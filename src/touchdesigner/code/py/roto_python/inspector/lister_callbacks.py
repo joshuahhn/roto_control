@@ -16,7 +16,7 @@ def onClick(info):
     if info.get('colName') == 'Mode' and info['rowData']['Control'].startswith('Button'):
         state=inspector.parent().GetControlState(id)
         op.TDResources.op('popMenu').Open(
-            items=['Toggle','Pulse'], callback=onModeSelect,
+            items=['Cycle'] if state.get('parameter_style')=='Menu' else ['Toggle','Pulse'], callback=onModeSelect,
             callbackDetails=dict(inspector=inspector,id=id,mode=state['mode']),
             checkedItems=[state['mode'].capitalize()],
             disabledItems=['Pulse'] if state.get('parameter_style')=='Toggle' else ['Toggle'] if state.get('parameter_style')=='Pulse' else [], autoClose=1)

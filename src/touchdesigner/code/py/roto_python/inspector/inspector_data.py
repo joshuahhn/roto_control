@@ -160,15 +160,15 @@ def offer(inspector, id):
 
 def eligible_parameters(inspector, comp, kind):
     """Discover writable custom parameters on demand; no per-frame scanning."""
-    if comp is None or not comp.valid or not comp.isCOMP:
+    if comp is None or not comp.valid or not comp.isCOMP or getattr(comp, 'OPType', '') == 'annotateCOMP':
         return []
-    styles = ('Float','Int') if kind == 'knob' else ('Toggle','Pulse')
+    styles = ('Float','Int','Menu') if kind == 'knob' else ('Toggle','Pulse','Menu')
     controls = inspector.parent().op('controls').module.Controls
     result = []
     for parameter in comp.customPars:
         if parameter.style not in styles:
             continue
-        mode = 'value' if kind == 'knob' else 'pulse' if parameter.style == 'Pulse' else 'toggle'
+        mode = 'value' if kind == 'knob' else 'cycle' if parameter.style == 'Menu' else 'pulse' if parameter.style == 'Pulse' else 'toggle'
         try:
             controls([dict(kind=kind,slot=1,id='picker.check',parameter=parameter,mode=mode)])
         except (ValueError, TypeError, AttributeError):
@@ -184,7 +184,7 @@ def available_components(inspector, kind):
     result = []
     while stack:
         comp = stack.pop()
-        if comp == controller or not comp.valid or not comp.isCOMP:
+        if comp == controller or not comp.valid or not comp.isCOMP or getattr(comp, 'OPType', '') == 'annotateCOMP':
             continue
         if eligible_parameters(inspector, comp, kind):
             result.append(comp)

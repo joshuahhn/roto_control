@@ -218,3 +218,20 @@ Final export: exports/roto_python.19.tox; canonical exports/roto_python.tox matc
 Authoritative workspace: /Users/huihongnin/project/roto_control/src/touchdesigner, origin https://github.com/joshuahhn/roto_control.git. Original nin-lab folder is retained as migration backup; continue all edits in this fork. Local docs helper is scripts/td_project_docs.py. Runtime environment is recreated here; do not use the old nin-lab Python path. Historical Backup, crash saves and older binaries remain at the original location.
 
 Migration verified: current live TD project is roto_control_python.32.toe under the fork. Canonical toe and tox hashes match latest .32 / .20 versions. New local Python environment completed actual hardware handshake. 116 tests pass; no live errors. No commit or push performed.
+
+
+## Menu parameter mapping
+
+Shared binding/controls/free Learn/Inspector now support custom Menu targets: knobs select quantized indices; buttons use Cycle with wrap. Label feedback and wire identity include choice semantics; options changes suspend old bindings. 123 tests pass. Live native Menu callbacks offered both knob/button targets; synthetic acknowledgements, knob CC input, PUSH press/held/release routing, API writes and assignment reload passed. Physical Menu LEARN/feedback remains pending. Existing user pixelSort mapping is preserved. Temporary fixture removed, final errors clean.
+
+Saved .33.toe and exported .21.tox; canonical files match. Clean exported tox reload supports both Menu knob/button assignment and option-label API feedback. Main hardware handshake and existing pixelSort Knob 1 recall verified. No fixture remains.
+
+
+## Physical two-option Menu LEARN
+
+User reported the first Masksource attempt did not show LEARNED, then confirmed retry worked. Actual hardware acknowledgement maps pixelSortV3.Masksource to Knob 3; Mapped=True, Valid=True, choices source/control, range 0–1, no error. Two-option Menu LEARN is confirmed; physical Knob 3 rotation has not been independently confirmed. The initial missed LEARN was not reproduced or root-caused; no additional runtime fix was made. Temporary diagnostic fixture removed. Saved .34.toe with this assignment; canonical toe SHA-256 matches. Generic export .21 remains empty of user assignments.
+
+
+## Inspector Annotation filtering
+
+COMP picker excludes annotateCOMP and stops traversal into its internal network, for both knobs and buttons. Live list previously contained seven annotations; after source reload both lists contain pixelSortV3 only. Direct eligible_parameters also rejects annotateCOMP. 123 tests pass. Exported clean .22.tox and promoted canonical tox; main reconnected and saved .35.toe with existing user mappings retained. Canonical toe hash matches.

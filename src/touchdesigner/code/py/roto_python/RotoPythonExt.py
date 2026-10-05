@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
+from binding import parameter_value
 
 
 class RotoPythonExt:
@@ -73,6 +74,9 @@ class RotoPythonExt:
                     button_type=getattr(target, "button_type", None),
                     binding_type="parameter" if parameter is not None else "callback" if binding is not None else "value",
                     comp=comp_path, parameter=parameter_name,
+                    menu_names=list(binding.menu_names) if binding is not None else [],
+                    menu_labels=list(binding.menu_labels) if binding is not None else [],
+                    value_label=binding.format_value(binding.normalized(value)) if binding is not None and binding.menu_names else "",
                     parameter_style=getattr(parameter,"style","") if parameter is not None else "",
                     requires_relearn=active_id in self.ownerComp.fetch('needs_relearn', ()) and not target.mapped)
 
@@ -291,10 +295,10 @@ class RotoPythonExt:
         if target is not None and target.touched and not self._host.learning:
             raise ValueError('Release the control before assigning')
         old = self._collection.bindings.get(key) if self._collection is not None else self._binding if key == ('knob', 1) else None
-        if old is not None and old.parameter == parameter:
+        if old is not None and old.parameter == parameter and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
             return self.GetControlState(old.id)
         style = getattr(parameter, 'style', '')
-        mode = 'value' if kind == 'knob' else 'pulse' if style == 'Pulse' else 'toggle'
+        mode = 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'
         adapter = None if kind == 'knob' else button_type or (
             getattr(target, 'button_type', None) or ('push' if mode == 'pulse' else 'toggle'))
         import uuid
@@ -445,7 +449,7 @@ class RotoPythonExt:
         self._leave_collection()
         self._host.configure_target(candidate.wire_identity, candidate.label,
                                     candidate.normalized(candidate.value),
-                                    lambda value: self.ownerComp.op("protocol").module.format_number(candidate.from_normalized(value)))
+                                    candidate.format_value)
         watcher.par.active = False
         watcher.par.op.expr = "str(parent.RotoPython.ext.RotoPythonExt.Targetowner)"
         watcher.par.pars = candidate.parameter.name if candidate.parameter is not None else ""
@@ -461,17 +465,17 @@ class RotoPythonExt:
 
     def BindParameter(self, parameter, *, id, minimum=None, maximum=None, label=None):
         if (not parameter.owner.valid or not parameter.isCustom
-                or parameter.style not in ("Float", "Int") or parameter.readOnly
+                or parameter.style not in ("Float", "Int", "Menu") or parameter.readOnly
                 or parameter.mode.name not in ("CONSTANT", "BIND")):
-            raise ValueError("Bind a writable CONSTANT/BIND custom Float or Int parameter")
-        minimum = parameter.normMin if minimum is None else minimum
-        maximum = parameter.normMax if maximum is None else maximum
+            raise ValueError("Bind a writable CONSTANT/BIND custom Float, Int or Menu parameter")
+        minimum = (0 if parameter.style == "Menu" else parameter.normMin) if minimum is None else minimum
+        maximum = (len(parameter.menuNames)-1 if parameter.style == "Menu" else parameter.normMax) if maximum is None else maximum
         # Explicit limits must not request values the target would silently clamp.
-        if ((parameter.clampMin and float(minimum) < parameter.min)
+        if parameter.style != "Menu" and ((parameter.clampMin and float(minimum) < parameter.min)
                 or (parameter.clampMax and float(maximum) > parameter.max)):
             raise ValueError("Binding range exceeds target clamp limits")
         candidate = self.ownerComp.op("binding").module.Binding(
-            id, label or parameter.label, minimum, maximum, parameter.eval(),
+            id, label or parameter.label, minimum, maximum, parameter_value(parameter),
             integer=parameter.style == "Int", parameter=parameter)
         return self._install_binding(candidate)
 
@@ -721,6 +725,8 @@ class RotoPythonExt:
             if self._collection.modes[key] == "pulse":
                 self._collection.pulse(key)
             else:
+                if self._collection.modes[key] == 'cycle':
+                    value = binding.normalized((int(binding.value)+1) % len(binding.menu_names))
                 target.parameter_changed(value)
                 actual = binding.write(binding.from_normalized(value), "hardware")
                 target.value = binding.normalized(actual)

@@ -68,3 +68,8 @@ Configuration edits use public `ConfigureControl(id, minimum=..., maximum=..., m
 Configuration overrides persist in controller storage by stable target ID and apply after table/hook registration on restore; fresh reusable exports clear these overrides. The saved targets table and registration hook remain the original registration source. Editable configuration currently requires a collection; built-in single Value remains fixed at 0 / 1.
 
 `ClearAllLearn()` preflights connection, LEARN and touch before any unmap command, and returns the registered IDs. A transport failure during the batch can leave a partially cleared batch; hardware offers no atomic clear-all acknowledgement. Confirmation belongs to the Inspector UI, while ClearLearn / ClearAllLearn remain direct APIs.
+
+
+## Menu parameters
+
+Custom Menu parameters support knobs (quantized option selection) and buttons (Cycle: advance and wrap on each press). Use hardware LEARN, select the destination, then change the menu. Inspector pickers support both kinds. PUSH ignores release/held duplicates; TOGGLE accepts each latched press. Menu ranges are fixed at indices 0..N-1, and SetValue uses those indices. State includes menu_names, menu_labels and value_label. LCD feedback uses the option label. Menu options must have 2..24 unique names and matching labels, following the official Ableton quantized-step limit. Changing names, labels or order suspends the binding; assign and re-learn it.

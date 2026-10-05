@@ -1,0 +1,25 @@
+{
+  "native_knob_learn": true,
+  "knob_cc_to_option": true,
+  "software_index_to_name": true,
+  "label": "Gamma",
+  "native_button_learn": true,
+  "push_cycles_wraps": true,
+  "held_release_duplicates_ignored": true,
+  "tests": 123,
+  "hardware_ack": "simulated",
+  "assignment_reload": true,
+  "portable_menu_knob_button": true,
+  "saved_project": "roto_control_python.34.toe",
+  "export": "roto_python.21.tox",
+  "physical_menu_learn": {
+    "Masksource": {
+      "kind": "knob",
+      "slot": 3,
+      "mapped": true,
+      "choices": 2,
+      "user_confirmed_learn_after_retry": true,
+      "physical_rotation_verified": false
+    }
+  }
+}

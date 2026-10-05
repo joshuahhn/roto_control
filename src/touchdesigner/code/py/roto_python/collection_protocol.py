@@ -23,6 +23,10 @@ class Control(Host):
         steps = 2 if self.key[0] == 'button' else 0
         labels = ('Ready', 'Trigger') if self.mode == 'pulse' else ('Off', 'On')
         strings = (*text13(labels[0]), *text13(labels[1])) if steps else ()
+        binding = getattr(self.format_value, '__self__', None)
+        if self.key[0] == 'knob' and binding is not None and binding.menu_names:
+            steps = len(binding.menu_names)
+            strings = tuple(byte for label in binding.menu_labels for byte in text13(label)) if steps <= 16 else ()
         self._command(PLUGIN, 10, (self.index >> 7, self.index & 127,
                                    *digest(self.target_id, 6), 0, 0, steps,
                                    value >> 7, value & 127, *text13(self.target_label), *strings))
@@ -48,7 +52,7 @@ class Control(Host):
             self._send((191, 11+slot, value >> 7))
             self._send((191, 43+slot, value & 127))
         else:
-            value = self._pulse_state if self.mode == 'pulse' else 127 if self.value >= 0.5 else 0
+            value = self._pulse_state if self.mode in ('pulse','cycle') else 127 if self.value >= 0.5 else 0
             self._send((191, 19+slot, value))
         self._display()
 
@@ -78,7 +82,7 @@ class CollectionHost(Host):
             indices.add(index)
             hashes.add(hashed)
             mode = spec.get('mode','value')
-            if (kind == 'knob' and mode != 'value') or (kind == 'button' and mode not in ('toggle','pulse')):
+            if (kind == 'knob' and mode != 'value') or (kind == 'button' and mode not in ('toggle','pulse','cycle')):
                 raise ValueError('Knob uses value; button uses toggle/pulse')
             button_type = spec.get('button_type', 'toggle' if kind == 'button' else None)
             if kind == 'button' and button_type not in ('toggle', 'push') or kind == 'knob' and button_type is not None:
@@ -255,7 +259,7 @@ class CollectionHost(Host):
             if target is None or not target.mapped or not target.enabled:
                 return
             # Action mode belongs to the consumer; button_type declares RX semantics.
-            if target.mode == 'pulse':
+            if target.mode in ('pulse','cycle'):
                 now = self.clock()
                 pressed = value >= 64
                 if target.button_type == 'push':
@@ -269,7 +273,7 @@ class CollectionHost(Host):
                 if fire:
                     target.last_pulse = now
                     self.assign_control(key,1)
-                    target.value = 0
+                    if target.mode == 'pulse': target.value = 0
                 if target.enabled and target.mapped:
                     # TOGGLE is an action source: confirm idle immediately.
                     # PUSH retains its RX state to distinguish press/release.

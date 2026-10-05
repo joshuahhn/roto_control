@@ -33,6 +33,16 @@ def parameter_chain(parameter):
     raise ValueError("Missing parameter bind master")
 
 
+def parameter_value(parameter):
+    if getattr(parameter, 'style', '') == 'Menu':
+        names = list(parameter.menuNames)
+        value = parameter.eval()
+        if value not in names:
+            raise ValueError('Menu value is not a current option')
+        return names.index(value)
+    return parameter.eval()
+
+
 class Binding:
     def __init__(self, id, label, minimum, maximum, value, *, integer=False,
                  parameter=None, on_change=None):
@@ -50,6 +60,15 @@ class Binding:
             raise ValueError("Integer target limits must be integers")
         if on_change is not None and not callable(on_change):
             raise TypeError("on_change must be callable")
+        self.menu_names = tuple(parameter.menuNames) if getattr(parameter, 'style', '') == 'Menu' else ()
+        self.menu_labels = tuple(parameter.menuLabels) if self.menu_names else ()
+        if self.menu_names:
+            if (not 2 <= len(self.menu_names) <= 24 or len(set(self.menu_names)) != len(self.menu_names)
+                    or len(self.menu_labels) != len(self.menu_names)):
+                raise ValueError('Menu needs 2..24 unique names and matching labels')
+            if minimum != 0 or maximum != len(self.menu_names)-1:
+                raise ValueError('Menu range must include all option indices')
+            integer = True
         self.integer, self.parameter, self.on_change = integer, parameter, on_change
         self.value = self.clamp(value)
         self.expected = None
@@ -57,12 +76,13 @@ class Binding:
 
     @property
     def signature(self):
-        return (self.minimum, self.maximum, self.integer)
+        return (self.minimum, self.maximum, self.integer, self.menu_names, self.menu_labels)
 
     @property
     def wire_identity(self):
         # Include value semantics so old mappings cannot change a new range.
-        return f"{self.id}:{self.minimum!r}:{self.maximum!r}:{int(self.integer)}"
+        identity = f"{self.id}:{self.minimum!r}:{self.maximum!r}:{int(self.integer)}"
+        return identity + repr((self.menu_names, self.menu_labels)) if self.menu_names else identity
 
     def clamp(self, value):
         value = float(value)
@@ -80,6 +100,9 @@ class Binding:
     def check_parameter(self):
         if self.parameter is None:
             return
+        if self.menu_names and (tuple(self.parameter.menuNames) != self.menu_names
+                                or tuple(self.parameter.menuLabels) != self.menu_labels):
+            raise ValueError('Menu options changed; assign and re-learn the parameter')
         for p in parameter_chain(self.parameter):
             if getattr(p, 'style', None) in ('Float', 'Int') and (
                     p.clampMin and self.minimum < p.min or
@@ -94,16 +117,25 @@ class Binding:
         changed = value != self.value
         self.value = value
         if self.parameter is not None:
-            if self.parameter.eval() != value:
+            if parameter_value(self.parameter) != value:
                 self.expected = value
-                self.parameter.val = value
+                self.parameter.val = self.menu_names[int(value)] if self.menu_names else value
         elif origin == "hardware" and changed and self.on_change is not None:
             self.on_change({"id": self.id, "value": value, "origin": origin})
         return value
 
+    def format_value(self, normalized):
+        value = self.from_normalized(normalized)
+        if self.menu_names:
+            return self.menu_labels[int(value)]
+        from protocol import format_number
+        return format_number(value)
+
     def external_changed(self, value):
         self.check_parameter()
         expected, self.expected = self.expected, None
+        if self.menu_names and isinstance(value, str):
+            value = self.menu_names.index(value)
         value = self.clamp(value)
         if value == expected:
             return False

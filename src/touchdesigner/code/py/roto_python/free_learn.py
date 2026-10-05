@@ -1,7 +1,7 @@
 """DAW-style learning: offer an edited Par, commit only the hardware's slot/hash."""
 import time
 import uuid
-from binding import parameter_chain
+from binding import parameter_chain, parameter_value
 from protocol import digest
 
 
@@ -15,6 +15,7 @@ class FreeLearner:
         self.baseline = {}
         self.ignored = {}
         self.next_scan = 0
+        self.selected_kind = 'knob'
         self.paths = ''
 
     @staticmethod
@@ -31,7 +32,7 @@ class FreeLearner:
                 continue
             pars = []
             for parameter in comp.customPars:
-                if parameter.style not in ('Float','Int','Toggle','Pulse'):
+                if parameter.style not in ('Float','Int','Menu','Toggle','Pulse'):
                     continue
                 try:
                     parameter_chain(parameter)
@@ -74,7 +75,7 @@ class FreeLearner:
     def ignore(self, parameter, value):
         if parameter is not None:
             for reference in parameter_chain(parameter):
-                self.ignored[self.key(reference)] = value
+                self.ignored[self.key(reference)] = reference.menuNames[int(value)] if reference.style == 'Menu' else value
 
     def changes(self, changes):
         if not self.active:
@@ -87,7 +88,7 @@ class FreeLearner:
             self.baseline[key] = value
             if value == old or value == self.ignored.pop(key,object()):
                 continue
-            if parameter.style not in ('Float','Int','Toggle'):
+            if parameter.style not in ('Float','Int','Menu','Toggle'):
                 continue
             candidates.append(parameter)
         # A public BIND Par and its master may both change. Prefer the COMP
@@ -117,8 +118,8 @@ class FreeLearner:
             return False
         e = self.extension
         try:
-            kind = 'button' if parameter.style in ('Toggle','Pulse') else 'knob'
-            mode = 'value' if kind == 'knob' else 'pulse' if parameter.style == 'Pulse' else 'toggle'
+            kind = self.selected_kind if parameter.style == 'Menu' else 'button' if parameter.style in ('Toggle','Pulse') else 'knob'
+            mode = 'value' if kind == 'knob' else 'cycle' if parameter.style == 'Menu' else 'pulse' if parameter.style == 'Pulse' else 'toggle'
             collection = e._collection
             existing = next((key for key,binding in collection.bindings.items() if binding.parameter == parameter),None) if collection else None
             if existing is not None:
@@ -134,7 +135,7 @@ class FreeLearner:
                 binding = candidate.bindings[kind,1]
                 wire = next(candidate.specs())
             template = self.owner.op('collection_protocol').module.Control(e._host._send,(kind,1),index,
-                wire['identity'],wire['label'],binding.normalized(parameter.eval() if mode != 'pulse' else 0),
+                wire['identity'],wire['label'],binding.normalized(parameter_value(parameter) if mode != 'pulse' else 0),
                 wire['formatter'],mode,wire['button_type'])
             template.enabled = template.connected = template.plugin = template.learning = True
             if not template.offer_parameter():
@@ -152,6 +153,7 @@ class FreeLearner:
         if len(message) == 3 and message[0] == 191 and self.active:
             if 52 <= message[1] <= 59 and message[2] > 0 or 20 <= message[1] <= 27:
                 self.last_parameter = None
+                self.selected_kind = 'knob' if 52 <= message[1] <= 59 else 'button'
         pending = self.pending
         if pending is None or time.monotonic()-pending['time'] > 30:
             return False

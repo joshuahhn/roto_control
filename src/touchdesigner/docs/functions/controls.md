@@ -61,3 +61,8 @@ Roto-Setup PUSH mode does not expose step labels (user-confirmed hardware setup)
 `RemoveControl(id)` deletes one registration; `RemoveAllControls()` returns the removed IDs. Both support offline operation and preserve the target parameter/value. Removed controls have no watcher, offer or input dispatch. Saved table rows/config overrides are removed; saved hooks are filtered until explicit public registration opts the ID back in. Hardware unmap is sent immediately when PLUGIN is ready and replayed on readiness after reconnect. These commands reject LEARN/touch/callback mutation and have no hardware acknowledgement. `ClearLearn` / `ClearAllLearn` still only unmap hardware and retain registration.
 
 An adapter-only `ConfigureControl(button_type=...)` preserves the target identity, acknowledgement and LED state; it sends no metadata/unmap and needs no re-LEARN. Existing range/mode re-LEARN requirements remain. The adapter must match actual hardware TYPE; every latched TOGGLE value triggers a Pulse, whereas PUSH triggers only rising presses.
+
+
+## Menu parameters
+
+Custom Menu parameters support knobs (quantized option selection) and buttons (Cycle: advance and wrap on each press). Use hardware LEARN, select the destination, then change the menu. Inspector pickers support both kinds. PUSH ignores release/held duplicates; TOGGLE accepts each latched press. Menu ranges are fixed at indices 0..N-1, and SetValue uses those indices. State includes menu_names, menu_labels and value_label. LCD feedback uses the option label. Menu options must have 2..24 unique names and matching labels, following the official Ableton quantized-step limit. Changing names, labels or order suspends the binding; assign and re-learn it.

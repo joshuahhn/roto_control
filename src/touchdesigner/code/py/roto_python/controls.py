@@ -1,5 +1,5 @@
 """Control collection adapters. TD handles are supplied by the caller."""
-from binding import Binding, parameter_chain
+from binding import Binding, parameter_chain, parameter_value
 from protocol import format_number
 
 
@@ -11,17 +11,17 @@ class Controls:
         for spec in specs:
             kind, slot = spec['kind'], spec['slot']
             key = kind, slot
-            mode = spec.get('mode', 'value' if kind == 'knob' else 'toggle')
+            mode = spec.get('mode', 'value' if kind == 'knob' else 'cycle' if getattr(spec.get('parameter'), 'style', '') == 'Menu' else 'toggle')
             if kind not in ('knob', 'button') or type(slot) is not int or not 1 <= slot <= 8:
                 raise ValueError('Control must be knob/button, slot 1..8')
-            if (kind == 'knob' and mode != 'value') or (kind == 'button' and mode not in ('toggle', 'pulse')):
+            if (kind == 'knob' and mode != 'value') or (kind == 'button' and mode not in ('toggle', 'pulse', 'cycle')):
                 raise ValueError('Knob uses value; button uses toggle/pulse')
             button_type = spec.get('button_type', 'toggle' if kind == 'button' else None)
             if kind == 'button' and button_type not in ('toggle', 'push') or kind == 'knob' and button_type is not None:
                 raise ValueError('button_type is toggle/push for buttons only')
             parameter = spec.get('parameter')
             if parameter is not None:
-                styles = ('Float', 'Int') if kind == 'knob' else (('Toggle',) if mode == 'toggle' else ('Pulse',))
+                styles = ('Float', 'Int', 'Menu') if kind == 'knob' else (('Toggle',) if mode == 'toggle' else ('Menu',) if mode == 'cycle' else ('Pulse',))
                 if not parameter.isCustom or parameter.style not in styles:
                     raise ValueError('Custom parameter style does not match control mode')
                 keys={(p.owner.path,p.name) for p in parameter_chain(parameter)}
@@ -30,15 +30,16 @@ class Controls:
                 parameters.update(keys)
             elif not callable(spec.get('on_change')):
                 raise ValueError('Supply a parameter or on_change callback')
-            minimum = spec.get('minimum', parameter.normMin if parameter is not None and kind == 'knob' else 0)
-            maximum = spec.get('maximum', parameter.normMax if parameter is not None and kind == 'knob' else 1)
-            if kind == 'button' and (minimum != 0 or maximum != 1):
+            menu = parameter is not None and parameter.style == 'Menu'
+            minimum = spec.get('minimum', 0 if menu else parameter.normMin if parameter is not None and kind == 'knob' else 0)
+            maximum = spec.get('maximum', len(parameter.menuNames)-1 if menu else parameter.normMax if parameter is not None and kind == 'knob' else 1)
+            if kind == 'button' and mode != 'cycle' and (minimum != 0 or maximum != 1):
                 raise ValueError('Button range must be 0..1')
-            if parameter is not None and kind == 'knob' and (
+            if parameter is not None and not menu and kind == 'knob' and (
                     parameter.clampMin and minimum < parameter.min or
                     parameter.clampMax and maximum > parameter.max):
                 raise ValueError('Binding range exceeds target clamp limits')
-            value = 0 if mode == 'pulse' else spec.get('value', parameter.eval() if parameter is not None else 0)
+            value = 0 if mode == 'pulse' else spec.get('value', parameter_value(parameter) if parameter is not None else 0)
             binding = Binding(spec['id'], spec.get('label') or (parameter.label if parameter is not None else spec['id']),
                               minimum, maximum, value, integer=kind == 'button' or parameter is not None and parameter.style == 'Int',
                               parameter=parameter, on_change=spec.get('on_change'))
@@ -57,8 +58,8 @@ class Controls:
             mode = self.modes[key]
             yield dict(kind=key[0], slot=key[1], index=self.indices[key], identity=binding.wire_identity + ':' + mode,
                        label=binding.label, mode=mode, button_type=self.button_types[key], value=binding.normalized(binding.value),
-                       formatter=lambda value, b=binding, m=mode: ('Ready' if m == 'pulse' else
-                                 ('On' if value >= .5 else 'Off') if m == 'toggle' else format_number(b.from_normalized(value))))
+                       formatter=binding.format_value if mode in ('value','cycle') else lambda value, b=binding, m=mode: ('Ready' if m == 'pulse' else
+                                 ('On' if value >= .5 else 'Off') if m == 'toggle' else b.format_value(value)))
 
     def key(self, id=None):
         if id is None:
