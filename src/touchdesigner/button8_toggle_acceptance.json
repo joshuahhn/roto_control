@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "time": 468763.451039666,
+      "value": 1
+    },
+    {
+      "time": 468766.184439541,
+      "value": 1
+    },
+    {
+      "time": 468767.551079875,
+      "value": 1
+    },
+    {
+      "time": 468769.400916875,
+      "value": 1
+    }
+  ],
+  "count": 4,
+  "mapped": true,
+  "button_type": "toggle",
+  "mode": "pulse",
+  "pulse_ack_pending": 0,
+  "errors": "",
+  "midi_values": [
+    127,
+    0,
+    127,
+    0
+  ],
+  "one_dispatch_per_received_press": true,
+  "probe_removed": true,
+  "note": "Three presses were requested; four distinct hardware MIDI events were received and each dispatched one native Pulse."
+}

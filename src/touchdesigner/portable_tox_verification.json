@@ -1,0 +1,24 @@
+{
+  "relocated_nested_tox": true,
+  "renamed_controller": true,
+  "embedded_transport_handshake": true,
+  "invalid_external_helper_ignored": true,
+  "external_DAT_paths": false,
+  "empty_16_slot_inspector": true,
+  "tests": 116,
+  "native_free_learn_after_relocation": true,
+  "acknowledgement": "simulated",
+  "mapped_slot": 2,
+  "public_api_write": true,
+  "export": "roto_python.19.tox",
+  "export_sha256": "6890bad27dadcc878f09da210fa6ec789eedfe78743da1deafcaccfbf8bc5b3d",
+  "saved_project": "roto_control_python.30.toe",
+  "canonical_matches": true,
+  "review": {
+    "errors": "PASS",
+    "structure": "PASS",
+    "parameters": "PASS",
+    "output": "PASS",
+    "performance": "WARN: startup compile snapshot only; no sustained load profile"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-04",
+  "build": "2025.33230",
+  "component": "/roto_control_python/roto_python",
+  "automated_tests": 24,
+  "td_errors": [],
+  "td_checks": [
+    "promoted binding interface",
+    "custom parameter watcher and software writes",
+    "synthetic hardware input without motor echo",
+    "callback hardware events/software suppression",
+    "callback failure suspension",
+    "target deletion/mode change suspension",
+    "target rename path resync",
+    "fresh builder including docs and demos",
+    "CHOP output and annotation containment"
+  ],
+  "parameter_binding": {
+    "id": "demo.parameter.speed",
+    "range": [
+      0,
+      10
+    ],
+    "user_confirmed": [
+      "LEARNED Speed",
+      "physical input changes Speed",
+      "motor and LCD on Speed 7"
+    ],
+    "mapping_recall": true
+  },
+  "callback_binding": {
+    "id": "demo.callback.speed",
+    "range": [
+      0,
+      10
+    ],
+    "user_confirmed": [
+      "LEARNED Callback",
+      "physical input changes Received/Events",
+      "motor and LCD on SetValue 3 then 7"
+    ],
+    "software_callback_event_delta": 0,
+    "mapping_recall": true
+  },
+  "cleanup": {
+    "pid": 64042,
+    "seconds": 0.03974908305099234,
+    "process_gone": true
+  },
+  "limitations": [
+    "one active target / Knob 1",
+    "runtime registration resets on extension reinit and tested Collapse Selected workflow",
+    "source files and venv required",
+    "no full-day or USB hotplug acceptance"
+  ],
+  "saved_project": "roto_control_python.4.toe",
+  "saved_sha256": "e2e00b14da845d20c74bb8cdae9f3239b713cc4e49a5f20af2128d39c5c14ac8"
+}

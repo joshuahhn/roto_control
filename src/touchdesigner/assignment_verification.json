@@ -1,0 +1,22 @@
+{
+  "knob_id": "parameter.61aa91c12dd74a488dc345985850d74f",
+  "pulse_id": "parameter.a84eab289d6a472a9b219b788f577e91",
+  "toggle_id": "parameter.32dd6d000ee74dd097693e0843d9bb5d",
+  "discovery": true,
+  "auto_offer": true,
+  "other_mapping_preserved": true,
+  "stale_ack_rejected": true,
+  "numeric_input": true,
+  "software_feedback": true,
+  "no_midi_process": true,
+  "extension_reload": true,
+  "remove_does_not_restore": true,
+  "first_assignment_in_learn": true,
+  "errors": "",
+  "embedded_export": true,
+  "export_new_comp_discovery": true,
+  "export_first_learn_assignment": true,
+  "assignment_tox_disk_reload": true,
+  "native_comp_and_parameter_popups": true,
+  "tests": 109
+}

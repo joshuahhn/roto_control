@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-04",
+  "build": "2025.33230",
+  "automated_tests": 32,
+  "callback_disk_reopen": {
+    "project": "roto_control_python.5.toe",
+    "target": "demo.callback.speed",
+    "valid": true,
+    "connected_at_start": false,
+    "mapping_after_connect": true
+  },
+  "extension_reload": [
+    "parameter setup restores",
+    "callback hook recreates registration"
+  ],
+  "invalid_setup": "suspends and reports internally; Apply recovers",
+  "outer_status_parameters_removed": true,
+  "output_channels_preserved": true,
+  "fresh_builder": true,
+  "saved_project": "roto_control_python.6.toe",
+  "saved_sha256": "8d164e6352af2894d1b0be1a48748b2913fd00232ac22589cae01bae361b8d51",
+  "parameter_disk_reopen": {
+    "project": "roto_control_python.6.toe",
+    "target": "demo.parameter.speed",
+    "valid": true,
+    "connected_at_start": false,
+    "mapping_after_connect": true,
+    "outer_diagnostics_absent": true
+  }
+}

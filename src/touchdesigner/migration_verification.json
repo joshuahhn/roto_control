@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/joshuahhn/roto_control.git",
+  "workspace": "/Users/huihongnin/project/roto_control/src/touchdesigner",
+  "source_backup": "/Users/huihongnin/project/nin-lab/td_projects/roto_control_python",
+  "project": "roto_control_python.32.toe",
+  "project_sha256": "d16f5f1e18f99886710d014890ca3228cbc0e5162cef54c27432aebcda0427a1",
+  "tox": "exports/roto_python.20.tox",
+  "tox_sha256": "09a95a37150e79c6c45e97e3e35710019f605f86fd60abef7a607c6c43beb6b0",
+  "tests": 116,
+  "new_python_hardware_handshake": true,
+  "errors": 0,
+  "commit_push": false
+}

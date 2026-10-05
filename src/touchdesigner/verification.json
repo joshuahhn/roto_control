@@ -1,0 +1,29 @@
+{
+  "build": "2025.33230",
+  "component": "/roto_control_python/roto_python",
+  "value": 0.0,
+  "connected": true,
+  "plugin": true,
+  "mapped": true,
+  "rx": 209826,
+  "tx": 74,
+  "echo_blocked": 224,
+  "rejected": 0,
+  "helper_pid": 99051,
+  "user_confirmed": [
+    "LEARNED Value",
+    "physical knob rotation",
+    "motor movement on TD Value 0.75",
+    "LCD numeric display"
+  ],
+  "accepted_session_project": "roto_control_python.1.toe",
+  "saved_project": "roto_control_python.2.toe",
+  "cleanup_check": {
+    "pid": 26945,
+    "connected_before": true,
+    "mapped_before": true,
+    "disconnect_seconds": 0.02053729200270027,
+    "process_gone": true,
+    "td_errors": []
+  }
+}

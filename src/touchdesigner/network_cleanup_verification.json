@@ -1,0 +1,9 @@
+{
+  "networks": 4,
+  "groups": 17,
+  "operators": 61,
+  "containment": true,
+  "overlaps": false,
+  "backward_wires": false,
+  "no_external_outputs": true
+}

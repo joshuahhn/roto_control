@@ -1,0 +1,69 @@
+{
+  "events": [
+    {
+      "time": 469507.934669791,
+      "value": 1
+    },
+    {
+      "time": 469508.53410575,
+      "value": 1
+    },
+    {
+      "time": 469509.100954708,
+      "value": 1
+    }
+  ],
+  "count": 3,
+  "rx": [
+    {
+      "time": 469507.934,
+      "bytes": "191 27 127"
+    },
+    {
+      "time": 469508.067,
+      "bytes": "191 27 0"
+    },
+    {
+      "time": 469508.534,
+      "bytes": "191 27 127"
+    },
+    {
+      "time": 469508.651,
+      "bytes": "191 27 0"
+    },
+    {
+      "time": 469509.101,
+      "bytes": "191 27 127"
+    },
+    {
+      "time": 469509.201,
+      "bytes": "191 27 0"
+    }
+  ],
+  "state": {
+    "id": "pixelsort.clear",
+    "kind": "button",
+    "slot": 8,
+    "mode": "pulse",
+    "label": "Clear History",
+    "value": 0,
+    "normalized": 0.0,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mapped": true,
+    "touched": false,
+    "valid": true,
+    "connected": true,
+    "plugin": true,
+    "error": "",
+    "button_type": "push",
+    "binding_type": "parameter",
+    "comp": "/roto_control_python/pixelSortV3",
+    "parameter": "Clearhistory",
+    "parameter_style": "Pulse",
+    "requires_relearn": false
+  },
+  "pulse_ack_pending": 0,
+  "errors": "",
+  "probe_removed": true
+}

@@ -1,0 +1,87 @@
+{
+  "targets": 13,
+  "knobs": 8,
+  "toggles": 3,
+  "pulses": 2,
+  "bound_pulse_reset_calls": 1,
+  "comp_pages": 2,
+  "clear_restore": true,
+  "clear_all": true,
+  "errors": [],
+  "date": "2026-10-05",
+  "tests": 95,
+  "saved_project": "roto_control_python.23.toe",
+  "saved_sha256": "12ff9c075d93e190d64324c32e21bde0bf01d419b7d5a28601d2bd357813fbef",
+  "export_sha256": "ebc8b29aa80e03a0a6ca4a0f453de9aa0e04383dd7260bcbecc2dc03768b0a4a",
+  "disk_reopen": true,
+  "restored_watcher_handles": 13,
+  "embedded_bound_single_api": true,
+  "physical_acceptance": "pending LEARN/input",
+  "final_connected": true,
+  "final_plugin": true,
+  "final_registered": 13,
+  "final_mapped": 0,
+  "knob1_physical_rotation": {
+    "user_confirmed": true,
+    "observed_parameter_value": 0.4180000126361847,
+    "api_matches_parameter": true,
+    "mapped": true,
+    "rotation_bytes_not_captured": true
+  },
+  "knob1_software_feedback": {
+    "sent_value": 0.25,
+    "motor_user_confirmed": true,
+    "lcd_near_sent_value_user_confirmed": true
+  },
+  "knob8_inspector_learn": {
+    "learned_user_confirmed": true,
+    "hardware_rotation_user_confirmed": true,
+    "user_display_value": 5,
+    "target": "fractal_pop.Tumblemult",
+    "software_feedback_sent": 2,
+    "motor_lcd_acceptance": "passed",
+    "motor_user_confirmed": true,
+    "lcd_near_2_user_confirmed": true
+  },
+  "button3_bound_toggle": {
+    "target": "fractal_pop.Autorotate",
+    "user_confirmed_on_off_led": true,
+    "inspector_learn_user_confirmed": true
+  },
+  "button8_toggle_pulse": {
+    "target": "pixelSortV3.Clearhistory",
+    "events": [
+      {
+        "time": 468763.451039666,
+        "value": 1
+      },
+      {
+        "time": 468766.184439541,
+        "value": 1
+      },
+      {
+        "time": 468767.551079875,
+        "value": 1
+      },
+      {
+        "time": 468769.400916875,
+        "value": 1
+      }
+    ],
+    "count": 4,
+    "mapped": true,
+    "button_type": "toggle",
+    "mode": "pulse",
+    "pulse_ack_pending": 0,
+    "errors": "",
+    "midi_values": [
+      127,
+      0,
+      127,
+      0
+    ],
+    "one_dispatch_per_received_press": true,
+    "probe_removed": true,
+    "note": "Three presses were requested; four distinct hardware MIDI events were received and each dispatched one native Pulse."
+  }
+}

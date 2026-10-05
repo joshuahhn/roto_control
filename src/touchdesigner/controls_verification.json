@@ -1,0 +1,771 @@
+{
+  "date": "2026-10-04",
+  "automated_tests": 47,
+  "live_synthetic": "16 mapping acknowledgements, input isolation, callback collection, output, single fallback passed",
+  "physical": {
+    "knob2": "LEARN,input 10, motor/LCD 7, recall accepted",
+    "button1": "127,0,127; final TD True",
+    "button2": "127,127,127; exactly 3 Pulse actions",
+    "knob8": "LEARN, input 10, motor/LCD 7 accepted",
+    "button8": "LEARNED; three CC27 positive messages; exactly three Pulse actions",
+    "button8_label": "Ready accepted after re-LEARN; visible Trigger flash failed (Ready only)"
+  },
+  "accepted_snapshot": {
+    "build": "2025.33230",
+    "state": {
+      "Connected": true,
+      "Plugin": true,
+      "Mapped": false,
+      "Touched": false,
+      "Learning": false,
+      "Bindingvalid": true,
+      "Rx": 2961,
+      "Tx": 31,
+      "Rejected": 0,
+      "Echoblocked": 3,
+      "Status": "Button 2 mapped to button 2",
+      "Lasterror": "",
+      "Targetid": "TD controls:demo.controls.v1",
+      "Targetvalue": 0.2500152597204419,
+      "Value": 0.2500152597204419
+    },
+    "targets": "kind\tslot\tid\tmode\tvalue\tmapped\tvalid\terror\r\nknob\t1\tdemo.knob1\tvalue\t2.500152597204419\t0\t1\t\r\nknob\t2\tdemo.knob2\tvalue\t7.0\t1\t1\t\r\nknob\t3\tdemo.knob3\tvalue\t5.0\t0\t1\t\r\nknob\t4\tdemo.knob4\tvalue\t5.0\t0\t1\t\r\nknob\t5\tdemo.knob5\tvalue\t5.0\t0\t1\t\r\nknob\t6\tdemo.knob6\tvalue\t5.0\t0\t1\t\r\nknob\t7\tdemo.knob7\tvalue\t5.0\t0\t1\t\r\nknob\t8\tdemo.knob8\tvalue\t7.506561679790026\t0\t1\t\r\nbutton\t1\tdemo.button1\ttoggle\t1\t1\t1\t\r\nbutton\t2\tdemo.button2\tpulse\t0\t1\t1\t\r\nbutton\t3\tdemo.button3\ttoggle\t0\t0\t1\t\r\nbutton\t4\tdemo.button4\tpulse\t0\t0\t1\t\r\nbutton\t5\tdemo.button5\ttoggle\t0\t0\t1\t\r\nbutton\t6\tdemo.button6\tpulse\t0\t0\t1\t\r\nbutton\t7\tdemo.button7\ttoggle\t0\t0\t1\t\r\nbutton\t8\tdemo.button8\tpulse\t0\t0\t1\t\r\n",
+    "rx": "time\tkind\tbytes\r\n437519.550\tbutton\t191 20 127\r\n437520.784\tbutton\t191 20 0\r\n437655.667\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n437655.667\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437668.600\tbutton\t191 20 127\r\n437672.867\tbutton\t191 20 0\r\n437675.017\tbutton\t191 20 127\r\n437740.984\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n437740.984\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437740.984\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n437748.884\tbutton\t191 20 127\r\n437755.517\tbutton\t191 21 127\r\n437756.950\tbutton\t191 21 127\r\n437758.217\tbutton\t191 21 0\r\n437858.667\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n437858.667\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437858.667\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n437874.100\tbutton\t191 20 127\r\n437875.000\tbutton\t191 20 0\r\n437875.900\tbutton\t191 20 127\r\n437877.600\tbutton\t191 21 127\r\n437878.434\tbutton\t191 21 127\r\n437879.367\tbutton\t191 21 0\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n437966.484\tbutton\t191 20 127\r\n437967.517\tbutton\t191 20 0\r\n437968.384\tbutton\t191 20 127\r\n437970.800\tbutton\t191 21 127\r\n437971.684\tbutton\t191 21 127\r\n437972.500\tbutton\t191 21 127\r\n",
+    "pulse": "parameter\tcount\r\nButton2\t3\r\nButton4\t0\r\nButton6\t0\r\nButton8\t0\r\n"
+  },
+  "slot8_snapshot": {
+    "state": {
+      "Connected": true,
+      "Plugin": true,
+      "Mapped": false,
+      "Touched": false,
+      "Learning": false,
+      "Bindingvalid": true,
+      "Rx": 7764,
+      "Tx": 75,
+      "Rejected": 0,
+      "Echoblocked": 33,
+      "Status": "Mapped; target ready",
+      "Lasterror": "",
+      "Targetid": "TD controls:demo.controls.v1",
+      "Targetvalue": 2.500152597204419,
+      "Value": 0.2500152597204419
+    },
+    "targets": "kind\tslot\tid\tmode\tvalue\tmapped\tvalid\terror\r\nknob\t1\tdemo.knob1\tvalue\t2.500152597204419\t0\t1\t\r\nknob\t2\tdemo.knob2\tvalue\t7.0\t1\t1\t\r\nknob\t3\tdemo.knob3\tvalue\t5.0\t0\t1\t\r\nknob\t4\tdemo.knob4\tvalue\t5.0\t0\t1\t\r\nknob\t5\tdemo.knob5\tvalue\t5.0\t0\t1\t\r\nknob\t6\tdemo.knob6\tvalue\t5.0\t0\t1\t\r\nknob\t7\tdemo.knob7\tvalue\t5.0\t0\t1\t\r\nknob\t8\tdemo.knob8\tvalue\t7.0\t1\t1\t\r\nbutton\t1\tdemo.button1\ttoggle\t1\t1\t1\t\r\nbutton\t2\tdemo.button2\tpulse\t0\t1\t1\t\r\nbutton\t3\tdemo.button3\ttoggle\t0\t0\t1\t\r\nbutton\t4\tdemo.button4\tpulse\t0\t0\t1\t\r\nbutton\t5\tdemo.button5\ttoggle\t0\t0\t1\t\r\nbutton\t6\tdemo.button6\tpulse\t0\t0\t1\t\r\nbutton\t7\tdemo.button7\ttoggle\t0\t0\t1\t\r\nbutton\t8\tdemo.button8\tpulse\t0\t1\t1\t\r\n",
+    "rx": "time\tkind\tbytes\r\n437858.667\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437858.667\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n437874.100\tbutton\t191 20 127\r\n437875.000\tbutton\t191 20 0\r\n437875.900\tbutton\t191 20 127\r\n437877.600\tbutton\t191 21 127\r\n437878.434\tbutton\t191 21 127\r\n437879.367\tbutton\t191 21 0\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n437951.867\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n437966.484\tbutton\t191 20 127\r\n437967.517\tbutton\t191 20 0\r\n437968.384\tbutton\t191 20 127\r\n437970.800\tbutton\t191 21 127\r\n437971.684\tbutton\t191 21 127\r\n437972.500\tbutton\t191 21 127\r\n438075.117\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n438075.117\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n438075.117\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n438149.634\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n438149.634\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n438149.634\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n438149.634\tmapping\t240 0 34 3 2 11 11 0 7 74 3 103 12 126 45 0 7 0 247\r\n438246.967\tmapping\t240 0 34 3 2 11 11 0 8 16 90 107 29 81 19 1 0 0 247\r\n438246.967\tmapping\t240 0 34 3 2 11 11 0 1 105 80 24 6 0 71 0 1 0 247\r\n438246.967\tmapping\t240 0 34 3 2 11 11 0 9 50 119 48 39 47 50 1 1 0 247\r\n438246.967\tmapping\t240 0 34 3 2 11 11 0 7 74 3 103 12 126 45 0 7 0 247\r\n438246.967\tmapping\t240 0 34 3 2 11 11 0 15 68 125 6 31 62 25 1 7 0 247\r\n438250.984\tbutton\t191 27 127\r\n438252.117\tbutton\t191 27 127\r\n438253.300\tbutton\t191 27 127\r\n",
+    "pulse": "parameter\tcount\r\nButton2\t3\r\nButton4\t0\r\nButton6\t0\r\nButton8\t3\r\n"
+  },
+  "layout": {
+    "groups": 8,
+    "operators": 31,
+    "padding": 20,
+    "no_overlap": true
+  },
+  "live_checks": [
+    "fresh builder reproduction",
+    "all 16 synthetic mappings",
+    "interleaved input pairs",
+    "pulse action no duplicate callback",
+    "callback hardware events/software suppression",
+    "single-target fallback",
+    "independent target suspension with offline diagnostics",
+    "16 target-unit channels, two output connectors",
+    "no operator errors / no wire cycles"
+  ],
+  "saved_project": "roto_control_python.29.toe",
+  "sha256": "39e7cea59ba032544e5ba9c9b01c8bba560212b5c09f6ab0c712d96161b95e8c",
+  "canonical_matches": true,
+  "disk_reopen": {
+    "project": "roto_control_python.8.toe",
+    "startup_connected": false,
+    "valid": true,
+    "restored_targets": 16,
+    "output_channels": 16,
+    "recall": {
+      "project": "roto_control_python.8.toe",
+      "state": {
+        "Connected": true,
+        "Plugin": true,
+        "Mapped": false,
+        "Touched": false,
+        "Learning": false,
+        "Bindingvalid": true,
+        "Rx": 1133,
+        "Tx": 29,
+        "Rejected": 0,
+        "Echoblocked": 0,
+        "Status": "Button 8 mapped to button 8",
+        "Lasterror": "",
+        "Targetid": "TD controls:demo.controls.v1",
+        "Targetvalue": 2.50015,
+        "Value": 0.250015
+      },
+      "recalled": [
+        "('knob', 2)",
+        "('knob', 8)",
+        "('button', 1)",
+        "('button', 2)",
+        "('button', 8)"
+      ]
+    }
+  },
+  "source_upgrade": "dependency DATs explicitly loaded before extension recreation",
+  "limitations": [
+    "LCD Trigger packet/0.3-second reset is protocol-tested, but hardware shows Ready only",
+    "Middle hardware slots are software-tested, not individually learned/tested"
+  ],
+  "previous_saved_project": "roto_control_python.11.toe",
+  "final_live_connected": true,
+  "ableton_reference": {
+    "commit": "2d43a72c6699983080f8765292498502ff08be57",
+    "lcd": "PARAM_VALUES uses param.str_for_value(param.value), value-change listener + trailing throttle timer",
+    "learn_labels": "quantized string slots zero-filled; live value text supplied by callbacks",
+    "pulse_flash": "No generic Pulse rearm or timed Trigger/Ready flash in reference script"
+  },
+  "led_revision": {
+    "date": "2026-10-04",
+    "tests": 49,
+    "button8_count_before": 3,
+    "button8_count_after": 6,
+    "last_rx": [
+      [
+        440322.818,
+        191,
+        27,
+        127
+      ],
+      [
+        440323.051,
+        191,
+        27,
+        127
+      ],
+      [
+        440323.284,
+        191,
+        27,
+        127
+      ]
+    ],
+    "hardware_acceptance": "Short LED flash and fixed Ready LCD accepted; all three later presses counted",
+    "zero_during_led_hold": "Automated coverage only; physical final intervals about 0.233 seconds",
+    "fresh_builder": "16 watcher OP targets resolved; deferred hardware Pulse acknowledged; software Pulse in LEARN offered metadata",
+    "native_pulse": "Same-frame callbacks may coalesce; Python callback binding dispatches each accepted MIDI event",
+    "saved_sha256": "943f7db39de489fc99157e70be052e83108120532227382bb61b10f7a3369cea",
+    "disk_reopen": {
+      "project": "roto_control_python.9.toe",
+      "startup_disconnected": true,
+      "targets": 16,
+      "resolved_watchers": 16,
+      "output_channels": 16,
+      "recall": [
+        "knob2",
+        "knob8",
+        "button1",
+        "button2",
+        "button8"
+      ],
+      "errors": [],
+      "button8_count": 6,
+      "final_disconnected": true
+    }
+  },
+  "numeric_display_revision": {
+    "date": "2026-10-04",
+    "decimals": 3,
+    "trim_trailing_zeros": true,
+    "td_target_precision_unchanged": true,
+    "tests": 50,
+    "live_formatter_examples": [
+      "0.123",
+      "7"
+    ],
+    "runtime_errors": [],
+    "saved_project": "roto_control_python.10.toe",
+    "sha256": "f805ad7d7f142d2e11212834539207c2209f9b2bc0893546c19aa332e999ab02"
+  },
+  "component_revision": {
+    "date": "2026-10-04",
+    "tests": 55,
+    "api": [
+      "GetValue",
+      "GetControlState"
+    ],
+    "saved_registration": "parameter/callback/mixed collection; legacy callback menu value preserved",
+    "public_custom_pars": 17,
+    "runtime_errors": [],
+    "main_disk_reopen": {
+      "project": "roto_control_python.11.toe",
+      "startup_disconnected": true,
+      "targets": 16,
+      "watchers_resolved": 16,
+      "output_channels": 16,
+      "learned_controls_recalled": [
+        "demo.knob2",
+        "demo.knob8",
+        "demo.button1",
+        "demo.button2",
+        "demo.button8"
+      ],
+      "final_disconnected": true
+    },
+    "portability": {
+      "component": "exports/roto_python.tox",
+      "nested_renamed_parent": true,
+      "saved_mixed_hook_reload": true,
+      "parameter_precision_retained": true,
+      "software_callback_echo": false,
+      "synthetic_hardware_pulse_callback": true,
+      "separate_project_folder": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-portability-68ah9r9_",
+      "separate_project": "portability.1.toe",
+      "development_source_folder_absent": true,
+      "embedded_dat_file_paths_empty": true,
+      "exported_helper_connected": true,
+      "external_dependencies": "same-machine Python interpreter and MIDI helper; another computer needs environment setup"
+    },
+    "saved_sha256": "e7ef59487a28304c9e1d9b3fe09ef1bc2b9e9485dc0734d290f531dea076b0a1",
+    "export_sha256": "c6e904e4bc11f2b68366dfdab7f623084b0b293880ffbddbfa3c1dc6b4f9bf77"
+  },
+  "native_toggle_revision": {
+    "date": "2026-10-05",
+    "hardware_setup": {
+      "type": "TOGGLE",
+      "off_value": 0,
+      "on_value": 127,
+      "steps": [
+        "Ready",
+        "Trigger"
+      ]
+    },
+    "no_feedback_trial": {
+      "count_before": 44,
+      "count_after": 48,
+      "rx": [
+        127,
+        0,
+        127,
+        0
+      ],
+      "tx_before": 64,
+      "tx_after": 64,
+      "physical_result": "Only Button 8 label; LED unlit; not accepted"
+    },
+    "implementation": "Immediate latched CC plus matching Trigger/Ready display feedback; no LED/text timer/reset",
+    "tests": 55,
+    "physical_acceptance": {
+      "lcd": [
+        "Trigger",
+        "Ready"
+      ],
+      "led": [
+        "light",
+        "dim"
+      ],
+      "count_before": 53,
+      "count_after": 58,
+      "tx_before": 74,
+      "tx_after": 84,
+      "timer_reset": false,
+      "note": "Both state values accepted; user made additional presses beyond two-step display check"
+    },
+    "cc_only_trial": {
+      "count_before": 48,
+      "count_after": 50,
+      "tx_before": 64,
+      "tx_after": 66,
+      "physical_result": "LED lit/dim accepted; LCD remained Button 8"
+    },
+    "saved_project": "roto_control_python.12.toe",
+    "saved_sha256": "ebb99b50c8364de8375efc74580e27260e3b23bac91af785f861b2c45e3af949",
+    "export": "exports/roto_python.tox",
+    "export_sha256": "ccf23db87d9a34a361b0e500399a0f4fb919da6634237e0571db10600e4b8bc1",
+    "disk_reopen": {
+      "startup_disconnected": true,
+      "targets": 16,
+      "output_channels": 16,
+      "watchers_resolved": 16,
+      "recall": [
+        "demo.knob2",
+        "demo.knob8",
+        "demo.button1",
+        "demo.button2",
+        "demo.button8"
+      ],
+      "errors": [],
+      "final_disconnected": true
+    }
+  },
+  "api_sequence_revision": {
+    "date": "2026-10-05",
+    "tests": 62,
+    "shared_toggle_confirmation": "CC plus display after successful parameter/callback dispatch",
+    "button_type": [
+      "toggle",
+      "push"
+    ],
+    "mixed_live_fixture": {
+      "targets": 6,
+      "callbacks": 3,
+      "native_pulse_actions": 1,
+      "output_channels": 6,
+      "errors": [],
+      "saved_hook_reinit": true,
+      "tox_reload": true,
+      "global_fault_query_recovery": true
+    },
+    "physical_toggle_led": {
+      "control": "demo.button1",
+      "accepted": true,
+      "lcd": [
+        "On",
+        "Off"
+      ],
+      "led": [
+        "light",
+        "dim"
+      ],
+      "latest_rx": [
+        [
+          448766.934,
+          191,
+          20,
+          127
+        ],
+        [
+          448768.65,
+          191,
+          20,
+          0
+        ]
+      ],
+      "final_value": 0,
+      "mapped": true,
+      "valid": true,
+      "note": "User confirmed display and LED. Other controls were pressed earlier; aggregate counters are not attributed to this pair."
+    },
+    "physical_push": "Button 8: six presses/six releases, six actions, held/released LED accepted",
+    "outer_custom_pars": 17,
+    "saved_project": "roto_control_python.14.toe",
+    "saved_sha256": "e1b5bff32297a630dfd2e59a91a84f0895c4c47670c95ad40a4ca47ede823159",
+    "export_sha256": "eb11c2545dcff3f4eeadfd31dbec7721164aa6fbfa03ee2c7bd774add971ffcc",
+    "watcher_cache_fix": true,
+    "single_parameter_edit": true,
+    "disk_reopen": {
+      "startup_disconnected": true,
+      "targets": 16,
+      "watchers_resolved": 16,
+      "direct_parameter_edit": true,
+      "output_channels": 16,
+      "mappings_recalled": 16,
+      "errors": []
+    },
+    "final_connected": true
+  },
+  "push_revision": {
+    "date": "2026-10-05",
+    "control": "demo.button8",
+    "mode": "pulse",
+    "button_type": "push",
+    "hardware_type": "PUSH",
+    "hardware_step_labels_available": false,
+    "count_before": 170,
+    "count_after": 176,
+    "presses": 6,
+    "releases": 6,
+    "tx_before": 68,
+    "tx_after": 92,
+    "hold_seconds": [
+      0.067,
+      0.083,
+      1.266,
+      1.55,
+      2.117,
+      1.883
+    ],
+    "release_action_count": 0,
+    "physical_led": "User confirmed held bright / released dim",
+    "physical_lcd": "No distinct text observation supplied",
+    "runtime_errors": [],
+    "saved_project": "roto_control_python.15.toe",
+    "saved_sha256": "590befdb1801808539298a449748289e738177312c195e0b12d81fd96888e382",
+    "disk_reopen": {
+      "startup_disconnected": true,
+      "push_restored": true,
+      "mapped_after_connect": true,
+      "targets": 16,
+      "watchers_resolved": 16,
+      "errors": []
+    }
+  },
+  "inspector_revision": {
+    "date": "2026-10-05",
+    "tests": 64,
+    "api": [
+      "GetControlStates",
+      "GetControlState destination fields"
+    ],
+    "columns": [
+      "Control",
+      "Mapped",
+      "COMP",
+      "Parameter",
+      "Mode",
+      "Hardware",
+      "Value",
+      "ID",
+      "Error"
+    ],
+    "public_custom_pars": 17,
+    "live_checks": [
+      "16 acknowledged controls rendered",
+      "parameter edits update rows at display precision",
+      "mixed parameter and callback targets",
+      "deleted target Invalid/Unavailable",
+      "single built-in Value",
+      "fresh source builder",
+      "UI error does not suspend host",
+      "disk reopen",
+      "nested renamed embedded export"
+    ],
+    "saved_project": "roto_control_python.16.toe",
+    "saved_sha256": "4eea06e51c3592e894eb07b1516cf2cc2a8964cdafa3bb765cabe0235bd7c20e",
+    "export_sha256": "da2fdb89161fdcb3dd132b6ff84b8bf62005423f34f038415540d149f474a53b",
+    "final_connected": true,
+    "errors": []
+  },
+  "clear_learn_revision": {
+    "date": "2026-10-05",
+    "api": "ClearLearn(id)",
+    "command": "F0 00 22 03 02 0B 0E CT CI F7",
+    "scope": "one control on current PLUGIN page; retain TD registration and value",
+    "tests": 67,
+    "live_synthetic_ui": true,
+    "physical_persistence": {
+      "confirmed": true,
+      "control": "demo.button8",
+      "count_before": 186,
+      "count_after": 186,
+      "after_connect_mapped": false,
+      "other_controls_recalled": 15,
+      "note": "Latest UI action status reported an offline rejection; earlier unmap TX timing was not captured. Fresh handshake recalls all other controls and omits Button 8."
+    },
+    "errors": [],
+    "ableton_reference": {
+      "commit": "2d43a72c6699983080f8765292498502ff08be57",
+      "UNMAP_CTL": 14,
+      "name_loads": 0,
+      "literal_unmap_send_calls": 0
+    }
+  },
+  "mapping_marks_revision": {
+    "date": "2026-10-05",
+    "tag": "roto_mapped",
+    "color": [
+      0.2,
+      0.55,
+      0.7
+    ],
+    "tests": 71,
+    "multiple_controls_controllers": true,
+    "preserve_user_styling": true,
+    "live_shared_comp_and_last_clear": true,
+    "disconnect_restore": true,
+    "disk_reopen": true,
+    "nested_embedded_export": true,
+    "saved_project": "roto_control_python.18.toe",
+    "saved_sha256": "36f4ae1c8bec05103669c52d7c1873c800c27e865c586a3828f0779eb8cf11af",
+    "export_sha256": "3ab381b77a12f47c97b9f57f2ff5b956c12bda892b220deb38a2e211a9cfdacb",
+    "errors": []
+  },
+  "inspector_edit_revision": {
+    "date": "2026-10-05",
+    "tests": 81,
+    "api": [
+      "ClearAllLearn",
+      "ConfigureControl",
+      "requires_relearn"
+    ],
+    "columns": [
+      "Control",
+      "Mapped",
+      "ClearLearn",
+      "COMP",
+      "Parameter",
+      "Mode",
+      "Hardware",
+      "Min",
+      "Max",
+      "Value",
+      "ID",
+      "Error"
+    ],
+    "same_cell_confirmation": true,
+    "clear_all_confirmation": true,
+    "range_mode_editing": true,
+    "relearn_highlight": true,
+    "configuration_restore": true,
+    "live_native_lister_callbacks": true,
+    "embedded_renamed_export": true,
+    "hardware_mappings_cleared_during_implementation": false,
+    "saved_project": "roto_control_python.20.toe",
+    "saved_sha256": "6764076a406f1cfa68d79c9eed52e1226d227fa60671acf05a082b717043d2ad",
+    "export_sha256": "d6c23607b3d45d85d2a6433f2daeb578d33b7b3b028a70d1bd6dca6457799e8e",
+    "errors": [],
+    "final_connected": true,
+    "final_plugin": true,
+    "final_mapped": 15,
+    "unmapped_controls": [
+      "demo.button8"
+    ],
+    "disk_reopen": true
+  },
+  "inspector_interaction_revision": {
+    "date": "2026-10-05",
+    "tests": 84,
+    "mode_popup": true,
+    "two_click_clear": true,
+    "native_style_validation_retained": true,
+    "synthetic_native_events": true,
+    "embedded_renamed_export": true,
+    "disk_reopen": true,
+    "saved_project": "roto_control_python.21.toe",
+    "saved_sha256": "132061841829ce1d2a4c26b888d02e9bbb1ab7aa99b43b21a859fb748b0e2c27",
+    "export_sha256": "904a510e4db5eef2e294989b7f9e30e375cafc521f2fac4ea882aeeaa89cf062",
+    "errors": []
+  },
+  "inspector_catalog_revision": {
+    "date": "2026-10-05",
+    "tests": 90,
+    "api": [
+      "GetControlCatalog",
+      "RemoveControl",
+      "RemoveAllControls"
+    ],
+    "full_slots": 16,
+    "disconnect_preserves_catalog": true,
+    "comp_pages": true,
+    "native_mode_popup_selection": true,
+    "native_parameter_incompatible_mode_disabled": true,
+    "two_click_clear": true,
+    "removed_hook_restore_filtered": true,
+    "offline_unmap_replayed": true,
+    "stale_ack_rejected": true,
+    "empty_collection_reinit": true,
+    "single_value_removal": true,
+    "embedded_renamed_export": true,
+    "saved_empty_embedded_reload": true,
+    "disk_reopen": true,
+    "physical_removal_this_revision": false,
+    "saved_project": "roto_control_python.22.toe",
+    "saved_sha256": "5aa08f50229bef61d24862f5e5a4a310cf6cd35190ce10c323b91d1107bdb591",
+    "export_sha256": "07c09ecbe97d155972cc82b34975e4e67e49ec281e87eb0456b6a71c298045e2",
+    "errors": [],
+    "final_connected": true,
+    "final_plugin": true,
+    "final_mapped": 15,
+    "unmapped_controls": [
+      "demo.button8"
+    ]
+  },
+  "real_components_revision": {
+    "targets": 13,
+    "knobs": 8,
+    "toggles": 3,
+    "pulses": 2,
+    "bound_pulse_reset_calls": 1,
+    "comp_pages": 2,
+    "clear_restore": true,
+    "clear_all": true,
+    "errors": [],
+    "date": "2026-10-05",
+    "tests": 95,
+    "saved_project": "roto_control_python.23.toe",
+    "saved_sha256": "12ff9c075d93e190d64324c32e21bde0bf01d419b7d5a28601d2bd357813fbef",
+    "export_sha256": "ebc8b29aa80e03a0a6ca4a0f453de9aa0e04383dd7260bcbecc2dc03768b0a4a",
+    "disk_reopen": true,
+    "restored_watcher_handles": 13,
+    "embedded_bound_single_api": true,
+    "physical_acceptance": "pending LEARN/input",
+    "final_connected": true,
+    "final_plugin": true,
+    "final_registered": 13,
+    "final_mapped": 0
+  },
+  "inspector_learn_revision": {
+    "date": "2026-10-05",
+    "tests": 99,
+    "row_action": "Learn/Re-learn -> Offerparameter(id)",
+    "native_release_single_packet": true,
+    "knob_parameter_pulse_callback_pulse": true,
+    "pulse_action_not_executed": true,
+    "no_value_change_or_unmap": true,
+    "mapped_only_after_ack": true,
+    "disk_reopen": true,
+    "embedded_renamed_export": true,
+    "physical_knob1_learned_user_confirmed": true,
+    "physical_rotation_motor": "pending",
+    "saved_project": "roto_control_python.24.toe",
+    "saved_sha256": "2bb789944097328597e7c5c37730fea2a66489040b336edee40cd3609cc92d7c",
+    "export_sha256": "a3b5b78817abc4a8100b1a33f1bbd032d362165c75409d800cbea496298ac686",
+    "errors": [],
+    "final_connected": true,
+    "final_plugin": true,
+    "knob1_recall_mapped": true,
+    "knob1_physical_rotation": {
+      "user_confirmed": true,
+      "observed_parameter_value": 0.4180000126361847,
+      "api_matches_parameter": true,
+      "mapped": true,
+      "rotation_bytes_not_captured": true
+    },
+    "knob1_software_feedback": {
+      "sent_value": 0.25,
+      "motor_user_confirmed": true,
+      "lcd_near_sent_value_user_confirmed": true
+    },
+    "knob8_inspector_learn": {
+      "learned_user_confirmed": true,
+      "hardware_rotation_user_confirmed": true,
+      "user_display_value": 5,
+      "target": "fractal_pop.Tumblemult",
+      "software_feedback_sent": 2,
+      "motor_lcd_acceptance": "passed",
+      "motor_user_confirmed": true,
+      "lcd_near_2_user_confirmed": true
+    },
+    "button3_bound_toggle": {
+      "target": "fractal_pop.Autorotate",
+      "user_confirmed_on_off_led": true,
+      "inspector_learn_user_confirmed": true
+    }
+  },
+  "adapter_revision": {
+    "date": "2026-10-05",
+    "tests": 101,
+    "button8_mode": "pulse",
+    "button8_hardware_adapter": "toggle",
+    "user_clarification": "Ready/dim and Trigger/light latched states",
+    "adapter_only_preserves_mapping": true,
+    "no_unmap_or_metadata_on_adapter_edit": true,
+    "saved_project": "roto_control_python.25.toe",
+    "saved_sha256": "39e7cea59ba032544e5ba9c9b01c8bba560212b5c09f6ab0c712d96161b95e8c",
+    "export_sha256": "3b75ee77ad8c10438b53dc502ef75b99344eb598e34cc3a48784e40433b8a243",
+    "disk_reopen": true,
+    "physical_pulse_every_press": "passed: four received MIDI presses, four native Pulse dispatches",
+    "errors": [],
+    "physical_acceptance": {
+      "events": [
+        {
+          "time": 468763.451039666,
+          "value": 1
+        },
+        {
+          "time": 468766.184439541,
+          "value": 1
+        },
+        {
+          "time": 468767.551079875,
+          "value": 1
+        },
+        {
+          "time": 468769.400916875,
+          "value": 1
+        }
+      ],
+      "count": 4,
+      "mapped": true,
+      "button_type": "toggle",
+      "mode": "pulse",
+      "pulse_ack_pending": 0,
+      "errors": "",
+      "midi_values": [
+        127,
+        0,
+        127,
+        0
+      ],
+      "one_dispatch_per_received_press": true,
+      "probe_removed": true,
+      "note": "Three presses were requested; four distinct hardware MIDI events were received and each dispatched one native Pulse."
+    }
+  },
+  "saved_sha256": "eb79c9a8db61ed81db3439450d4645dcda27ce1ad35e75fccf538fc65dc7a569",
+  "assignment_revision": {
+    "knob_id": "parameter.61aa91c12dd74a488dc345985850d74f",
+    "pulse_id": "parameter.a84eab289d6a472a9b219b788f577e91",
+    "toggle_id": "parameter.32dd6d000ee74dd097693e0843d9bb5d",
+    "discovery": true,
+    "auto_offer": true,
+    "other_mapping_preserved": true,
+    "stale_ack_rejected": true,
+    "numeric_input": true,
+    "software_feedback": true,
+    "no_midi_process": true,
+    "extension_reload": true,
+    "remove_does_not_restore": true,
+    "first_assignment_in_learn": true,
+    "errors": "",
+    "embedded_export": true,
+    "export_new_comp_discovery": true,
+    "export_first_learn_assignment": true,
+    "assignment_tox_disk_reload": true,
+    "native_comp_and_parameter_popups": true,
+    "tests": 109,
+    "saved_project": "roto_control_python.27.toe",
+    "saved_sha256": "a804ffc74d5a18463b0d9682f750aecded8978e74c22f940e4645b07146dbe2c",
+    "export": "exports/roto_python.15.tox",
+    "export_sha256": "a719585829332ba341ad341ff9f5ee4b807cae9e7907fba4ae2cb5fd452f1fa8",
+    "existing_physical_mappings_recalled": [
+      "knob1",
+      "knob8",
+      "button3",
+      "button8"
+    ],
+    "new_picker_physical_learn": "pending"
+  },
+  "free_learn_revision": {
+    "id": "parameter.4b1aa0a0ac7844208a45ac6391793b84",
+    "wire_index": 128,
+    "actual_parameter_callback": true,
+    "new_comp_discovered": true,
+    "slot_from_hardware_ack": true,
+    "other_mapping_preserved": true,
+    "numeric_hardware_input": true,
+    "observer_disabled_outside_learn": true,
+    "api_write_not_offered": true,
+    "wire_index_and_assignment_restored": true,
+    "errors": "",
+    "tests": 116,
+    "embedded_export_direct_par_callback": true,
+    "first_assignment_device_identity_preserved": true,
+    "actual_tox_assignment_disk_reload": true,
+    "hardware_direct_learn": "confirmed",
+    "saved_project": "roto_control_python.29.toe",
+    "export": "exports/roto_python.16.tox",
+    "sortError_discoverable": true,
+    "observer_active_outside_learn": false,
+    "existing_mappings_recalled": [
+      "knob1",
+      "knob8",
+      "button3",
+      "button8"
+    ],
+    "physical_assignment": {
+      "comp": "/roto_control_python/feedback",
+      "parameter": "Opacity",
+      "slot": 2,
+      "mapped": true,
+      "value": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "wire_index": 129,
+      "rotation_motor": "rotation confirmed by user; motor feedback not yet tested",
+      "observed_value_after_rotation": 0.007000000216066837
+    }
+  },
+  "feedback_acceptance_save": {
+    "project": "roto_control_python.29.toe",
+    "sha256": "c4595eb7716a4db26f173c469b6117f463cf4ac5bfc86127f60b9b67fa5b5830",
+    "canonical_matches": true
+  }
+}

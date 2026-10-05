@@ -1,0 +1,30 @@
+{
+  "id": "parameter.4b1aa0a0ac7844208a45ac6391793b84",
+  "wire_index": 128,
+  "actual_parameter_callback": true,
+  "new_comp_discovered": true,
+  "slot_from_hardware_ack": true,
+  "other_mapping_preserved": true,
+  "numeric_hardware_input": true,
+  "observer_disabled_outside_learn": true,
+  "api_write_not_offered": true,
+  "wire_index_and_assignment_restored": true,
+  "errors": "",
+  "tests": 116,
+  "embedded_export_direct_par_callback": true,
+  "first_assignment_device_identity_preserved": true,
+  "actual_tox_assignment_disk_reload": true,
+  "hardware_direct_learn": "confirmed",
+  "physical_assignment": {
+    "comp": "/roto_control_python/feedback",
+    "parameter": "Opacity",
+    "slot": 2,
+    "mapped": true,
+    "value": 0.0,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "wire_index": 129,
+    "rotation_motor": "rotation confirmed by user; motor feedback not yet tested",
+    "observed_value_after_rotation": 0.007000000216066837
+  }
+}

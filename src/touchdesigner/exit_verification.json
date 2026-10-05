@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-05",
+  "build": "2025.33230",
+  "original_symptom": "User normal quit hung; native terminate/crash-handler sampled; MCP stopped listening",
+  "original_root_cause": "Unconfirmed",
+  "original_recovery": "/tmp/roto_exit_recovery_20261005_030156",
+  "crash_autosave_bytes": 0,
+  "tests": [
+    {
+      "state": "disconnected fresh reopen",
+      "trigger": "project.quit() nonforced",
+      "result": "All TD processes exited; MCP listener absent"
+    },
+    {
+      "state": "connected fresh reopen",
+      "trigger": "project.quit() nonforced",
+      "pid": 12745,
+      "result": "Normal exit within probe polling interval; no remaining process"
+    }
+  ],
+  "source_changes": false,
+  "saved_project": "roto_control_python.21.toe",
+  "current_project_sha256": "068af8c7295df4c89965b7e9f8d7ee48dc0abd3ed0c60bd7462d03948ef0228e",
+  "note": "Current file differs from earlier export milestone hash, but reopens with 16 targets and no operator errors. No unsaved-data discard was forced by test quit."
+}
