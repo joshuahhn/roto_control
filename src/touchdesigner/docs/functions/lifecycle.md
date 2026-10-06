@@ -19,7 +19,7 @@ At project root:
 - base_parameter_demo: press Use this binding, then edit Speed (0–10). Knob changes write Speed; Speed edits drive motor/LCD when mapped.
 - base_callback_demo: press Use this binding, edit Speed and press Send Speed to controller. Knob changes update Received, Events and Origin through a Python callback. Software SetValue leaves Events unchanged.
 
-Controller Value is the normalized manual control/monitor. Diagnostics live inside base_state and controller.State. Targetvalue uses the selected target's units. Targetid names that target. Connected/Plugin/Learning/Mapped/Touched describe session state. Bindingvalid and Lasterror expose target/callback failures. Rx counts all MIDI messages, including F8 timing clock; Tx counts outgoing messages. Rejected counts malformed/unsupported mapping packets; Echoblocked counts suppressed physical-input feedback.
+State['Value'] is the normalized monitor; the old outer Control / Value and Offer Value parameters are removed. Use target parameters or SetValue for value changes, and hardware LEARN/Inspector or Offerparameter(id) for learning. Diagnostics live inside base_state and controller.State. Targetvalue uses the selected target's units. Targetid names that target. Connected/Plugin/Learning/Mapped/Touched describe session state. Bindingvalid and Lasterror expose target/callback failures. Rx counts all MIDI messages, including F8 timing clock; Tx counts outgoing messages. Rejected counts malformed/unsupported mapping packets; Echoblocked counts suppressed physical-input feedback.
 
 A deleted target, readonly/mode change or callback exception suspends that binding and clears mapping. Further target dispatch is stopped. Fix the cause and bind again; Disconnect stays available. Error strings are diagnostics, not stable error codes. A failed SetValue raises as well as reporting its error.
 
@@ -34,3 +34,9 @@ Disconnect, load changed dependency DAT source, then reinitialize the Extension.
 `verify_api_sequences.py` builds an isolated six-target fixture without opening MIDI ports. Run build_fixture, wait one TD frame, then exercise. Check the deferred native Pulse callback on the next frame. The saved registration hook also supports extension reinit and tox reload checks. This complements test_api.py with real TD parameters/watchers; synthetic MIDI does not establish physical PUSH acceptance.
 
 Collection restore refreshes watcher OP expressions even when their source text is unchanged, to clear initialization-time unresolved caches. Verify actual watcher OP handles and a direct parameter edit after disk reopen.
+
+## COMP Follow lifecycle
+
+The existing Tick samples the current Network Editor at 10 Hz, fences uncertain routing, drains bounded MIDI batches and makes one guarded activation decision. Pending intents carry a connection generation; Connect/Disconnect/open failure/child failure clear both TD and hardware requests while retaining saved links and Follow preference. A fresh offline selection can change local context; reconnect recalls that committed context.
+
+The lifecycle Execute DAT has Project Pre Save enabled. `onProjectPreSave` synchronously refreshes Focus links independently of the timeline; a callback name alone is insufficient on TD 2025.33230. Managed component saves and export prepare links explicitly. Startup never opens MIDI or activates from the initial selected COMP. See layouts.md for guards, missing-link and reload policies.

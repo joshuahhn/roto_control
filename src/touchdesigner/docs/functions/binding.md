@@ -12,7 +12,7 @@ def changed(event):
 controller.BindCallback(id='app.speed', label='Speed', minimum=0, maximum=10,
                         value=5, on_change=changed)
 controller.SetValue(7)  # motor/state only; does not call changed
-controller.Unbind()    # restore built-in normalized Value target
+controller.Unbind()    # restore the internal built-in normalized Value target
 ```
 
 Methods are promoted on the controller COMP. One registration replaces the active binding. Bind methods return its id; SetValue returns the clamped value. Validate registrations before mutating the previous binding.
@@ -32,6 +32,8 @@ Binding replacement/Unbind is rejected while touched or learning. Bind while idl
 Binding has two workflows. **Parameter mapping** (`Setupmode=collection`) uses hardware LEARN, Inspector and saved Layouts/Tracks. **Python registration** (`Setupmode=callback`) runs the saved internal `registration.onRegister(controller)` DAT; it must call BindParameter, BindCallback or BindControls, including mixed parameter/callback collections. Apply setup (`Applybinding`) validates and reapplies the selected workflow. Ordinary LEARN/Inspector assignment needs no Apply. Invalid registration exposes an internal Lasterror and prevents Connect until corrected/applied.
 
 Built-in Value and Custom parameter are legacy single-target APIs, rather than menu choices. The disconnected upgrade captures/restores the legacy parameter setup through the Layout registry before removing its old outer fields. BindParameter/BindCallback/Unbind remain available for code integrations. Put persistent code registrations in the registration hook; direct calls remain temporary.
+
+The Control page is removed too. Built-in Value uses internal `base_state.Manualvalue` backing state; old saved self-Value destinations migrate to it without changing their IDs, ranges or wire identities. Use SetValue/GetValue and Offerparameter rather than `controller.par.Value` or an outer Offer Value pulse. Manualvalue is excluded from the public State snapshot.
 
 State is a snapshot dictionary (controller.State); diagnostics are not outer custom parameters. For example controller.State['Mapped'] and controller.State['Targetvalue'].
 

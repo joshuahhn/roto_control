@@ -10,6 +10,9 @@ import uuid
 def export(controller, destination):
     if controller.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before exporting')
+    follower = getattr(controller.ext.RotoPythonExt, '_follow', None)
+    if follower is not None:
+        follower.refresh_links()
     destination = Path(destination).absolute()
     if destination.suffix != '.tox':
         raise ValueError('Export destination must end in .tox')
@@ -24,6 +27,10 @@ def export(controller, destination):
     holder.viewer = holder.display = True
     try:
         clone = holder.copy(controller, name='roto_python')
+        # Generic exports must not retain arbitrary controller storage backups
+        # (including old verification snapshots containing user mappings).
+        # The documented empty runtime/configuration fields are rebuilt below.
+        clone.storage.clear()
         for dat in clone.findChildren(type=DAT):
             file_par = getattr(dat.par, 'file', None)
             if file_par is not None:
@@ -49,6 +56,10 @@ def export(controller, destination):
             par = getattr(clone.par, name)
             par.default = par.val = str(path)
         clone.ext.RotoPythonExt._layouts = None
+        clone.par.Followcomp.default = clone.par.Followcomp.val = False
+        clone.par.Focuscomp.val = ''
+        clone.ext.RotoPythonExt._follow.handles.clear()
+        clone.ext.RotoPythonExt._follow.invalidate()
         clone.store('layout_registry',None)
         clone.store('layout_registry_suspended',False)
         clone.store('pending_unmap_identities',[])
@@ -72,7 +83,7 @@ def export(controller, destination):
             if parameter is not None:
                 parameter.val = ''
         clone.par.Groupid = 'roto.controls.v1'
-        clone.par.Value = .5
+        clone.ext.RotoPythonExt._value_parameter().val = .5
         table = clone.op('base_targets/targets')
         columns = [cell.val for cell in table.row(0)]
         table.clear()
@@ -82,6 +93,13 @@ def export(controller, destination):
             '    # Register your parameters/callbacks here, then select Python registration.\n'
             '    raise ValueError("Configure registration.onRegister first")\n')
         clone.ext.RotoPythonExt.BindControls([], group_id=clone.par.Groupid.eval(), _allow_empty=True)
+        # A newly copied extension may not have completed its first Tick.
+        # Rebuild after clearing: capture preserves unavailable old targets by
+        # design, so it cannot be used to sanitize a generic export.
+        clone.ext.RotoPythonExt._layout_ready = True
+        clone.ext.RotoPythonExt._layouts = None
+        clone.store('layout_registry', None)
+        clone.store('page_targets', [])
         clone.ext.RotoPythonExt._layout_manager()
         clone.op('setup').module.configure_ui(clone)
         clone.ext.RotoPythonExt.Disconnect()

@@ -9,10 +9,14 @@ import uuid
 from protocol import digest, display_name, text13
 from binding import parameter_value
 
-VERSION=2
+VERSION=3
 PLUGIN_FIELDS=("group_id","device_id","plugin_name","targets","state")
 FIELDS=('parameter_assignments','assignment_device_id','control_overrides','removed_controls','pending_unmaps','needs_relearn','control_catalog','pending_unmap_identities','page_targets')
 DEFAULTS=([],None,{},[],[],(),[],[],[])
+
+class ActivationRollbackError(RuntimeError):
+    rollback_failed = True
+
 
 class Layouts:
     def __init__(self, extension):
@@ -21,7 +25,9 @@ class Layouts:
         self.delete_pending=None
         self.track_delete_pending=None
         self.first_track=0
+        self.first_plugin=0
         self.selected_track=None
+        self.selected_plugin=None
         self.legacy=False
         data=self.owner.fetch('layout_registry',None)
         if data is None:
@@ -45,11 +51,23 @@ class Layouts:
                 plugin=dict({key:old[key] for key in PLUGIN_FIELDS},id='plugin.'+old['id'])
                 track=dict(id=track_id,name=old['track_name'],active_plugin=plugin['id'],plugins=[plugin])
                 records.append(dict(id=old['id'],name=old['name'],active_track=track_id,tracks=[track]))
-            data.update(version=VERSION,records=records)
+            data.update(version=2,records=records)
+        if data.get('version')==2:
+            for layout in data['records']:
+                for track in layout['tracks']:
+                    link=track.pop('focus_comp',None)
+                    if link is not None:track['plugins'][0]['focus_comp']=link
+                    for plugin in track['plugins']:
+                        plugin['name_mode']='comp' if plugin.get('focus_comp') else 'manual'
+            data['version']=VERSION
         if data.get('version')==VERSION:
             for layout in data['records']:
                 for track in layout['tracks']:
                     for plugin in track['plugins']:
+                        plugin.setdefault('name_mode','manual')
+                        link=plugin.get('focus_comp')
+                        if isinstance(link,dict) and isinstance(link.get('path'),str) and link['path']:
+                            link['path']=os.path.normpath(link['path'])
                         library={t['id']:t for t in plugin['state'].get('page_targets',[])}
                         library.update({t['id']:copy.deepcopy(t) for t in plugin['targets']})
                         plugin['state']['page_targets']=list(library.values())
@@ -71,14 +89,23 @@ class Layouts:
             tracks=layout.get('tracks')
             if not isinstance(tracks,list) or not 1<=len(tracks)<=16383:raise ValueError('Layout needs 1..16383 Tracks')
             if layout.get('active_track') not in [t['id'] for t in tracks]:raise ValueError('Active Track is missing')
+            focus_paths=set()
             for track in tracks:
                 if not isinstance(track.get('id'),str) or not track['id'] or track['id'] in track_ids:raise ValueError('Invalid or duplicate Track ID')
                 track_ids.add(track['id']);display_name(track['name'])
                 plugins=track.get('plugins')
-                # The schema preserves the Plugin layer; this UI/runtime supports one per Track.
-                if not isinstance(plugins,list) or len(plugins)!=1:raise ValueError('This version supports one Plugin per Track')
-                if track.get('active_plugin')!=plugins[0]['id']:raise ValueError('Active Plugin is missing')
+                if not isinstance(plugins,list) or not 1<=len(plugins)<=127:raise ValueError('Track needs 1..127 Plugins')
+                if track.get('active_plugin') not in [p['id'] for p in plugins]:raise ValueError('Active Plugin is missing')
                 for record in plugins:
+                    if record.get('name_mode','manual') not in ('manual','comp'):raise ValueError('Invalid Plugin name policy')
+                    link=record.get('focus_comp')
+                    if link is not None:
+                        if (not isinstance(link,dict) or link.get('state') not in ('bound','missing')
+                                or not isinstance(link.get('path'),str) or not link['path'] or link['path'].startswith('/')):
+                            raise ValueError('Invalid Focus COMP link')
+                        if link['state']=='bound':
+                            if link['path'] in focus_paths:raise ValueError('Duplicate Focus COMP link in Layout')
+                            focus_paths.add(link['path'])
                     if not isinstance(record.get('id'),str) or not record['id'] or record['id'] in plugin_ids:raise ValueError('Invalid or duplicate Plugin ID')
                     plugin_ids.add(record['id'])
                     for field,seen in (('group_id',groups),('device_id',devices)):
@@ -110,20 +137,25 @@ class Layouts:
             if track['id']==track_id:return track
         raise ValueError('Unknown Track ID: '+str(track_id))
 
-    def plugin(self,layout_id=None,track_id=None):
+    def plugin(self,layout_id=None,track_id=None,plugin_id=None):
         track=self.track(layout_id,track_id)
-        return next(p for p in track['plugins'] if p['id']==track['active_plugin'])
+        plugin_id=track['active_plugin'] if plugin_id is None else plugin_id
+        for plugin in track['plugins']:
+            if plugin['id']==plugin_id:return plugin
+        raise ValueError('Unknown Plugin ID: '+str(plugin_id))
 
-    def record(self,id=None,track_id=None):
+    def record(self,id=None,track_id=None,plugin_id=None):
         """Flat activation projection; nested registry remains the authority."""
         layout=self.layout(id);track=self.track(id,track_id)
-        return dict(self.plugin(id,track_id),id=layout['id'],name=layout['name'],track_name=track['name'])
+        return dict(self.plugin(id,track_id,plugin_id),id=layout['id'],name=layout['name'],track_name=track['name'])
 
     def context(self):
         if self.legacy:return dict(legacy=True,label='Python registration',key=None)
         layout=self.layout();track=self.track();plugin=self.plugin()
         return dict(legacy=False,layout_id=layout['id'],track_id=track['id'],plugin_id=plugin['id'],
                     selected_track_id=self.selected_track or track['id'],locked=self.locked,
+                    selected_plugin_id=self.selected_plugin or plugin['id'],first_plugin=self.first_plugin,
+                    plugin_count=len(track['plugins']),
                     key=(layout['id'],track['id'],plugin['id']),
                     label=layout['name']+' / '+track['name']+' / '+plugin['plugin_name'])
 
@@ -134,7 +166,7 @@ class Layouts:
         for key,binding in bindings:
             if binding is None:
                 # Built-in Value remains a real target, never a saved numeric preset.
-                parameter=self.owner.par.Value
+                parameter=ext._value_parameter()
                 target=dict(kind='knob',slot=1,id='Value',label='Value',minimum=0,maximum=1,mode='value',button_type=None,index=0)
             else:
                 parameter=binding.parameter
@@ -183,15 +215,24 @@ class Layouts:
             par=getattr(self.owner.par,name,None)
             if par is not None:
                 par.menuNames=[r['id'] for r in records];par.menuLabels=[r['name'] for r in records];par.val=active
+        par=getattr(self.owner.par,'Plugin',None)
+        if par is not None:
+            par.menuNames=[p['id'] for p in self.track()['plugins']]
+            par.menuLabels=[p.get('comp_name',p['plugin_name']) if p.get('name_mode')=='comp' else p['plugin_name'] for p in self.track()['plugins']]
+            par.val=self.plugin()['id']
+        name=getattr(self.owner.par,'Pluginname',None)
+        if name is not None:name.enable=not self.legacy and self.plugin().get('name_mode')!='comp'
         for name,value in (('Layoutname',self.layout()['name']),('Newtrackname','TRACK')):
             par=getattr(self.owner.par,name,None)
             if par is not None and name=='Layoutname':par.val=value
+        follower = getattr(self.ext, '_follow', None)
+        if follower is not None:follower.sync_ui()
 
     def attach(self):
         host=self.ext._host
         host.devices_callback=None if self.legacy else self.announce
         host.tracks_callback=None if self.legacy else self.announce_tracks
-        host.plugin_index=0
+        host.plugin_index=self.track()['plugins'].index(self.plugin())
         if hasattr(host,'pending_unmaps') and not self.legacy:host.pending_unmaps=set()
 
     def track_detail(self,index):
@@ -212,11 +253,14 @@ class Layouts:
             host._command(12,4,self.track_detail(index))
 
     def announce(self,select=True):
-        host=self.ext._host;record=self.plugin()
-        host._command(11,2,(1,));host._command(11,3,(0,))
-        host._command(11,5,(0,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0))
+        host=self.ext._host;plugins=self.track()['plugins']
+        self.first_plugin=min(self.first_plugin,((len(plugins)-1)//8)*8)
+        host._command(11,2,(len(plugins),));host._command(11,3,(self.first_plugin,))
+        for index in range(self.first_plugin,min(self.first_plugin+8,len(plugins))):
+            record=plugins[index]
+            host._command(11,5,(index,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0))
         host._command(11,6)
-        if select:host._command(11,8,(0,0,0))
+        if select:host._command(11,8,(plugins.index(self.plugin()),0,0))
 
     def guard(self,hardware=False):
         host=self.ext._host
@@ -252,6 +296,7 @@ class Layouts:
                 inspector.store('pending_clear',None)
                 inspector.store('action_status','Selected '+self.context()['label'])
             self.delete_pending=self.track_delete_pending=None
+            ext._delete_request=None
             # Keep only a partially transmitted JSON line so the MIDI child's
             # input stream remains valid; discard queued old-context feedback.
             pending=ext._pending
@@ -308,39 +353,104 @@ class Layouts:
         self._select(layout_id,track_id,hardware)
         return track_id
 
-    def _select(self,layout_id,track_id,hardware=False):
-        if layout_id==self.data['active'] and track_id==self.layout()['active_track'] and not self.legacy:
+    def select_plugin(self,layout_id,track_id,plugin_id,hardware=False):
+        self.plugin(layout_id,track_id,plugin_id)
+        if self.locked and hardware and (layout_id!=self.data['active'] or track_id!=self.track()['id']):
+            raise ValueError('Locked Device selection stays within the routing Track')
+        self._select(layout_id,track_id,hardware,plugin_id)
+        return plugin_id
+
+    def _select(self,layout_id,track_id,hardware=False,plugin_id=None):
+        follower = getattr(self.ext, '_follow', None)
+        plugin_id=self.plugin(layout_id,track_id,plugin_id)['id']
+        if (layout_id,track_id,plugin_id)==self.context().get('key') and not self.legacy:
+            if follower is not None and not follower.committing:
+                follower.before_manual(layout_id,track_id,plugin_id);follower.after_manual()
             if not self.locked:self.selected_track=track_id
             return layout_id
         self.guard(hardware)
-        destination=self.record(layout_id,track_id);self.resolve(destination);self.capture(force=True)
+        destination=self.record(layout_id,track_id,plugin_id);self.resolve(destination);self.capture(force=True)
+        if follower is not None:follower.before_manual(layout_id,track_id,plugin_id)
         previous=copy.deepcopy(self.data);old_selected=self.selected_track;old_page=self.first_track
+        old_plugin=self.selected_plugin;old_plugin_page=self.first_plugin
         session=(self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning)
         self.legacy=False;self.owner.store('layout_registry_suspended',False)
         self.data['active']=layout_id;self.layout()['active_track']=track_id
-        self.selected_track=track_id
+        self.track()['active_plugin']=plugin_id
+        self.selected_track=old_selected if self.locked and hardware else track_id
+        self.selected_plugin=plugin_id
         self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
+        self.first_plugin=(self.track()['plugins'].index(self.plugin())//8)*8
         try:self.install(destination,hardware)
-        except Exception:
+        except Exception as original:
             self.data=previous;self.selected_track=old_selected;self.first_track=old_page
+            self.selected_plugin=old_plugin;self.first_plugin=old_plugin_page
             self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning=session
-            self.install(self.record())
+            try:self.install(self.record())
+            except Exception as rollback:
+                if isinstance(rollback,OSError):raise
+                if follower is not None:
+                    follower.pending=None;follower.paused=True;follower.fence()
+                    follower.error=str(original)+'; rollback failed: '+str(rollback)
+                    follower.status='paused'
+                raise ActivationRollbackError(str(original)+'; rollback failed: '+str(rollback)) from original
             raise
-        self.save();self.ext._publish();return layout_id
+        self.save()
+        if follower is not None:follower.after_manual()
+        self.ext._publish();return layout_id
 
     def restore(self):
         self.legacy=False;self.owner.store('layout_registry_suspended',False)
         self.selected_track=self.track()['id']
+        self.selected_plugin=self.plugin()['id']
         self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
+        self.first_plugin=(self.track()['plugins'].index(self.plugin())//8)*8
         self.install(self.record());self.ext._restore_pending=False;self.ext._publish()
 
     @staticmethod
-    def empty_track(name):
+    def empty_plugin(name):
         name=display_name(name)
-        id=uuid.uuid4().hex;plugin_id='plugin.'+uuid.uuid4().hex
-        plugin=dict(id=plugin_id,group_id=plugin_id,device_id='TD controls:'+plugin_id,
-                    plugin_name='CUSTOM',targets=[],state={f:copy.deepcopy(v) for f,v in zip(FIELDS,DEFAULTS)})
-        return dict(id='track.'+id,name=name,active_plugin=plugin_id,plugins=[plugin])
+        plugin_id='plugin.'+uuid.uuid4().hex
+        return dict(id=plugin_id,group_id=plugin_id,device_id='TD controls:'+plugin_id,
+                    plugin_name=name,name_mode='manual',targets=[],state={f:copy.deepcopy(v) for f,v in zip(FIELDS,DEFAULTS)})
+
+    @staticmethod
+    def empty_track(name):
+        name=display_name(name);plugin=Layouts.empty_plugin('CUSTOM')
+        return dict(id='track.'+uuid.uuid4().hex,name=name,active_plugin=plugin['id'],plugins=[plugin])
+
+    def create_plugin(self,layout_id,track_id,name):
+        track=self.track(layout_id,track_id);plugin=self.empty_plugin(name)
+        if len(track['plugins'])>=127:raise ValueError('Plugin count exceeds protocol capacity')
+        self.guard();self.capture(force=True)
+        track['plugins'].append(plugin);self.save();self.menu()
+        if (layout_id,track_id)==(self.data['active'],self.track()['id']) and self.ext._host.connected:
+            self.announce(select=False)
+        return plugin['id']
+
+    def rename_plugin(self,layout_id,track_id,plugin_id,name):
+        name=display_name(name);plugin=self.plugin(layout_id,track_id,plugin_id)
+        if self.ext._host.learning:raise ValueError('Exit LEARN before renaming Device')
+        if (layout_id,track_id,plugin_id)==self.context().get('key'):
+            self.ext.SetLayoutNames(self.track()['name'],name)
+        plugin.update(plugin_name=name,name_mode='manual')
+        self.save();self.menu()
+        if (layout_id,track_id)==(self.data['active'],self.track()['id']) and self.ext._host.connected:
+            self.announce(select=False)
+        self.ext._publish();return plugin_id
+
+    def remove_plugin(self,layout_id,track_id,plugin_id):
+        track=self.track(layout_id,track_id);plugin=self.plugin(layout_id,track_id,plugin_id)
+        if len(track['plugins'])==1:raise ValueError('Cannot delete the last Device')
+        self.guard()
+        if track['active_plugin']==plugin_id:
+            successor=next(p['id'] for p in track['plugins'] if p['id']!=plugin_id)
+            if (layout_id,track_id)==(self.data['active'],self.track()['id']):
+                self.select_plugin(layout_id,track_id,successor)
+            else:track['active_plugin']=successor
+        track['plugins'].remove(plugin);self.save();self.menu()
+        if (layout_id,track_id)==(self.data['active'],self.track()['id']) and self.ext._host.connected:self.announce()
+        return True
 
     def create(self,name):
         if not isinstance(name,str) or not name.strip():raise ValueError('Layout name is required')
@@ -419,7 +529,7 @@ class Layouts:
             self.confirmed=False;self.touched.clear()
             self.plugin()['targets']=[]
             self.owner.store('parameter_assignments',[]);self.owner.store('control_catalog',[])
-            self.owner.par.Value.enable=self.owner.par.Offerparameter.enable=False
+            ext._enable_manual_controls(False)
             inspector=self.owner.op('inspector')
             if inspector is not None:
                 inspector.store('pending_clear',None)
@@ -453,8 +563,10 @@ class Layouts:
         ext._layout_dirty=True
         self.capture(force=True)
 
-    def receive(self,message):
+    def receive(self,message,control_only=False):
         message=tuple(message)
+        follower=getattr(self.ext,'_follow',None)
+        control_only=control_only or bool(follower and follower.gated)
         if len(message)==3 and message[0]==191 and 52<=message[1]<=59 and 0<=message[2]<128:
             if message[2]:self.touched.add(message[1])
             else:self.touched.discard(message[1])
@@ -464,7 +576,9 @@ class Layouts:
             if group==11 and command==13 and len(data)==1 and data[0] in (0,1):self.locked=bool(data[0]);return True
             if group==12 or (group==10 and command==2) or (group==11 and command==1):self.locked=False;self.touched.clear()
             return False
-        if group==11 and command==1 and self.ext._host.connected:
+        if control_only and ((group==11 and command in (11,14)) or (group==10 and command in (20,21))):
+            return False
+        if group==11 and command==1 and self.ext._host.connected and not control_only:
             self.page_changed()
         if group==10 and command in (20,21) and not data and self.ext._host.plugin:
             self.page_changed();return True
@@ -486,6 +600,9 @@ class Layouts:
                     return True
         if group==11 and command==13 and len(data)==1 and data[0] in (0,1):
             was_locked=self.locked;self.locked=bool(data[0])
+            if follower is not None:
+                if was_locked and not self.locked:follower.unlocked()
+                return True
             if was_locked and not self.locked and self.selected_track and self.selected_track!=self.track()['id']:
                 try:self.select_track(self.data['active'],self.selected_track,hardware=True)
                 except ValueError as exc:self.ext._last_error=str(exc)
@@ -497,6 +614,9 @@ class Layouts:
             if command==6:
                 if index%8:return True
                 self.first_track=index;self.announce_tracks(select=False)
+            elif follower is not None:
+                self.selected_track=tracks[index]['id']
+                follower.request(self.data['active'],tracks[index]['id'],'hardware')
             elif self.locked:
                 # Mirror Ableton: browsing selection can change while the locked
                 # Plugin keeps its original Track and mappings. No forced select.
@@ -507,13 +627,23 @@ class Layouts:
                     self.ext._last_error=str(exc);self.announce_tracks();self.ext._publish()
             return True
         if group==11 and command==7:
-            if data==(0,):self.announce(select=False)
+            plugins=self.track()['plugins']
+            if len(data)==1 and data[0]<8 and self.first_plugin+data[0]<len(plugins):
+                plugin_id=plugins[self.first_plugin+data[0]]['id']
+                if follower is not None:
+                    self.selected_plugin=plugin_id
+                    follower.request(self.data['active'],self.track()['id'],'hardware_plugin',plugin_id=plugin_id)
+                else:
+                    try:self.select_plugin(self.data['active'],self.track()['id'],plugin_id,hardware=True)
+                    except ValueError as exc:self.ext._last_error=str(exc)
             return True
         if group==11 and command==4:
-            if data==(0,):self.announce(select=False)
+            if len(data)==1 and data[0]%8==0 and data[0]<len(self.track()['plugins']):
+                self.first_plugin=data[0];self.announce(select=False)
             return True
         if (group==10 and command==2) or (group==11 and command==1):
             self.confirmed=False;self.locked=False;self.touched.clear();self.selected_track=self.track()['id']
+            self.selected_plugin=self.plugin()['id']
         return False
 
     def acknowledge(self):

@@ -2,6 +2,8 @@
 
 For direct mapping, open hardware LEARN, select a control and change any compatible COMP custom parameter. TD offers it automatically and commits the hardware-reported slot after a matching acknowledgement. The Inspector COMP / Parameter picker is an optional explicit assignment path. The persistent one-slot API is `controller.AssignParameter("knob", 2, target.par.Speed)` or `controller.AssignParameter("button", 5, target.par.Reset, button_type="push")`. Metadata is inferred and other collection mappings are preserved. See inspector.md for automatic offers during hardware LEARN. `BindControls` below remains the complete-registration API.
 
+Hardware can report several mappings together on LEARN exit. Free LEARN retains each offer for 30 seconds, reserves its parameter index, and matches acknowledgements independently by index/hash, including out-of-order reports. Repeated offers for the same pending parameter retain its ID/index. At most 128 offers can await acknowledgement. Layout, Device, control-page, input-fence and transport-session resets cancel pending offers. A Menu's acknowledgement determines knob selection versus button Cycle even when hardware did not send a selection CC before the edit; the offered hash is saved with the actual mode and unchanged Menu options.
+
 ```python
 controller.BindControls([
     dict(kind='knob', slot=1, id='scene.speed', parameter=scene.par.Speed),
@@ -66,3 +68,5 @@ An adapter-only `ConfigureControl(button_type=...)` preserves the target identit
 ## Menu parameters
 
 Custom Menu parameters support knobs (quantized option selection) and buttons (Cycle: advance and wrap on each press). Use hardware LEARN, select the destination, then change the menu. Inspector pickers support both kinds. PUSH ignores release/held duplicates; TOGGLE accepts each latched press. Menu ranges are fixed at indices 0..N-1, and SetValue uses those indices. State includes menu_names, menu_labels and value_label. LCD feedback uses the option label. Menu options must have 2..24 unique names and matching labels, following the official Ableton quantized-step limit. Changing names, labels or order suspends the binding; assign and re-learn it.
+
+Cycle LED feedback follows the selected Menu value: the first option is off, all other options are on. PUSH release does not clear a selected option's LED. Software edits and mapping recall send the same state feedback; LCD text identifies the actual option. Pulse retains action/press feedback independently.

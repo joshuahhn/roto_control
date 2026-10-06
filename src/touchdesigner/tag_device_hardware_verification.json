@@ -1,0 +1,186 @@
+{
+  "user_confirmed": true,
+  "physical_fractal_power": true,
+  "physical_pixelsort_recall": true,
+  "layout": "T",
+  "track": "T",
+  "devices": [
+    {
+      "name": "pixelSortV3",
+      "id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+      "targets": [
+        {
+          "kind": "knob",
+          "slot": 1,
+          "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+          "label": "Sort By",
+          "minimum": 0.0,
+          "maximum": 7.0,
+          "mode": "value",
+          "button_type": null,
+          "index": 128,
+          "identity": "parameter.292f87cf1c224693a56c515c5e9e539b:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value",
+          "menu_names": [
+            "luminance",
+            "hue",
+            "saturation",
+            "value",
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "menu_labels": [
+            "Brightness",
+            "Hue (Color)",
+            "Saturation",
+            "Value",
+            "Red",
+            "Green",
+            "Blue",
+            "Alpha"
+          ],
+          "comp": "../pixelSortV3",
+          "parameter": "Sortcrit"
+        },
+        {
+          "kind": "button",
+          "slot": 1,
+          "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+          "label": "Mask Image",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "mode": "cycle",
+          "button_type": "toggle",
+          "index": 133,
+          "identity": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28:0.0:1.0:1(('source', 'control'), ('Source (Input 1)', 'Control (Input 2)')):value",
+          "menu_names": [
+            "source",
+            "control"
+          ],
+          "menu_labels": [
+            "Source (Input 1)",
+            "Control (Input 2)"
+          ],
+          "comp": "../pixelSortV3",
+          "parameter": "Masksource"
+        },
+        {
+          "kind": "knob",
+          "slot": 2,
+          "id": "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+          "label": "Low Threshold",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "mode": "value",
+          "button_type": null,
+          "index": 132,
+          "identity": "parameter.9de40f49815a4072b2ffcdedbf0f3d08:0.0:1.0:0:value",
+          "menu_names": [],
+          "menu_labels": [],
+          "comp": "../pixelSortV3",
+          "parameter": "Lowthresh"
+        },
+        {
+          "kind": "knob",
+          "slot": 3,
+          "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+          "label": "High Threshold",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "mode": "value",
+          "button_type": null,
+          "index": 130,
+          "identity": "parameter.4f3475e31cd94822aec26eeb6c9f16bb:0.0:1.0:0:value",
+          "menu_names": [],
+          "menu_labels": [],
+          "comp": "../pixelSortV3",
+          "parameter": "Highthresh"
+        },
+        {
+          "kind": "knob",
+          "slot": 4,
+          "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+          "label": "Effect Mix",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "mode": "value",
+          "button_type": null,
+          "index": 131,
+          "identity": "parameter.2b5fa1105e1446be9f89c813f5484b1a:0.0:1.0:0:value",
+          "menu_names": [],
+          "menu_labels": [],
+          "comp": "../pixelSortV3",
+          "parameter": "Mix"
+        }
+      ]
+    },
+    {
+      "name": "fractal_pop",
+      "id": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "targets": [
+        {
+          "kind": "knob",
+          "slot": 1,
+          "id": "parameter.3260e849bc3349c998632238c542f36c",
+          "label": "Power",
+          "minimum": 2.0,
+          "maximum": 16.0,
+          "mode": "value",
+          "button_type": null,
+          "index": 128,
+          "identity": "parameter.3260e849bc3349c998632238c542f36c:2.0:16.0:0:value",
+          "menu_names": [],
+          "menu_labels": [],
+          "comp": "../fractal_pop",
+          "parameter": "Power"
+        }
+      ]
+    }
+  ],
+  "context": {
+    "enabled": true,
+    "status": "waiting_for_transport",
+    "error": "",
+    "device_tag": "roto_device",
+    "tag_error": "",
+    "observed_comp": "/roto_control_python/pixelSortV3",
+    "routing_comp": "/roto_control_python/pixelSortV3",
+    "pending_reason": "",
+    "connection_generation": 1,
+    "routing_epoch": 1,
+    "gated": false,
+    "source": null,
+    "sequence": null,
+    "requested_comp": "",
+    "pending_track_id": null,
+    "pending_plugin_id": null,
+    "focus_comp": {
+      "path": "../pixelSortV3",
+      "state": "bound"
+    },
+    "legacy": false,
+    "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+    "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "locked": false,
+    "selected_plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "first_plugin": 0,
+    "plugin_count": 2,
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "label": "T / T / pixelSortV3"
+  },
+  "native_build": "2025.33230",
+  "unit_tests": 228,
+  "generic_reload": true,
+  "configuration_and_values_preserved": true,
+  "saved_project": "roto_control_python.67.toe",
+  "export": "roto_python.37.tox",
+  "final_reconnect": true,
+  "errors": ""
+}

@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-07",
+  "unit_tests": 164,
+  "outer_pages": [
+    "Connection",
+    "Binding",
+    "Display",
+    "Layouts",
+    "Tracks"
+  ],
+  "outer_control_removed": true,
+  "internal_backing_preserved": true,
+  "configured_registry_preserved": true,
+  "configuration_sha256": "6d557ab36c0e1a0dbbea43dffba4f3d68f14a67d52351efc8c46579cdeb74573",
+  "main_reconnect_recall": true,
+  "main_control": {
+    "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+    "kind": "knob",
+    "slot": 1,
+    "mode": "value",
+    "label": "Sort By",
+    "value": 0,
+    "normalized": 0.0,
+    "minimum": 0.0,
+    "maximum": 7.0,
+    "mapped": true,
+    "touched": false,
+    "valid": true,
+    "connected": true,
+    "plugin": true,
+    "error": "",
+    "button_type": null,
+    "binding_type": "parameter",
+    "comp": "/roto_control_python/pixelSortV3",
+    "parameter": "Sortcrit",
+    "menu_names": [
+      "luminance",
+      "hue",
+      "saturation",
+      "value",
+      "red",
+      "green",
+      "blue",
+      "alpha"
+    ],
+    "menu_labels": [
+      "Brightness",
+      "Hue (Color)",
+      "Saturation",
+      "Value",
+      "Red",
+      "Green",
+      "Blue",
+      "Alpha"
+    ],
+    "value_label": "Brightness",
+    "parameter_style": "Menu",
+    "requires_relearn": false
+  },
+  "library": [
+    {
+      "parameter": "Mix",
+      "index": 129,
+      "identity": "parameter.70f33bdb7f6646febb51703cab9db710:0.0:1.0:0:value"
+    },
+    {
+      "parameter": "Sortcrit",
+      "index": 128,
+      "identity": "parameter.292f87cf1c224693a56c515c5e9e539b:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value"
+    }
+  ],
+  "fresh_builder_and_legacy_migration": true,
+  "builtin_SetValue_Unbind_reload": true,
+  "callback_reload_return": true,
+  "generic_export_empty_disconnected": true,
+  "export": "exports/roto_python.30.tox",
+  "errors": "",
+  "project": "roto_control_python.49.toe"
+}

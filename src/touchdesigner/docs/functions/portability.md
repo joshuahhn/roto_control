@@ -6,6 +6,6 @@ The tox embeds the controller code, Inspector, documentation and MIDI process so
 
 Python with mido and python-rtmidi is still required. The Python parameter preserves the configured interpreter on this machine. On another machine install those packages and select that machine's interpreter. Device is the exact MIDI input/output name. The disabled Helper parameter is retained for older component compatibility; the embedded helper takes precedence.
 
-A generic export starts disconnected, without user targets, callbacks or mappings. It does not clear mappings on the physical hardware. Inspector shows all eight knobs and eight buttons, including empty slots. Advanced binding APIs remain available. Diagnostics are internal and accessible through controller.State. The portable version has no outer CHOP outputs; parameter targets and callbacks receive the actual values/events.
+A generic export starts disconnected, with Follow off and no Focus links, user targets, callbacks or mappings. It does not clear mappings on the physical hardware. Inspector shows all eight knobs and eight buttons, including empty slots. Advanced binding APIs remain available. Diagnostics are internal and accessible through controller.State. The portable version has no outer CHOP outputs; parameter targets and callbacks receive the actual values/events.
 
 Run export_component.py in TD and call export(controller, a_new_tox_path) after Disconnect. It exports an isolated copy and never overwrites an existing destination. Development source edits require a deliberate new export.

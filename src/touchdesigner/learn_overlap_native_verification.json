@@ -1,0 +1,12 @@
+{
+  "native_callbacks": true,
+  "newest_ack_before_oldest": true,
+  "menu_kind_from_ack": true,
+  "no_commit_value_writes": true,
+  "knob_dispatch": true,
+  "menu_button_cycle": true,
+  "physical_acceptance": false,
+  "native_build": "2025.33230",
+  "reload_hash_recall": true,
+  "errors": ""
+}

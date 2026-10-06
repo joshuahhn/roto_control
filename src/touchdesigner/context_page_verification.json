@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-07",
+  "pages": [
+    "Connection",
+    "Binding",
+    "Layout"
+  ],
+  "parameter_count": 11,
+  "parameter_values_and_enable_preserved": true,
+  "full_registry_preserved": true,
+  "control_states_preserved": true,
+  "idempotent": true,
+  "unit_tests": 169,
+  "fresh_builder": true,
+  "generic_export_reload": true,
+  "export": "exports/roto_python.31.tox",
+  "permanent_confirm_parameters": false,
+  "native_popup_cancel_confirm": true,
+  "duplicate_popup_callback_ignored": true,
+  "plugin_name_independent": true,
+  "labels": {
+    "Layout": "Active Layout",
+    "Layoutname": "New / rename Layout",
+    "Trackname": "Hardware Track name",
+    "Pluginname": "Hardware Plugin name"
+  },
+  "reconnect_mapped": true,
+  "network_layout": {
+    "networks": 4,
+    "groups": 17,
+    "operators": 63,
+    "containment": true,
+    "overlaps": false,
+    "backward_wires": false
+  },
+  "project": "roto_control_python.51.toe",
+  "canonical_project_matches": true,
+  "canonical_export_matches": true
+}

@@ -1,0 +1,487 @@
+{
+  "user_confirmed_led_and_lcd": true,
+  "trace": [
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553031.636984666,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553031.637025541,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        67,
+        111,
+        110,
+        116,
+        114,
+        111,
+        108,
+        32,
+        40,
+        73,
+        110,
+        112,
+        0,
+        247
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553092.317293958,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553092.3173405,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        83,
+        111,
+        117,
+        114,
+        99,
+        101,
+        32,
+        40,
+        73,
+        110,
+        112,
+        117,
+        0,
+        247
+      ],
+      "value": 0.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553092.31759575,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553092.317610375,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        83,
+        111,
+        117,
+        114,
+        99,
+        101,
+        32,
+        40,
+        73,
+        110,
+        112,
+        117,
+        0,
+        247
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553092.317628666,
+      "event": "rx_after",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553093.200709791,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553093.200751625,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        67,
+        111,
+        110,
+        116,
+        114,
+        111,
+        108,
+        32,
+        40,
+        73,
+        110,
+        112,
+        0,
+        247
+      ],
+      "value": 1.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553093.200900291,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553093.200912041,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        67,
+        111,
+        110,
+        116,
+        114,
+        111,
+        108,
+        32,
+        40,
+        73,
+        110,
+        112,
+        0,
+        247
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553093.200929458,
+      "event": "rx_after",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553102.167013625,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553102.167045916,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        83,
+        111,
+        117,
+        114,
+        99,
+        101,
+        32,
+        40,
+        73,
+        110,
+        112,
+        117,
+        0,
+        247
+      ],
+      "value": 0.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553102.167196,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553102.167204291,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        83,
+        111,
+        117,
+        114,
+        99,
+        101,
+        32,
+        40,
+        73,
+        110,
+        112,
+        117,
+        0,
+        247
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553102.167216125,
+      "event": "rx_after",
+      "message": [
+        191,
+        20,
+        0
+      ],
+      "value": 0.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553103.166968208,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553103.1669955,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        67,
+        111,
+        110,
+        116,
+        114,
+        111,
+        108,
+        32,
+        40,
+        73,
+        110,
+        112,
+        0,
+        247
+      ],
+      "value": 1.0,
+      "parameter": "source"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553103.167114875,
+      "event": "tx",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553103.167122583,
+      "event": "tx",
+      "message": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        24,
+        1,
+        0,
+        67,
+        111,
+        110,
+        116,
+        114,
+        111,
+        108,
+        32,
+        40,
+        73,
+        110,
+        112,
+        0,
+        247
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    },
+    {
+      "tag": "DEBUG-cycle-led",
+      "time": 553103.167134458,
+      "event": "rx_after",
+      "message": [
+        191,
+        20,
+        127
+      ],
+      "value": 1.0,
+      "parameter": "control"
+    }
+  ],
+  "state": {
+    "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+    "kind": "button",
+    "slot": 1,
+    "mode": "cycle",
+    "label": "Mask Image",
+    "value": 1,
+    "normalized": 1.0,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mapped": true,
+    "touched": false,
+    "valid": true,
+    "connected": true,
+    "plugin": true,
+    "error": "",
+    "button_type": "toggle",
+    "binding_type": "parameter",
+    "comp": "/roto_control_python/pixelSortV3",
+    "parameter": "Masksource",
+    "menu_names": [
+      "source",
+      "control"
+    ],
+    "menu_labels": [
+      "Source (Input 1)",
+      "Control (Input 2)"
+    ],
+    "value_label": "Control (Input 2)",
+    "parameter_style": "Menu",
+    "requires_relearn": false
+  },
+  "errors": "",
+  "reconnect_all_five_mapped": true,
+  "wire_identities_preserved": true,
+  "export_reload_verified": true,
+  "saved_project": "roto_control_python.63.toe",
+  "generic_export": "exports/roto_python.35.tox"
+}

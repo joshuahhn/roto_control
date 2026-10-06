@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "user_confirmation": "working",
+  "scope": "One linked COMP selection and Knob 1 input",
+  "layout": "T",
+  "track": "T",
+  "plugin": "CUSTOM",
+  "focus_comp": "pixelSortV3",
+  "parameter": "Sortcrit",
+  "observed_value": 4,
+  "observed_value_label": "Red",
+  "mapped": true,
+  "operator_errors": "",
+  "single_comp_follow_and_knob_input": true,
+  "lcd_separately_confirmed": false,
+  "a_b_a_two_comp_follow": false,
+  "lock_unlock_follow": false,
+  "learn_touch_deferral": false,
+  "name_sync_implemented": false
+}
