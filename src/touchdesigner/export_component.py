@@ -67,10 +67,10 @@ def export(controller, destination):
             par.default = par.val = value
         clone.ext.RotoPythonExt.SetLayoutNames('EFFECT', 'CUSTOM')
         clone.par.Setupmode = 'collection'
-        clone.par.Targetcomp = ''
-        clone.par.Targetpar = ''
-        clone.par.Bindingid = ''
-        clone.par.Targetlabel = ''
+        for name in ('Targetcomp', 'Targetpar', 'Bindingid', 'Targetlabel'):
+            parameter = getattr(clone.par, name, None)
+            if parameter is not None:
+                parameter.val = ''
         clone.par.Groupid = 'roto.controls.v1'
         clone.par.Value = .5
         table = clone.op('base_targets/targets')
@@ -79,10 +79,11 @@ def export(controller, destination):
         table.appendRow(columns)
         clone.op('registration').text = (
             'def onRegister(controller):\n'
-            '    # Register your parameters/callbacks here, then select Registration hook.\n'
+            '    # Register your parameters/callbacks here, then select Python registration.\n'
             '    raise ValueError("Configure registration.onRegister first")\n')
         clone.ext.RotoPythonExt.BindControls([], group_id=clone.par.Groupid.eval(), _allow_empty=True)
         clone.ext.RotoPythonExt._layout_manager()
+        clone.op('setup').module.configure_ui(clone)
         clone.ext.RotoPythonExt.Disconnect()
         clone.save(str(destination), createFolders=True)
     finally:

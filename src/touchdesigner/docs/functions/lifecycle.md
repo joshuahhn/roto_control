@@ -23,7 +23,7 @@ Controller Value is the normalized manual control/monitor. Diagnostics live insi
 
 A deleted target, readonly/mode change or callback exception suspends that binding and clears mapping. Further target dispatch is stopped. Fix the cause and bind again; Disconnect stays available. Error strings are diagnostics, not stable error codes. A failed SetValue raises as well as reporting its error.
 
-Saved Binding page configuration is restored after initialization (first Tick, or Apply/Connect). Registration hook mode recreates its runtime registration using registration.onRegister(controller). MIDI remains disconnected until Connect. Temporary direct API/demo-button registrations do not change saved setup. Development source DATs stay synced to disk. Use export_component.py for an embedded-code tox with no demo bindings; The MIDI helper is embedded; only Python with the MIDI packages remains external. See portability.md.
+Saved Binding page configuration is restored after initialization (first Tick, or Apply/Connect). Python registration mode recreates its runtime registration using registration.onRegister(controller). MIDI remains disconnected until Connect. Temporary direct API/demo-button registrations do not change saved setup. Development source DATs stay synced to disk. Use export_component.py for an embedded-code tox with no demo bindings; The MIDI helper is embedded; only Python with the MIDI packages remains external. See portability.md.
 
 ## Source upgrades
 

@@ -27,7 +27,7 @@ def onRegister(controller):
     ], group_id='app.controls.v1')
 ```
 
-Put callback registration in the internal registration DAT and select Registration hook mode to recreate it after reload. For parameter collections, Multiple controls mode reads the saved targets table. Temporary direct BindControls calls are replaced by saved configuration after extension initialization. BindParameter/BindCallback/Unbind switch back to single-target mode. Binding changes are rejected during LEARN, touch or hardware callback dispatch.
+Put callback registration in the internal registration DAT and select Python registration mode to recreate it after reload. Parameter mapping restores the saved active Layout/Track/Plugin; the targets table remains the initial source for a new registry. Temporary direct BindControls calls are replaced by saved configuration after extension initialization. BindParameter/BindCallback/Unbind switch back to single-target mode. Binding changes are rejected during LEARN, touch or hardware callback dispatch.
 
 Per-control watchers react to software edits and skip expected hardware writes. Knob input pairs never combine across slots. Touch defers only that knob's motor feedback; releasing applies its pending value. Invalid targets suspend independently; other controls continue. Root Bindingvalid is false if any target is invalid; inspect state rows for the reason.
 

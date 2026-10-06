@@ -21,7 +21,7 @@ BindParameter accepts a writable CONSTANT/BIND custom Float or Int Par handle. L
 
 Use a stable nonempty id independent of operator paths/display labels. Wire identities include id/range/integer semantics; a different target cannot use an old acknowledged mapping. A reused id with changed value semantics is rejected within the current extension session. Assign distinct ids to distinct targets. The built-in target preserves the original Value/device hashes for compatibility.
 
-The callback receives {'id': id, 'value': target_value, 'origin': 'hardware'} only when a hardware value changes. Callback runs on TD's main thread; keep it short. Do not recursively SetValue, Bind or Unbind inside it. Callback objects are not serialized. Put registration in the internal registration DAT onRegister(controller) and select Registration hook mode to recreate them after reload.
+The callback receives {'id': id, 'value': target_value, 'origin': 'hardware'} only when a hardware value changes. Callback runs on TD's main thread; keep it short. Do not recursively SetValue, Bind or Unbind inside it. Callback objects are not serialized. Put registration in the internal registration DAT onRegister(controller) and select Python registration mode to recreate them after reload.
 
 The external parameter watcher skips hardware/software write echoes. Target rename resyncs after the OP reference changes. A TD Collapse Selected/restructure can reinitialize the controller extension; saved setup is reapplied after initialization; direct API registrations need registering again. EXPRESSION/EXPORT modes, readonly and nonnumeric parameters are rejected. BIND references are supported only when their same-style Par chain resolves to a writable CONSTANT master. Missing/cyclic/non-Par masters or driven masters are rejected; no bind expression or master mode is replaced.
 
@@ -29,7 +29,9 @@ Binding replacement/Unbind is rejected while touched or learning. Bind while idl
 
 ## Saved parameter setup
 
-Set Setupmode to parameter, Targetcomp to the target COMP, Targetpar to its custom parameter name, and Bindingid to a stable ID. Useparrange selects normMin/normMax; otherwise Minimum/Maximum are used. Targetlabel is optional. Applybinding validates and applies this configuration. These custom parameters persist in the project/tox. In Registration hook mode the saved internal registration DAT must call BindParameter, BindCallback or BindControls; mixed parameter/callback collections are supported. Invalid setup exposes an internal Lasterror and prevents Connect until corrected/applied.
+Binding has two workflows. **Parameter mapping** (`Setupmode=collection`) uses hardware LEARN, Inspector and saved Layouts/Tracks. **Python registration** (`Setupmode=callback`) runs the saved internal `registration.onRegister(controller)` DAT; it must call BindParameter, BindCallback or BindControls, including mixed parameter/callback collections. Apply setup (`Applybinding`) validates and reapplies the selected workflow. Ordinary LEARN/Inspector assignment needs no Apply. Invalid registration exposes an internal Lasterror and prevents Connect until corrected/applied.
+
+Built-in Value and Custom parameter are legacy single-target APIs, rather than menu choices. The disconnected upgrade captures/restores the legacy parameter setup through the Layout registry before removing its old outer fields. BindParameter/BindCallback/Unbind remain available for code integrations. Put persistent code registrations in the registration hook; direct calls remain temporary.
 
 State is a snapshot dictionary (controller.State); diagnostics are not outer custom parameters. For example controller.State['Mapped'] and controller.State['Targetvalue'].
 
@@ -39,7 +41,7 @@ State is a snapshot dictionary (controller.State); diagnostics are not outer cus
 
 `State` remains aggregate transport diagnostics; use GetControlState for individual mapping/validity. Pulse GetValue/CHOP output stays zero; consume Pulse events. Query values are the last tracked state, not a synchronous forced parameter poll.
 
-Saved Registration hook mode keeps the legacy menu value `callback` for compatibility. The hook may register a parameter, callback or mixed collection. It must make a new registration on each restore. Direct registration calls remain temporary; saved hooks run after extension initialization.
+Saved Python registration mode keeps the legacy menu value `callback` for compatibility. The hook may register a parameter, callback or mixed collection. It must make a new registration on each restore. Direct registration calls remain temporary; saved hooks run after extension initialization.
 
 A failed saved registration suspends the whole host: all target queries report invalid/unmapped and the registration error. Correct the setup and Applybinding before reconnecting. A consumer/write failure suspends only that target in a collection.
 

@@ -15,7 +15,7 @@ Inspector displays all 16 slots, mapped COMP/parameter, values, ranges and butto
 
 ## Controls
 
-Connect / Disconnect own the MIDI session. Device selects the exact port; Python selects the MIDI runtime. Inspector handles assignments, Re-learn and clearing. Advanced Binding controls and public methods support parameter/callback integrations.
+Connect / Disconnect own the MIDI session. Device selects the exact port; Python selects the MIDI runtime. Binding has two workflows: **Parameter mapping** uses hardware LEARN and Inspector, with saved Layouts/Tracks; **Python registration** runs `registration.onRegister(controller)` to recreate parameter/callback integrations. Apply setup restores the selected workflow; ordinary LEARN does not need Apply. Inspector handles assignments, Re-learn and clearing.
 
 ## Inputs and Outputs
 

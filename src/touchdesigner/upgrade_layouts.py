@@ -27,9 +27,10 @@ def upgrade(controller,source_dir):
     dat.par.file='';dat.par.syncfile=False;dat.par.loadonstart=False
     # Existing Binding annotation is cleaned using actual measured sizes afterward.
     dat.nodeX,dat.nodeY=540,-270
-    for name in ('protocol','binding','free_learn','RotoPythonExt'):
+    for name in ('protocol','binding','free_learn','RotoPythonExt','setup'):
         controller.op(name).text=(source/'code/py/roto_python'/f'{name}.py').read_text(encoding='utf-8')
     controller.op('inspector/inspector_data').text=(source/'code/py/roto_python/inspector/inspector_data.py').read_text(encoding='utf-8')
     controller.op('parameter_callbacks').par.pars='Value Trackname Pluginname Layout Track Newtrack Deletetrack Confirmtrackdelete Canceltrackdelete Connect Disconnect Offerparameter Applybinding Newlayout Renamelayout Deletelayout Confirmdelete Canceldelete'
     controller.par.reinitextensions.pulse()
+    controller.op('setup').module.configure_ui(controller)
     return controller

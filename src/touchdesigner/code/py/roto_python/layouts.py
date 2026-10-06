@@ -120,7 +120,7 @@ class Layouts:
         return dict(self.plugin(id,track_id),id=layout['id'],name=layout['name'],track_name=track['name'])
 
     def context(self):
-        if self.legacy:return dict(legacy=True,label='Registration hook',key=None)
+        if self.legacy:return dict(legacy=True,label='Python registration',key=None)
         layout=self.layout();track=self.track();plugin=self.plugin()
         return dict(legacy=False,layout_id=layout['id'],track_id=track['id'],plugin_id=plugin['id'],
                     selected_track_id=self.selected_track or track['id'],locked=self.locked,

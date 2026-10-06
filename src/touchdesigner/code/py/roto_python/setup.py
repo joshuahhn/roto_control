@@ -1,6 +1,32 @@
 """Apply persisted TD configuration through the public binding interface."""
 
 
+def configure_ui(controller):
+    """Expose two workflows after migrating old single-target saved setups."""
+    mode = controller.par.Setupmode.eval()
+    if mode not in ('collection', 'callback'):
+        extension = controller.ext.RotoPythonExt
+        if extension._process is not None:
+            raise ValueError('Disconnect before migrating a legacy Binding setup')
+        if controller.Applybinding() is False:
+            raise ValueError('Apply a valid legacy binding before upgrading its UI')
+        extension._layout_manager().restore()
+        mode = 'collection'
+    controller.par.Setupmode.menuNames = ['collection', 'callback']
+    controller.par.Setupmode.menuLabels = ['Parameter mapping', 'Python registration']
+    controller.par.Setupmode.default = 'collection'
+    controller.par.Setupmode.val = mode
+    controller.par.Applybinding.label = 'Apply setup'
+    controller.par.Groupid.enableExpr = "me.par.Setupmode == 'callback'"
+    # Runtime compatibility APIs remain; obsolete saved single-target fields do not.
+    for name in ('Targetcomp', 'Targetpar', 'Bindingid', 'Targetlabel',
+                 'Useparrange', 'Minimum', 'Maximum'):
+        parameter = getattr(controller.par, name, None)
+        if parameter is not None:
+            parameter.destroy()
+    return mode
+
+
 def restore(controller):
     par = controller.par
     mode = par.Setupmode.eval()
