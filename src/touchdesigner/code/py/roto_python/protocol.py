@@ -27,6 +27,19 @@ def text13(text):
     return tuple(text.encode("ascii", "replace")[:12].ljust(13, b"\0"))
 
 
+def display_name(value):
+    """Validate a hardware name without truncation or replacement."""
+    if not isinstance(value, str):
+        raise ValueError("Hardware name must be a string")
+    try:
+        data = value.encode("ascii")
+    except UnicodeEncodeError as exc:
+        raise ValueError("Hardware name must use ASCII") from exc
+    if len(data) > 12 or any(x < 32 or x > 126 for x in data):
+        raise ValueError("Hardware name must contain at most 12 printable ASCII bytes")
+    return value
+
+
 def format_number(value):
     """Compact LCD text; preserve numeric precision outside the display."""
     text = f"{value:.3f}".rstrip("0").rstrip(".")
@@ -47,7 +60,9 @@ class Host:
     Runtime flags reset on each session; no controller mappings are inferred.
     """
 
-    def __init__(self, send, assign, value=0.5):
+    def __init__(self, send, assign, value=0.5, *, track_name="EFFECT", plugin_name="CUSTOM"):
+        self.track_name = display_name(track_name)
+        self.plugin_name = display_name(plugin_name)
         self.send = send
         self.assign = assign
         self.value = float(value)
@@ -128,17 +143,38 @@ class Host:
         self._display_deadline = 0.0
         self.last_event = "Disconnected"
 
+    def set_display_names(self, track_name, plugin_name):
+        track_name, plugin_name = display_name(track_name), display_name(plugin_name)
+        if (track_name, plugin_name) == (self.track_name, self.plugin_name):
+            return False
+        if self.learning:
+            raise ValueError("Exit hardware LEARN before changing display names")
+        self.track_name, self.plugin_name = track_name, plugin_name
+        if self.connected:
+            self._command(GENERAL, 0x16, text13(self.track_name))
+            if self.plugin:
+                self._device_details()
+                self._command(PLUGIN, 6)
+        return True
+
+    def _device_details(self):
+        self._command(PLUGIN, 5, (getattr(self, "plugin_index", 0), *digest(self.device_id, 8),
+                                 1, *text13(self.plugin_name), 0, 0))
+
     def _devices(self):
+        callback = getattr(self, "devices_callback", None)
+        if callback is not None:
+            callback()
+            return
         self._command(PLUGIN, 2, (1,))  # NUM_DEVICES
         self._command(PLUGIN, 3, (0,))  # FIRST_DEVICE
-        self._command(PLUGIN, 5, (0, *digest(self.device_id, 8),
-                                 1, *text13("TD Python"), 0, 0))
+        self._device_details()
         self._command(PLUGIN, 6)  # PLUGIN_DETAILS_END
         self._command(PLUGIN, 8, (0, 0, 0))  # select device, no forced macro pages
 
     def _tracks(self):
         # PLUGIN selection still belongs to a track, even in this one-target host.
-        detail = (0, 0, *text13("TD Prototype"), 0, 0)
+        detail = (0, 0, *text13(self.track_name), 0, 0)
         self._command(GENERAL, 4, (0, 1))
         self._command(GENERAL, 5, (0, 0))
         self._command(GENERAL, 7, detail)

@@ -235,3 +235,27 @@ User reported the first Masksource attempt did not show LEARNED, then confirmed 
 ## Inspector Annotation filtering
 
 COMP picker excludes annotateCOMP and stops traversal into its internal network, for both knobs and buttons. Live list previously contained seven annotations; after source reload both lists contain pixelSortV3 only. Direct eligible_parameters also rejects annotateCOMP. 123 tests pass. Exported clean .22.tox and promoted canonical tox; main reconnected and saved .35.toe with existing user mappings retained. Canonical toe hash matches.
+
+## Layout phase 1 — fixed display names (2026-10-06)
+
+Display page now has Trackname=EFFECT and Pluginname=CUSTOM. SetLayoutNames validates at most 12 printable ASCII bytes, rejects edits during hardware LEARN and updates current track/name metadata without DAW SELECT, unmap, identity changes or mapping-state resets. Invalid native edits restore the previous accepted name and retain a visible internal Lasterror. Fresh source builder and upgrade callback allowlists include both names. Collection replacement preserves accepted display names. Generic export resets names to EFFECT/CUSTOM.
+
+131 automated tests pass, including exact metadata-only packets, atomic validation/LEARN rejection and isolated probe routing guards. Live embedded source update verified native invalid-edit rollback/error after a subsequent tick, names preserved through BindControls, restored defaults, promoted API and clean TD errors. Current collection remains empty with existing deletion tombstones/pending unmaps preserved. No registry/UI has been built.
+
+External layout_protocol_probe.py and LAYOUT_PROBE.md prepare the A/B/A hardware gate. Probe has its own MIDI lifetime, distinct synthetic identities, ordered RX/TX log, requested versus control-confirmed state, lock/LEARN/touch guards and no UNMAP/user-target writes. It has not been started and physical recall remains unverified. Production TD must be disconnected before probe port ownership; stop/close ports then reconnect production to restore.
+
+Phase-1 artifacts saved through live TD as .36.toe (canonical SHA-256 matches) and clean reusable .24.tox (canonical promoted); export reload verified default names, updated embedded protocol/docs, empty assignments/pending unmaps and no MIDI process. Main production session was reconnected; physical display appearance and A/B/A recall are still awaiting user confirmation.
+
+
+## Layout hardware gate (2026-10-06)
+
+Isolated A/B probe confirmed distinct plugin/parameter hashes recall A -> B -> A after reconnect without re-LEARN. B received 75 physical inputs in session2; A received 35 after recall in session3. Hardware LOCK event caused local select B rejection with no selection TX or active-state change; unlock event received. User confirmed PROBE EMPTY display and previous label cleared; EMPTY remained unacknowledged and input-disabled. Returning from EMPTY received matching A acknowledgement. Probe stopped and production TD Connect requested. Evidence: layout_hardware_verification.json. Hardware-origin selection under lock and delayed-CC attribution remain unverified; no general selection-complete acknowledgement was inferred.
+
+
+## Saved Layout registry and UI (2026-10-06)
+
+Implemented persisted parameter Layouts, Layouts page selection/create/rename/delete confirmation, per-Layout display names, missing-target catalog and active-only Clear. Switching reads current parameter values without firing Pulse actions. LEARN/touch/LOCK guards and matching control recall gate routing. Capacity is 8 Layouts. Callback registration remains a separate legacy mode; its registry survives callback Applybinding/reinit and returning to a saved Layout.
+
+139 tests pass. Native verification covered callback mode/reinit/return, two-Layout tox save/reload, disconnected empty generic export and embedded source. Network cleanup checked 4 networks, 17 groups and 63 operators with containment, no overlaps or backward wires. Temporary verification COMPs removed; production handshake Connected=True/Plugin=True, empty Custom Layout and no Lasterror. Stale hardware mapping reports are rejected because no corresponding target is configured. Evidence: layout_native_verification.json and layout_hardware_verification.json.
+
+Final artifacts: project .37.toe and generic export .26.tox (documentation refreshed after .25 verification). Canonical copies match numbered artifacts. Final production Layout UI physical acceptance remains pending; isolated A/B/A hardware recall and lock/unlock passed. Hardware-origin selection under LOCK and delayed CC attribution remain limitations. No commit/push.

@@ -12,6 +12,9 @@ from binding import parameter_value
 class RotoPythonExt:
     def __init__(self, ownerComp):
         self.ownerComp = ownerComp
+        self._layout_ready = False
+        self._layout_dirty = False
+        self._layouts = None
         self._process = None
         self._receive = b""
         self._pending = b""
@@ -29,13 +32,55 @@ class RotoPythonExt:
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
-            self._send, self._assign, ownerComp.par.Value.eval())
+            self._send, self._assign, ownerComp.par.Value.eval(), **self._display_names())
         self._publish()
 
     @property
     def State(self):
         """Snapshot for callers; diagnostics live inside the network."""
         return {par.name: par.eval() for par in self.ownerComp.op("base_state").customPars}
+
+    def _display_names(self):
+        return {"track_name": self.ownerComp.par.Trackname.eval() if hasattr(self.ownerComp.par, "Trackname") else "EFFECT",
+                "plugin_name": self.ownerComp.par.Pluginname.eval() if hasattr(self.ownerComp.par, "Pluginname") else "CUSTOM"}
+
+    def SetLayoutNames(self, track_name, plugin_name):
+        """Update fixed hardware display names without changing mapping identity."""
+        self._layout_dirty = True
+        result = self._host.set_display_names(track_name, plugin_name)
+        for name, value in (("Trackname", track_name), ("Pluginname", plugin_name)):
+            par = getattr(self.ownerComp.par, name, None)
+            if par is not None and par.eval() != value:
+                par.val = value
+        if result:
+            self._last_error = ""
+        self._publish()
+        return result
+
+    def _layout_manager(self):
+        if self._layouts is None:
+            dat = self.ownerComp.op('layouts')
+            if dat is None:
+                raise ValueError('Install Layout support first')
+            self._layouts = dat.module.Layouts(self)
+        return self._layouts
+
+    def GetLayouts(self):
+        manager = self._layout_manager()
+        return [dict(id=r['id'], name=r['name'], track_name=r['track_name'], plugin_name=r['plugin_name'],
+                     active=r['id']==manager.data['active']) for r in manager.data['records']]
+
+    def SelectLayout(self, id):
+        return self._layout_manager().select(id)
+
+    def CreateLayout(self, name):
+        return self._layout_manager().create(name)
+
+    def RenameLayout(self, id, name):
+        return self._layout_manager().rename(id, name)
+
+    def RemoveLayout(self, id):
+        return self._layout_manager().remove(id)
 
     def _check_single_id(self, id):
         active_id = self._binding.id if self._binding is not None else "Value"
@@ -102,6 +147,15 @@ class RotoPythonExt:
                     record[field]=old[field]
             record['last_mapped']=state['mapped'] or old.get('last_mapped', False)
             records.append(record)
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and not manager.legacy:
+            target_ids={t['id'] for t in manager.record()['targets']}
+            present={state['id'] for state in records}
+            removed=set(self.ownerComp.fetch('removed_controls',[]))
+            for id, old in previous.items():
+                if id in target_ids and id not in present and id not in removed:
+                    old=dict(old,valid=False,mapped=False,error='Target unavailable')
+                    records.append(old)
         if records != self.ownerComp.fetch('control_catalog', []):
             self.ownerComp.store('control_catalog', records)
 
@@ -113,6 +167,23 @@ class RotoPythonExt:
         self._restore_pending = False
         self._restoring = True
         try:
+            has_registry=self.ownerComp.op('layouts') is not None and self.ownerComp.fetch('layout_registry',None) is not None
+            if has_registry and self.ownerComp.par.Setupmode.eval()=='callback':
+                previous_manager=getattr(self,'_layouts',None)
+                suspended=self.ownerComp.fetch('layout_registry_suspended',False)
+                manager=self._layout_manager()
+                if previous_manager is not None and not previous_manager.legacy and self._layout_ready:
+                    manager.capture(force=True)
+                if not suspended:
+                    # Saved parameter Layouts remain in registry; legacy hook owns
+                    # its independent overlays after opting out of Layout mode.
+                    for field,value in (('parameter_assignments',[]),('assignment_device_id',None),('control_overrides',{}),('removed_controls',[]),('pending_unmaps',[]),('pending_unmap_identities',[]),('needs_relearn',()),('control_catalog',[])):
+                        self.ownerComp.store(field,value)
+                manager.legacy=True;manager.attach()
+                self.ownerComp.store('layout_registry_suspended',True)
+            elif has_registry:
+                self._layout_manager().restore()
+                return tuple(self._collection.ids)
             result = self.ownerComp.op("setup").module.restore(self.ownerComp)
             if self._collection is None and self.ownerComp.fetch('parameter_assignments', []):
                 assigned = self._assignment_specs()
@@ -125,6 +196,12 @@ class RotoPythonExt:
                         value=binding.value if binding else self.ownerComp.par.Value.eval(),
                         label=binding.label if binding else 'Value'))
                 result = self.BindControls(assigned,group_id=self.ownerComp.par.Groupid.eval())
+            self._layout_ready=True
+            if self.ownerComp.op('layouts') is not None:
+                try:
+                    self._layout_manager()
+                except ValueError as exc:
+                    self._last_error = str(exc)
             self._publish()
             return result
         except Exception as exc:
@@ -135,6 +212,9 @@ class RotoPythonExt:
 
     def ClearLearn(self, id=None):
         """Request hardware unmap for one control; retain its TD registration/value."""
+        self._layout_dirty = True
+        if getattr(self,'_layouts',None) is not None and not self._layouts.confirmed:
+            raise ValueError('Await current Layout recall before hardware-only Clear Learn')
         if self._dispatching:
             raise ValueError("Do not clear LEARN inside a hardware callback")
         if self._collection is not None:
@@ -147,6 +227,7 @@ class RotoPythonExt:
 
     def RemoveControl(self, id):
         """Delete one registered target and suppress saved-hook recall; retain empty slot."""
+        self._layout_dirty = True
         if self._collection is None:
             active_id=self._check_single_id(id)
             if self._dispatching or self._host.learning or self._host.touched:
@@ -159,12 +240,31 @@ class RotoPythonExt:
             pending.add(('knob',1));self.ownerComp.store('pending_unmaps',sorted(pending))
             self.BindControls([],group_id='removed.single',_allow_empty=True)
             return active_id
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and id not in self._collection.ids:
+            target=next((t for t in manager.record()['targets'] if t['id']==id),None)
+            if target is None:raise ValueError('Unknown target ID: '+str(id))
+            manager.guard()
+            removed=set(self.ownerComp.fetch('removed_controls',[]));removed.add(id)
+            self.ownerComp.store('removed_controls',sorted(removed))
+            self.ownerComp.store('parameter_assignments',[r for r in self.ownerComp.fetch('parameter_assignments',[]) if r['id']!=id])
+            self.ownerComp.store('control_catalog',[r for r in self.ownerComp.fetch('control_catalog',[]) if r['id']!=id])
+            pending={tuple(key) for key in self.ownerComp.fetch('pending_unmaps',[])};pending.add((target['kind'],target['slot']))
+            self.ownerComp.store('pending_unmaps',sorted(pending))
+            identities=[r for r in self.ownerComp.fetch('pending_unmap_identities',[]) if (r['kind'],r['slot'])!=(target['kind'],target['slot'])]
+            if target.get('identity'):identities.append({k:target[k] for k in ('kind','slot','index','identity')})
+            self.ownerComp.store('pending_unmap_identities',identities)
+            self._publish();return id
         key=self._collection.key(id)
         target=self._host.controls[key]
         if self._dispatching or self._host.learning or target.touched:
             raise ValueError("Exit LEARN and release the control before removing")
-        if self._host.connected and self._host.plugin:
+        if self._host.connected and self._host.plugin and (getattr(self,"_layouts",None) is None or self._layouts.confirmed):
             self._host.clear_learn(key)
+        if manager is not None:
+            identities=[r for r in self.ownerComp.fetch('pending_unmap_identities',[]) if (r['kind'],r['slot'])!=key]
+            identities.append(dict(kind=key[0],slot=key[1],index=target.index,identity=target.target_id))
+            self.ownerComp.store('pending_unmap_identities',identities)
         pending=set(tuple(key) for key in self.ownerComp.fetch('pending_unmaps', []))
         pending.add(key)
         self.ownerComp.store('pending_unmaps', sorted(pending))
@@ -198,7 +298,8 @@ class RotoPythonExt:
             return (self.RemoveControl(self._check_single_id(None)),)
         if self._dispatching or self._host.learning or self._host.touched:
             raise ValueError("Exit LEARN and release all controls before removing")
-        ids=tuple(self._collection.ids)
+        manager=getattr(self,"_layouts",None)
+        ids=tuple(t["id"] for t in manager.record()["targets"]) if manager is not None else tuple(self._collection.ids)
         for id in ids:
             self.RemoveControl(id)
         return ids
@@ -219,6 +320,7 @@ class RotoPythonExt:
 
     def ConfigureControl(self, id, *, minimum=None, maximum=None, mode=None, button_type=None):
         """Validate configuration; only changed wire semantics require re-LEARN."""
+        self._layout_dirty = True
         if self._collection is None:
             raise ValueError("Editable configuration requires a control collection")
         key = self._collection.key(id)
@@ -286,6 +388,7 @@ class RotoPythonExt:
 
     def AssignParameter(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None, _hardware_mapped=False):
         """Assign one slot, infer metadata and persist it; preserve other controls."""
+        self._layout_dirty = True
         if kind not in ('knob', 'button') or type(slot) is not int or not 1 <= slot <= 8:
             raise ValueError('Control must be knob/button, slot 1..8')
         key = kind, slot
@@ -375,6 +478,7 @@ class RotoPythonExt:
             self.ownerComp.store('removed_controls', sorted(removed))
         pending = {tuple(value) for value in self.ownerComp.fetch('pending_unmaps', [])};pending.discard(key)
         self.ownerComp.store('pending_unmaps', sorted(pending));self._host.pending_unmaps = pending
+        self.ownerComp.store('pending_unmap_identities',[r for r in self.ownerComp.fetch('pending_unmap_identities',[]) if (r['kind'],r['slot'])!=key])
         self.ownerComp.store('needs_relearn', tuple(set(self.ownerComp.fetch('needs_relearn', ())) | {id}))
         self.ownerComp.par.Value.enable = ('knob',1) in self._collection.bindings
         self.ownerComp.par.Offerparameter.enable = ('knob',1) in self._collection.bindings
@@ -464,6 +568,7 @@ class RotoPythonExt:
         return candidate.id
 
     def BindParameter(self, parameter, *, id, minimum=None, maximum=None, label=None):
+        self._layout_dirty = True
         if (not parameter.owner.valid or not parameter.isCustom
                 or parameter.style not in ("Float", "Int", "Menu") or parameter.readOnly
                 or parameter.mode.name not in ("CONSTANT", "BIND")):
@@ -480,6 +585,9 @@ class RotoPythonExt:
         return self._install_binding(candidate)
 
     def BindCallback(self, *, id, label, minimum, maximum, value, on_change):
+        if getattr(self,'_layouts',None) is not None and not self._layouts.legacy:
+            raise ValueError('Callback Layouts require a reconstruction factory; use existing registration-hook mode outside Layout conversion')
+        self._layout_dirty = True
         if not callable(on_change):
             raise TypeError("on_change must be callable")
         candidate = self.ownerComp.op("binding").module.Binding(
@@ -535,6 +643,7 @@ class RotoPythonExt:
             raise
 
     def Unbind(self):
+        self._layout_dirty = True
         removed=set(self.ownerComp.fetch('removed_controls', []))
         if getattr(self,'_restoring',False) and 'Value' in removed:
             self.BindControls([],group_id='removed.single',_allow_empty=True)
@@ -576,6 +685,9 @@ class RotoPythonExt:
             raise RuntimeError("MIDI output queue exceeded limit")
 
     def _publish(self):
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and manager.mutating:
+            return
         self._update_catalog()
         pending = self.ownerComp.fetch('needs_relearn', ())
         if pending:
@@ -583,6 +695,14 @@ class RotoPythonExt:
             remaining = tuple(id for id in pending if not mapped.get(id, False))
             if remaining != pending:
                 self.ownerComp.store('needs_relearn', remaining)
+        if manager is not None:
+            try:
+                manager.attach()
+                manager.capture()
+                if not manager.legacy:self.ownerComp.store('layout_registry_suspended',False)
+            except ValueError as exc:
+                self.ownerComp.store('layout_registry_suspended',True)
+                self._last_error = str(exc)
         par = self.ownerComp.op("base_state").par
         par.Value.val = self.ownerComp.par.Value.eval()
         par.Connected.val = self._host.connected
@@ -630,7 +750,7 @@ class RotoPythonExt:
         for watcher in self.ownerComp.ops("base_targets/watch_*"):
             watcher.par.active = False
         old = self._host
-        self._host = self.ownerComp.op("protocol").module.Host(self._send, self._assign, self.ownerComp.par.Value.eval())
+        self._host = self.ownerComp.op("protocol").module.Host(self._send, self._assign, self.ownerComp.par.Value.eval(), **self._display_names())
         self._host.connected, self._host.plugin = old.connected, old.plugin
         self._collection = None
         self.ownerComp.par.Value.enable = True
@@ -640,9 +760,12 @@ class RotoPythonExt:
         self._output_values = None
 
     def BindControls(self, specs, *, group_id, _allow_empty=False, _allow_learning=False):
+        self._layout_dirty = True
         if self._dispatching or (self._host.learning or self._host.touched) and not (_allow_learning and self._host.learning):
             raise ValueError("Cannot replace controls inside a callback, during LEARN or touch")
         specs=list(specs)
+        if getattr(self,'_layouts',None) is not None and not self._layouts.legacy and any(spec.get('parameter') is None for spec in specs):
+            raise ValueError('Callback Layouts require a reconstruction factory; collection was not changed')
         original=bool(specs)
         removed=set(self.ownerComp.fetch('removed_controls', []))
         if getattr(self,'_restoring',False):
@@ -657,6 +780,7 @@ class RotoPythonExt:
         host = self.ownerComp.op("collection_protocol").module.CollectionHost(
             self._send, self._assign_control, list(collection.specs()), group_id,
             allow_empty=_allow_empty or original or bool(removed))
+        host.track_name, host.plugin_name = self._host.track_name, self._host.plugin_name
         device = self.ownerComp.fetch('assignment_device_id',None)
         if device and device['group_id'] == group_id:
             host.device_id = device['device_id']
@@ -849,6 +973,10 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        manager=getattr(self,"_layouts",None)
+        if manager is not None and not manager.mutating:
+            try: manager.capture(force=True)
+            except ValueError: pass
         if self._process is not None:
             if self._process.poll() is None:
                 self._process.terminate()
@@ -880,7 +1008,21 @@ class RotoPythonExt:
         return result
 
     def onParValueChange(self, par, prev):
-        if par.name == "Value":
+        if par.name == 'Layout':
+            manager=self._layout_manager()
+            if manager.mutating or par.eval()==manager.data['active']:return
+            try:
+                manager.select(par.eval())
+            except ValueError as exc:
+                par.val=manager.data['active'];self._last_error=str(exc);self._publish()
+        elif par.name in ("Trackname", "Pluginname"):
+            try:
+                self.SetLayoutNames(**self._display_names())
+            except ValueError as exc:
+                par.val = self._host.track_name if par.name == "Trackname" else self._host.plugin_name
+                self._last_error = str(exc)
+            self._publish()
+        elif par.name == "Value":
             value = par.eval()
             expected, self._mirror_expected = self._mirror_expected, None
             if value == expected:
@@ -894,6 +1036,27 @@ class RotoPythonExt:
                 self.SetValue(self._binding.from_normalized(value))
 
     def onParPulse(self, par):
+        if par.name in ('Newlayout','Renamelayout','Deletelayout','Confirmdelete','Canceldelete'):
+            manager=self._layout_manager()
+            try:
+                if par.name=='Newlayout':
+                    self.SelectLayout(self.CreateLayout(self.ownerComp.par.Layoutname.eval()))
+                elif par.name=='Renamelayout':
+                    self.RenameLayout(manager.data['active'],self.ownerComp.par.Layoutname.eval())
+                elif par.name=='Deletelayout':
+                    if len(manager.data['records'])==1:raise ValueError('Cannot delete the last Layout')
+                    manager.delete_pending=manager.data['active']
+                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=True
+                elif par.name=='Confirmdelete':
+                    if manager.delete_pending!=manager.data['active']:raise ValueError('Delete confirmation expired')
+                    self.RemoveLayout(manager.delete_pending);manager.delete_pending=None
+                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=False
+                else:
+                    manager.delete_pending=None
+                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=False
+            except ValueError as exc:
+                self._last_error=str(exc)
+            self._publish();return
         {"Connect": self.Connect, "Disconnect": self.Disconnect,
          "Offerparameter": self.Offerparameter, "Applybinding": self.Applybinding}[par.name]()
 
@@ -946,9 +1109,14 @@ class RotoPythonExt:
                 elif "midi" in event:
                     self._trace_control_midi(event["midi"])
                     learner = getattr(self,"_free_learner",None)
-                    consumed = learner.receive(event["midi"]) if learner is not None else False
+                    manager=getattr(self,'_layouts',None)
+                    consumed = manager.receive(event['midi']) if manager is not None else False
+                    if not consumed:
+                        consumed = learner.receive(event["midi"]) if learner is not None else False
                     if not consumed:
                         self._host.receive(event["midi"])
+                    if manager is not None:
+                        manager.acknowledge()
                     if learner is not None:
                         learner.sync()
             if process.poll() is not None:

@@ -48,6 +48,10 @@ def export(controller, destination):
         for name, path in paths.items():
             par = getattr(clone.par, name)
             par.default = par.val = str(path)
+        clone.ext.RotoPythonExt._layouts = None
+        clone.store('layout_registry',None)
+        clone.store('layout_registry_suspended',False)
+        clone.store('pending_unmap_identities',[])
         clone.store('assignment_device_id',None)
         clone.store('parameter_assignments', [])
         clone.store('control_catalog', [])
@@ -57,6 +61,10 @@ def export(controller, destination):
         clone.store('needs_relearn', ())
         clone.op('inspector').store('pending_clear', None)
         clone.op('inspector').store('clear_press', None)
+        for name, value in (('Trackname', 'EFFECT'), ('Pluginname', 'CUSTOM')):
+            par = getattr(clone.par, name)
+            par.default = par.val = value
+        clone.ext.RotoPythonExt.SetLayoutNames('EFFECT', 'CUSTOM')
         clone.par.Setupmode = 'collection'
         clone.par.Targetcomp = ''
         clone.par.Targetpar = ''
@@ -73,6 +81,7 @@ def export(controller, destination):
             '    # Register your parameters/callbacks here, then select Registration hook.\n'
             '    raise ValueError("Configure registration.onRegister first")\n')
         clone.ext.RotoPythonExt.BindControls([], group_id=clone.par.Groupid.eval(), _allow_empty=True)
+        clone.ext.RotoPythonExt._layout_manager()
         clone.ext.RotoPythonExt.Disconnect()
         clone.save(str(destination), createFolders=True)
     finally:

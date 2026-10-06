@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-06",
+  "probe_log": "/tmp/roto-layout-probe-20261006-session3.jsonl",
+  "sequence": [
+    {
+      "sequence": 15,
+      "monotonic": 501456.797276416,
+      "kind": "requested",
+      "data": "A"
+    },
+    {
+      "sequence": 25,
+      "monotonic": 501456.873648708,
+      "kind": "confirmed_control",
+      "data": 0
+    },
+    {
+      "sequence": 164,
+      "monotonic": 501462.56567225,
+      "kind": "requested",
+      "data": "B"
+    },
+    {
+      "sequence": 172,
+      "monotonic": 501462.623899916,
+      "kind": "confirmed_control",
+      "data": 1
+    },
+    {
+      "sequence": 347,
+      "monotonic": 501469.809971041,
+      "kind": "requested",
+      "data": "A"
+    },
+    {
+      "sequence": 355,
+      "monotonic": 501469.869754833,
+      "kind": "confirmed_control",
+      "data": 0
+    },
+    {
+      "sequence": 991,
+      "monotonic": 501491.531294958,
+      "kind": "lock",
+      "data": true
+    },
+    {
+      "sequence": 1311,
+      "monotonic": 501504.758855625,
+      "kind": "rejected",
+      "data": "Exit LEARN, unlock and release controls before TD-origin selection"
+    },
+    {
+      "sequence": 1631,
+      "monotonic": 501517.983623875,
+      "kind": "lock",
+      "data": false
+    },
+    {
+      "sequence": 1860,
+      "monotonic": 501527.391984,
+      "kind": "requested",
+      "data": "EMPTY"
+    },
+    {
+      "sequence": 3061,
+      "monotonic": 501552.265427166,
+      "kind": "requested",
+      "data": "A"
+    },
+    {
+      "sequence": 3069,
+      "monotonic": 501552.324226166,
+      "kind": "confirmed_control",
+      "data": 0
+    }
+  ],
+  "a_rotation_events": 35,
+  "b_rotation_previous_session": 75,
+  "empty_display_user_confirmed": true,
+  "empty_mapping_ack": false,
+  "return_from_empty_a_recall": true,
+  "limitations": [
+    "Lock test verified local rejection, not device rejection of forced packets",
+    "Hardware-origin selection under lock not tested",
+    "Ordinary CC has no layout identity; delayed same-slot CC cannot be perfectly attributed",
+    "Empty selection visually confirmed; no protocol selection-complete acknowledgement"
+  ]
+}

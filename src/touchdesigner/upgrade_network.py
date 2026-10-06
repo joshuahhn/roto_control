@@ -8,6 +8,11 @@ def upgrade(parent_comp, source_dir):
     comp = parent_comp.op('roto_python')
     if comp is None:
         raise ValueError('Build roto_python first')
+    display_page = next((p for p in comp.customPages if p.name == "Display"), None) or comp.appendCustomPage("Display")
+    for name, value in (("Trackname", "EFFECT"), ("Pluginname", "CUSTOM")):
+        if getattr(comp.par, name, None) is None:
+            par = display_page.appendStr(name)[0]
+            par.default = par.val = value
     state = comp.op('base_state') or comp.create(baseCOMP, 'base_state')
     state.viewer = True
     state.par.parentshortcut = 'RotoState'
@@ -120,6 +125,6 @@ def upgrade(parent_comp, source_dir):
         dat.par.builtin = False
         dat.par.valuechange = False
         dat.par.onpulse = True
-    comp.op('parameter_callbacks').par.pars = 'Value Connect Disconnect Offerparameter Applybinding'
+    comp.op('parameter_callbacks').par.pars = 'Value Trackname Pluginname Connect Disconnect Offerparameter Applybinding'
     comp.par.reinitextensions.pulse()
     return comp

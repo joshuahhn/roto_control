@@ -34,6 +34,11 @@ def build(parent_comp, source_dir):
     par.default = par.val = "Roto-Control"
     for name in ("Connect", "Disconnect"):
         page.appendPulse(name)
+    display_page = next((p for p in comp.customPages if p.name == "Display"), None) or comp.appendCustomPage("Display")
+    for name, value in (("Trackname", "EFFECT"), ("Pluginname", "CUSTOM")):
+        if getattr(comp.par, name, None) is None:
+            par = display_page.appendStr(name)[0]
+            par.default = par.val = value
     page = comp.appendCustomPage("Control")
     value = page.appendFloat("Value", label="Value (Knob 1)")[0]
     value.default = value.val = 0.5
@@ -58,7 +63,7 @@ def build(parent_comp, source_dir):
 
     callbacks = comp.op("parameter_callbacks")
     callbacks.par.op.expr = "parent.RotoPython"
-    callbacks.par.pars = "Value Connect Disconnect Offerparameter"
+    callbacks.par.pars = "Value Trackname Pluginname Connect Disconnect Offerparameter"
     callbacks.par.custom = True
     callbacks.par.builtin = False
     callbacks.par.valuechange = True
@@ -107,4 +112,8 @@ def build(parent_comp, source_dir):
     if comp.op("docs") is not None:
         comp.op("docs").nodeX = 220
         comp.op("docs").nodeY = -325
+    layout_ns = dict(globals())
+    layout_path = source / 'upgrade_layouts.py'
+    exec(compile(layout_path.read_text(encoding='utf-8'), str(layout_path), 'exec'), layout_ns)
+    layout_ns['upgrade'](comp, source)
     return comp

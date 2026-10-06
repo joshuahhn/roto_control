@@ -1,0 +1,13 @@
+{
+  "tests": 139,
+  "generic_export": "roto_python.25.tox",
+  "generic_empty_registry": true,
+  "generic_disconnected": true,
+  "callback_apply_reinit_return": true,
+  "saved_two_layout_tox_reload": true,
+  "source_embedded": true,
+  "layout_networks": 4,
+  "layout_groups": 17,
+  "layout_operators": 63,
+  "physical_final_ui_acceptance": "pending"
+}
