@@ -13,13 +13,23 @@ def upgrade(controller,source_dir):
     for name,label in [('Newlayout','New empty Layout'),('Renamelayout','Rename Layout'),('Deletelayout','Delete Layout'),('Confirmdelete','Yes, delete Layout'),('Canceldelete','No, keep Layout')]:
         if getattr(controller.par,name,None) is None:page.appendPulse(name,label=label)
     controller.par.Confirmdelete.enable=controller.par.Canceldelete.enable=False
+    track_page=next((p for p in controller.customPages if p.name=='Tracks'),None) or controller.appendCustomPage('Tracks')
+    if getattr(controller.par,'Track',None) is None:
+        par=track_page.appendMenu('Track',label='Active Track')[0]
+        par.menuNames=['track.custom'];par.menuLabels=['EFFECT'];par.default=par.val='track.custom'
+    if getattr(controller.par,'Newtrackname',None) is None:
+        par=track_page.appendStr('Newtrackname',label='New Track name')[0];par.default=par.val='TRACK'
+    for name,label in [('Newtrack','New empty Track'),('Deletetrack','Delete Track'),('Confirmtrackdelete','Yes, delete Track'),('Canceltrackdelete','No, keep Track')]:
+        if getattr(controller.par,name,None) is None:track_page.appendPulse(name,label=label)
+    controller.par.Confirmtrackdelete.enable=controller.par.Canceltrackdelete.enable=False
     dat=controller.op('layouts') or controller.create(textDAT,'layouts')
     dat.viewer=True;dat.par.language='python';dat.text=(source/'code/py/roto_python/layouts.py').read_text(encoding='utf-8')
     dat.par.file='';dat.par.syncfile=False;dat.par.loadonstart=False
     # Existing Binding annotation is cleaned using actual measured sizes afterward.
     dat.nodeX,dat.nodeY=540,-270
-    for name in ('protocol','RotoPythonExt'):
+    for name in ('protocol','binding','RotoPythonExt'):
         controller.op(name).text=(source/'code/py/roto_python'/f'{name}.py').read_text(encoding='utf-8')
-    controller.op('parameter_callbacks').par.pars='Value Trackname Pluginname Layout Connect Disconnect Offerparameter Applybinding Newlayout Renamelayout Deletelayout Confirmdelete Canceldelete'
+    controller.op('inspector/inspector_data').text=(source/'code/py/roto_python/inspector/inspector_data.py').read_text(encoding='utf-8')
+    controller.op('parameter_callbacks').par.pars='Value Trackname Pluginname Layout Track Newtrack Deletetrack Confirmtrackdelete Canceltrackdelete Connect Disconnect Offerparameter Applybinding Newlayout Renamelayout Deletelayout Confirmdelete Canceldelete'
     controller.par.reinitextensions.pulse()
     return controller

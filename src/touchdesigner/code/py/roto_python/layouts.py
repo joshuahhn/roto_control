@@ -6,10 +6,11 @@ reconstruction factory. No target value or callable is persisted as a preset.
 import copy
 import os
 import uuid
-from protocol import digest, display_name, sysex, text13
+from protocol import digest, display_name, text13
 from binding import parameter_value
 
-VERSION=1
+VERSION=2
+PLUGIN_FIELDS=("group_id","device_id","plugin_name","targets","state")
 FIELDS=('parameter_assignments','assignment_device_id','control_overrides','removed_controls','pending_unmaps','needs_relearn','control_catalog','pending_unmap_identities')
 DEFAULTS=([],None,{},[],[],(),[],[])
 
@@ -18,48 +19,105 @@ class Layouts:
         self.ext=extension;self.owner=extension.ownerComp
         self.mutating=False;self.locked=False;self.touched=set();self.confirmed=False
         self.delete_pending=None
+        self.track_delete_pending=None
+        self.first_track=0
+        self.selected_track=None
         self.legacy=False
         data=self.owner.fetch('layout_registry',None)
         if data is None:
             record=self.snapshot('custom','Custom')
-            data=dict(version=VERSION,active='custom',records=[record])
+            data=dict(version=1,active='custom',records=[record])
+        data=self.migrate(data)
         self.validate(data)
         self.data=copy.deepcopy(data)
         self.save();self.attach();self.menu()
+
+    @staticmethod
+    def migrate(data):
+        """Copy v1 without changing any hardware or parameter identity."""
+        data=copy.deepcopy(data)
+        if not isinstance(data,dict):raise ValueError('Invalid Layout database')
+        if data.get('version')==1:
+            records=[]
+            for old in data['records']:
+                track_id='track.'+old['id']
+                plugin=dict({key:old[key] for key in PLUGIN_FIELDS},id='plugin.'+old['id'])
+                track=dict(id=track_id,name=old['track_name'],active_plugin=plugin['id'],plugins=[plugin])
+                records.append(dict(id=old['id'],name=old['name'],active_track=track_id,tracks=[track]))
+            data.update(version=VERSION,records=records)
+        return data
 
     @staticmethod
     def validate(data):
         if not isinstance(data,dict) or data.get('version')!=VERSION:
             raise ValueError('Unsupported Layout database version')
         records=data.get('records')
-        if not isinstance(records,list) or not 1<=len(records)<=8:
-            raise ValueError('Layout database needs 1..8 Layouts')
-        ids=set();groups=set()
-        for record in records:
-            if not isinstance(record,dict) or not isinstance(record.get('id'),str) or not record['id'] or record['id'] in ids:
+        if not isinstance(records,list) or not records:
+            raise ValueError('Layout database needs at least one Layout')
+        ids=set();track_ids=set();plugin_ids=set();groups=set();devices=set()
+        for layout in records:
+            if not isinstance(layout,dict) or not isinstance(layout.get('id'),str) or not layout['id'] or layout['id'] in ids:
                 raise ValueError('Invalid or duplicate Layout ID')
-            ids.add(record['id'])
-            if not isinstance(record.get('name'),str) or not record['name'].strip(): raise ValueError('Layout name is required')
-            if not isinstance(record.get('group_id'),str) or not record['group_id'] or record['group_id'] in groups: raise ValueError('Invalid or duplicate Layout group identity')
-            groups.add(record['group_id'])
-            display_name(record['track_name']);display_name(record['plugin_name'])
-            if not isinstance(record.get('targets'),list) or not isinstance(record.get('state'),dict): raise ValueError('Invalid Layout target/state records')
-            slots=set();target_ids=set()
-            for target in record['targets']:
-                key=(target['kind'],target['slot'])
-                if key[0] not in ('knob','button') or type(key[1]) is not int or not 1<=key[1]<=8 or key in slots or target['id'] in target_ids: raise ValueError('Invalid or duplicate Layout target slot/ID')
-                slots.add(key);target_ids.add(target['id'])
-        if data.get('active') not in ids: raise ValueError('Active Layout is missing')
+            ids.add(layout['id'])
+            if not isinstance(layout.get('name'),str) or not layout['name'].strip():raise ValueError('Layout name is required')
+            tracks=layout.get('tracks')
+            if not isinstance(tracks,list) or not 1<=len(tracks)<=16383:raise ValueError('Layout needs 1..16383 Tracks')
+            if layout.get('active_track') not in [t['id'] for t in tracks]:raise ValueError('Active Track is missing')
+            for track in tracks:
+                if not isinstance(track.get('id'),str) or not track['id'] or track['id'] in track_ids:raise ValueError('Invalid or duplicate Track ID')
+                track_ids.add(track['id']);display_name(track['name'])
+                plugins=track.get('plugins')
+                # The schema preserves the Plugin layer; this UI/runtime supports one per Track.
+                if not isinstance(plugins,list) or len(plugins)!=1:raise ValueError('This version supports one Plugin per Track')
+                if track.get('active_plugin')!=plugins[0]['id']:raise ValueError('Active Plugin is missing')
+                for record in plugins:
+                    if not isinstance(record.get('id'),str) or not record['id'] or record['id'] in plugin_ids:raise ValueError('Invalid or duplicate Plugin ID')
+                    plugin_ids.add(record['id'])
+                    for field,seen in (('group_id',groups),('device_id',devices)):
+                        if not isinstance(record.get(field),str) or not record[field] or record[field] in seen:raise ValueError('Invalid or duplicate Plugin '+field)
+                        seen.add(record[field])
+                    display_name(record['plugin_name'])
+                    if not isinstance(record.get('targets'),list) or not isinstance(record.get('state'),dict):raise ValueError('Invalid Plugin target/state records')
+                    slots=set();target_ids=set()
+                    for target in record['targets']:
+                        key=(target['kind'],target['slot'])
+                        if key[0] not in ('knob','button') or type(key[1]) is not int or not 1<=key[1]<=8 or key in slots or target['id'] in target_ids:raise ValueError('Invalid or duplicate Plugin target slot/ID')
+                        slots.add(key);target_ids.add(target['id'])
+        if data.get('active') not in ids:raise ValueError('Active Layout is missing')
 
     def save(self):
         self.validate(self.data)
-        if self.owner.fetch('layout_registry',None)!=self.data: self.owner.store('layout_registry',copy.deepcopy(self.data))
+        if self.owner.fetch('layout_registry',None)!=self.data:self.owner.store('layout_registry',copy.deepcopy(self.data))
 
-    def record(self,id=None):
+    def layout(self,id=None):
         id=self.data['active'] if id is None else id
         for record in self.data['records']:
             if record['id']==id:return record
         raise ValueError('Unknown Layout ID: '+str(id))
+
+    def track(self,layout_id=None,track_id=None):
+        layout=self.layout(layout_id)
+        track_id=layout['active_track'] if track_id is None else track_id
+        for track in layout['tracks']:
+            if track['id']==track_id:return track
+        raise ValueError('Unknown Track ID: '+str(track_id))
+
+    def plugin(self,layout_id=None,track_id=None):
+        track=self.track(layout_id,track_id)
+        return next(p for p in track['plugins'] if p['id']==track['active_plugin'])
+
+    def record(self,id=None,track_id=None):
+        """Flat activation projection; nested registry remains the authority."""
+        layout=self.layout(id);track=self.track(id,track_id)
+        return dict(self.plugin(id,track_id),id=layout['id'],name=layout['name'],track_name=track['name'])
+
+    def context(self):
+        if self.legacy:return dict(legacy=True,label='Registration hook',key=None)
+        layout=self.layout();track=self.track();plugin=self.plugin()
+        return dict(legacy=False,layout_id=layout['id'],track_id=track['id'],plugin_id=plugin['id'],
+                    selected_track_id=self.selected_track or track['id'],locked=self.locked,
+                    key=(layout['id'],track['id'],plugin['id']),
+                    label=layout['name']+' / '+track['name']+' / '+plugin['plugin_name'])
 
     def snapshot(self,id,name):
         ext=self.ext;targets=[]
@@ -102,36 +160,50 @@ class Layouts:
         if self.legacy or self.mutating or self.ext._restore_pending or not getattr(self.ext,"_layout_ready",True) or not (force or getattr(self.ext,"_layout_dirty",False)):return
         old=self.record()
         record=self.snapshot(old['id'],old['name'])
-        self.data['records'][self.data['records'].index(old)]=record
+        self.plugin().update({key:record[key] for key in PLUGIN_FIELDS})
+        self.track()['name']=record['track_name']
         self.save()
         self.ext._layout_dirty=False
 
     def menu(self):
-        par=getattr(self.owner.par,'Layout',None)
-        if par is not None:
-            par.menuNames=[r['id'] for r in self.data['records']]
-            par.menuLabels=[r['name'] for r in self.data['records']]
-            par.val=self.data['active']
-        name=getattr(self.owner.par,'Layoutname',None)
-        if name is not None:name.val=self.record()['name']
+        for name,records,active in (('Layout',self.data['records'],self.data['active']),('Track',self.layout()['tracks'],self.layout()['active_track'])):
+            par=getattr(self.owner.par,name,None)
+            if par is not None:
+                par.menuNames=[r['id'] for r in records];par.menuLabels=[r['name'] for r in records];par.val=active
+        for name,value in (('Layoutname',self.layout()['name']),('Newtrackname','TRACK')):
+            par=getattr(self.owner.par,name,None)
+            if par is not None and name=='Layoutname':par.val=value
 
     def attach(self):
-        if self.legacy:
-            self.ext._host.devices_callback=None
-            self.ext._host.plugin_index=0
-            return
-        self.ext._host.devices_callback=self.announce
-        self.ext._host.plugin_index=self.data['records'].index(self.record())
-        # Pending offline clears are replayed only after selected-control evidence.
-        if hasattr(self.ext._host,'pending_unmaps'):self.ext._host.pending_unmaps=set()
+        host=self.ext._host
+        host.devices_callback=None if self.legacy else self.announce
+        host.tracks_callback=None if self.legacy else self.announce_tracks
+        host.plugin_index=0
+        if hasattr(host,'pending_unmaps') and not self.legacy:host.pending_unmaps=set()
+
+    def track_detail(self,index):
+        track=self.layout()['tracks'][index]
+        return (index>>7,index&127,*text13(track['name']),0,0)
+
+    def announce_tracks(self,select=True):
+        host=self.ext._host;tracks=self.layout()['tracks']
+        self.first_track=min(self.first_track,((len(tracks)-1)//8)*8)
+        host._command(10,4,(len(tracks)>>7,len(tracks)&127))
+        host._command(10,5,(self.first_track>>7,self.first_track&127))
+        for index in range(self.first_track,min(self.first_track+8,len(tracks))):
+            host._command(10,7,self.track_detail(index))
+        host._command(10,8)
+        if select:
+            selected=self.selected_track or self.track()['id']
+            index=next(i for i,t in enumerate(tracks) if t['id']==selected)
+            host._command(12,4,self.track_detail(index))
 
     def announce(self,select=True):
-        host=self.ext._host
-        host._command(11,2,(len(self.data['records']),));host._command(11,3,(0,))
-        for index,record in enumerate(self.data['records']):
-            host._command(11,5,(index,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0))
+        host=self.ext._host;record=self.plugin()
+        host._command(11,2,(1,));host._command(11,3,(0,))
+        host._command(11,5,(0,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0))
         host._command(11,6)
-        if select:host._command(11,8,(self.data['records'].index(self.record()),0,0))
+        if select:host._command(11,8,(0,0,0))
 
     def guard(self,hardware=False):
         host=self.ext._host
@@ -162,6 +234,15 @@ class Layouts:
         ext=self.ext;host=ext._host;session=(host.connected,host.plugin,host.learning)
         self.mutating=True
         try:
+            inspector=self.owner.op('inspector')
+            if inspector is not None:
+                inspector.store('pending_clear',None)
+                inspector.store('action_status','Selected '+self.context()['label'])
+            self.delete_pending=self.track_delete_pending=None
+            # Keep only a partially transmitted JSON line so the MIDI child's
+            # input stream remains valid; discard queued old-context feedback.
+            pending=ext._pending
+            ext._pending=(pending.split(b'\n',1)[0]+b'\n') if pending and not pending.startswith(b'{"midi":') else b''
             host.connected=host.plugin=False
             learner=getattr(ext,'_free_learner',None)
             if learner:
@@ -187,7 +268,7 @@ class Layouts:
             ext._host.device_id=record['device_id'];ext._host.track_name=record['track_name'];ext._host.plugin_name=record['plugin_name']
             self.owner.par.Trackname=record['track_name'];self.owner.par.Pluginname=record['plugin_name']
             ext._host.connected,ext._host.plugin,ext._host.learning=session
-            self.data['active']=record['id'];self.confirmed=False;self.attach();self.menu()
+            self.confirmed=False;self.attach();self.menu()
             catalog=copy.deepcopy(record['state'].get('control_catalog',[]))
             for missing in unavailable:
                 item=next((item for item in catalog if item['id']==missing['id']),None)
@@ -197,53 +278,108 @@ class Layouts:
                 item.update(valid=False,mapped=False,error='Target unavailable',last_mapped=False)
             self.owner.store('control_catalog',catalog)
             if ext._host.connected and ext._host.plugin:
-                ext._host._command(10,0x16,text13(record['track_name']))
-                self.announce(select=not hardware)
-            ext._host.last_event='Layout '+record['name']+': awaiting per-control recall' if session[0] else 'Layout '+record['name']+': disconnected'
+                self.announce_tracks(select=not hardware)
+                self.announce()
+            ext._host.last_event=self.context()['label']+': awaiting per-control recall' if session[0] else self.context()['label']+': disconnected'
             ext._last_error=''
             ext._layout_ready=True
         finally:
             self.mutating=False
 
     def select(self,id,hardware=False):
-        destination=self.record(id)
-        if id==self.data['active'] and not self.legacy:
-            return id
-        self.guard(hardware);self.resolve(destination);self.capture(force=True)
-        self.legacy=False;self.owner.store("layout_registry_suspended",False)
-        previous=copy.deepcopy(self.record())
+        layout=self.layout(id)
+        return self._select(id,layout['active_track'],hardware)
+
+    def select_track(self,layout_id,track_id,hardware=False):
+        self.track(layout_id,track_id)
+        self._select(layout_id,track_id,hardware)
+        return track_id
+
+    def _select(self,layout_id,track_id,hardware=False):
+        if layout_id==self.data['active'] and track_id==self.layout()['active_track'] and not self.legacy:
+            if not self.locked:self.selected_track=track_id
+            return layout_id
+        self.guard(hardware)
+        destination=self.record(layout_id,track_id);self.resolve(destination);self.capture(force=True)
+        previous=copy.deepcopy(self.data);old_selected=self.selected_track;old_page=self.first_track
+        session=(self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning)
+        self.legacy=False;self.owner.store('layout_registry_suspended',False)
+        self.data['active']=layout_id;self.layout()['active_track']=track_id
+        self.selected_track=track_id
+        self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
         try:self.install(destination,hardware)
         except Exception:
-            self.install(previous)
-            # Recalled controls must reconfirm after rollback; old mapping flags are unsafe.
+            self.data=previous;self.selected_track=old_selected;self.first_track=old_page
+            self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning=session
+            self.install(self.record())
             raise
-        self.save();self.ext._publish();return id
+        self.save();self.ext._publish();return layout_id
 
     def restore(self):
-        self.legacy=False;self.owner.store("layout_registry_suspended",False)
+        self.legacy=False;self.owner.store('layout_registry_suspended',False)
+        self.selected_track=self.track()['id']
+        self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
         self.install(self.record());self.ext._restore_pending=False;self.ext._publish()
+
+    @staticmethod
+    def empty_track(name):
+        name=display_name(name)
+        id=uuid.uuid4().hex;plugin_id='plugin.'+uuid.uuid4().hex
+        plugin=dict(id=plugin_id,group_id=plugin_id,device_id='TD controls:'+plugin_id,
+                    plugin_name='CUSTOM',targets=[],state={f:copy.deepcopy(v) for f,v in zip(FIELDS,DEFAULTS)})
+        return dict(id='track.'+id,name=name,active_plugin=plugin_id,plugins=[plugin])
 
     def create(self,name):
         if not isinstance(name,str) or not name.strip():raise ValueError('Layout name is required')
-        if len(self.data['records'])>=8:raise ValueError('Layout v1 supports at most 8 plugins (one hardware page)')
-        self.guard();self.capture(force=True);id=uuid.uuid4().hex
-        record=dict(id=id,name=name.strip(),group_id='layout.'+id,device_id='TD controls:layout.'+id,track_name='EFFECT',plugin_name='CUSTOM',targets=[],state={f:copy.deepcopy(v) for f,v in zip(FIELDS,DEFAULTS)})
-        self.data['records'].append(record);self.save();self.menu()
-        if self.ext._host.connected and self.ext._host.plugin:self.announce(select=False)
-        return id
+        self.guard();self.capture(force=True);id=uuid.uuid4().hex;track=self.empty_track('EFFECT')
+        self.data['records'].append(dict(id=id,name=name.strip(),active_track=track['id'],tracks=[track]))
+        self.save();self.menu();return id
+
+    def create_track(self,layout_id,name):
+        layout=self.layout(layout_id);track=self.empty_track(name)
+        if len(layout['tracks'])>=16383:raise ValueError('Track count exceeds protocol capacity')
+        self.guard();self.capture(force=True)
+        layout['tracks'].append(track);self.save();self.menu()
+        if layout_id==self.data['active'] and self.ext._host.connected:self.announce_tracks(select=False)
+        return track['id']
 
     def rename(self,id,name):
         if not isinstance(name,str) or not name.strip():raise ValueError('Layout name is required')
-        self.record(id)['name']=name.strip();self.save();self.menu();return id
+        self.layout(id)['name']=name.strip();self.save();self.menu();self.ext._publish();return id
+
+    def rename_track(self,layout_id,track_id,name):
+        name=display_name(name);track=self.track(layout_id,track_id)
+        if self.ext._host.learning:raise ValueError('Exit LEARN before renaming Track')
+        if layout_id==self.data['active'] and track_id==self.track()['id']:
+            self.ext.SetLayoutNames(name,self.plugin()['plugin_name'])
+        else:
+            track['name']=name;self.save();self.menu()
+            if layout_id==self.data['active'] and self.ext._host.connected:self.announce_tracks(select=False)
+        return track_id
 
     def remove(self,id):
-        record=self.record(id)
+        self.layout(id)
         if len(self.data['records'])==1:raise ValueError('Cannot delete the last Layout')
         self.guard()
         if id==self.data['active']:self.select(next(r['id'] for r in self.data['records'] if r['id']!=id))
-        self.data['records']=[r for r in self.data['records'] if r['id']!=id];self.save();self.attach();self.menu()
-        if self.ext._host.connected and self.ext._host.plugin:self.announce()
+        self.data['records']=[r for r in self.data['records'] if r['id']!=id]
+        self.save();self.menu();return True
+
+    def remove_track(self,layout_id,track_id):
+        layout=self.layout(layout_id);track=self.track(layout_id,track_id)
+        if len(layout['tracks'])==1:raise ValueError('Cannot delete the last Track')
+        self.guard()
+        if layout['active_track']==track_id:
+            successor=next(t['id'] for t in layout['tracks'] if t['id']!=track_id)
+            if layout_id==self.data['active']:self.select_track(layout_id,successor)
+            else:layout['active_track']=successor
+        layout['tracks'].remove(track)
+        self.save();self.menu()
+        if layout_id==self.data['active'] and self.ext._host.connected:self.announce_tracks()
         return True
+
+    def all_plugins(self):
+        return (p for layout in self.data['records'] for track in layout['tracks'] for p in track['plugins'])
 
     def receive(self,message):
         message=tuple(message)
@@ -262,7 +398,7 @@ class Layouts:
                 key=(removed['kind'],removed['slot'])
                 if key not in pending or key in self.ext._host.controls:continue
                 if data[:2]==(removed['index']>>7,removed['index']&127) and data[2:8]==digest(removed['identity'],6) and data[8:]==(int(removed['kind']=='button'),removed['slot']-1,0):
-                    ambiguous=any(t.get('identity')==removed['identity'] and t['index']==removed['index'] for r in self.data['records'] if r['id']!=self.data['active'] for t in r['targets'])
+                    ambiguous=any(t.get('identity')==removed['identity'] and t['index']==removed['index'] for r in self.all_plugins() if r['id']!=self.plugin()['id'] for t in r['targets'])
                     if ambiguous:
                         self.ext._last_error='Cannot attribute removed-target acknowledgement uniquely to this Layout'
                         return True
@@ -270,16 +406,36 @@ class Layouts:
                     self.ext._host._command(11,14,(int(removed['kind']=='button'),removed['slot']-1))
                     self.ext._host.last_event='Removed target hardware unmap reconciled'
                     return True
-        if group==11 and command==13 and len(data)==1 and data[0] in (0,1):self.locked=bool(data[0]);return True
-        if group==11 and command==7 and len(data)==1:
-            if data[0]>=len(self.data['records']):return True
-            try:self.select(self.data['records'][data[0]]['id'],hardware=True)
-            except ValueError as exc:self.ext._last_error=str(exc);self.ext._publish()
+        if group==11 and command==13 and len(data)==1 and data[0] in (0,1):
+            was_locked=self.locked;self.locked=bool(data[0])
+            if was_locked and not self.locked and self.selected_track and self.selected_track!=self.track()['id']:
+                try:self.select_track(self.data['active'],self.selected_track,hardware=True)
+                except ValueError as exc:self.ext._last_error=str(exc)
+            return True
+        if group==10 and command in (6,9):
+            if len(data)!=2:return True
+            index=(data[0]<<7)|data[1];tracks=self.layout()['tracks']
+            if index>=len(tracks):return True
+            if command==6:
+                if index%8:return True
+                self.first_track=index;self.announce_tracks(select=False)
+            elif self.locked:
+                # Mirror Ableton: browsing selection can change while the locked
+                # Plugin keeps its original Track and mappings. No forced select.
+                self.selected_track=tracks[index]['id'];self.ext._publish()
+            else:
+                try:self.select_track(self.data['active'],tracks[index]['id'],hardware=True)
+                except ValueError as exc:
+                    self.ext._last_error=str(exc);self.announce_tracks();self.ext._publish()
+            return True
+        if group==11 and command==7:
+            if data==(0,):self.announce(select=False)
             return True
         if group==11 and command==4:
-            self.announce(select=False);return True
-        if group==12 or (group==10 and command==2) or (group==11 and command==1):
-            self.confirmed=False;self.locked=False;self.touched.clear()
+            if data==(0,):self.announce(select=False)
+            return True
+        if (group==10 and command==2) or (group==11 and command==1):
+            self.confirmed=False;self.locked=False;self.touched.clear();self.selected_track=self.track()['id']
         return False
 
     def acknowledge(self):
@@ -289,4 +445,4 @@ class Layouts:
             # Selection has current-layout parameter evidence. Scoped offline removals can now be sent.
             for kind,slot in self.owner.fetch('pending_unmaps',[]):
                 if (kind,slot) not in self.ext._host.controls:self.ext._host._command(11,14,(int(kind=='button'),slot-1))
-            self.ext._host.last_event='Layout '+self.record()['name']+': controls recalled'
+            self.ext._host.last_event=self.context()['label']+': controls recalled'

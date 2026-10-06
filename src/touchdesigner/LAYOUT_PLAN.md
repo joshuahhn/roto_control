@@ -1,3 +1,15 @@
+# Multi-Track implementation update (2026-10-06)
+
+The historical plan below describes v1 Layout-as-Plugin and is superseded by registry v2: Layout -> multiple Tracks -> one Plugin per Track -> mappings. Current contract and API: [Layouts and Tracks](docs/functions/layouts.md).
+
+Implemented in existing external Python modules/DATs, without new persistent network operators: nested registry migration, stable Plugin identities, Track CRUD/menu, paged Track announcements, hardware/TD selection paths and Inspector context. v1 Layouts migrate independently with existing wire identities and removal records preserved. Layout count is no longer tied to a hardware Plugin page.
+
+The user authorized implementation while away, with physical testing on return. Software/native acceptance may precede the physical gate under that instruction. Multi-Track hardware recall and LOCK behavior must still be tested; prior two-Plugin acceptance is not evidence for the new Track layer. Do not claim physical completion.
+
+Return-test sequence: choose a test Layout; create EFFECT and VISUAL Tracks, both CUSTOM; learn the same physical knob to different parameters; switch EFFECT/VISUAL/EFFECT via hardware and TD; verify independent targets, current-value feedback, reconnect and empty mapping set. Then test LOCK selection/unlock and the ninth Track page. Never infer recall completion from a timer.
+
+---
+
 # Saved mapping Layouts — build plan
 
 ## Scope

@@ -1,5 +1,6 @@
 """Target-unit conversion and two adapters; no TD or MIDI dependency."""
 import math
+from protocol import format_number
 
 
 def parameter_chain(parameter):
@@ -128,7 +129,6 @@ class Binding:
         value = self.from_normalized(normalized)
         if self.menu_names:
             return self.menu_labels[int(value)]
-        from protocol import format_number
         return format_number(value)
 
     def external_changed(self, value):

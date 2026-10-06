@@ -14,9 +14,17 @@ def fingerprint(states):
     return tuple((s['id'],s['kind'],s['slot'],s['comp'],s['parameter'],s['mode'],s['minimum'],s['maximum'],s['button_type'],s['connected'],s['plugin']) for s in states)
 
 
+def context(inspector):
+    parent=getattr(inspector,'parent',None)
+    controller=parent() if parent is not None else None
+    get_context=getattr(controller,'GetLayoutContext',None)
+    return get_context() if get_context is not None else dict(key=None,label='')
+
+
 def refresh(inspector, states):
+    current=context(inspector)
     pending = inspector.fetch('pending_clear', None)
-    if pending and pending['fingerprint'] != fingerprint(states):
+    if pending and (pending['fingerprint'] != fingerprint(states) or pending.get('context')!=current['key']):
         inspector.store('pending_clear', None)
         pending = None
     database=inspector.op('database')
@@ -44,7 +52,7 @@ def refresh(inspector, states):
             continue
         destination = state['comp'] or ('Python callback' if state['binding_type']=='callback' else 'Unavailable')
         parameter = state['parameter'] or '\u2014'
-        value = format(state['value'],'.3f').rstrip('0').rstrip('.') or '0'
+        value = (format(state['value'],'.3f').rstrip('0').rstrip('.') or '0') if state['value'] is not None else 'Unavailable'
         confirm = pending and pending['id'] == state['id']
         rows.append([state['kind'].capitalize()+' '+str(state['slot']),
                      'Invalid' if not state['valid'] else 'Yes' if state['mapped'] else 'No',
@@ -70,7 +78,9 @@ def refresh(inspector, states):
             lister.par.Refresh.pulse()
     count = sum(state['mapped'] for state in states)
     status = inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value')
-    inspector.op('title').par.text = f'ROTO Inspector  |  {count}/{len(states)} mapped  |  {status}'
+    inspector.op('title').par.text = f"ROTO Inspector | {current['label']} | {count}/{len(states)} mapped | {status}"
+    if current.get('locked'):
+        inspector.op('title').par.text += ' | LOCK' + (' (selected Track differs)' if current.get('selected_track_id')!=current.get('track_id') else '')
     for name, label in [('clear_all','Clear All'),('clear_all_yes','Yes'),('clear_all_no','No')]:
         button = inspector.op(name)
         if button is not None:
@@ -81,15 +91,15 @@ def request_clear(inspector, id):
     states = inspector.parent().GetControlCatalog()
     if id is not None and id not in [s['id'] for s in states]:
         raise ValueError('Unknown target ID: '+str(id))
-    inspector.store('pending_clear',dict(id=id,fingerprint=fingerprint(states)))
-    inspector.store('action_status','Delete all target bindings?' if id is None else 'Delete target '+id+'?')
+    inspector.store('pending_clear',dict(id=id,fingerprint=fingerprint(states),context=context(inspector)['key']))
+    inspector.store('action_status','Delete all bindings in current Plugin?' if id is None else 'Delete target '+id+'?')
     refresh(inspector,states)
 
 
 def confirm_clear(inspector, yes, id):
     pending = inspector.fetch('pending_clear',None)
     states = inspector.parent().GetControlCatalog()
-    if not pending or pending['id'] != id or pending['fingerprint'] != fingerprint(states):
+    if not pending or pending['id'] != id or pending['fingerprint'] != fingerprint(states) or pending.get('context')!=context(inspector)['key']:
         inspector.store('pending_clear',None)
         inspector.store('action_status','Confirmation expired; click Clear again')
         refresh(inspector,states)

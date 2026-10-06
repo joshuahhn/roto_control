@@ -51,3 +51,8 @@ FreeLearner owns a pending unregistered parameter offer during hardware LEARN. A
 ## Active repository
 
 Continue development in joshuahhn/roto_control, src/touchdesigner. The nin-lab location is a migration backup. Documentation embedding uses the local scripts/td_project_docs.py; current project is .32.toe and portable export is .20.tox.
+
+
+## Multi-Track registry v2 (2026-10-06)
+
+Layouts own ordered Tracks; each Track currently owns one Plugin with independent parameter mappings. layouts.py owns versioned migration and Track metadata/selection; protocol.Host delegates Track announcements through tracks_callback. Hardware Track pages are distinct from selection. Only the current routing Track's Plugin is advertised. Under LOCK, selected Track and routing Track may differ; physical behavior remains pending acceptance. Inspector context and clear confirmations are Plugin-scoped. See docs/functions/layouts.md and multitrack_native_verification.json. The .32 baseline above is historical; consult the final HANDOFF entry for current artifacts.

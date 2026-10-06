@@ -173,6 +173,10 @@ class Host:
         self._command(PLUGIN, 8, (0, 0, 0))  # select device, no forced macro pages
 
     def _tracks(self):
+        callback = getattr(self, "tracks_callback", None)
+        if callback is not None:
+            callback()
+            return
         # PLUGIN selection still belongs to a track, even in this one-target host.
         detail = (0, 0, *text13(self.track_name), 0, 0)
         self._command(GENERAL, 4, (0, 1))

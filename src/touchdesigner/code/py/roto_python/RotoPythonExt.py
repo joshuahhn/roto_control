@@ -46,6 +46,9 @@ class RotoPythonExt:
 
     def SetLayoutNames(self, track_name, plugin_name):
         """Update fixed hardware display names without changing mapping identity."""
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and not manager.legacy and manager.locked and manager.selected_track not in (None,manager.track()['id']):
+            raise ValueError('Unlock before renaming a Track different from hardware selection')
         self._layout_dirty = True
         result = self._host.set_display_names(track_name, plugin_name)
         for name, value in (("Trackname", track_name), ("Pluginname", plugin_name)):
@@ -54,6 +57,12 @@ class RotoPythonExt:
                 par.val = value
         if result:
             self._last_error = ""
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and not manager.legacy and not manager.mutating:
+            manager.capture(force=True)
+            if result:
+                manager.menu()
+                if self._host.connected:manager.announce_tracks(select=False)
         self._publish()
         return result
 
@@ -67,7 +76,8 @@ class RotoPythonExt:
 
     def GetLayouts(self):
         manager = self._layout_manager()
-        return [dict(id=r['id'], name=r['name'], track_name=r['track_name'], plugin_name=r['plugin_name'],
+        return [dict(id=r['id'], name=r['name'], track_name=manager.track(r['id'])['name'],
+                     plugin_name=manager.plugin(r['id'])['plugin_name'],track_count=len(r['tracks']),
                      active=r['id']==manager.data['active']) for r in manager.data['records']]
 
     def SelectLayout(self, id):
@@ -81,6 +91,28 @@ class RotoPythonExt:
 
     def RemoveLayout(self, id):
         return self._layout_manager().remove(id)
+
+    def GetTracks(self, layout_id=None):
+        manager=self._layout_manager();layout=manager.layout(layout_id)
+        return [dict(id=t['id'],name=t['name'],plugin_id=t['active_plugin'],
+                     plugin_name=manager.plugin(layout['id'],t['id'])['plugin_name'],
+                     active=t['id']==layout['active_track']) for t in layout['tracks']]
+
+    def GetLayoutContext(self):
+        manager=getattr(self,'_layouts',None)
+        return manager.context() if manager is not None else dict(key=None,label='Initializing',legacy=True)
+
+    def CreateTrack(self, layout_id, name):
+        return self._layout_manager().create_track(layout_id,name)
+
+    def SelectTrack(self, layout_id, track_id):
+        return self._layout_manager().select_track(layout_id,track_id)
+
+    def RenameTrack(self, layout_id, track_id, name):
+        return self._layout_manager().rename_track(layout_id,track_id,name)
+
+    def RemoveTrack(self, layout_id, track_id):
+        return self._layout_manager().remove_track(layout_id,track_id)
 
     def _check_single_id(self, id):
         active_id = self._binding.id if self._binding is not None else "Value"
@@ -299,7 +331,8 @@ class RotoPythonExt:
         if self._dispatching or self._host.learning or self._host.touched:
             raise ValueError("Exit LEARN and release all controls before removing")
         manager=getattr(self,"_layouts",None)
-        ids=tuple(t["id"] for t in manager.record()["targets"]) if manager is not None else tuple(self._collection.ids)
+        saved=[t["id"] for t in manager.record()["targets"]] if manager is not None and not manager.legacy else []
+        ids=tuple(dict.fromkeys([*self._collection.ids,*saved]))
         for id in ids:
             self.RemoveControl(id)
         return ids
@@ -1015,7 +1048,16 @@ class RotoPythonExt:
                 manager.select(par.eval())
             except ValueError as exc:
                 par.val=manager.data['active'];self._last_error=str(exc);self._publish()
+        elif par.name == 'Track':
+            manager=self._layout_manager()
+            if manager.mutating or par.eval()==manager.layout()['active_track']:return
+            try:self.SelectTrack(manager.data['active'],par.eval())
+            except ValueError as exc:
+                par.val=manager.layout()['active_track'];self._last_error=str(exc);self._publish()
         elif par.name in ("Trackname", "Pluginname"):
+            manager=getattr(self,'_layouts',None)
+            if manager is not None and manager.mutating:return
+            if self._display_names()==dict(track_name=self._host.track_name,plugin_name=self._host.plugin_name):return
             try:
                 self.SetLayoutNames(**self._display_names())
             except ValueError as exc:
@@ -1036,6 +1078,22 @@ class RotoPythonExt:
                 self.SetValue(self._binding.from_normalized(value))
 
     def onParPulse(self, par):
+        if par.name in ('Newtrack','Deletetrack','Confirmtrackdelete','Canceltrackdelete'):
+            manager=self._layout_manager();layout_id=manager.data['active'];track_id=manager.track()['id']
+            try:
+                if par.name=='Newtrack':
+                    self.SelectTrack(layout_id,self.CreateTrack(layout_id,self.ownerComp.par.Newtrackname.eval()))
+                elif par.name=='Deletetrack':
+                    if len(manager.layout()['tracks'])==1:raise ValueError('Cannot delete the last Track')
+                    manager.track_delete_pending=(layout_id,track_id)
+                elif par.name=='Confirmtrackdelete':
+                    if manager.track_delete_pending!=(layout_id,track_id):raise ValueError('Delete confirmation expired')
+                    self.RemoveTrack(layout_id,track_id);manager.track_delete_pending=None
+                else:manager.track_delete_pending=None
+            except ValueError as exc:self._last_error=str(exc)
+            enabled=manager.track_delete_pending is not None
+            self.ownerComp.par.Confirmtrackdelete.enable=self.ownerComp.par.Canceltrackdelete.enable=enabled
+            self._publish();return
         if par.name in ('Newlayout','Renamelayout','Deletelayout','Confirmdelete','Canceldelete'):
             manager=self._layout_manager()
             try:

@@ -95,3 +95,16 @@ class ConfirmationTests(unittest.TestCase):
         self.assertEqual((row['Min'],row['Max'],row['Error']),('0','10','Needs re-LEARN'))
 
 if __name__=='__main__':unittest.main()
+
+class ContextConfirmationTests(unittest.TestCase):
+    inspector=InspectorTests.inspector
+    state=InspectorTests.state
+    fixture=ConfirmationTests.fixture
+    def test_identical_targets_in_other_track_expire_confirmation(self):
+        inspector,table,states,calls=self.fixture();controller=inspector.parent()
+        selected={'key':('layout','trackA','pluginA'),'label':'A'}
+        controller.GetLayoutContext=lambda:dict(selected)
+        request_clear(inspector,None)
+        selected.update(key=('layout','trackB','pluginB'),label='B')
+        self.assertFalse(confirm_clear(inspector,True,None))
+        self.assertEqual(calls,[])
