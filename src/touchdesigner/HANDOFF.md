@@ -273,3 +273,32 @@ Migration preserves v1 Layout IDs, target wire hashes/indices, settings override
 Prepared artifacts: project .40.toe and generic export .27.tox, with canonical copies. Final controller is disconnected on the user's T Layout; no hardware LEARN, motor or reconnect probe was run. No commit/push.
 
 On return: connect manually, use Tracks / New Track name + New empty Track to create a second Track within a chosen Layout. Learn the same knob slot to different test parameters in both Tracks, keeping Pluginname=CUSTOM. Test hardware and TD A/B/A, current values/motor/LCD, reconnect, empty mappings, LOCK selection/unlock and ninth-Track paging. Layout selection remains in TD. Do not treat old two-Plugin probe evidence as multi-Track acceptance. MIDI CC and mapping reports lack a Track/session token; delayed-event ambiguity remains documented.
+
+
+## Physical multi-Track A/B/A acceptance (2026-10-07)
+
+User confirmed Knob 1 controls pixelSortV3.Sortcrit on Track T and pixelSortV3.Lowthresh on Track TRACK, both Pluginname=CUSTOM within Layout T. User confirmed switching back and forth recalls independent mappings without re-LEARN ("working, pass"). Live inspection observed Sortcrit Mapped=True after return to T; both Plugin identities and target records were present. Evidence: multitrack_hardware_verification.json. Reconnect, motor/LCD, LOCK and ninth-Track paging remain pending.
+
+Saved both mappings through live TD as roto_control_python.41.toe; canonical project matches. Existing connection retained. Generic export remains empty .27.tox. No runtime source changes, commit or push.
+
+
+User additionally confirmed Disconnect -> Connect works (2026-10-07). Live inspection after the report: Connected/Plugin/Mapped=True on TRACK / CUSTOM, Knob 1 -> pixelSortV3.Lowthresh, requires_relearn=False, no Lasterror or operator errors. Reconnect recall accepted; motor/LCD, LOCK and ninth-Track paging remain pending. No additional project save or runtime changes needed for this verification.
+
+
+User confirmed motor movement and LCD feedback after editing Lowthresh in TD on TRACK (2026-10-07). Live inspection remained connected/mapped with no Lasterror; value at inspection was approximately 0.667, so exact 0.8 positioning is not claimed. Physical parameter-to-hardware feedback accepted for this target. LOCK selection/unlock and ninth-Track paging remain pending.
+
+
+User confirmed LOCK blocks TD-origin Track switching (2026-10-07). Live inspection retained TRACK / Lowthresh Mapped=True and Lasterror="Unlock hardware before switching Layout". Lock was already off at inspection; this records the user-confirmed guard, not hardware-origin selection under lock. Hardware-origin Track selection under LOCK/unlock follow and ninth-Track paging remain pending.
+
+
+Hardware-origin Track selection under LOCK accepted (2026-10-07): user confirmed operation; live inspection showed locked=True, selected Track T, routing Track TRACK, and Knob 1 still mapped to Lowthresh (value approximately 0.326). Unlock-follow and ninth-Track paging remain pending.
+
+
+Unlock-follow accepted (2026-10-07): user confirmed Knob 1 returns to Sortcrit without re-LEARN. Live inspection showed locked=False, selected/routing Track T, Sortcrit Mapped=True, requires_relearn=False, value 4 (Red), no Lasterror. Multi-Track A/B/A, reconnect, Lowthresh motor/LCD feedback, TD-origin lock guard, hardware selection while locked and unlock-follow are now physically accepted. Ninth-Track paging remains pending.
+
+
+## Physical ninth-Track paging acceptance (2026-10-07)
+
+Temporary Paging test Layout contained nine empty Tracks. User confirmed PAGE2-09 visible on hardware page two. Live inspection after browsing showed first_track=8 with PAGE1-01 still active, proving page browsing did not select a Track. User then selected PAGE2-09; live inspection confirmed matching selected/routing Track, page index 8 and no errors. Empty Track selection is accepted without inventing a mapping acknowledgement.
+
+Temporary Layout removed, original T Layout / T Track restored with Sortcrit recall. Saved through live TD as roto_control_python.42.toe; canonical bytes match. User mappings retained, connection remains active, generic export unchanged. All enumerated physical checks in multitrack_hardware_verification.json have now passed; delayed MIDI attribution remains a protocol limitation. No commit/push.

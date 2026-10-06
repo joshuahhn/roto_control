@@ -1,0 +1,371 @@
+{
+  "date": "2026-10-07",
+  "user_confirmed": {
+    "track_T_knob1_Sortcrit": true,
+    "track_TRACK_knob1_Lowthresh": true,
+    "a_b_a_recall_without_relearn": true,
+    "independent_target_routing": true,
+    "reconnect_recall": true,
+    "track_TRACK_Lowthresh_motor_and_lcd_feedback": true,
+    "lock_blocks_td_track_switch": true,
+    "hardware_track_selection_keeps_locked_routing": true,
+    "unlock_follows_selected_track_without_relearn": true,
+    "ninth_track_visible_on_second_page": true
+  },
+  "pending": [],
+  "context": {
+    "legacy": false,
+    "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+    "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "locked": false,
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "label": "T / T / CUSTOM"
+  },
+  "state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 524,
+    "Tx": 14,
+    "Rejected": 1,
+    "Echoblocked": 0,
+    "Status": "T / T / CUSTOM: controls recalled",
+    "Lasterror": "",
+    "Targetid": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a",
+    "Targetvalue": 4.0,
+    "Value": 0.5714285714285714
+  },
+  "tracks": [
+    {
+      "id": "track.3e6fc58800854c43bac1742c9063a87a",
+      "name": "T",
+      "active_plugin": "plugin.3e6fc58800854c43bac1742c9063a87a",
+      "plugins": [
+        {
+          "group_id": "layout.3e6fc58800854c43bac1742c9063a87a",
+          "device_id": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a",
+          "plugin_name": "CUSTOM",
+          "targets": [
+            {
+              "kind": "knob",
+              "slot": 1,
+              "id": "parameter.c6abb1a7042e4a59982306ce4a65f86f",
+              "label": "Sort By",
+              "minimum": 0.0,
+              "maximum": 7.0,
+              "mode": "value",
+              "button_type": null,
+              "index": 128,
+              "identity": "parameter.c6abb1a7042e4a59982306ce4a65f86f:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value",
+              "menu_names": [
+                "luminance",
+                "hue",
+                "saturation",
+                "value",
+                "red",
+                "green",
+                "blue",
+                "alpha"
+              ],
+              "menu_labels": [
+                "Brightness",
+                "Hue (Color)",
+                "Saturation",
+                "Value",
+                "Red",
+                "Green",
+                "Blue",
+                "Alpha"
+              ],
+              "comp": "../pixelSortV3",
+              "parameter": "Sortcrit"
+            }
+          ],
+          "state": {
+            "parameter_assignments": [
+              {
+                "kind": "knob",
+                "slot": 1,
+                "id": "parameter.c6abb1a7042e4a59982306ce4a65f86f",
+                "label": "Sort By",
+                "minimum": 0.0,
+                "maximum": 7.0,
+                "mode": "value",
+                "button_type": null,
+                "index": 128,
+                "identity": "parameter.c6abb1a7042e4a59982306ce4a65f86f:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value",
+                "menu_names": [
+                  "luminance",
+                  "hue",
+                  "saturation",
+                  "value",
+                  "red",
+                  "green",
+                  "blue",
+                  "alpha"
+                ],
+                "menu_labels": [
+                  "Brightness",
+                  "Hue (Color)",
+                  "Saturation",
+                  "Value",
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Alpha"
+                ],
+                "comp": "../pixelSortV3",
+                "parameter": "Sortcrit"
+              }
+            ],
+            "assignment_device_id": {
+              "group_id": "layout.3e6fc58800854c43bac1742c9063a87a",
+              "device_id": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a"
+            },
+            "control_overrides": {},
+            "removed_controls": [],
+            "pending_unmaps": [],
+            "needs_relearn": [],
+            "control_catalog": [
+              {
+                "id": "parameter.c6abb1a7042e4a59982306ce4a65f86f",
+                "kind": "knob",
+                "slot": 1,
+                "mode": "value",
+                "label": "Sort By",
+                "value": 4,
+                "normalized": 0.5714285714285714,
+                "minimum": 0.0,
+                "maximum": 7.0,
+                "mapped": true,
+                "touched": false,
+                "valid": true,
+                "connected": true,
+                "plugin": true,
+                "error": "",
+                "button_type": null,
+                "binding_type": "parameter",
+                "comp": "/roto_control_python/pixelSortV3",
+                "parameter": "Sortcrit",
+                "menu_names": [
+                  "luminance",
+                  "hue",
+                  "saturation",
+                  "value",
+                  "red",
+                  "green",
+                  "blue",
+                  "alpha"
+                ],
+                "menu_labels": [
+                  "Brightness",
+                  "Hue (Color)",
+                  "Saturation",
+                  "Value",
+                  "Red",
+                  "Green",
+                  "Blue",
+                  "Alpha"
+                ],
+                "value_label": "Red",
+                "parameter_style": "Menu",
+                "requires_relearn": false,
+                "last_mapped": true
+              }
+            ],
+            "pending_unmap_identities": []
+          },
+          "id": "plugin.3e6fc58800854c43bac1742c9063a87a"
+        }
+      ]
+    },
+    {
+      "id": "track.136ed89c5a2049928846407687c3d756",
+      "name": "TRACK",
+      "active_plugin": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+      "plugins": [
+        {
+          "id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+          "group_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+          "device_id": "TD controls:plugin.c8c74d8f74da4d7396069fadb1e29409",
+          "plugin_name": "CUSTOM",
+          "targets": [
+            {
+              "kind": "knob",
+              "slot": 1,
+              "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+              "label": "Low Threshold",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "mode": "value",
+              "button_type": null,
+              "index": 128,
+              "identity": "parameter.77fe70e9216349d2b31341cc105d790f:0.0:1.0:0:value",
+              "menu_names": [],
+              "menu_labels": [],
+              "comp": "../pixelSortV3",
+              "parameter": "Lowthresh"
+            }
+          ],
+          "state": {
+            "parameter_assignments": [
+              {
+                "kind": "knob",
+                "slot": 1,
+                "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+                "label": "Low Threshold",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "mode": "value",
+                "button_type": null,
+                "index": 128,
+                "identity": "parameter.77fe70e9216349d2b31341cc105d790f:0.0:1.0:0:value",
+                "menu_names": [],
+                "menu_labels": [],
+                "comp": "../pixelSortV3",
+                "parameter": "Lowthresh"
+              }
+            ],
+            "assignment_device_id": {
+              "group_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+              "device_id": "TD controls:plugin.c8c74d8f74da4d7396069fadb1e29409"
+            },
+            "control_overrides": {},
+            "removed_controls": [],
+            "pending_unmaps": [],
+            "needs_relearn": [],
+            "control_catalog": [
+              {
+                "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+                "kind": "knob",
+                "slot": 1,
+                "mode": "value",
+                "label": "Low Threshold",
+                "value": 0.31270219129585547,
+                "normalized": 0.31270219129585547,
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "mapped": true,
+                "touched": false,
+                "valid": true,
+                "connected": true,
+                "plugin": true,
+                "error": "",
+                "button_type": null,
+                "binding_type": "parameter",
+                "comp": "/roto_control_python/pixelSortV3",
+                "parameter": "Lowthresh",
+                "menu_names": [],
+                "menu_labels": [],
+                "value_label": "",
+                "parameter_style": "Float",
+                "requires_relearn": false,
+                "last_mapped": true
+              }
+            ],
+            "pending_unmap_identities": []
+          }
+        }
+      ]
+    }
+  ],
+  "errors": "",
+  "saved_project": "roto_control_python.42.toe",
+  "reconnect_observation": {
+    "project": "roto_control_python.41.toe",
+    "track": "TRACK",
+    "parameter": "pixelSortV3.Lowthresh",
+    "connected": true,
+    "plugin": true,
+    "mapped": true,
+    "requires_relearn": false,
+    "value": 0.31270219129585547,
+    "last_error": "",
+    "operator_errors": ""
+  },
+  "feedback_observation": {
+    "track": "TRACK",
+    "parameter": "pixelSortV3.Lowthresh",
+    "value_at_inspection": 0.6669999957084656,
+    "mapped": true,
+    "last_error": "",
+    "physical_evidence": "User confirmed motor movement and LCD update after editing Lowthresh in TD; exact requested 0.8 value was not observed at inspection."
+  },
+  "lock_guard_observation": {
+    "routing_track": "TRACK",
+    "parameter": "pixelSortV3.Lowthresh",
+    "mapped": true,
+    "last_error": "Unlock hardware before switching Layout",
+    "locked_at_inspection": false,
+    "note": "User confirmed TD-origin selection was blocked under LOCK; lock was already off when inspected."
+  },
+  "hardware_lock_observation": {
+    "locked": true,
+    "selected_track": "T",
+    "routing_track": "TRACK",
+    "parameter": "pixelSortV3.Lowthresh",
+    "mapped": true,
+    "value": 0.3261307452847464
+  },
+  "unlock_observation": {
+    "locked": false,
+    "selected_track": "T",
+    "routing_track": "T",
+    "parameter": "pixelSortV3.Sortcrit",
+    "mapped": true,
+    "requires_relearn": false,
+    "value": 4,
+    "value_label": "Red",
+    "last_error": ""
+  },
+  "paging_observation": {
+    "page_index": 8,
+    "active_before_selection": "PAGE1-01",
+    "active_after_hardware_selection": "PAGE2-09",
+    "page_browsing_preserved_routing": true,
+    "ninth_track_selection": true,
+    "empty_track": true,
+    "errors": ""
+  },
+  "paging_test_removed": true,
+  "final_context": {
+    "legacy": false,
+    "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+    "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "locked": false,
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "label": "T / T / CUSTOM"
+  },
+  "final_state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 297,
+    "Tx": 15,
+    "Rejected": 0,
+    "Echoblocked": 0,
+    "Status": "T / T / CUSTOM: controls recalled",
+    "Lasterror": "",
+    "Targetid": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a",
+    "Targetvalue": 4.0,
+    "Value": 0.5714285714285714
+  }
+}
