@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-07",
+  "user_confirmed": {
+    "page1_page2_page1_independent_knob1": true,
+    "td_parameter_control": true
+  },
+  "observed_context": {
+    "legacy": false,
+    "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+    "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "locked": false,
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "label": "T / T / CUSTOM"
+  },
+  "observed_state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 4635,
+    "Tx": 140,
+    "Rejected": 1,
+    "Echoblocked": 5,
+    "Status": "Mapped; target ready",
+    "Lasterror": "",
+    "Targetid": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a",
+    "Targetvalue": 0.0,
+    "Value": 0.0
+  },
+  "saved_targets": [
+    {
+      "kind": "knob",
+      "slot": 1,
+      "id": "parameter.70f33bdb7f6646febb51703cab9db710",
+      "label": "Effect Mix",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mode": "value",
+      "button_type": null,
+      "index": 129,
+      "identity": "parameter.70f33bdb7f6646febb51703cab9db710:0.0:1.0:0:value",
+      "menu_names": [],
+      "menu_labels": [],
+      "comp": "../pixelSortV3",
+      "parameter": "Mix"
+    },
+    {
+      "kind": "knob",
+      "slot": 1,
+      "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+      "label": "Sort By",
+      "minimum": 0.0,
+      "maximum": 7.0,
+      "mode": "value",
+      "button_type": null,
+      "index": 128,
+      "identity": "parameter.292f87cf1c224693a56c515c5e9e539b:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value",
+      "menu_names": [
+        "luminance",
+        "hue",
+        "saturation",
+        "value",
+        "red",
+        "green",
+        "blue",
+        "alpha"
+      ],
+      "menu_labels": [
+        "Brightness",
+        "Hue (Color)",
+        "Saturation",
+        "Value",
+        "Red",
+        "Green",
+        "Blue",
+        "Alpha"
+      ],
+      "comp": "../pixelSortV3",
+      "parameter": "Sortcrit"
+    }
+  ],
+  "errors": "",
+  "coverage_note": "Physical two-page test only; eight pages/128 controls covered by automated tests, not full physical acceptance.",
+  "saved_project": "roto_control_python.45.toe"
+}

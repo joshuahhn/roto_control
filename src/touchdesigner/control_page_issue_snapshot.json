@@ -1,0 +1,301 @@
+{
+  "registry": {
+    "version": 2,
+    "active": "3e6fc58800854c43bac1742c9063a87a",
+    "records": [
+      {
+        "id": "custom",
+        "name": "Custom",
+        "active_track": "track.custom",
+        "tracks": [
+          {
+            "id": "track.custom",
+            "name": "EFFECT",
+            "active_plugin": "plugin.custom",
+            "plugins": [
+              {
+                "group_id": "roto.controls.v1",
+                "device_id": "TD controls:roto.controls.v1",
+                "plugin_name": "CUSTOM",
+                "targets": [],
+                "state": {
+                  "parameter_assignments": [],
+                  "assignment_device_id": {
+                    "group_id": "roto.controls.v1",
+                    "device_id": "TD controls:roto.controls.v1"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [
+                    "parameter.351a42f52e984c329b0f64d19577873c",
+                    "parameter.3fc6f0f96253460ba9e1053c464b6231",
+                    "parameter.451fb7d910d544ee9d54f49a94ced376",
+                    "parameter.9b61e012cb1c4bae944d5bc9e67772d8",
+                    "parameter.b52661ea810246dea5c4daaaa7b3723e"
+                  ],
+                  "pending_unmaps": [
+                    [
+                      "button",
+                      1
+                    ],
+                    [
+                      "knob",
+                      1
+                    ],
+                    [
+                      "knob",
+                      2
+                    ],
+                    [
+                      "knob",
+                      3
+                    ],
+                    [
+                      "knob",
+                      4
+                    ]
+                  ],
+                  "needs_relearn": [],
+                  "control_catalog": [],
+                  "pending_unmap_identities": []
+                },
+                "id": "plugin.custom"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3e6fc58800854c43bac1742c9063a87a",
+        "name": "T",
+        "active_track": "track.3e6fc58800854c43bac1742c9063a87a",
+        "tracks": [
+          {
+            "id": "track.3e6fc58800854c43bac1742c9063a87a",
+            "name": "T",
+            "active_plugin": "plugin.3e6fc58800854c43bac1742c9063a87a",
+            "plugins": [
+              {
+                "group_id": "layout.3e6fc58800854c43bac1742c9063a87a",
+                "device_id": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a",
+                "plugin_name": "CUSTOM",
+                "targets": [
+                  {
+                    "kind": "knob",
+                    "slot": 1,
+                    "id": "parameter.70f33bdb7f6646febb51703cab9db710",
+                    "label": "Effect Mix",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 129,
+                    "identity": "parameter.70f33bdb7f6646febb51703cab9db710:0.0:1.0:0:value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../pixelSortV3",
+                    "parameter": "Mix"
+                  }
+                ],
+                "state": {
+                  "parameter_assignments": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "parameter.70f33bdb7f6646febb51703cab9db710",
+                      "comp": "../pixelSortV3",
+                      "parameter": "Mix",
+                      "mode": "value",
+                      "label": "Effect Mix",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "button_type": null,
+                      "index": 129
+                    }
+                  ],
+                  "assignment_device_id": {
+                    "group_id": "layout.3e6fc58800854c43bac1742c9063a87a",
+                    "device_id": "TD controls:layout.3e6fc58800854c43bac1742c9063a87a"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [
+                    "parameter.1baf72b30c2f45d2bc2f24d0b2fff6d8",
+                    "parameter.c6abb1a7042e4a59982306ce4a65f86f",
+                    "parameter.d383b597020d49708c7835e77ffe5d04"
+                  ],
+                  "pending_unmaps": [],
+                  "needs_relearn": [
+                    "parameter.70f33bdb7f6646febb51703cab9db710"
+                  ],
+                  "control_catalog": [
+                    {
+                      "id": "parameter.70f33bdb7f6646febb51703cab9db710",
+                      "kind": "knob",
+                      "slot": 1,
+                      "mode": "value",
+                      "label": "Effect Mix",
+                      "value": 0.43799999356269836,
+                      "normalized": 0.43799999356269836,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": true,
+                      "plugin": true,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_control_python/pixelSortV3",
+                      "parameter": "Mix",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Float",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    }
+                  ],
+                  "pending_unmap_identities": []
+                },
+                "id": "plugin.3e6fc58800854c43bac1742c9063a87a"
+              }
+            ]
+          },
+          {
+            "id": "track.136ed89c5a2049928846407687c3d756",
+            "name": "TRACK",
+            "active_plugin": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+            "plugins": [
+              {
+                "id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+                "group_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+                "device_id": "TD controls:plugin.c8c74d8f74da4d7396069fadb1e29409",
+                "plugin_name": "CUSTOM",
+                "targets": [
+                  {
+                    "kind": "knob",
+                    "slot": 1,
+                    "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+                    "label": "Low Threshold",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 128,
+                    "identity": "parameter.77fe70e9216349d2b31341cc105d790f:0.0:1.0:0:value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../pixelSortV3",
+                    "parameter": "Lowthresh"
+                  }
+                ],
+                "state": {
+                  "parameter_assignments": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+                      "label": "Low Threshold",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 128,
+                      "identity": "parameter.77fe70e9216349d2b31341cc105d790f:0.0:1.0:0:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../pixelSortV3",
+                      "parameter": "Lowthresh"
+                    }
+                  ],
+                  "assignment_device_id": {
+                    "group_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+                    "device_id": "TD controls:plugin.c8c74d8f74da4d7396069fadb1e29409"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [],
+                  "pending_unmaps": [],
+                  "needs_relearn": [],
+                  "control_catalog": [
+                    {
+                      "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+                      "kind": "knob",
+                      "slot": 1,
+                      "mode": "value",
+                      "label": "Low Threshold",
+                      "value": 0.09345052798632729,
+                      "normalized": 0.09345052798632729,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": true,
+                      "touched": false,
+                      "valid": true,
+                      "connected": true,
+                      "plugin": true,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_control_python/pixelSortV3",
+                      "parameter": "Lowthresh",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Float",
+                      "requires_relearn": false,
+                      "last_mapped": true
+                    }
+                  ],
+                  "pending_unmap_identities": []
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "context": {
+    "legacy": false,
+    "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+    "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+    "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+    "locked": false,
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "label": "T / T / CUSTOM"
+  },
+  "targets": [
+    {
+      "id": "parameter.70f33bdb7f6646febb51703cab9db710",
+      "kind": "knob",
+      "slot": 1,
+      "mode": "value",
+      "label": "Effect Mix",
+      "value": 0.32008789598974546,
+      "normalized": 0.32008789598974546,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Mix",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    }
+  ],
+  "rx_events": "time\tkind\tbytes\r\n533109.950\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533161.384\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533204.517\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533238.567\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533239.684\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533239.884\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533270.317\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533271.100\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533271.284\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533274.217\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533274.417\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533348.334\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533350.284\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533350.484\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533588.251\tmapping\t240 0 34 3 2 11 11 1 0 99 40 100 33 60 96 0 0 0 247\r\n533625.834\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n533785.269\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n539040.467\tmapping\t240 0 34 3 2 11 11 1 1 24 47 0 21 117 74 0 0 0 247\r\n539045.750\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n539050.117\tmapping\t240 0 34 3 2 11 11 1 1 24 47 0 21 117 74 0 0 0 247\r\n539052.767\tmapping\t240 0 34 3 2 11 11 1 0 33 34 95 39 94 102 0 0 0 247\r\n539069.067\tmapping\t240 0 34 3 2 11 11 1 0 56 5 71 84 0 81 0 0 0 247\r\n539070.984\tmapping\t240 0 34 3 2 11 11 1 1 24 47 0 21 117 74 0 0 0 247\r\n539103.250\tmapping\t240 0 34 3 2 11 11 1 0 56 5 71 84 0 81 0 0 0 247\r\n539104.367\tmapping\t240 0 34 3 2 11 11 1 1 24 47 0 21 117 74 0 0 0 247\r\n539136.534\tmapping\t240 0 34 3 2 11 11 1 0 56 5 71 84 0 81 0 0 0 247\r\n539150.434\tmapping\t240 0 34 3 2 11 11 1 1 24 47 0 21 117 74 0 0 0 247\r\n539159.800\tmapping\t240 0 34 3 2 11 11 1 1 35 90 30 106 53 12 0 0 0 247\r\n539161.867\tmapping\t240 0 34 3 2 11 11 1 0 56 5 71 84 0 81 0 0 0 247\r\n539164.350\tmapping\t240 0 34 3 2 11 11 1 1 35 90 30 106 53 12 0 0 0 247\r\n539218.100\tmapping\t240 0 34 3 2 11 11 1 0 56 5 71 84 0 81 0 0 0 247\r\n539232.134\tmapping\t240 0 34 3 2 11 11 1 1 35 90 30 106 53 12 0 0 0 247\r\n"
+}

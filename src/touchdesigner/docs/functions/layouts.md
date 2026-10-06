@@ -1,22 +1,30 @@
 # Layouts and Tracks
 
-A saved Layout contains multiple selectable Tracks. Each Track currently has one Plugin mapping set of up to 8 knobs and 8 buttons. The schema retains a Plugins list for future expansion; multiple Plugins per Track are rejected in this version.
+A saved Layout contains multiple selectable Tracks. Each Track currently has one Plugin, with up to eight hardware control pages of 8 knobs and 8 buttons per page. The schema retains a Plugins list for future expansion; multiple Plugins per Track are rejected in this version.
 
 Select Layout on the Layouts page. Select Active Track on the Tracks page, or use the hardware Track selector while connected in PLUGIN mode. New Track name plus New empty Track creates and selects a Track. Display / Trackname renames the current Track; Pluginname renames its Plugin. Delete Track uses Yes/No confirmation and cannot remove the last Track. Layout deletion remains separately confirmed. Configuration edits are retained automatically; save the containing TD project to persist to disk.
 
 Different Tracks and Layouts may reuse EFFECT / CUSTOM display names without sharing their mappings. IDs are stable and independent of display names and hardware list indices. Track and Plugin names accept at most 12 printable ASCII bytes. Layout labels are independent of wire display limits. The old eight-Layout cap is removed; hardware Track lists are paged in groups of eight. The two-byte count bounds the registry to 16383 Tracks per Layout; this is a protocol encoding ceiling, not a tested hardware capacity.
 
-Inspector shows Layout / routing Track / Plugin. Clear and Clear All affect only that Plugin's mappings; their confirmations expire on context changes. Missing targets remain visible and can be cleared. Switching reads current target values, does not restore numeric presets and never fires Pulse actions. Renaming does not require re-LEARN. Changed Menu choices do.
+Inspector shows Layout / routing Track / Plugin. Clear and Clear All affect the currently displayed control targets; off-page definitions remain saved. Confirmations expire on Track or control-page changes. Missing targets remain visible and can be cleared. Switching reads current target values, does not restore numeric presets and never fires Pulse actions. Renaming does not require re-LEARN. Changed Menu choices do.
 
 ## Selection and readiness
 
 Track browsing pages do not select Tracks. Hardware selection is handled via general ROTO SELECT TRACK (0A 09); this Ableton-compatible host does not depend on Logic-only SET TRACK SELECT MODE (0B 15). Only the routing Track's Plugin is advertised, at Plugin index 0. Layouts are TD configuration, not hardware Plugin entries.
 
-TD-origin switching is blocked during LEARN, touch or LOCK. Under LOCK, hardware Track selection is tracked separately while the locked Plugin keeps routing; unlock attempts to follow the selected Track. Inspector flags a difference between selected and routing Track. This behavior follows the Ableton integration model but still requires physical acceptance on this firmware. No force-selection flag is used.
+TD-origin switching is blocked during LEARN, touch or LOCK. Under LOCK, hardware Track selection is tracked separately while the locked Plugin keeps routing; unlock attempts to follow the selected Track. Inspector flags a difference between selected and routing Track. This behavior has passed physical Track-selection/LOCK acceptance on the tested firmware. No force-selection flag is used.
 
 Control routing resumes individually on matching mapping reports. An empty Plugin can be selected with zero ready controls; there is no invented global completion acknowledgement or timeout-based confirmation. MIDI CC does not carry Track/Plugin identity, so delayed old CC after new mapping acknowledgement cannot always be distinguished. Reused legacy parameter hashes can also be ambiguous; migration does not silently change them.
 
 PUSH/TOGGLE is configured in Roto-Setup. The TD adapter must match hardware TYPE; switching Tracks does not reconfigure it.
+
+## Plugin control pages
+
+Control pages within a Plugin are separate from Track-list pages. The host retains a Plugin-scoped parameter library (`page_targets`) independently of the current 16 physical slots. Learning Page 2 Knob 1 retains Page 1's parameter definition. Hardware CONTROL MAPPED reports identify the current slot's target by parameter index/hash; the host restores the matching definition and its watcher. Parameter indices are allocated across the entire Plugin library, including inactive pages.
+
+Normal Plugins do not report an absolute control-page number. Observed left/right notifications (GENERAL 14/15) suspend old slot routing immediately; subsequent mapping reports rebuild the active slots. Empty pages remain input-disabled. TD does not guess a page number by counting arrow presses. Eight pages / 128 distinct targets have automated coverage; physical control-page acceptance is separate from previously accepted Track-list paging.
+
+Offline deletion is reconciled only against the matching removed-target identity, never by replaying a slot-only unmap after an unrelated page's acknowledgement. Explicit Clear removes the target definition; learning/replacing a slot through hardware retains earlier definitions because the page number is not transmitted. Definitions deleted by the old one-page implementation cannot be reconstructed from a hash alone; re-LEARN the affected target once.
 
 ## Python API
 
@@ -42,4 +50,4 @@ Generic tox exports start disconnected with one empty Custom Layout / EFFECT Tra
 
 ## Acceptance status
 
-Automated and disconnected native verification cover migration, Track isolation, paging packets, source-aware selection, lock state handling, stale mapping rejection, native UI callbacks and save/reload. Physical multi-Track A/B/A, motor/LCD, reconnect and LOCK acceptance remain pending. Earlier isolated Plugin-switching evidence does not establish Track-switching acceptance.
+Physical multi-Track A/B/A, reconnect, Lowthresh motor/LCD, LOCK/unlock and ninth-Track list paging passed on 2026-10-07 (multitrack_hardware_verification.json). These tests did not cover Plugin control pages. The reported cross-control-page overwrite is fixed in source with automated eight-page/128-target coverage and disconnected native verification; physical re-LEARN/page recall validation is pending.

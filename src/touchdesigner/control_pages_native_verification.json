@@ -1,0 +1,13 @@
+{
+  "native_page_recall": true,
+  "native_empty_page_input_blocked": true,
+  "independent_target_writes": true,
+  "tox_reload_retains_offpage_targets": true,
+  "errors": "",
+  "physical_acceptance": false,
+  "unit_tests": 162,
+  "eight_pages_128_targets_automated": true,
+  "generic_export_empty": true,
+  "export": "exports/roto_python.28.tox",
+  "project": "roto_control_python.44.toe"
+}

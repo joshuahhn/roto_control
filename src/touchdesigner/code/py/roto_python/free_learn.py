@@ -128,6 +128,7 @@ class FreeLearner:
                 index = e._host.controls[existing].index
             else:
                 used = {target.index for target in e._host.controls.values()} if collection else {0}
+                used.update(t['index'] for t in self.owner.fetch('page_targets',[]))
                 index = next(index for index in range(128,16384) if index not in used)
                 adapter = None if kind == 'knob' else 'push' if mode == 'pulse' else 'toggle'
                 candidate = self.owner.op('controls').module.Controls([dict(kind=kind,slot=1,

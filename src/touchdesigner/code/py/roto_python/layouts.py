@@ -11,8 +11,8 @@ from binding import parameter_value
 
 VERSION=2
 PLUGIN_FIELDS=("group_id","device_id","plugin_name","targets","state")
-FIELDS=('parameter_assignments','assignment_device_id','control_overrides','removed_controls','pending_unmaps','needs_relearn','control_catalog','pending_unmap_identities')
-DEFAULTS=([],None,{},[],[],(),[],[])
+FIELDS=('parameter_assignments','assignment_device_id','control_overrides','removed_controls','pending_unmaps','needs_relearn','control_catalog','pending_unmap_identities','page_targets')
+DEFAULTS=([],None,{},[],[],(),[],[],[])
 
 class Layouts:
     def __init__(self, extension):
@@ -30,6 +30,7 @@ class Layouts:
         data=self.migrate(data)
         self.validate(data)
         self.data=copy.deepcopy(data)
+        self.owner.store('page_targets',copy.deepcopy(self.plugin()['state'].get('page_targets',[])))
         self.save();self.attach();self.menu()
 
     @staticmethod
@@ -45,6 +46,13 @@ class Layouts:
                 track=dict(id=track_id,name=old['track_name'],active_plugin=plugin['id'],plugins=[plugin])
                 records.append(dict(id=old['id'],name=old['name'],active_track=track_id,tracks=[track]))
             data.update(version=VERSION,records=records)
+        if data.get('version')==VERSION:
+            for layout in data['records']:
+                for track in layout['tracks']:
+                    for plugin in track['plugins']:
+                        library={t['id']:t for t in plugin['state'].get('page_targets',[])}
+                        library.update({t['id']:copy.deepcopy(t) for t in plugin['targets']})
+                        plugin['state']['page_targets']=list(library.values())
         return data
 
     @staticmethod
@@ -160,6 +168,11 @@ class Layouts:
         if self.legacy or self.mutating or self.ext._restore_pending or not getattr(self.ext,"_layout_ready",True) or not (force or getattr(self.ext,"_layout_dirty",False)):return
         old=self.record()
         record=self.snapshot(old['id'],old['name'])
+        removed=set(self.owner.fetch('removed_controls',[]))
+        library={t['id']:t for t in self.owner.fetch('page_targets',[]) if t['id'] not in removed}
+        library.update({t['id']:copy.deepcopy(t) for t in record['targets']})
+        self.owner.store('page_targets',list(library.values()))
+        record['state']['page_targets']=copy.deepcopy(list(library.values()))
         self.plugin().update({key:record[key] for key in PLUGIN_FIELDS})
         self.track()['name']=record['track_name']
         self.save()
@@ -381,6 +394,65 @@ class Layouts:
     def all_plugins(self):
         return (p for layout in self.data['records'] for track in layout['tracks'] for p in track['plugins'])
 
+    def page_changed(self):
+        """Normal Plugin arrows announce a new page, but not an absolute index.
+
+        Keep all parameter definitions; current slots are rebuilt solely from
+        CONTROL MAPPED hashes. An empty page must never route the previous page.
+        """
+        self.capture(force=True)
+        ext=self.ext;host=ext._host
+        if ext._collection is None:return
+        self.mutating=True
+        try:
+            for watcher in self.owner.ops('base_targets/watch_*'):watcher.par.active=False
+            learner=getattr(ext,'_free_learner',None)
+            if learner:
+                learner.pending=None;learner.last_parameter=None
+            for mapping in (ext._collection.ids,ext._collection.bindings,ext._collection.modes,
+                            ext._collection.button_types,ext._collection.paths,ext._collection.errors,ext._collection.indices):
+                mapping.clear()
+            host.controls.clear();host._parts.clear();host._sync()
+            # Complete a partially transmitted JSON line, discard queued old feedback.
+            pending=ext._pending
+            ext._pending=(pending.split(b'\n',1)[0]+b'\n') if pending and not pending.startswith(b'{"midi":') else b''
+            self.confirmed=False;self.touched.clear()
+            self.plugin()['targets']=[]
+            self.owner.store('parameter_assignments',[]);self.owner.store('control_catalog',[])
+            self.owner.par.Value.enable=self.owner.par.Offerparameter.enable=False
+            inspector=self.owner.op('inspector')
+            if inspector is not None:
+                inspector.store('pending_clear',None)
+                inspector.store('action_status','Control page changed; awaiting mapping reports')
+            ext._output_values=None;ext._layout_dirty=True
+            host.last_event='Control page changed; awaiting mapping reports'
+        finally:self.mutating=False
+        self.capture(force=True);ext._publish()
+
+    def recall_page_target(self,data):
+        """Resolve a saved Plugin parameter independently of its last physical slot."""
+        kind='button' if data[8] else 'knob';slot=data[9]+1
+        index=(data[0]<<7)|data[1];ext=self.ext
+        target=ext._host.controls.get((kind,slot))
+        if target is not None and target.index==index and digest(target.target_id,6)==data[2:8]:return
+        removed=set(self.owner.fetch('removed_controls',[]))
+        saved=next((t for t in self.owner.fetch('page_targets',[]) if t['id'] not in removed
+                    and t['kind']==kind and t['index']==index and digest(t['identity'],6)==data[2:8]),None)
+        if saved is None:return
+        record=dict(saved,slot=slot)
+        specs,missing=self.resolve({'targets':[record]})
+        if missing:
+            ext._last_error='Control page target unavailable: '+record['parameter'];return
+        spec=specs[0];parameter=spec['parameter']
+        if (list(getattr(parameter,'menuNames',None) or [])!=record.get('menu_names',[]) or
+                list(getattr(parameter,'menuLabels',None) or [])!=record.get('menu_labels',[])):
+            ext._last_error='Control page Menu choices changed; re-LEARN required';return
+        ext.AssignParameter(kind,slot,parameter,_id=record['id'],_wire_index=index,
+                            _hardware_mapped=True,_saved_spec=spec)
+        ext._host.controls[kind,slot].target_id=record['identity']
+        ext._layout_dirty=True
+        self.capture(force=True)
+
     def receive(self,message):
         message=tuple(message)
         if len(message)==3 and message[0]==191 and 52<=message[1]<=59 and 0<=message[2]<128:
@@ -392,13 +464,19 @@ class Layouts:
             if group==11 and command==13 and len(data)==1 and data[0] in (0,1):self.locked=bool(data[0]);return True
             if group==12 or (group==10 and command==2) or (group==11 and command==1):self.locked=False;self.touched.clear()
             return False
-        if group==11 and command==11 and len(data)==11:
+        if group==11 and command==1 and self.ext._host.connected:
+            self.page_changed()
+        if group==10 and command in (20,21) and not data and self.ext._host.plugin:
+            self.page_changed();return True
+        if group==11 and command==11 and len(data)==11 and data[8] in (0,1) and 0<=data[9]<8 and data[10]==0:
+            try:self.recall_page_target(data)
+            except ValueError as exc:self.ext._last_error=str(exc)
             pending={tuple(key) for key in self.owner.fetch('pending_unmaps',[])}
             for removed in self.owner.fetch('pending_unmap_identities',[]):
                 key=(removed['kind'],removed['slot'])
                 if key not in pending or key in self.ext._host.controls:continue
                 if data[:2]==(removed['index']>>7,removed['index']&127) and data[2:8]==digest(removed['identity'],6) and data[8:]==(int(removed['kind']=='button'),removed['slot']-1,0):
-                    ambiguous=any(t.get('identity')==removed['identity'] and t['index']==removed['index'] for r in self.all_plugins() if r['id']!=self.plugin()['id'] for t in r['targets'])
+                    ambiguous=any(t.get('identity')==removed['identity'] and t['index']==removed['index'] for r in self.all_plugins() if r['id']!=self.plugin()['id'] for t in r['state'].get('page_targets',r['targets']))
                     if ambiguous:
                         self.ext._last_error='Cannot attribute removed-target acknowledgement uniquely to this Layout'
                         return True
@@ -443,6 +521,6 @@ class Layouts:
         if not self.confirmed and self.ext._host.mapped:
             self.confirmed=True
             # Selection has current-layout parameter evidence. Scoped offline removals can now be sent.
-            for kind,slot in self.owner.fetch('pending_unmaps',[]):
-                if (kind,slot) not in self.ext._host.controls:self.ext._host._command(11,14,(int(kind=='button'),slot-1))
+            # Offline deletions reconcile only on their exact removed-target report.
+            # A ready slot is not evidence for other slots on this control page.
             self.ext._host.last_event=self.context()['label']+': controls recalled'

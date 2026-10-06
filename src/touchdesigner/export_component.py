@@ -54,6 +54,7 @@ def export(controller, destination):
         clone.store('pending_unmap_identities',[])
         clone.store('assignment_device_id',None)
         clone.store('parameter_assignments', [])
+        clone.store('page_targets', [])
         clone.store('control_catalog', [])
         clone.store('removed_controls', [])
         clone.store('pending_unmaps', [])

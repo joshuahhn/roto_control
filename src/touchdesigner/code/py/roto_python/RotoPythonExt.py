@@ -209,7 +209,7 @@ class RotoPythonExt:
                 if not suspended:
                     # Saved parameter Layouts remain in registry; legacy hook owns
                     # its independent overlays after opting out of Layout mode.
-                    for field,value in (('parameter_assignments',[]),('assignment_device_id',None),('control_overrides',{}),('removed_controls',[]),('pending_unmaps',[]),('pending_unmap_identities',[]),('needs_relearn',()),('control_catalog',[])):
+                    for field,value in (('parameter_assignments',[]),('assignment_device_id',None),('control_overrides',{}),('removed_controls',[]),('pending_unmaps',[]),('pending_unmap_identities',[]),('needs_relearn',()),('control_catalog',[]),('page_targets',[])):
                         self.ownerComp.store(field,value)
                 manager.legacy=True;manager.attach()
                 self.ownerComp.store('layout_registry_suspended',True)
@@ -419,7 +419,7 @@ class RotoPythonExt:
                                button_type=record['button_type'], index=record.get('index',record['slot']-1+(8 if record['kind']=='button' else 0))))
         return result
 
-    def AssignParameter(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None, _hardware_mapped=False):
+    def AssignParameter(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None, _hardware_mapped=False, _saved_spec=None):
         """Assign one slot, infer metadata and persist it; preserve other controls."""
         self._layout_dirty = True
         if kind not in ('knob', 'button') or type(slot) is not int or not 1 <= slot <= 8:
@@ -430,8 +430,12 @@ class RotoPythonExt:
         target = self._host.controls.get(key) if self._collection is not None else self._host if key == ('knob', 1) else None
         if target is not None and target.touched and not self._host.learning:
             raise ValueError('Release the control before assigning')
+        manager=getattr(self,'_layouts',None)
+        if _hardware_mapped and manager is not None and not manager.legacy:
+            manager.capture(force=True)
+            self._layout_dirty=True
         old = self._collection.bindings.get(key) if self._collection is not None else self._binding if key == ('knob', 1) else None
-        if old is not None and old.parameter == parameter and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
+        if old is not None and (_id is None or old.id==_id) and old.parameter == parameter and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
             return self.GetControlState(old.id)
         style = getattr(parameter, 'style', '')
         mode = 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'
@@ -440,6 +444,9 @@ class RotoPythonExt:
         import uuid
         id = _id or 'parameter.'+uuid.uuid4().hex
         spec = dict(kind=kind, slot=slot, id=id, parameter=parameter, mode=mode, button_type=adapter)
+        if _saved_spec is not None:
+            spec.update({k:v for k,v in _saved_spec.items() if k not in ('kind','slot','id','parameter','identity')})
+            mode=spec['mode'];adapter=spec['button_type']
         if _wire_index is not None:
             spec['index'] = _wire_index
         # Validate the candidate and duplicate Par/bind-master ownership first.
@@ -506,7 +513,7 @@ class RotoPythonExt:
         for row in range(table.numRows-1,0,-1):
             if table[row,'kind'].val == kind and int(table[row,'slot'].val) == slot:
                 table.deleteRow(row)
-        if old is not None:
+        if old is not None and not _hardware_mapped:
             removed = set(self.ownerComp.fetch('removed_controls', []));removed.add(old.id)
             self.ownerComp.store('removed_controls', sorted(removed))
         pending = {tuple(value) for value in self.ownerComp.fetch('pending_unmaps', [])};pending.discard(key)
