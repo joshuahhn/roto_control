@@ -1,12 +1,14 @@
 # Compact Inspector build plan
 
-2026-10-08. The initial scout below was read-only. Milestones 1–2 are implemented; milestones 3–6 remain planned.
+2026-10-08. The initial scout below was read-only. Milestones 1–4 are implemented; milestones 5–6 remain planned.
 
-Milestone 1 adds mapping health, shared commands/capabilities, bounded native definition caching and root callback cleanup in both views. Pure tests and isolated native fixtures pass, including automatic touch/mode updates and invalid inactive targets. See [HEALTH_REPORT.md](HEALTH_REPORT.md) for evidence and performance scope. Milestone 2 adds a separate collapsible Mapping draft and validated Range/Mode/Input configuration. The header now uses Device-first dropdowns with Layout | Track below. See [MAPPING_REPORT.md](MAPPING_REPORT.md). The old Inspector remains available; target assignment and native parameter definition editing remain later work.
+Milestone 1 adds mapping health, shared commands/capabilities, bounded native definition caching and root callback cleanup in both views. Pure tests and isolated native fixtures pass, including automatic touch/mode updates and invalid inactive targets. See [HEALTH_REPORT.md](HEALTH_REPORT.md) for evidence and performance scope. Milestone 2 adds a separate collapsible Mapping draft and validated Range/Mode/Input configuration. The header now uses Device-first dropdowns with Layout | Track below. See [MAPPING_REPORT.md](MAPPING_REPORT.md). Milestone 3 adds shared bounded target discovery, explicit assignment/retargeting and typed Value controls; see [TARGET_REPORT.md](TARGET_REPORT.md). Milestone 4 adds filters, Details, scoped Clear Device and Reveal/Repair; see [PARITY_REPORT.md](PARITY_REPORT.md). The old Inspector remains available; replacement acceptance and native parameter definition editing remain later work.
+
+Native window resize deformation in both the main Inspector and Popup is unresolved and deferred by the user in [issue #6](https://github.com/joshuahhn/roto_control/issues/6). It does not block other milestones; native visual acceptance remains required before replacement.
 
 ## Outcome and scope
 
-Retain the compact vertical list and Fold/Popup presentation while restoring the existing Inspector's assignment, configuration and diagnostic capabilities. Use one editor with Value, Mapping and Advanced sections. Expanded content scrolls inside the existing window; window dimensions remain under the user's control. Keep 24px actions, 12px side insets and 6px gaps as the starting design, not a restriction on future fields.
+Retain the compact vertical list and Fold/Popup presentation while restoring the existing Inspector's assignment, configuration and diagnostic capabilities. Use one editor with Value, Mapping and Advanced sections. Fold content scrolls inside the existing window. Popup sections add/remove only their height delta downward; manual width/height remain independent. Keep 24px actions, 12px side insets and 6px gaps as the starting design, not a restriction on future fields.
 
 Replacement requires target assignment/replacement, compatible mapping Mode, PUSH/TOGGLE adapter, mapping Range, mapping health, COMP/callback filters, scoped Clear All and diagnostics. Native custom-parameter definition/Style editing is additional scope: the old Inspector does not perform native Style conversion.
 
@@ -60,7 +62,7 @@ The controller is the only authoritative mapping store. Picker tables and caches
 | User operation | Shared command / existing API | Required behavior |
 | --- | --- | --- |
 | Browse | Existing Choices/GetCatalog | Never changes routing; inactive state reads as saved/browsed, not a fabricated hardware ACK |
-| Value Apply | Existing `Commit` -> `SetValue` | Validate native type/range, active context, LEARN/touch and draft token; unchanged draft does not rewind live Value |
+| Live Value edit | Existing `Commit` -> `SetValue` | Validate native type/range, active context, LEARN/touch and draft token; unchanged draft does not rewind live Value |
 | Configure mapping | Proposed `Configure(context, slot, patch, token)` -> `ConfigureControl` | Submit compatible range/mode/input changes together; validation and re-LEARN remain controller-owned |
 | Assign/retarget | Proposed `Assign(context, slot, target_handle, token)` -> `AssignParameter` | Support empty slots; revalidate OP/Par and duplicate ownership at execution; preserve other registrations |
 | Ping / Clear | Existing methods, delegated to shared commands | Preserve current guards/confirmation; offer is not an ACK; Clear keeps target Value |
@@ -121,19 +123,31 @@ For each milestone, use the skill's build sequence: infrastructure -> source mod
 ## Cache, lifecycle and verification
 
 - Keep the existing four-context model LRU and one frame-end scheduled refresh. Allocate each section once per editor host and reuse it. Four existing hosts are the maximum, not one editor per slot.
-- Picker uses at most 24 visible result rows per host, backed by the shared on-demand catalog. Bound its cache by both 32 COMP parameter pages and 4,096 entries; release OP/Par references on eviction/disconnect and refresh/revalidate before committing. Large uncached discovery uses a cancellable, finite job with one pending continuation and a proposed 2ms work budget per event-loop slice. It is initiated by opening/refreshing the picker, not by permanent frame polling. Context/session/query generation changes cancel old results. These limits are defaults to test, not measured optimum values. Typing filters the current snapshot without rescanning every frame.
+- Picker uses at most 24 visible result rows per host, backed by the shared on-demand catalog. Bound its cache by both 32 scope/kind snapshots and 4,096 entries; release OP/Par references on eviction/disconnect and refresh/revalidate before committing. Large uncached discovery uses a cancellable, finite job with one pending continuation and a cooperative 2ms work budget per event-loop slice. It is initiated by opening/refreshing the picker, not by permanent frame polling. Context/session/query generation changes cancel old results. These limits are defaults to test, not measured optimum values. Typing filters the current snapshot without rescanning every frame.
 - Subscribe only to relevant owners/parameters. Closed/hidden sections defer text writes. Diagnostics RX/TX counters are read on open/refresh, not added to hot observers.
 - New caches, candidate tables, confirmation tokens, target handles and draft destinations must clear during generic export. Reload must restore exactly two view subscriptions and no embedded controller or user destinations.
 - Pure tests exercise commands/drafts with fake adapters; native fixtures use isolated disconnected controllers and captured protocol output. Do not delete or reconfigure the user's current real mappings merely to test removal or configuration.
 - Test stale drafts/session/context/target deletion, changing Menu options, mixed Int/Float/Menu/Toggle/Pulse/callback targets, touched controls, LEARN on/off, disconnect/reconnect and partial Clear All failure. Confirm that UI refresh cannot execute business Pulse or echo a second write.
-- Re-run the 230-runtime/33-current-Inspector baseline plus meaningful new tests; run `git diff --check`. Review operator errors, callback/reference graphs, actual sizes, annotation containment/gaps, names and file dependencies after each milestone.
+- Re-run the 230-runtime/79-current-Inspector baseline plus meaningful new tests; run `git diff --check`. Review operator errors, callback/reference graphs, actual sizes, annotation containment/gaps, names and file dependencies after each milestone.
 - Before declaring replacement, run matched idle/redraw/editor/context/picker workloads and a 30-minute fixture soak. Log operator/subscriber/cache/queue counts and whole-process memory, plus sync/dispatch/native-render timing separately. Compare against a fresh baseline in the same project; investigate a >10% p95 regression rather than assuming that the historical 0.395ms sync result guarantees rendering performance. Native OS X/reopen churn is a separate scenario.
 - User hardware acceptance covers forgotten-map Ping/ACK, knob Range re-LEARN, button input adapters and Menu behavior, then all sixteen slots/cross-Device isolation. Sent metadata and unmap requests alone do not establish persistent hardware success.
 
-The first implementation slice is Milestone 1. Finish and inspect that slice before expanding the editor or changing parameter definitions.
+The next implementation slice is Milestone 5: replacement acceptance. Milestones 1–4 are implemented; the deferred resize bug remains tracked separately, and parameter definition changes remain later work.
 
 ## Source references
 
 - [Current compact UI](ui.py), [shared live adapter](live_model.py), [builders](build_live.py), [export lifecycle](export_live.py).
 - [Existing Inspector operations](../../code/py/roto_python/inspector/inspector_data.py), [native menu callbacks](../../code/py/roto_python/inspector/lister_callbacks.py), [controller APIs](../../code/py/roto_python/RotoPythonExt.py).
 - [Inspector semantics](../../docs/functions/inspector.md), [current verification](LIVE_REPORT.md), [historical mock stress](SHARED_MODEL_REPORT.md).
+
+## Additional integration investigations
+
+User requested [Serial API feasibility/read-back (#7)](https://github.com/joshuahhn/roto_control/issues/7) and [CHOP/binding takeover with selectable synchronization (#8)](https://github.com/joshuahhn/roto_control/issues/8). Both require scoped design/prototype evidence before extending the production host. The latter separates source ownership from target sync strategy and coordinates with runtime BIND ownership issue #5. They do not establish that EXPRESSION/EXPORT/non-Par masters are writable today, and do not supersede the deferred resize issue. The Mapping label is now HW Type for the declared local button RX adapter.
+
+## In-window header dropdown refinement
+
+After two physical traces show missing first-item releases and a timing-only trial fails, replace the three floating header menus with one bounded panel per Inspector root. Keep existing selector IDs/guards and read-only browsing. External builder: build_context_menu.py; pure row pool/capacity: context_menu.py; UI dispatch in ui.py. Reuse eight rows and native MDI icons, add bounded paging/wheel callbacks and scoped ESC dismissal, then verify same window, no dimension/routing/session changes, generic scrubbing and native geometry. Physical input acceptance remains pending; resize issue #6 stays deferred.
+
+## Milestone 5 acceptance progress
+
+Finite matched-frame/RSS/16-slot runners and native parity rechecks are implemented. The first soak stopped after 352 seconds when Popup height reached 2074px for 178px content. The collapse/reopen viewport-cache race is fixed and reproduced before/after; the full 30-minute gate remains pending. Source/evidence and physical gates are in REPLACEMENT_REPORT.md and replacement_physical_gates.json. Real production data is restored.

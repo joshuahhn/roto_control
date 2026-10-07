@@ -1,10 +1,10 @@
 """Dropdown opening never cycles; selection is ID-based and stale-safe."""
 from types import SimpleNamespace
 from unittest import TestCase
-from unittest.mock import patch
 from live_model import ControllerCatalog
 from test_live_model import Adapter,KEY,state
 from ui import InspectorView
+from context_menu import Dropdown
 
 class MenuPar:
     def __init__(self,value,names,labels):self.val=value;self.menuNames=names;self.menuLabels=labels
@@ -20,34 +20,41 @@ class DropdownTests(TestCase):
         model=ControllerCatalog(self.adapter);model.GetCatalog(KEY)
         self.view=InspectorView.__new__(InspectorView);v=self.view
         v._model=model;v._context=KEY;v._menu_generation=0;v._follow_routing=True
+        v._context_menu=None
         v.ownerComp=SimpleNamespace(par=Pars(**{n:MenuPar(KEY[i],['device','other'] if n=='Device' else [KEY[i]],['Same name','Same name'] if n=='Device' else [n]) for i,n in enumerate(('Layout','Track','Device'))}))
         v.Key=lambda:tuple(getattr(v.ownerComp.par,n).eval() for n in ('Layout','Track','Device'))
         v.ConfigureMenus=lambda key:None;v.OnContext=lambda:None
-        self.opened=[];popup=SimpleNamespace(Open=lambda **kwargs:self.opened.append(dict(kwargs,details=kwargs['callbackDetails'])))
-        self.patch=patch('ui.op',SimpleNamespace(TDResources=SimpleNamespace(op=lambda name:popup)),create=True);self.patch.start();self.addCleanup(self.patch.stop)
+        panel=SimpleNamespace(y=200,par=SimpleNamespace(y=MenuPar(200,[],[])),op=lambda path:SimpleNamespace(par=SimpleNamespace(text='',display=False)))
+        v.ownerComp.op=lambda name:panel
+        self.opened=[];v._render_context_menu=lambda:self.opened.append(v._context_menu)
+        def open_menu(items,callback,details,checked,host,anchor):
+            v.CloseContextMenu();v._menu_panel=panel;v._menu_callback=callback
+            v._context_menu=Dropdown(items,details,checked);v._render_context_menu();return True
+        v.OpenInlineMenu=open_menu
     def test_all_three_header_buttons_open_dropdown_without_cycling(self):
         for name in ('Device','Layout','Track'):
             self.assertTrue(self.view.Action('context_'+name));self.assertEqual(self.view.Key(),KEY)
-            self.assertEqual(self.opened[-1]['details']['name'],name)
+            self.assertEqual(self.opened[-1].details['name'],name)
         self.assertEqual(self.adapter.active,KEY)
     def test_duplicate_labels_resolve_correct_id_and_keep_hardware_route(self):
         self.view.OpenContextMenu('Device');menu=self.opened[-1]
-        self.assertEqual(menu['items'],['Same name (1)','Same name (2)'])
-        self.assertTrue(menu['callback'](dict(item=menu['items'][1],details=menu['details'])))
+        self.assertEqual(menu.items,('Same name (1)','Same name (2)'))
+        self.assertTrue(self.view.SelectContextItem(1))
+        self.assertIsNone(self.view._context_menu)
         self.assertEqual(self.view.Key(),self.other);self.assertFalse(self.view._follow_routing)
         self.assertEqual(self.adapter.active,KEY);self.assertEqual(self.adapter.writes,[])
     def test_stale_menu_after_session_change_or_new_menu_is_ignored(self):
         self.view.OpenContextMenu('Device');menu=self.opened[-1]
         self.adapter.session+=1;self.view._model.Sync()
-        self.assertFalse(menu['callback'](dict(item=menu['items'][1],details=menu['details'])))
+        self.assertFalse(self.view.SelectContextMenu(dict(item=menu.items[1],details=menu.details)))
         self.view.OpenContextMenu('Device');menu=self.opened[-1];self.view.OpenContextMenu('Track')
-        self.assertFalse(menu['callback'](dict(item=menu['items'][1],details=menu['details'])))
+        self.assertFalse(self.view.SelectContextMenu(dict(item=menu.items[1],details=menu.details)))
         self.assertEqual(self.view.Key(),KEY)
     def test_removed_registry_context_does_not_raise_in_menu_callback(self):
         self.view.OpenContextMenu('Device');menu=self.opened[-1]
         def removed(*args):raise ValueError('Context was removed')
         self.adapter.Choices=removed
-        self.assertFalse(menu['callback'](dict(item=menu['items'][1],details=menu['details'])))
+        self.assertFalse(self.view.SelectContextItem(1))
         self.assertEqual(self.view.Key(),KEY)
 
 class IndependentEditorTests(TestCase):

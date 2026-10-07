@@ -1,0 +1,40 @@
+{
+  "baseline": [
+    328,
+    178
+  ],
+  "samples": [
+    {
+      "actual": 312,
+      "opening": 312,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 446,
+      "opening": 446,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 580,
+      "opening": 580,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 714,
+      "opening": 714,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 848,
+      "opening": 848,
+      "content": 178.0,
+      "width": 328
+    }
+  ],
+  "all_pass": false,
+  "production_preserved": true
+}

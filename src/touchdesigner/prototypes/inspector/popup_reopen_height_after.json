@@ -1,0 +1,130 @@
+{
+  "baseline": [
+    328,
+    178
+  ],
+  "samples": [
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    },
+    {
+      "actual": 178,
+      "opening": 178,
+      "content": 178.0,
+      "width": 328
+    }
+  ],
+  "all_pass": true,
+  "production_preserved": true
+}

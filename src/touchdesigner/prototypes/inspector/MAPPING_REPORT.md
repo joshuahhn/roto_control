@@ -30,11 +30,13 @@ The installed-model read-only probe has approximately 0.190ms p95 over 100 sync/
 
 ## Remaining scope
 
-Target assignment/retargeting, typed Menu/Toggle widgets, filters, scoped Clear All, diagnostics and native parameter definition editing remain later milestones. The old Inspector remains necessary. Physical Range re-LEARN, PUSH/TOGGLE adapter acceptance and forgotten-map Ping recovery remain pending. Current native fixtures prove software/API behavior, not physical hardware persistence.
+Target assignment/retargeting and typed Menu/Toggle/integer Value controls are now implemented in Milestone 3; see [TARGET_REPORT.md](TARGET_REPORT.md). Filters, scoped Clear All, diagnostics and native parameter definition editing remain later milestones. The old Inspector remains necessary. Physical Range re-LEARN, PUSH/TOGGLE adapter acceptance and forgotten-map Ping recovery remain pending. Current native fixtures prove software/API behavior, not physical hardware persistence.
 
 ## Resize rendering investigation
 
 A real horizontal native drag reproduced a persistent white strip at the bottom of the Popup in the macOS window capture. Toggling root display and forcing viewport/window cooks did not remove it; those probes are reverted. The direct TD panel capture renders the full dark background correctly. Native UI automation then timed out, preventing a verified post-resize visual fix. Root cause and transient resize flicker remain unresolved; no per-frame forced render, resize polling or window-reopen workaround was installed. Size assertions and unit tests do not establish that this native rendering issue is fixed.
+
+The user subsequently confirmed that both text/icons and fields stretch or move during native resizing in both the main Inspector and Popup. An independent Popup panel root and native anchors were applied live after checkpoint `.8`; the user still reports deformation. Fixed font/icon/row geometry in source and native geometry fixtures do not prove visual correctness during an OS window drag. The 1,200-frame probe in `resize_frame_profile.json` captured zero resize frames, so it provides no resize performance conclusion. The temporary probe was removed. This issue is now deferred at the user's request as [issue #6](https://github.com/joshuahhn/roto_control/issues/6); continue the assignment/typed Value milestone without treating resize as resolved.
 
 ## Remove spare window height
 

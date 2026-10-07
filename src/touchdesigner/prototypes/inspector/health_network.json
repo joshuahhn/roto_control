@@ -1,7 +1,7 @@
 [
   {
     "view": "/inspector_below",
-    "functional_nodes": 30,
+    "functional_nodes": 34,
     "no_overlap": true,
     "groups": [
       [
@@ -15,21 +15,21 @@
         "Events",
         1110,
         -235,
-        530,
+        880,
         175
       ],
       [
         "State",
         1110,
         -25,
-        180,
+        355,
         175
       ]
     ]
   },
   {
     "view": "/inspector_popup",
-    "functional_nodes": 30,
+    "functional_nodes": 34,
     "no_overlap": true,
     "groups": [
       [
@@ -43,14 +43,14 @@
         "Events",
         1110,
         -235,
-        530,
+        880,
         175
       ],
       [
         "State",
         1110,
         -25,
-        180,
+        355,
         175
       ]
     ]

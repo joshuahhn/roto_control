@@ -15,9 +15,12 @@ for name in ('Stepvalues','Resetdemo'):m.par[name].enable=False
 if m.op('demo_actions'):m.op('demo_actions').par.active=False
 command_namespace=dict(globals())
 exec(Path(project.folder+'/prototypes/inspector/build_commands.py').read_text(),command_namespace)
+exec(Path(project.folder+'/prototypes/inspector/build_targets.py').read_text(),dict(globals(),targets_only=True))
 source=m.op('live_model') or m.create(textDAT,'live_model');source.viewer=True;source.par.language='python'
 source.text=Path(project.folder+'/prototypes/inspector/live_model.py').read_text();source.nodeX=275;source.nodeY=-160
 m.par.ext0object="op('./live_model').module.InspectorModel(me)";m.par.ext0promote=True;m.par.initextonstart=True
+for parent in [m.op('base_commands')]+[v for v in views if v]:
+    dat=parent.op('parity') or parent.create(textDAT,'parity');dat.viewer=True;dat.par.language='python';dat.text=Path(project.folder+'/prototypes/inspector/parity.py').read_text()
 m.initializeExtensions(0)
 # Existing controller catalog emits DAT changes only when its contents change.
 cb=m.op('controller_catalog') or m.create(datexecuteDAT,'controller_catalog');cb.viewer=True;cb.par.active=False
@@ -31,11 +34,15 @@ watch.text="def onValueChange(par,prev):\n    parent.InspectorModel.RequestSync(
 config=m.op('controller_changed') or m.create(parameterexecuteDAT,'controller_changed');config.viewer=True
 config.par.op.expr='parent.InspectorModel';config.par.pars='Controller';config.par.custom=True;config.par.builtin=False
 config.text="def onValueChange(par,prev):\n    parent.InspectorModel.RequestSync()\n";config.nodeX=475;config.nodeY=-320
+exec(Path(project.folder+'/prototypes/inspector/build_parity.py').read_text(),dict(globals(),parity_views=views))
 for c in views:
     if c:c.op('ui').text=Path(project.folder+'/prototypes/inspector/ui.py').read_text()
+exec(Path(project.folder+'/prototypes/inspector/isolate_popup.py').read_text(),dict(globals(),isolate_views=views))
 action_namespace=dict(globals(),action_views=views)
 exec(Path(project.folder+'/prototypes/inspector/build_editor_actions.py').read_text(),action_namespace)
 exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text(),dict(globals(),action_views=views))
+exec(Path(project.folder+'/prototypes/inspector/build_targets.py').read_text(),dict(globals(),target_views=views))
+exec(Path(project.folder+'/prototypes/inspector/build_parity.py').read_text(),dict(globals(),parity_views=views))
 for c in views:
     if not c:continue
     c.par.Presentation.menuLabels=['Fold','Popup']

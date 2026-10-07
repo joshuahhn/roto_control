@@ -29,8 +29,9 @@ for view in [op('/inspector_below'),op('/inspector_popup')]:
         section=editor.op('container_mapping');nodes=clean_grid(section);check(nodes)
         annotate(section,'annotate_mapping','Mapping',nodes)
         results.append(dict(editor=editor.path,nodes=len(fields+mapping),mapping_nodes=len(nodes),no_overlap=True))
-    popup=view.op('editor_popup');nodes=[popup.op('container_editor_content'),popup.op('scroll_wheel')]
+    popup=view.op('ui').module.popup_host(view);nodes=[popup.op('container_editor_content'),popup.op('scroll_wheel')]
     check(nodes);annotate(popup,'annotate_viewport','Viewport',nodes)
+    if view.op('base_popup'):annotate(view.op('base_popup'),'annotate_popup','Popup',[popup])
 assert not any(c.errors(recurse=True) for c in [op('/inspector_model'),op('/inspector_below'),op('/inspector_popup')])
 Path(project.folder+'/prototypes/inspector/mapping_network.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results))

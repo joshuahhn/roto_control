@@ -20,6 +20,8 @@ if phase=='start':
     assert ext._process is None
     m.par.Controller=clone;m.Sync();m.Flush();v.ext.InspectorView.style='below';v.Action('slot1')
     editor=v.ext.InspectorView._editors[0];field=editor.op('field_Value');callbacks=field.par.callbacks.eval().module
+    v.Action('value_type');v.Action('value_type')
+    assert not holder.fetch('writes') and holder.par.Amount.eval()==.37
     assert field.par.editmode.eval()=='editablecontinuous'
     assert not editor.op('cancel').par.display.eval() and not editor.op('apply').par.display.eval()
     callbacks.onValueChange(field,'.37','0');assert not holder.fetch('writes')
@@ -36,7 +38,7 @@ elif phase=='finish':
     try:
         assert holder.par.Amount.eval()==.81 and len(holder.fetch('writes'))==2
         assert not m.Stats()['subscriber_errors']
-        result=dict(continuous_user_callback_live_write=True,no_value_apply_cancel=True,
+        result=dict(numeric_type_cycle_no_deferred_write=True,continuous_user_callback_live_write=True,no_value_apply_cancel=True,
                     same_value_deduplicated=True,invalid_range_no_write=True,
                     software_value_follows_field=True,deferred_model_updates_no_echo=True)
     finally:

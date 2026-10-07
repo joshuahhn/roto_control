@@ -17,8 +17,11 @@ def annotate(parent,name,title,operators):
 
 results=[]
 for view in [op('/inspector_below'),op('/inspector_popup')]:
-    events=[view.op(n) for n in ('click_follow','click_presentation','window_opened')]
-    state=[view.op('editor_state')] if view.op('editor_state') else []
+    events=[view.op(n) for n in ('click_follow','click_presentation','window_opened','click_filter','click_clear_device')]
+    events=[o for o in events if o]
+    for i,o in enumerate(events):o.nodeX=1135+i*175;o.nodeY=-210
+    state=[view.op(n) for n in ('editor_state','parity') if view.op(n)]
+    if view.op('clear_device'):view.op('clear_device').nodeX=200;view.op('clear_device').nodeY=-800
     operators=[o for o in view.children if o not in events+state and o.OPType!='annotateCOMP']
     groups=[annotate(view,'annotate_view','View',operators),annotate(view,'annotate_events','Events',events)]
     if state:groups.append(annotate(view,'annotate_state','State',state))

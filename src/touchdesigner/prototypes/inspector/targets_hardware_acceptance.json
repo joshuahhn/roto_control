@@ -1,0 +1,65 @@
+{
+  "source": "user confirmation",
+  "statement": "实体working。 Ping button working.",
+  "physical_assignment_reported_working": true,
+  "physical_ping_reported_working": true,
+  "native_snapshot_is_not_a_new_physical_test": true,
+  "project": "inspector_editor_actions.10.toe",
+  "connected": true,
+  "learning": false,
+  "context": [
+    "3e6fc58800854c43bac1742c9063a87a",
+    "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin.3e6fc58800854c43bac1742c9063a87a"
+  ],
+  "controls": [
+    {
+      "kind": "knob",
+      "slot": 1,
+      "parameter": "Sortcrit",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    {
+      "kind": "button",
+      "slot": 1,
+      "parameter": "Masksource",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    {
+      "kind": "knob",
+      "slot": 2,
+      "parameter": "Lowthresh",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    {
+      "kind": "knob",
+      "slot": 3,
+      "parameter": "Highthresh",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    {
+      "kind": "knob",
+      "slot": 4,
+      "parameter": "Mix",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    {
+      "kind": "knob",
+      "slot": 5,
+      "parameter": "Spanpercent",
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    }
+  ]
+}

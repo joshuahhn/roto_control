@@ -6,7 +6,7 @@
     "no_overlap": true
   },
   {
-    "editor": "/inspector_below/editor_popup/container_editor_content",
+    "editor": "/inspector_below/base_popup/editor_popup/container_editor_content",
     "nodes": 35,
     "mapping_nodes": 20,
     "no_overlap": true
@@ -18,7 +18,7 @@
     "no_overlap": true
   },
   {
-    "editor": "/inspector_popup/editor_popup/container_editor_content",
+    "editor": "/inspector_popup/base_popup/editor_popup/container_editor_content",
     "nodes": 35,
     "mapping_nodes": 20,
     "no_overlap": true

@@ -1,0 +1,308 @@
+{
+  "virtual_mouse_only": true,
+  "physical_item_selection_verified": false,
+  "samples": [
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 6,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 10,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 14,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 18,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 22,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 26,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 30,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 34,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 38,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 42,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 46,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 50,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 54,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 58,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 62,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 66,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 70,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 74,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 78,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 82,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 86,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 90,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 94,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 98,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 102,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 106,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 110,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    },
+    {
+      "button": "Device",
+      "item": "fractal_pop",
+      "expected": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "menu_open_before_item": true,
+      "menu_generation": 114,
+      "model_generation": 2,
+      "actual": "plugin.0ecf82a6ac4342968389361aa5299556",
+      "selected_once": true
+    },
+    {
+      "button": "Layout",
+      "item": "Custom",
+      "expected": "custom",
+      "menu_open_before_item": true,
+      "menu_generation": 118,
+      "model_generation": 2,
+      "actual": "custom",
+      "selected_once": true
+    },
+    {
+      "button": "Track",
+      "item": "TRACK",
+      "expected": "track.136ed89c5a2049928846407687c3d756",
+      "menu_open_before_item": true,
+      "menu_generation": 122,
+      "model_generation": 2,
+      "actual": "track.136ed89c5a2049928846407687c3d756",
+      "selected_once": true
+    }
+  ],
+  "all_selected_once": true,
+  "routing_session_preserved": true
+}

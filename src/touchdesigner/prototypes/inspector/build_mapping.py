@@ -35,7 +35,7 @@ for view in views:
         if not hasattr(draft.par,name):page.appendFloat(name)
     for name in ('Mapmode','Mapinput'):
         if not hasattr(draft.par,name):page.appendStr(name)
-    popup=view.op('editor_popup');content=popup.op('container_editor_content')
+    popup=view.op('ui').module.popup_host(view);content=popup.op('container_editor_content')
     if not content:
         # Copy native panel nodes and their existing callbacks together; all field
         # bindings/actions already use the view's depth-independent shortcut.
@@ -82,7 +82,7 @@ for view in views:
             f.par.bgcolorr=f.par.bgcolorg=f.par.bgcolorb=.08;f.par.textpaddingl=f.par.textpaddingr=6
             f.par.w.expr='(parent().width-80)/2';f.par.x.expr='62+%d*(me.width+6)'%i
             f.par.text.bindExpr="parent.InspectorDemo.op('base_draft').par.Map%s"%name
-        for name,caption,y in [('mode','Mode',66),('input','Input',38)]:
+        for name,caption,y in [('mode','Mode',66),('input','HW Type',38)]:
             text(section,'label_'+name,caption,12,y,44,22)
             b=button(section,'choice_'+name,'','mapping_'+name,62,y,136,22);b.par.w.expr='parent().width-74'
             b.op('text_label').par.text.expr="(parent.InspectorDemo.op('base_draft').par.Map%s.eval().upper() or '—') + (' ▾' if parent().par.enable.eval() else '')"%name
@@ -98,4 +98,17 @@ for view in views:
     for name in ('Layout','Track','Device'):view.op('context_'+name+'/text_cycle').par.text='▾'
     view.op('context_Device').par.y.expr='parent().height-40-me.height'
     for name in ('Layout','Track'):view.op('context_'+name).par.y.expr='parent().height-74-me.height'
+exec(Path(project.folder+'/prototypes/inspector/native_editor_layout.py').read_text(),dict(globals(),layout_views=views))
 print('Mapping sections installed; native window dimensions retained')
+
+# Header dropdown callbacks: release mouse capture before transferring focus.
+header_scope={}
+exec(Path(project.folder+'/prototypes/inspector/context_callbacks.py').read_text(),header_scope)
+for view in views:
+    if not view:continue
+    for name in ('Device','Layout','Track'):
+        cb=view.op('click_context_'+name)
+        cb.par.offtoon=False;cb.par.ontooff=True
+        cb.par.whileon=cb.par.whileoff=cb.par.valuechange=False
+        cb.par.language='python'
+        cb.text=header_scope['header_callback_source'](name)

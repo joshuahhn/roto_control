@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-08",
+  "range_relearn": {
+    "status": "not_tested",
+    "evidence": "User replied 未試 to new Inspector Mapping Range / Apply / controller re-LEARN question"
+  },
+  "typed_live_value": {
+    "status": "accepted",
+    "evidence": "User confirmed real K2 value and controller LEARN alert updates earlier in this thread"
+  },
+  "target_assignment_and_ping": {
+    "status": "accepted",
+    "evidence": "User confirmed target assignment and Ping earlier in this thread; see targets_hardware_acceptance.json"
+  },
+  "header_first_click": {
+    "status": "accepted",
+    "evidence": "User confirmed Device/Layout/Track first item clicks; see inline_selector_acceptance.json"
+  },
+  "declared_hw_adapter": {
+    "status": "not_verified",
+    "evidence": "No physical PUSH/TOGGLE adapter acceptance recorded"
+  },
+  "native_resize": {
+    "status": "deferred",
+    "issue": "https://github.com/joshuahhn/roto_control/issues/6"
+  }
+}

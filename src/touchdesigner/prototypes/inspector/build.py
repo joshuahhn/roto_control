@@ -35,6 +35,10 @@ for n in ('Label','Destination'): p.appendStr(n)
 for n in ('Minimum','Maximum','Value'): p.appendFloat(n)
 d.par.Maximum=1
 ui=c.create(textDAT,'ui'); ui.par.language='python'; ui.viewer=True
+state=c.create(textDAT,'editor_state');state.viewer=True;state.par.language='python'
+state.text=Path(project.folder+'/prototypes/inspector/editor_state.py').read_text()
+parity=c.create(textDAT,'parity');parity.viewer=True;parity.par.language='python';parity.text=Path(project.folder+'/prototypes/inspector/parity.py').read_text()
+context=c.create(textDAT,'context_menu');context.viewer=True;context.par.language='python';context.text=Path(project.folder+'/prototypes/inspector/context_menu.py').read_text()
 ui.text=Path(project.folder+'/prototypes/inspector/ui.py').read_text()
 u=ui.module
 
@@ -95,12 +99,13 @@ for i in range(16):
     t=text(row,'text_value','',0,0,40,24,10,u.MUTED); t.par.alignx='right'; t.par.x.expr='parent().width-58'
     t=text(row,'text_arrow','+',0,0,12,24,12,u.MUTED); t.par.x.expr='parent().width-12'
     row.op('text_label').destroy()
-for name,parentcomp in [('editor_below',content),('editor_popup',c)]:
+popupbase=c.create(baseCOMP,'base_popup');popupbase.viewer=popupbase.display=True
+popupbase.nodeX=0;popupbase.nodeY=-320;popupbase.nodeWidth=160;popupbase.nodeHeight=130
+for name,parentcomp in [('editor_below',content),('editor_popup',popupbase)]:
     e=panel(parentcomp,containerCOMP,name,12 if name=='editor_below' else 0,0,210,178,u.SURFACE)
     if name=='editor_below': stretch(e,24)
     else:
-        e.par.display=False
-        e.par.w.expr="parent.InspectorDemo.op('window_editor').contentWidth if parent.InspectorDemo.op('window_editor').isOpen else parent.InspectorDemo.width"
+        e.par.display=True
     t=text(e,'text_empty','Select a control in the Inspector',12,64,186,44,11,u.MUTED); stretch(t,24)
     t.par.type='multiline';t.par.wordwrap=True;t.par.alignx='center'
     t=text(e,'text_heading','',12,151,186,18,9,u.ACCENT); stretch(t,24)
@@ -126,18 +131,21 @@ for name,parentcomp in [('editor_below',content),('editor_popup',c)]:
 if not c.op('window_main'): c.create(windowCOMP,'window_main')
 for name,target,title,w,h in [('window_main','', 'Inspector / '+('Fold' if prototype_style=='below' else 'Popup'),240,390),('window_editor','editor_popup','Edit mapping',240,178)]:
     o=c.op(name) or c.create(windowCOMP,name); o.viewer=True
-    o.par.winop.expr='parent.InspectorDemo' if not target else "parent.InspectorDemo.op('editor_popup')"
+    o.par.winop.expr='parent.InspectorDemo' if not target else "parent.InspectorDemo.op('base_popup/editor_popup')"
     o.par.title=title; o.par.size='custom'; o.par.winw=w; o.par.winh=h; o.par.borders=True; o.par.bordersinsize=False
 cb=c.create(parameterexecuteDAT,'context_changed'); cb.viewer=True; cb.par.op.expr='parent.InspectorDemo'; cb.par.pars='Layout Track Device'; cb.par.builtin=False
 cb.text="def onValueChange(par,prev):\n    parent.InspectorDemo.op('ui').module.context()\n"
 windowcb=c.create(parameterexecuteDAT,'window_opened');windowcb.viewer=True
 windowcb.par.op='window_main';windowcb.par.pars='winopen';windowcb.par.custom=False;windowcb.par.builtin=True
 windowcb.text="def onPulse(par):\n    parent.InspectorDemo.OnWindowOpen()\n"
-for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list([content.op('editor_below'),c.op('editor_popup')]):
+for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list([content.op('editor_below'),u.popup_host(c)]):
     for i,o in enumerate(p.children): o.nodeX=(i%5)*200; o.nodeY=-(i//5)*160
 action_namespace=dict(globals(),action_views=[c])
 exec(Path(project.folder+'/prototypes/inspector/build_editor_actions.py').read_text(),action_namespace)
 exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text(),dict(globals(),action_views=[c]))
+exec(Path(project.folder+'/prototypes/inspector/build_targets.py').read_text(),dict(globals(),target_views=[c]))
+exec(Path(project.folder+'/prototypes/inspector/build_parity.py').read_text(),dict(globals(),parity_views=[c]))
+exec(Path(project.folder+'/prototypes/inspector/build_context_menu.py').read_text(),dict(globals(),context_views=[c],reload_context_views=False))
 c.seq.ext.numBlocks=1;c.par.initextonstart=True
 c.par.ext0object="op('./ui').module.InspectorView(me)";c.par.ext0promote=True
 c.initializeExtensions(0)

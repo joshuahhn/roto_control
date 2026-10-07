@@ -1,0 +1,21 @@
+{
+  "native_build": "2025.33230",
+  "comp_callback_all_filters_readonly": true,
+  "stale_filter_callback_rejected": true,
+  "details_fixed_section_reused": true,
+  "stable_id_target_health_display": true,
+  "diagnostics_counters_on_demand": true,
+  "controller_follow_lock_state": true,
+  "reveal_existing_pane_and_follow_guard": true,
+  "repair_reuses_picker": true,
+  "clear_confirmation_full_active_catalog": true,
+  "clear_cancel_and_repeat_guard": true,
+  "live_value_does_not_expire": true,
+  "config_learn_touch_inactive_guards": true,
+  "partial_failure_exact_ids": true,
+  "other_device_and_target_values_preserved": true,
+  "native_callback_filter_details_clear_without_dispatch": true,
+  "production_catalog_registry_routing_session_preserved": true,
+  "subscribers": 2,
+  "errors": ""
+}

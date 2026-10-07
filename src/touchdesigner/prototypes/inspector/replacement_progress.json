@@ -1,0 +1,53 @@
+{
+  "pid": 67592,
+  "phase": "done",
+  "case": "popup",
+  "elapsed_s": 412.50649699999485,
+  "soak_elapsed_s": 352.0688679580344,
+  "duration_s": 1800.0,
+  "feeds": 3222,
+  "stats": {
+    "received": 0,
+    "changed": 0,
+    "flushes": 3373,
+    "notifications": 6746,
+    "hits": 54974,
+    "misses": 11,
+    "rejected": 0,
+    "cache_contexts": 1,
+    "cache_capacity": 4,
+    "source_contexts": 1,
+    "subscribers": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "scheduled": false,
+    "subscriber_errors": [],
+    "generation": 14,
+    "data_mode": "controller",
+    "sync_calls": 6961
+  },
+  "targets": {
+    "pages": 0,
+    "entries": 0,
+    "jobs": 0,
+    "pending": 0,
+    "errors": []
+  },
+  "maxima": {
+    "cache_contexts": 2,
+    "source_contexts": 2,
+    "pending_contexts": 1,
+    "pending_slots": 14,
+    "subscribers": 2,
+    "targets_pages": 2,
+    "targets_entries": 34,
+    "targets_jobs": 0,
+    "targets_pending": 0,
+    "fixture_midi_pending_bytes": 0,
+    "definition_contexts": 2
+  },
+  "errors": [],
+  "done": true,
+  "production_preserved": true,
+  "reason": "height_bug_investigation"
+}

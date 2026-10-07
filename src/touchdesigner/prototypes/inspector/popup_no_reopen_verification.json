@@ -1,0 +1,18 @@
+{
+  "mapping_target_mapping_collapse_no_open_close_pulses": true,
+  "native_height_deltas": [
+    134,
+    250,
+    134,
+    0
+  ],
+  "width_top_left_main_preserved": true,
+  "production_catalog_session_preserved": true,
+  "native_visual_flash_verified": false,
+  "user_acceptance": {
+    "section_flash_resolved": true,
+    "intermediate_width_change_resolved": true,
+    "source": "User confirmed no flash anymore, then width problem fix",
+    "date": "2026-10-08"
+  }
+}

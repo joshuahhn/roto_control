@@ -1,0 +1,15 @@
+{
+  "source": "selector_item_capture.json",
+  "native_callback_replay_only": true,
+  "first_gesture": {
+    "menu_open": true,
+    "accepted_callbacks": 0
+  },
+  "second_gesture": {
+    "menu_open": true,
+    "accepted_callbacks": 1
+  },
+  "missing_first_selection_reproduced": true,
+  "physical_timing_fix_verified": false,
+  "routing_session_preserved": true
+}

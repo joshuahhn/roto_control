@@ -465,3 +465,158 @@ Actual horizontal native mouse resize reproduced a persistent white bottom strip
 ## Trim Inspector editor spare height (2026-10-08)
 
 User reported unused empty space. Existing Popup native content was 334x318 with a 178px editor. External fit_editor_height.py trims it once to 334x178, preserving width/top-left/main Inspector. Native expand/collapse passes 334x178 -> 334x312 -> 334x178 with viewport matching editor content and unchanged production catalog. Manual resizing remains free. No runtime source/topology changes or new tests; existing 230 runtime/68 Inspector results remain the last test baseline. Updated generic exports and checkpoint inspector_editor_actions.7.toe through live TD. Prior native repaint issue remains unresolved. No commit/push.
+
+
+## Ping icon meaning (2026-10-08)
+
+User found the refresh-arrow Ping icon misleading. Changed Ping to the bundled Material Design Icons access-point glyph (F0003), showing outward signal waves; Clear/Mapping actions retain the same icon font. All four existing editor hosts updated, no additional window/operator or command behavior change. Compact 178/312 heights retained. Embedded source/generic exports updated; checkpoint inspector_editor_actions.8.toe. No commit/push.
+
+
+## Native resize deformation deferred (2026-10-08)
+
+User confirmed that main Inspector and Popup resizing deforms text/icons and stretches/moves fields. The independent Popup panel-root and native-anchor trial applied live after `inspector_editor_actions.8.toe` did not resolve the reported behavior. No visual fix or renderer root cause is established. These latest live UI changes are not yet a new saved/exported checkpoint. Existing geometry/pure-test results do not prove native drag rendering. The temporary frame probe was removed; `resize_frame_profile.json` captured 1,200 idle samples and zero resize frames, so resize cost remains unmeasured.
+
+At the user's request, published [issue #6](https://github.com/joshuahhn/roto_control/issues/6) with `bug` and `ready-for-agent`, including reproduction, attempted mitigations and native-window acceptance criteria. Stop investigating resize for now and continue with Milestone 3 target picker/typed Value controls. The issue remains open; old Inspector replacement acceptance remains incomplete. README and build/report notes now reflect the unresolved status. No new live TD changes, binary save/export, commit or push in this issue-recording step.
+
+
+## Compact Inspector target picker / typed Value (2026-10-08)
+
+Milestone 3 is implemented in both Fold and Popup: click Target to open a searchable COMP-scoped picker with six reused rows, explicit Assign/Cancel and paging/Refresh. Empty-slot assignment and retargeting use the existing controller authority; search/select/cancel do not write mappings or Value. Shared scalar discovery has 32 snapshots/4,096 total entries, finite traversal/work bounds, at most two jobs and one pending continuation each, with a cooperative 2ms slice budget. Candidate native/bind-chain definitions are revalidated before Assign. Context/session/target/touch guards, duplicate ownership and old-registration fencing preserve other controls. HW LEARN assignment offers once and reports awaiting ACK without claiming hardware success.
+
+Value uses live Float/integer fields, a checked native Menu dropdown with indexed labels, or ON/OFF Toggle; no Value Apply/Cancel. Changed Menu definitions reject stale callbacks. Pulse stays read-only. Picker/Mapping are mutually exclusive, collapsed content remains 178px, Mapping 312px, picker 428px, with existing Popup downward height delta and Fold scrolling. Hidden result/widget labels and scope/query are scrubbed from generic exports. No extra editor windows, per-frame tree scan or production runtime edits.
+
+230 runtime and 79 Inspector tests pass. Native fixtures, fresh view builder, Mapping/live Value regressions, grouped-network containment/overlap checks and generic source/export reload pass. Production catalog/registry/session remain intact, with two subscribers and no prototype errors. Actual-project discovery slice p95/max 2.064/2.120ms, cached open 0.0107ms, query plus UI 0.249ms and idle sync 0.141ms; no query rescan, node growth in 20 reopen cycles or idle text-write growth. Native rendering/MIDI and long-duration memory are not measured. Physical new assignment/LEARN remains pending. See prototypes/inspector/TARGET_REPORT.md and targets_*.json.
+
+Checkpoint: inspector_editor_actions.10.toe, saved through live TD with generic Inspector tox exports refreshed. One main Inspector retains Popup preference, with no open editor. The independent Popup root/native-anchor trial is now included but still does not resolve native resize deformation; issue #6 remains deferred. Old Inspector replacement and milestones 4–6 remain incomplete. No commit/push.
+
+
+## Value Float / Int cycle and physical assignment / Ping acceptance (2026-10-08)
+
+User requested choosing Float or Int for numeric Value, then specified a cycle action. Both editor presentations now have a compact 48px Float ↔ / Int ↔ button on the existing Value row. The choice is local to the selected editor and defaults to native Style on a different slot. Switching preserves target Value, Style, mapping Range and re-LEARN state; it sends no Value write, including after deferred callbacks. Int input accepts whole numbers; a native Int target still rejects fractional input in Float mode. Menu/Toggle/Pulse keep their appropriate controls. Collapsed/section heights and window count remain unchanged.
+
+Native fixtures pass actual cycle callbacks, integer input for Float, fractional rejection for native Int in Float mode and no deferred writes. 230 runtime / 79 Inspector tests and generic exports pass. User also confirms physical target assignment and Ping working; evidence records the user statement and a read-only current-controller snapshot in prototypes/inspector/targets_hardware_acceptance.json. Range/input-adapter, long-duration stress and full replacement remain separate gates. Latest checkpoint: inspector_editor_actions.11.toe, with updated embedded README and generic exports. No commit/push.
+
+
+## Serial and binding architecture issues / HW Type label (2026-10-08)
+
+Published user-requested issues [#7](https://github.com/joshuahhn/roto_control/issues/7) for optional read-only Serial API integration/transport feasibility and [#8](https://github.com/joshuahhn/roto_control/issues/8) for CHOP/binding-driven value ownership, Roto takeover, configurable inactivity return and direct-Python/reference-expression/native-BIND sync strategies. Both are enhancement/ready-for-agent investigations with public-seam tests, native/physical acceptance and lifecycle/performance gates. #8 coordinates with BIND ownership conflict issue #5; source authority and sync mechanism are separate, and arbitrary existing expressions/exports must not be silently overwritten. No serial or new binding runtime is implemented in this issue-recording step.
+
+Renamed the Mapping field label Input to HW Type in all four existing editor hosts and the external builder. It remains a declared PUSH/TOGGLE RX adapter; this label does not claim hardware auto-detection or configuration writes. Internal parameter/API names and behavior are preserved. Source docs and embedded README/generic exports refreshed; saved through live TD as inspector_editor_actions.15.toe. No new operators/editor windows, runtime behavior change, commit or push.
+
+
+## Popup section opening avoids reopen (2026-10-08)
+
+User reported a close/reopen-like flash when clicking Target or Mapping. Native probe confirms `winh` updates an open window without `winopen`; section expansion redundantly pulsed Open afterward. Removed only that pulse, preserving automatic downward height deltas, independent manual size and top-left position. Regression test fails on the former four Open pulses and passes with zero. Staged native Mapping/Target/Mapping/collapse verifies 134/250/134/0 deltas, unchanged width/top-left/main size, zero Open/Close pulses and unchanged production catalog/session. Native geometry settles after window processing; allow at least two frames between fixture stages. Probe DAT/storage removed.
+
+230 runtime / 80 Inspector tests pass; generic exports refreshed. Saved checkpoint inspector_editor_actions.13.toe. User visual flash acceptance remains pending; this fix does not claim resolution of manual resize deformation in issue #6. No commit/push.
+
+
+## Section resize keeps the current native width (2026-10-08)
+
+User confirms Target/Mapping no longer flash, but width changes in between when pressed. Opening Width can remain stale after native manual resizing; offset changes before width synchronization temporarily apply that stale width. The regression records a 376px manually resized window snapping to 286px under the old ordering, then remaining 376px under the fix. Capture native x/y first, synchronize opening width only if stale, then update vertical offset/height. No Open/Close/Update Settings pulse, polling or native OS bridge is introduced. An Update Settings probe included title-bar height; temporary dimensions were restored and the probe state removed.
+
+230 runtime / 81 Inspector tests and staged native geometry/no-reopen checks pass. Flash disappearance is user-accepted; intermediate-width visual acceptance remains pending. Source Markdown/embedded README/generic exports updated, checkpoint inspector_editor_actions.16.toe. Issue #6 remains deferred. No commit/push.
+
+
+## Section flash and width physical acceptance (2026-10-08)
+
+User confirms the intermediate-width problem is fixed, following confirmation that section-opening flash is gone. Target/Mapping section transitions are now user-accepted for both reported symptoms. Recorded separately from agent geometry/pulse checks in prototypes/inspector/popup_no_reopen_verification.json. Manual window-resize deformation remains deferred in issue #6. Acceptance-record update only; no runtime changes, project save, commit or push.
+
+## Compact Inspector milestone 4 (2026-10-08)
+
+User accepted the section-toggle width fix, then requested the next milestone. Native resize deformation in issue #6 remains deferred.
+
+Added view-local COMP/callback filters, a compact native-icon Details section, stable target IDs/errors, separate view/controller Follow state, LOCK and selected/routing/gate diagnostics. RX/TX/rejected are sampled on open/Refresh. Reveal uses the existing Network Editor with controller Follow OFF; Repair reuses the existing Target picker and still requires explicit Assign.
+
+Clear Device confirms full Layout / Track / Device and all current active registrations, including filtered-out rows. It delegates the existing RemoveAllControls scope, preserving other Devices, target Values and inactive hardware-page libraries. Eight-second single-use confirmation revalidates scope/session/registration/native definitions; LEARN/touch/inactive browsing are blocked. Partial failure reports removed/remaining counts and error.
+
+230 runtime / 87 Inspector tests and isolated native parameter/callback fixtures pass. Production catalog/registry/routing/MIDI session are preserved. Fresh builder no longer rewrites identical parity source (avoiding shared-model reload); two subscriptions remain. Bounded Python measurements: idle sync p95 0.255ms, Details Refresh 0.281ms, Fold close/open pair 0.967ms; operator count stays stable. These do not measure OS rendering, transport or a long-duration soak. See prototypes/inspector/PARITY_REPORT.md and parity_verification.json / parity_performance.json.
+
+Generic Inspector exports and embedded README are refreshed through live TD; active project saved as a checkpoint with one main Inspector, Popup preference and no open editor. Next slice is Milestone 5 replacement acceptance, including matched render/soak and physical configuration re-LEARN gates. Old Inspector remains available. No production runtime changes, commit or push.
+
+## Info hierarchy and physical tab recognition probe (2026-10-08)
+
+User reports intermittent two-click header selectors, difficult uniform Info text, and different hardware FUNC/SEL layouts. They clarified Function means the physical Roto FUNC screen and requested a test file before deciding the Custom Device/registry approach.
+
+Info now uses bold group headings (Mapping / Hardware routing / Technical), muted labels and larger main values. Long path/ID/context fields occupy full-width rows in a scrollable Technical group, with an explicit native wheel callback. Equal detail signatures skip field/layout writes. Native parity/scroll/reopen checks and generic scrubbing pass; the existing section/window footprint is retained.
+
+Thirty native virtual clicks open Device/Layout/Track once each, including switches with a previous menu open. This does not reproduce the intermittent physical click symptom or prove macOS click delivery. Do not claim that bug fixed. A temporary recorder in prototypes/inspector/tab_layout_probe.py captures physical General/Track, Plugin/Device, MIX and normal page messages plus menu click/open/focus/close events. It forwards existing handlers without synthetic sends, routing/Value/mapping changes, new ports or polling. Bounded to 512 events; disk writes only on Save/Mark/Stop. Native start/stop smoke restores hooks and preserves production context/catalog/session. See TAB_LAYOUT_TEST.md and selector_click_verification.json.
+
+230 runtime / 92 Inspector tests pass. Before physical capture, generic exports and embedded README are refreshed and checkpoint saved through live TD. Recorder is temporary, not embedded/exported; stop/save it before extension reload or TD restart. Current physical capture lives in the active controller extension's _tab_layout_probe, if present; source Mark/Save/Stop can access it from a freshly executed namespace. User must report actual FUNC/SEL screen names because packets do not prove visible screen state. Registry hierarchy remains Layout -> Track -> Device; special Custom Device and hierarchy changes await this evidence. No commit/push.
+
+
+## Physical tab findings and menu-item clarification (2026-10-08)
+
+Physical FUNC shows T / TRACK, held SEL shows pixelSortV3 / fractal_pop, released LCD shows pixelSortV3 / T. These match Track and Device lists. LCD T is Track; TD Layout also happens to be T. Inspector selectors browse only, and captured Custom browsing did not change active T / T / pixelSortV3 routing. tab_layout_capture.json saved/stopped: 59 events, zero drops/errors/conflicts, original hooks restored. No Custom Device or registry migration is justified by these observations alone.
+
+The user explicitly clarified that menus open, but **selecting an item inside all three menus sometimes takes two clicks**. Earlier header-opening fixtures addressed the wrong step. The temporary header-release trial was withdrawn on disk/live and its throwaway fixture removed. Thirty staged native list mouse-down/release selections pass; single-call virtual clicks do not deliver equivalent list events and must not be mistaken for a physical repro. No selection fix or root cause is established. verify_selector_items.py and selector_item_verification.json preserve routing/session; recorder source now additionally captures native list gestures/click classification/double-click dispatch and SelectContextMenu return acceptance. Temporary hooks must be stopped/saved before rebuilding or reinitializing. Final physical menu-item capture, if active, is selector_item_capture.json in _tab_layout_probe; use source Save/Stop in an isolated namespace.
+
+230 runtime / 93 Inspector tests pass. Generic exports retain original press header callbacks; no new editor windows or production runtime changes. Checkpoint after export/reload is saved through live TD as inspector_editor_actions.19.toe. After saving, the temporary physical recorder was started at selector_item_capture.json; it is not embedded in that checkpoint. Native resize issue #6 remains deferred. No commit/push.
+
+
+## Menu-item native event-order trace (2026-10-08)
+
+User physically reproduced first item click ignored, menu remains open. selector_item_capture.json saved/stopped: 50 events, zero drops/errors/conflicts. First Device/Layout gesture has release endrow=-1 then a new press in the same frame; Track also receives an end before start. No first-item selection callback, DoubleClick or LostFocus occurs; later callbacks are accepted. This identifies native event ordering as the failing boundary, not a rejected Inspector callback. macOS/focus cause remains an inference. The finite replay_selector_item_capture.py reproduces zero accepted callbacks first, one on the subsequent gesture while preserving routing/session; it is a callback-seam replay, not an OS-input regression proof.
+
+Targeted trial now uses header release inside + one deferred TD frame, guarded against close/destruction/context/model/session/menu generation changes and duplicate queued releases. This differs from the earlier withdrawn synchronous release trial. Existing header DATs only; no extension/window rebuild or native resource changes. context_callbacks.py generates fresh builder/export callbacks. Pure cancellation/duplicate checks and native held/release/drag-out + 30 staged item selections pass. Physical fix acceptance remains pending; do not claim fixed from software tests. New temporary recorder, if active, writes selector_item_release_capture.json and must be stopped/saved before any rebuild/reload. Runtime stays connected with one main and no editors. Resize issue #6 remains deferred; no commit/push.
+
+Final trial checks: 230 runtime / 98 Inspector tests, 30 staged header+item selections, 30 header openings, held/release/drag-out cases and generic export/reload pass; prototypes have zero errors, two subscribers, no discovery jobs. The native item fixture uses fully staged header and item gestures; coalesced virtual header clicks occasionally delivered no list gesture after the extra deferred frame and are not an OS-input repro. Physical mouse acceptance remains the remaining gate.
+
+Saved trial checkpoint through live TD: inspector_editor_actions.20.toe (verified exists). After saving, selector_item_release_capture.json recorder started; it remains temporary and outside the saved checkpoint. Save/Stop before rebuilding.
+
+
+## In-window header dropdowns (2026-10-08)
+
+Physical release-plus-one-frame trial failed: first item click still ignored, menu remains open. selector_item_release_capture.json stopped/saved (188 events, zero drops/errors/conflicts); repeated release-before-press remains after menu reopening, actual selection callbacks accepted. The user explicitly requests dropdowns inside the Inspector window. Timing timer removed; no OS/root-cause fix claimed.
+
+Implemented container_context_menu inside each existing Inspector root: fixed 24px native rows, 11px text, MDI checks/arrows, at most eight reused rows. Overlay below the anchored header uses actual button.y, fits rows/footer to available space, and never changes main Window dimensions or opens resource popMenu for these three selectors. Small lists have no unused footer; longer lists support wheel/paging/count. Click outside, scoped ESC, focus loss, other actions, context changes, view switching and Disconnect dismiss. Readonly Text callbacks removed from new labels. Header release-inside opens synchronously; no queued timer. Existing ID/context/session-generation/stale guards remain, browsing never routes hardware.
+
+230 runtime / 98 Inspector tests pass. Native 30 item clicks, header held/release/drag-out, dismissal, same root/no new menu Window, 17-item paging/wheel callback, stale selection/Disconnect, unchanged dimensions/operator count/catalog/routing/session pass. interactMouse wheel did not emit a native wheel event in this TD build; fixture instead verifies the native Panel Execute boundary, so physical wheel acceptance stays pending. Fresh isolated builder passes with same shared model; probe removed and two subscriptions retained. Context network cleanup verifies no overlap/containment. Generic export/reload clears menu fields/checks/keyboard FIFO and retains original production session. Physical first-click and Escape acceptance remain pending. Temporary recorder, if active, is inline_selector_capture.json; Stop/Save before rebuild/reload. No commit/push; resize issue #6 deferred.
+
+Saved final in-window checkpoint through live TD: inspector_editor_actions.21.toe, verified exists. One main open, no Popup editor, dropdown initially closed. After save, inline_selector_capture.json temporary recorder started for physical first-click acceptance; it is outside the saved project and must be stopped/saved before rebuild/reload.
+
+
+## In-window dropdown physical acceptance (2026-10-08)
+
+User confirms all three menus select items with one click. inline_selector_capture.json stopped/saved: 24 events, five item presses and five accepted callbacks, Device/Layout/Track all observed, hardware routing stable, zero drops/logging errors/restoration conflicts. inline_selector_acceptance.json separates this acceptance from physical wheel/OS Escape, which remain unverified. All diagnostic hooks removed; controller connected, two model subscribers. First-item-click bug and same-window header layout accepted. Native resize issue #6 remains deferred; no commit/push.
+
+Acceptance documentation embedded and generic exports refreshed. Verified saved checkpoint: inspector_editor_actions.22.toe. Recorder is stopped; continue from this checkpoint.
+
+
+## 2026-10-08 - Editor dropdowns inside Fold and Popup
+
+User prefers the accepted in-window header dropdowns and requested the same approach in the editor. Value Menu, Mapping Mode and HW Type now reuse the pure Dropdown renderer and first-press row callbacks in their existing editor hosts; openers use release-inside without a timer. Numeric Float/Int remains a cycle; Target picker remains inline. Each view has three fixed eight-row pools, only one active, with above/below placement and bounded paging. Dropdown opening never changes Window dimensions or pulses Open. Main/Fold and Popup dismissal/focus are scoped to their actual Window roots (a nested Fold panelRoot alone does not identify its containing Window).
+
+230 runtime / 106 Inspector tests pass. Native disconnected callback/Menu fixture tests both Fold and Popup: first release opens, first row press selects, live Value dispatch, draft-only Mode/HW Type, preserved geometry/open count, no TDResources floating menu, zero errors and two restored subscribers. Production catalog, registry, session and routing are unchanged. Fixture removed; fresh builder creates all pools with no new open Windows. Generic export/reload checks include empty editor pools, keyboard buffers and embedded callbacks. Source README embedded before export. Physical editor first-click acceptance remains to be checked by user; header first-click acceptance is already confirmed. Resize issue #6 remains deferred. No commit/push.
+
+Saved and verified live checkpoint: `inspector_editor_actions.23.toe`. Generic exports reloaded successfully with empty editor pools and embedded sources. Header paging/dismissal regression checks pass after allowing one native focus-update frame before testing Escape. One main Inspector is open in Popup presentation, editor/dropdowns closed, controller connected, two subscribers, no recorder or fixture left running.
+
+
+## 2026-10-08 - Downward editor dropdowns and excess-height cleanup
+
+User finds upward dropdowns odd and accepts a longer editor, then reports the editor is too long. Editor menus now always open downward. A pure bounded space calculation adds only missing height for at most four visible rows (four visible Menu choices plus paging: 92px extra, 178 -> 270). Controls keep their top-relative positions. Mapping/Picker/Details shift with temporary space. Popup consumes existing free native height first, otherwise expands down with width/top-left retained and no Open pulse. Selection, outside click, Escape, focus loss and Disconnect remove the temporary height; Fold uses its existing scrolling content without enlarging the main Window. Header dropdowns are unchanged.
+
+Observed Popup retained 551px while collapsed editor content used 178px. Applied one-time content fit to both saved Popup hosts, preserving widths 328/240. Updated fit_editor_height.py to close a dropdown first, synchronize actual width before offsets and remove its old Open pulse. Subsequent manual resizing remains free; issue #6 is still deferred. Real K1 snapshot verifies 328x270 with four visible downward rows and paging; collapsed baseline is 328x178. Production Value was not changed by this visual check.
+
+230 runtime / 109 Inspector tests pass. Staged disconnected native fixtures verify both presentations: downward fit, first item selection, temporary editor growth/restored heights, stable Window width/top-left/open count, live Value versus Mapping draft isolation, unchanged production catalog/registry/session/routing, no errors, two restored subscribers. Generic exports and embedded README refreshed. No commit/push.
+
+User clarified that a dropdown does NOT need to display every option at once. Editor capacity is therefore four visible rows; the fixed eight-row pool remains bounded and only four rows are displayed. Remaining items are reachable through wheel/paging/count. Native fixtures verify the last option is reachable and returning to the first page still selects correctly. Header capacity remains eight.
+
+A same-frame menu close/window close could save the expanded Size From Window height, even with Opening Height already collapsed. Generic export now explicitly normalizes the closed host and Opening Height to 178px; reload verification asserts both plus zero temporary menu space. Checkpoint .24 was an intermediate full-eight-row trial; use the subsequent saved checkpoint.
+
+Final clarification: show all options when the existing height can fit them; otherwise use compact paging. Editor capacity is now adaptive: up to eight pooled rows when existing Popup/viewport free height fits, otherwise up to four. The native fixture includes a 342px Popup: all eight rows visible with no footer/no Window growth, then restores the compact baseline. Compact Fold/Popup tests still verify four rows, all remaining options reachable, and 178 -> 270 -> 178 for a base Menu editor.
+
+Final checkpoint saved through live TD: `inspector_editor_actions.26.toe`, verified exists (TD incremented the explicit .25 save). Real K1 review: 328x270 with four visible rows/count, then 328x178 after dismissal; save refreshed after native geometry settled. One main Inspector and compact K1 Popup are open, dropdown closed; production connected, two subscribers, no recorder/fixture.
+
+
+## 2026-10-08 - Replacement probe interrupted; Popup height accumulation fixed
+
+Following next, M5 finite acceptance runners were added on disk: acceptance_metrics.py, acceptance_probe.py and external sample_process_memory.py. Mapping/target/parity native fixtures pass; 230 runtime / 114 Inspector tests pass. Twenty real-data matched frame cases completed. The 1800-second disconnected sixteen-slot soak was stopped at 352 seconds following the user's oversized Popup report; replacement_acceptance.json is explicitly incomplete. Production catalog/registry/routing/session preserved, clone/probe destroyed, RSS sampler stopped. Source report: REPLACEMENT_REPORT.md. User explicitly reports physical Range / Apply / re-LEARN not yet tested; replacement_physical_gates.json records it. Old Inspector retained.
+
+Observed Popup 2074px versus 178px collapsed content. Reproduced exact growth with settled Mapping -> collapse + close/reopen in same tick: native heights 312,446,580,714,848 instead of178. The Window member could update synchronously while Size From Window still held the expanded cache. ui.py now tracks latest intended geometry across async native/viewport settlement; reopen and dropdown free-space decisions prioritize it. One cancellable three-frame run clears the intent and synchronizes a closed host; Disconnect/export cancel it. No extra Window or permanent frame observer. Manual post-settlement dimensions still supply the new base and keep width/top-left.
+
+Native after replay passes20 reopen cycles at178px; fast section/dropdown replay passes30 cycles; manual376x220 ->376x354 ->376x220 plus original-rectangle restoration passes. Deferred-geometry tests cover same-tick deltas and close/reopen. Editor dropdown gestures still pass. Height guards added to the soak runner to reject drift early. Complete30-minute soak remains pending rather than reclassified as pass. Native resize deformation issue6 remains separate/deferred. No commit/push.
+
+The finite harness now also saves/restores each pre-test Popup rectangle and normalizes only its fixture phase to178px. Short smoke captures use a separate artifact prefix so they cannot overwrite the incomplete30-minute result. Dropdown free-space decisions use the current intended viewport height during settlement, avoiding clipping against a stale expanded cache.
+
+Final fixed checkpoint saved/verified through live TD: inspector_editor_actions.27.toe. Generic export/reload passes with empty geometry state/no pending settlement run. Final real K1 Popup328x178; production controller connected, two subscriptions, no acceptance probe/fixture/RSS sampler. Separate popup_height_fix_smoke_acceptance.json completed a10-second fixture phase after shortened matched cases with no errors and production preserved; it is explicitly not the30-minute gate. Complete30-minute replacement acceptance remains pending.

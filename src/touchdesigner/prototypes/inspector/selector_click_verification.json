@@ -1,0 +1,158 @@
+{
+  "virtual_mouse_only": true,
+  "macos_physical_click_delivery_verified": false,
+  "single_click_results": [
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    },
+    {
+      "button": "Device",
+      "open": true,
+      "menu_name": "Device"
+    },
+    {
+      "button": "Layout",
+      "open": true,
+      "menu_name": "Layout"
+    },
+    {
+      "button": "Track",
+      "open": true,
+      "menu_name": "Track"
+    }
+  ],
+  "all_opened_once": true,
+  "routing_session_preserved": true
+}

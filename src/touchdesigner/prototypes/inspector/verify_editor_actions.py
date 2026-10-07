@@ -3,6 +3,14 @@ from pathlib import Path
 import copy
 import json
 
+def horizontal(o):
+    if o.par.hmode.eval()=='anchors':
+        width=o.parent().width
+        left=width*o.par.leftanchor.eval()+o.par.leftoffset.eval()
+        right=width*o.par.rightanchor.eval()+o.par.rightoffset.eval()
+        return left,right-left
+    return o.par.x.eval(),o.par.w.eval()
+
 def verify():
     production=op('/roto_control_python/roto_python')
     model=op('/inspector_model');views=[op('/inspector_below'),op('/inspector_popup')]
@@ -81,14 +89,14 @@ def verify():
                 assert editor.op('container_mapping/'+name+'/text_label').par.font.eval()==view.op('ui').module.ICON_FONT
             ping=editor.op('ping');clear=editor.op('clear');heading=editor.op('text_heading')
             # Closed/hidden panels report zero layout coordinates; inspect expressions.
-            px=ping.par.x.eval();cx=clear.par.x.eval()
-            assert heading.par.x.eval()+heading.par.w.eval()+6<=px
+            px,pw=horizontal(ping);cx,cw=horizontal(clear);hx,hw=horizontal(heading)
+            assert hx+hw+6<=px
             assert px+ping.par.w.eval()+6<=cx and cx+clear.par.w.eval()<=editor.width-12
             assert ping.par.y.eval()==clear.par.y.eval()==148 and ping.par.w.eval()==clear.par.w.eval()==24 and editor.height==178
             cancel=editor.op('cancel');apply=editor.op('apply');status=editor.op('text_status')
             assert cancel.par.y.eval()==apply.par.y.eval()==status.par.y.eval()==6
             assert not cancel.par.display.eval() and not apply.par.display.eval()
-            assert status.par.x.eval()+status.par.w.eval()<=editor.width-12
+            sx,sw=horizontal(status);assert sx+sw<=editor.width-12
             for upper,lower in [('ping','field_Label'),('field_Label','field_Destination'),('field_Destination','field_Minimum'),('field_Minimum','field_Value'),('field_Value','apply')]:
                 assert editor.op(upper).par.y.eval()-editor.op(lower).par.y.eval()-editor.op(lower).par.h.eval()==6
             children=[child for child in editor.children if child.OPType!='annotateCOMP']

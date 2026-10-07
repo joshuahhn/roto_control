@@ -6,6 +6,10 @@ component.viewer=component.display=True;component.par.parentshortcut='InspectorC
 component.nodeX=875;component.nodeY=-40;component.nodeWidth=160;component.nodeHeight=130
 if not hasattr(component.par,'Model'):component.appendCustomPage('Data').appendOP('Model')
 component.par.Model.expr='parent.InspectorModel'
+helper=component.op('parity') or component.create(textDAT,'parity')
+helper.viewer=True;helper.par.language='python';helper_source=Path(project.folder+'/prototypes/inspector/parity.py').read_text()
+if helper.text!=helper_source:helper.text=helper_source
+helper.nodeX=175;helper.nodeY=0;helper.nodeWidth=130;helper.nodeHeight=90
 module=component.op('InspectorCommands') or component.create(textDAT,'InspectorCommands')
 module.viewer=True;module.par.language='python'
 source=Path(project.folder+'/prototypes/inspector/commands.py').read_text();changed=module.text!=source

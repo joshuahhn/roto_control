@@ -2,7 +2,7 @@
 action_views=globals().get('action_views',[op('/inspector_below'),op('/inspector_popup')])
 for view in action_views:
     if not view:continue
-    popup=view.op('editor_popup')
+    popup=view.op('ui').module.popup_host(view)
     for editor in (view.op('container_scroll/container_content/editor_below'),popup.op('container_editor_content') or popup):
         if not editor:continue
         editor.par.h=178

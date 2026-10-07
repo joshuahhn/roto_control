@@ -121,11 +121,25 @@ class ControllerCatalog(CatalogModel):
     def Health(self,context,slot):return self._commands.Health(context,slot)
     def Capabilities(self,context,slot):return self._commands.Capabilities(context,slot)
     def MappingSchema(self,*args):return self._commands.MappingSchema(*args)
+    def ValueSchema(self,*args):return self._commands.ValueSchema(*args)
+    def Assign(self,*args):return self._commands.Assign(*args)
+    def TargetScope(self):return self.adapter.TargetScope()
+    def TargetStart(self,*args):return self.adapter.Targets.Start(*args)
+    def TargetCancel(self,identity):
+        targets=getattr(self.adapter,'Targets',None)
+        if targets:targets.Cancel(identity)
     def Configure(self,*args):return self._commands.Configure(*args)
     def Commit(self,*args):return self._commands.Commit(*args)
     def Ping(self,*args):return self._commands.Ping(*args)
     def CheckClear(self,*args):return self._commands.CheckClear(*args)
     def Clear(self,*args):return self._commands.Clear(*args)
+
+    def PrepareClearDevice(self,*args):return self._commands.PrepareClearDevice(*args)
+    def ClearDevice(self,*args):return self._commands.ClearDevice(*args)
+    def Diagnostics(self):return self.adapter.Diagnostics()
+    def Reveal(self,context,slot,token):
+        context,slot,info=self._commands._target(context,slot,token)
+        return self.adapter.Reveal(info)
 
     def Stats(self):return dict(super().Stats(),data_mode='controller',sync_calls=self._sync_count)
 
@@ -139,6 +153,29 @@ class TDControllerAdapter:
     def __init__(self,owner):self.owner=owner;self._definitions_cache=OrderedDict();self._definition_session=None
     @property
     def controller(self):return self.owner.par.Controller.eval()
+    @property
+    def Targets(self):
+        component=self.owner.op('base_targets')
+        return component.ext.InspectorTargets if component else None
+    def TargetScope(self):
+        c=self.controller
+        if not c:raise ValueError('Choose a controller')
+        focus=c.par.Focuscomp.eval() if hasattr(c.par,'Focuscomp') else None
+        return focus.path if focus else c.parent().path
+    def Assign(self,key,slot,handle):
+        if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
+        c=self.controller
+        if not c:raise ValueError('Choose a controller')
+        kind='knob' if slot<8 else 'button'
+        parameter=self.Targets.Resolve(handle,kind)
+        state=c.AssignParameter(kind,slot%8+1,parameter)
+        message='Assigned · open HW LEARN, then Ping'
+        if c.State['Learning'] and state['connected'] and state['plugin']:
+            try:
+                offered=c.Offerparameter(state['id'])
+                message='Assigned · awaiting hardware ACK' if offered else 'Assigned · Ping was rejected'
+            except Exception as error:message='Assigned · Ping failed: '+str(error)
+        return dict(id=state['id'],message=message)
     def ActiveContext(self):
         c=self.controller
         return tuple(c.GetLayoutContext().get('key') or EMPTY) if c else EMPTY
@@ -146,16 +183,20 @@ class TDControllerAdapter:
         c=self.controller
         if not c:
             self._definitions_cache.clear();self._definition_session=None
+            if self.Targets:self.Targets.Reset()
             return None
         ext=c.ext.RotoPythonExt;follow=getattr(ext,'_follow',None)
         session=(id(ext),getattr(follow,'connection_generation',None))
-        if session!=self._definition_session:self._definitions_cache.clear();self._definition_session=session
+        if session!=self._definition_session:
+            self._definitions_cache.clear();self._definition_session=session
+            if self.Targets:self.Targets.Reset()
         return session
     def Status(self):
         c=self.controller
         if not c:return dict(Connected=False,Learning=False,Label='Choose controller')
         state=c.State
-        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=c.GetLayoutContext()['label'],Active=self.ActiveContext())
+        routing=c.GetLayoutContext();follow=c.GetCompContext()
+        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False))
     def Exists(self,key):
         c=self.controller
         if not c:return key==EMPTY
@@ -219,7 +260,9 @@ class TDControllerAdapter:
                 cache[id]=(signature,definition);info.update(definition);continue
             try:
                 chain=c.op('binding').module.parameter_chain(par)
-                definition['parameter_definition']=tuple((p.owner.id,p.owner.path,p.name,p.style,p.mode.name,p.readOnly,p.min,p.max,p.clampMin,p.clampMax) for p in chain)
+                definition['parameter_definition']=tuple((p.owner.id,p.owner.path,p.name,p.style,p.mode.name,p.readOnly,p.min,p.max,p.clampMin,p.clampMax,tuple(p.menuNames or ()),tuple(p.menuLabels or ())) for p in chain)
+                if par.style=='Menu' and (tuple(par.menuNames or ())!=tuple(info.get('menu_names',())) or tuple(par.menuLabels or ())!=tuple(info.get('menu_labels',()))):
+                    raise ValueError('Menu options changed; assign again and re-LEARN')
                 if par.style in ('Float','Int') and any((p.clampMin and info['minimum']<p.min) or (p.clampMax and info['maximum']>p.max) for p in chain):
                     raise ValueError('Binding range exceeds target or bind master clamp limits')
             except (ValueError,AttributeError) as error:definition['definition_error']=str(error)
@@ -239,6 +282,22 @@ class TDControllerAdapter:
     def Clear(self,key,info):
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
         return self.controller.RemoveControl(info['id'])
+    def ClearDevice(self,key):
+        if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
+        return self.controller.RemoveAllControls()
+    def Diagnostics(self):
+        c=self.controller
+        return dict(state=dict(c.State),routing=dict(c.GetLayoutContext()),follow=dict(c.GetCompContext())) if c else dict(state={},routing={},follow={})
+    def Reveal(self,info):
+        c=self.controller
+        if not c or not info.get('parameter'):raise ValueError('No native target to reveal')
+        if c.GetCompContext().get('enabled'):raise ValueError('Turn off controller Follow before Reveal; pane selection can change routing')
+        target=op(info.get('comp',''))
+        if not target or not target.valid or not getattr(target.par,info['parameter'],None):raise ValueError('Target unavailable; use Target picker to repair')
+        pane=ui.panes.current
+        if not pane or pane.type.name!='NETWORKEDITOR':raise ValueError('Reveal requires an existing Network Editor pane')
+        pane.owner=target
+        return target.path
     def Configure(self,key,info,values):
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
         return self.controller.ConfigureControl(info['id'],**values)
@@ -263,7 +322,7 @@ class InspectorModel(ControllerCatalog):
     def WatchOwners(self):
         c=self.adapter.controller
         if not c:return []
-        owners=[c.op('base_state'),c.op('inspector/title')]
+        owners=[c,c.op('base_state'),c.op('inspector/title')]
         for key in {context for context,_ in self._subscribers.values()}:
             if not self.HasContext(key):continue
             for info in self._info.get(key,[]):
@@ -274,7 +333,7 @@ class InspectorModel(ControllerCatalog):
                     if master and master not in owners:owners.append(master)
         return [o for o in owners if o]
     def WatchPars(self):
-        names={'Learning','Connected','Plugin','Touched','Bindingvalid','Lasterror','Targetid','text'}
+        names={'Learning','Connected','Plugin','Touched','Bindingvalid','Lasterror','Targetid','text','Followcomp','Layout','Track','Plugin','Focuscomp'}
         for key in {context for context,_ in self._subscribers.values()}:
             for info in self._info.get(key,[]):
                 if info.get('parameter'):names.add(info['parameter'])
@@ -302,4 +361,5 @@ class InspectorModel(ControllerCatalog):
     def onDestroyTD(self):
         for pending in (self._queued_run,self._sync_run):
             if pending:pending.kill()
+        if self.adapter.Targets:self.adapter.Targets.Reset()
         self.Shutdown()

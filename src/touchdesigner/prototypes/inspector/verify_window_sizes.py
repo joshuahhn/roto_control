@@ -21,7 +21,7 @@ elif phase=='finish':
         assert (main.contentWidth,main.contentHeight)==(360,430)
         assert (popup.contentWidth,popup.contentHeight)==(286,348)
         assert (popup.x,popup.y+popup.height)==v.fetch('window_size_corner')
-        assert (v.op('editor_popup').width,v.op('editor_popup').height)==(286,348)
+        assert (v.op('ui').module.popup_host(v).width,v.op('ui').module.popup_host(v).height)==(286,348)
         assert u._editors[1].height==312
         assert op('/inspector_model').ActiveContext()==saved['route']
         result=dict(native_popup_resize_independent=True,selection_preserves_popup_size=True,
