@@ -104,8 +104,10 @@ class Host:
         self.last_event = "Target ready; await mapping or LEARN"
 
     def _send(self, message):
-        self.send(tuple(message))
+        if self.send(tuple(message)) is False:
+            return False
         self.tx += 1
+        return True
 
     def _command(self, group, command, data=()):
         self._send(sysex(group, command, data))
@@ -149,10 +151,11 @@ class Host:
             return False
         if self.learning:
             raise ValueError("Exit hardware LEARN before changing display names")
+        plugin_name_changed = plugin_name != self.plugin_name
         self.track_name, self.plugin_name = track_name, plugin_name
         if self.connected:
             self._command(GENERAL, 0x16, text13(self.track_name))
-            if self.plugin:
+            if self.plugin and plugin_name_changed:
                 self._device_details()
                 self._command(PLUGIN, 6)
         return True
@@ -234,7 +237,7 @@ class Host:
             else:
                 self._feedback()
 
-    def receive(self, message):
+    def receive(self, message, control_only=False):
         message = tuple(message)
         if not message or any(type(x) is not int or not 0 <= x <= 255 for x in message):
             self.rejected += 1
@@ -246,6 +249,8 @@ class Host:
                 self.rejected += 1
                 return
             group, command, data = message[5], message[6], message[7:-1]
+            if control_only and group == PLUGIN and command in (0x0B, 0x0E):
+                return
             if group == GENERAL and command == 2:
                 # Ableton-compatible host identity, not a registered TD DAW ID.
                 self._command(GENERAL, 3, (1,))
@@ -293,6 +298,10 @@ class Host:
         if len(message) != 3 or message[0] != 0xBF or any(x > 127 for x in message[1:]):
             return
         cc, value = message[1:]
+        if control_only:
+            if cc == 52:
+                self.touched = value > 0
+            return
         if cc == 52:
             self.touched = value > 0
             if self.touched and self.enabled and self.connected and self.plugin and self.mapped:

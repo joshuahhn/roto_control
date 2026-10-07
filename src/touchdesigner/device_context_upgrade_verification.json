@@ -1,0 +1,64 @@
+{
+  "identity_targets_libraries_preserved": true,
+  "existing_mapping_variants_not_merged": true,
+  "native_parameter_values_preserved": true,
+  "migration_version": 3,
+  "geometry": {
+    "networks": 4,
+    "groups": 18,
+    "operators": 64,
+    "containment": true,
+    "overlaps": false,
+    "backward_wires": false
+  },
+  "pages": [
+    "Connection",
+    "Binding",
+    "Layout"
+  ],
+  "field_count": 16,
+  "errors": "",
+  "generic_export_reload_empty": true,
+  "disconnected": true,
+  "follow_off": true,
+  "no_focus_links": true,
+  "no_user_mapping_backups": true,
+  "no_dat_file_dependencies": true,
+  "embedded_docs_current": true,
+  "callback_reconstruction_and_parameter_return": true,
+  "native_active_device_parameter_callback": true,
+  "fresh_external_builder": true,
+  "final_embedded_docs_match_source": true,
+  "external_reconnect": {
+    "context": {
+      "legacy": false,
+      "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+      "track_id": "track.136ed89c5a2049928846407687c3d756",
+      "plugin_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+      "selected_track_id": "track.136ed89c5a2049928846407687c3d756",
+      "locked": false,
+      "selected_plugin_id": "plugin.c8c74d8f74da4d7396069fadb1e29409",
+      "first_plugin": 0,
+      "plugin_count": 1,
+      "key": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.136ed89c5a2049928846407687c3d756",
+        "plugin.c8c74d8f74da4d7396069fadb1e29409"
+      ],
+      "label": "T / TRACK / PLUGIN"
+    },
+    "target": {
+      "id": "parameter.77fe70e9216349d2b31341cc105d790f",
+      "parameter": "Lowthresh",
+      "value": 0.0934505,
+      "mapped": true,
+      "valid": true,
+      "requires_relearn": false
+    },
+    "connected": true,
+    "plugin": true,
+    "errors": "",
+    "last_error": "",
+    "project": "roto_control_python.57.toe"
+  }
+}

@@ -6,7 +6,7 @@ sys.path.insert(0,str(Path(__file__).parent / "code/py/roto_python"))
 from binding import parameter_value
 from controls import Controls
 from collection_protocol import CollectionHost
-from protocol import digest, sysex
+from protocol import digest, sysex, text13
 import test_assignment
 import test_free_learn
 
@@ -48,12 +48,38 @@ class MenuTests(unittest.TestCase):
             with self.assertRaises(ValueError): Controls([dict(kind='knob',slot=1,id='menu',parameter=p)])
         with self.assertRaises(ValueError): Controls([dict(kind='knob',slot=1,id='menu',parameter=menu(),minimum=1)])
 
-    def ready(self,adapter):
+    def ready(self,adapter,parameter=None):
         e=test_assignment.AssignmentTests().fixture();e._host.learning=False
-        state=e.AssignParameter('button',3,menu(),button_type=adapter)
+        state=e.AssignParameter('button',3,menu() if parameter is None else parameter,button_type=adapter)
         h=e._host;h.connected=h.plugin=True;t=h.controls['button',3]
         h.receive(sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),1,2,0)))
         return e,state
+
+    def test_two_choice_cycle_led_confirms_selected_option_for_both_types(self):
+        for adapter in ('toggle','push'):
+            with self.subTest(adapter=adapter):
+                p=menu();p.menuNames=p.menuNames[:2];p.menuLabels=p.menuLabels[:2];p.val='alpha'
+                e,s=self.ready(adapter,p);sent=[];e._host.send=sent.append
+                e._host.receive((191,22,127))
+                self.assertEqual(p.eval(),'beta')
+                self.assertEqual([m for m in sent if m[:2]==(191,22)][-1],(191,22,127))
+                self.assertIn(sysex(10,24,(1,2,*text13('Beta'))),sent)
+                sent.clear();e.SetValue(0,id=s['id'])
+                self.assertEqual(p.eval(),'alpha')
+                self.assertEqual([m for m in sent if m[:2]==(191,22)][-1],(191,22,0))
+                self.assertIn(sysex(10,24,(1,2,*text13('Alpha'))),sent)
+
+    def test_cycle_led_survives_push_release_and_wraps_to_off(self):
+        e,s=self.ready('push');sent=[];e._host.send=sent.append
+        p=e._collection.bindings['button',3].parameter
+        e._host.receive((191,22,127));e._host.receive((191,22,0))
+        self.assertEqual(p.eval(),'gamma')
+        self.assertTrue(all(m[2]==127 for m in sent if m[:2]==(191,22)))
+        sent.clear();e._host.receive((191,22,127));e._host.receive((191,22,0))
+        self.assertEqual(p.eval(),'alpha')
+        self.assertTrue(all(m[2]==0 for m in sent if m[:2]==(191,22)))
+        sent.clear();e.SetValue(1,id=s['id'])
+        self.assertEqual([m for m in sent if m[:2]==(191,22)][-1],(191,22,127))
 
     def test_push_cycles_wraps_and_ignores_release_or_held_duplicates(self):
         e,s=self.ready('push');p=e._collection.bindings['button',3].parameter

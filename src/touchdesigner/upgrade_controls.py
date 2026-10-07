@@ -155,4 +155,6 @@ def upgrade(parent_comp, source_dir):
     exec(compile(path.read_text(),str(path),"exec"),layout_ns)
     layout_ns["layout"](parent_comp)
     comp.par.reinitextensions.pulse()
+    if comp.op('layouts') is not None:
+        comp.op('setup').module.configure_ui(comp)
     return comp

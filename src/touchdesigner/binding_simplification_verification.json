@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-07",
+  "unit_tests": 162,
+  "menus": [
+    "Parameter mapping",
+    "Python registration"
+  ],
+  "binding_parameters": [
+    "Setupmode",
+    "Groupid",
+    "Applybinding"
+  ],
+  "callback_apply_reload_return": true,
+  "legacy_value_migration": true,
+  "main_page_targets": [
+    {
+      "parameter": "Mix",
+      "index": 129,
+      "identity": "parameter.70f33bdb7f6646febb51703cab9db710:0.0:1.0:0:value"
+    },
+    {
+      "parameter": "Sortcrit",
+      "index": 128,
+      "identity": "parameter.292f87cf1c224693a56c515c5e9e539b:0.0:7.0:1(('luminance', 'hue', 'saturation', 'value', 'red', 'green', 'blue', 'alpha'), ('Brightness', 'Hue (Color)', 'Saturation', 'Value', 'Red', 'Green', 'Blue', 'Alpha')):value"
+    }
+  ],
+  "layout_check": {
+    "networks": 4,
+    "groups": 17,
+    "operators": 63,
+    "containment": true,
+    "overlaps": false,
+    "backward_wires": false
+  },
+  "export": "exports/roto_python.29.tox",
+  "generic_export_empty_disconnected": true,
+  "main_reconnect_recall": true,
+  "main_errors": "",
+  "project": "roto_control_python.47.toe"
+}

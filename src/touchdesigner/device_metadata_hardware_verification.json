@@ -1,0 +1,20 @@
+{
+  "native_build": "2025.33230",
+  "user_confirmed": true,
+  "results": {
+    "initial_list_and_hardware_select_b": true,
+    "hardware_selection_context": "Metadata test / TEST TRACK / B TEST",
+    "preceding_deletion_rename_list_and_hardware_c_b": true,
+    "active_deletion_successor_rename_and_single_device_list": true
+  },
+  "original_mapping_configuration_preserved": true,
+  "assignment_metadata_hydrated_from_saved_targets": true,
+  "test_layout_removed": true,
+  "follow_restored": true,
+  "restored_context": "T / T / pixelSortV3",
+  "original_controls_recalled": 5,
+  "errors": "",
+  "saved_project": "roto_control_python.71.toe",
+  "final_reconnect": true,
+  "fractal_power_retained": true
+}

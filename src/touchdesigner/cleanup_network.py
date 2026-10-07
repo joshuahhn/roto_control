@@ -9,6 +9,7 @@ GROUPS = {
         ('State', ['base_state'], 1),
         ('Inspector', ['inspector'], 1),
         ('Guide', ['readme_md', 'docs'], 2),
+        ('Focus', ['text_comp_follow'], 1),
         ('Value output', ['parameter_values', 'null_values', 'out_values'], 3),
         ('Control output', ['select_controls', 'null_controls', 'out_controls'], 3),
     ],

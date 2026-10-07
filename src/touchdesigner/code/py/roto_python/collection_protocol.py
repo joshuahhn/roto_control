@@ -52,7 +52,15 @@ class Control(Host):
             self._send((191, 11+slot, value >> 7))
             self._send((191, 43+slot, value & 127))
         else:
-            value = self._pulse_state if self.mode in ('pulse','cycle') else 127 if self.value >= 0.5 else 0
+            # Pulse confirms an action/press. Cycle has a persistent Menu
+            # value: first option is off, every other option is on. Keep
+            # _pulse_state independent for PUSH release/duplicate detection.
+            if self.mode == 'pulse':
+                value = self._pulse_state
+            elif self.mode == 'cycle':
+                value = 127 if self.value > 0 else 0
+            else:
+                value = 127 if self.value >= 0.5 else 0
             self._send((191, 19+slot, value))
         self._display()
 
@@ -152,7 +160,7 @@ class CollectionHost(Host):
             for target in self.controls.values():
                 target.flush_display(now)
 
-    def receive(self, message):
+    def receive(self, message, control_only=False):
         message = tuple(message)
         # Let the proven parser validate and count the message first. Handle
         # mapped/unmap commands here because single-target routing differs.
@@ -160,6 +168,8 @@ class CollectionHost(Host):
                     and message[-1] == 247 and all(type(x) is int and 0<=x<128 for x in message[1:-1]))
         if is_sysex and message[5:7] in ((11,11),(11,14)):
             self.rx += 1
+            if control_only:
+                return
             data = message[7:-1]
             if not self.enabled or not self.plugin:
                 return
@@ -198,7 +208,7 @@ class CollectionHost(Host):
             reset = message[5:7] == (11,1) or message[5] == 12
             # Avoid single-target handling of CCs and mappings; session control
             # still uses Host's handshake, track and device announcements.
-            super().receive(message)
+            super().receive(message, control_only=control_only)
             if reset:
                 for target in self.controls.values():
                     target.stop()
@@ -220,6 +230,13 @@ class CollectionHost(Host):
             return
         self._sync()
         cc, value = message[1:]
+        if control_only:
+            if 52 <= cc <= 59:
+                target = self.controls.get(('knob', cc-51))
+                if target is not None:
+                    target.touched = value > 0
+            self._sync()
+            return
         if 52<=cc<=59 and self.enabled:
             slot = cc-51
             target = self.controls.get(('knob',slot))
@@ -275,8 +292,8 @@ class CollectionHost(Host):
                     self.assign_control(key,1)
                     if target.mode == 'pulse': target.value = 0
                 if target.enabled and target.mapped:
-                    # TOGGLE is an action source: confirm idle immediately.
-                    # PUSH retains its RX state to distinguish press/release.
+                    # RX latch tracks press/release independently of Cycle's
+                    # Menu value/LED. Pulse TOGGLE still confirms idle.
                     target._pulse_state = value if target.button_type == 'push' else 0
                     target._feedback()
             else:

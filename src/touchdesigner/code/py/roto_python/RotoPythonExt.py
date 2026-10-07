@@ -29,16 +29,77 @@ class RotoPythonExt:
         self._restoring = False
         self._restore_pending = True
         self._mirror_expected = None
+        self._delete_request = None
+        self._follow = None
+        self._receive_epoch = None
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
-            self._send, self._assign, ownerComp.par.Value.eval(), **self._display_names())
+            self._send, self._assign, self._value_parameter().eval(), **self._display_names())
+        helper = ownerComp.op('text_comp_follow')
+        if helper is not None:
+            self._follow = helper.module.CompFollower(self)
         self._publish()
+
+    def SetTrackComp(self, layout_id, track_id, comp):
+        """Compatibility: link that Track's active Device."""
+        return self._follow.set_link(layout_id, track_id, comp)
+
+    def SetPluginComp(self, layout_id, track_id, plugin_id, comp):
+        return self._follow.set_plugin_link(layout_id, track_id, plugin_id, comp)
+
+    def SelectComp(self, comp):
+        return self._follow.select(comp)
+
+    def GetCompContext(self):
+        return self._follow.context() if self._follow else dict(enabled=False, status='unavailable')
+
+    def _discard_context_output(self):
+        kept = []
+        for line in self._pending.splitlines(keepends=True):
+            try:
+                message = json.loads(line)['midi']
+            except (ValueError, KeyError):
+                kept.append(line)  # preserve a partially transmitted frame
+                continue
+            if not self._follow.context_output(message):
+                kept.append(line)
+        self._pending = b''.join(kept)
+
+    def _receive_midi(self, message, token=None):
+        follower = getattr(self, '_follow', None)
+        manager = getattr(self, '_layouts', None)
+        learner = getattr(self, '_free_learner', None)
+        if follower is not None and token is not None and token[0] != follower.connection_generation:
+            return
+        stale = follower is not None and token is not None and token != follower.token
+        consumed = manager.receive(message, control_only=stale) if manager is not None else False
+        fenced = follower is not None and (follower.gated or stale)
+        if not consumed and not fenced and learner is not None:
+            consumed = learner.receive(message)
+        if not consumed:
+            self._host.receive(message, control_only=fenced)
+        if manager is not None and not fenced:
+            manager.acknowledge()
+        if learner is not None:
+            learner.sync()
 
     @property
     def State(self):
         """Snapshot for callers; diagnostics live inside the network."""
-        return {par.name: par.eval() for par in self.ownerComp.op("base_state").customPars}
+        return {par.name: par.eval() for par in self.ownerComp.op("base_state").customPars
+                if par.name != 'Manualvalue'}
+
+    def _value_parameter(self):
+        """Legacy outer Value, or its internal backing after the UI upgrade."""
+        legacy = getattr(self.ownerComp.par, 'Value', None)
+        return legacy if legacy is not None else self.ownerComp.op('base_state').par.Manualvalue
+
+    def _enable_manual_controls(self, enabled):
+        self._value_parameter().enable = enabled
+        pulse = getattr(self.ownerComp.par, 'Offerparameter', None)
+        if pulse is not None:
+            pulse.enable = enabled
 
     def _display_names(self):
         return {"track_name": self.ownerComp.par.Trackname.eval() if hasattr(self.ownerComp.par, "Trackname") else "EFFECT",
@@ -50,6 +111,7 @@ class RotoPythonExt:
         if manager is not None and not manager.legacy and manager.locked and manager.selected_track not in (None,manager.track()['id']):
             raise ValueError('Unlock before renaming a Track different from hardware selection')
         self._layout_dirty = True
+        plugin_name_changed = plugin_name != self._host.plugin_name
         result = self._host.set_display_names(track_name, plugin_name)
         for name, value in (("Trackname", track_name), ("Pluginname", plugin_name)):
             par = getattr(self.ownerComp.par, name, None)
@@ -59,6 +121,7 @@ class RotoPythonExt:
             self._last_error = ""
         manager=getattr(self,'_layouts',None)
         if manager is not None and not manager.legacy and not manager.mutating:
+            if plugin_name_changed:manager.plugin()['name_mode']='manual'
             manager.capture(force=True)
             if result:
                 manager.menu()
@@ -96,7 +159,29 @@ class RotoPythonExt:
         manager=self._layout_manager();layout=manager.layout(layout_id)
         return [dict(id=t['id'],name=t['name'],plugin_id=t['active_plugin'],
                      plugin_name=manager.plugin(layout['id'],t['id'])['plugin_name'],
+                     plugin_count=len(t['plugins']),
                      active=t['id']==layout['active_track']) for t in layout['tracks']]
+
+    def GetPlugins(self, layout_id=None, track_id=None):
+        manager=self._layout_manager()
+        follower=getattr(self,'_follow',None)
+        if follower:follower.refresh_links()
+        track=manager.track(layout_id,track_id)
+        return [dict(id=p['id'],name=p['plugin_name'],comp_name=p.get('comp_name'),
+                     name_mode=p.get('name_mode','manual'),focus_comp=copy.deepcopy(p.get('focus_comp')),
+                     active=p['id']==track['active_plugin']) for p in track['plugins']]
+
+    def CreatePlugin(self, layout_id, track_id, name):
+        return self._layout_manager().create_plugin(layout_id,track_id,name)
+
+    def SelectPlugin(self, layout_id, track_id, plugin_id):
+        return self._layout_manager().select_plugin(layout_id,track_id,plugin_id)
+
+    def RenamePlugin(self, layout_id, track_id, plugin_id, name):
+        return self._layout_manager().rename_plugin(layout_id,track_id,plugin_id,name)
+
+    def RemovePlugin(self, layout_id, track_id, plugin_id):
+        return self._layout_manager().remove_plugin(layout_id,track_id,plugin_id)
 
     def GetLayoutContext(self):
         manager=getattr(self,'_layouts',None)
@@ -139,6 +224,9 @@ class RotoPythonExt:
             comp_path, parameter_name = parameter.owner.path, parameter.name
         elif binding is None:
             comp_path, parameter_name = self.ownerComp.path, "Value"
+            if hasattr(self.ownerComp, 'par') and getattr(self.ownerComp.par, 'Value', None) is None:
+                backing = self._value_parameter()
+                comp_path, parameter_name = backing.owner.path, backing.name
         value = binding.value if binding is not None else target.value
         return dict(id=active_id, kind=key[0], slot=key[1], mode=mode,
                     label=binding.label if binding is not None else target.target_label,
@@ -196,6 +284,9 @@ class RotoPythonExt:
         return self.GetControlState(id)["value"]
 
     def Applybinding(self):
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            follower.repair()
         self._restore_pending = False
         self._restoring = True
         try:
@@ -222,10 +313,10 @@ class RotoPythonExt:
                 if not any((spec['kind'],spec['slot']) == ('knob',1) for spec in assigned):
                     binding = self._binding
                     assigned.insert(0, dict(kind='knob',slot=1,id=binding.id if binding else 'Value',
-                        parameter=binding.parameter if binding else self.ownerComp.par.Value,
+                        parameter=binding.parameter if binding else self._value_parameter(),
                         on_change=binding.on_change if binding else None,
                         minimum=binding.minimum if binding else 0,maximum=binding.maximum if binding else 1,
-                        value=binding.value if binding else self.ownerComp.par.Value.eval(),
+                        value=binding.value if binding else self._value_parameter().eval(),
                         label=binding.label if binding else 'Value'))
                 result = self.BindControls(assigned,group_id=self.ownerComp.par.Groupid.eval())
             self._layout_ready=True
@@ -311,8 +402,7 @@ class RotoPythonExt:
             mapping.pop(key,None)
         self._host.controls.pop(key)
         self._host._sync()
-        self.ownerComp.par.Value.enable=('knob',1) in self._collection.bindings
-        self.ownerComp.par.Offerparameter.enable=('knob',1) in self._collection.bindings
+        self._enable_manual_controls(('knob',1) in self._collection.bindings)
         table=self.ownerComp.op('base_targets/targets')
         for row in range(table.numRows-1,0,-1):
             if table[row,'id'].val==id:
@@ -463,12 +553,12 @@ class RotoPythonExt:
         elif key != ('knob', 1):
             binding = self._binding
             specs.append(dict(kind='knob', slot=1, id=binding.id if binding else 'Value',
-                              parameter=binding.parameter if binding else self.ownerComp.par.Value,
+                              parameter=binding.parameter if binding else self._value_parameter(),
                               on_change=binding.on_change if binding else None,
                               label=binding.label if binding else 'Value',
                               minimum=binding.minimum if binding else 0,
                               maximum=binding.maximum if binding else 1,
-                              value=binding.value if binding else self.ownerComp.par.Value.eval()))
+                              value=binding.value if binding else self._value_parameter().eval()))
         candidate = self.ownerComp.op('controls').module.Controls([*specs, spec])
         binding = candidate.bindings[key]
         watcher = self.ownerComp.op('base_targets/watch_'+kind+str(slot))
@@ -520,8 +610,7 @@ class RotoPythonExt:
         self.ownerComp.store('pending_unmaps', sorted(pending));self._host.pending_unmaps = pending
         self.ownerComp.store('pending_unmap_identities',[r for r in self.ownerComp.fetch('pending_unmap_identities',[]) if (r['kind'],r['slot'])!=key])
         self.ownerComp.store('needs_relearn', tuple(set(self.ownerComp.fetch('needs_relearn', ())) | {id}))
-        self.ownerComp.par.Value.enable = ('knob',1) in self._collection.bindings
-        self.ownerComp.par.Offerparameter.enable = ('knob',1) in self._collection.bindings
+        self._enable_manual_controls(('knob',1) in self._collection.bindings)
         self._output_values = None
         self._publish()
         return self.GetControlState(id)
@@ -539,9 +628,9 @@ class RotoPythonExt:
         self._publish()
 
     def _mirror(self, normalized):
-        if self.ownerComp.par.Value.eval() != normalized:
+        if self._value_parameter().eval() != normalized:
             self._mirror_expected = normalized
-            self.ownerComp.par.Value.val = normalized
+            self._value_parameter().val = normalized
 
     def _assign(self, value):
         # Acknowledge physical input before the deferred TD callbacks.
@@ -704,7 +793,7 @@ class RotoPythonExt:
         self._binding = None
         self._last_error = ""
         self._leave_collection()
-        self._host.configure_target("Value", "Value", self.ownerComp.par.Value.eval(),
+        self._host.configure_target("Value", "Value", self._value_parameter().eval(),
                                     self.ownerComp.op("protocol").module.format_number, default=True)
         self._publish()
 
@@ -719,6 +808,9 @@ class RotoPythonExt:
             self._fault(exc)
 
     def _send(self, message):
+        follower = getattr(self, '_follow', None)
+        if follower is not None and follower.gated and follower.context_output(message):
+            return False
         self._pending += (json.dumps({"midi": message}) + "\n").encode()
         if len(self._pending) > 262144:
             self.Disconnect()
@@ -744,7 +836,7 @@ class RotoPythonExt:
                 self.ownerComp.store('layout_registry_suspended',True)
                 self._last_error = str(exc)
         par = self.ownerComp.op("base_state").par
-        par.Value.val = self.ownerComp.par.Value.eval()
+        par.Value.val = self._value_parameter().eval()
         par.Connected.val = self._host.connected
         par.Plugin.val = self._host.plugin
         par.Mapped.val = self._host.mapped
@@ -790,11 +882,10 @@ class RotoPythonExt:
         for watcher in self.ownerComp.ops("base_targets/watch_*"):
             watcher.par.active = False
         old = self._host
-        self._host = self.ownerComp.op("protocol").module.Host(self._send, self._assign, self.ownerComp.par.Value.eval(), **self._display_names())
+        self._host = self.ownerComp.op("protocol").module.Host(self._send, self._assign, self._value_parameter().eval(), **self._display_names())
         self._host.connected, self._host.plugin = old.connected, old.plugin
         self._collection = None
-        self.ownerComp.par.Value.enable = True
-        self.ownerComp.par.Offerparameter.enable = True
+        self._enable_manual_controls(True)
         self.ownerComp.op("base_targets/state").clear()
         self.ownerComp.op("base_targets/controls_values").clear()
         self._output_values = None
@@ -840,8 +931,7 @@ class RotoPythonExt:
         self.ownerComp.store("removed_controls",sorted(removed))
         self.ownerComp.store("pending_unmaps",sorted(pending))
         self._host, self._collection, self._binding = host, collection, None
-        self.ownerComp.par.Value.enable = ("knob", 1) in collection.bindings
-        self.ownerComp.par.Offerparameter.enable = ("knob", 1) in collection.bindings
+        self._enable_manual_controls(("knob", 1) in collection.bindings)
         self._output_values = None
         self._restore_pending, self._last_error = False, ""
         for key, watcher in watchers.items():
@@ -1013,6 +1103,10 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            follower.session_boundary()
+        self._receive_epoch = None
         manager=getattr(self,"_layouts",None)
         if manager is not None and not manager.mutating:
             try: manager.capture(force=True)
@@ -1048,6 +1142,25 @@ class RotoPythonExt:
         return result
 
     def onParValueChange(self, par, prev):
+        follower = getattr(self, '_follow', None)
+        if follower is not None and par.name in ('Followcomp', 'Focuscomp'):
+            try:
+                if par.name == 'Followcomp':
+                    follower.observe(force=True, explicit=bool(par.eval()))
+                    follower.flush()
+                elif not follower.manager.mutating and not follower.syncing_ui:
+                    current = follower.handles.get(follower.manager.plugin()['id'])
+                    current = current if follower.eligible(current) else None
+                    desired = par.eval()
+                    if desired is None and str(par.val).strip():
+                        # TD leaves the old OP string unresolved on rename.
+                        # An unresolved reference is not an explicit unlink.
+                        follower.sync_ui()
+                    elif desired != current:
+                        follower.set_plugin_link(follower.manager.data['active'], follower.manager.track()['id'], follower.manager.plugin()['id'], desired)
+            except ValueError as exc:
+                self._last_error = str(exc); follower.sync_ui()
+            self._publish(); return
         if par.name == 'Layout':
             manager=self._layout_manager()
             if manager.mutating or par.eval()==manager.data['active']:return
@@ -1061,17 +1174,25 @@ class RotoPythonExt:
             try:self.SelectTrack(manager.data['active'],par.eval())
             except ValueError as exc:
                 par.val=manager.layout()['active_track'];self._last_error=str(exc);self._publish()
+        elif par.name == 'Plugin':
+            manager=self._layout_manager()
+            if manager.mutating or par.eval()==manager.plugin()['id']:return
+            try:self.SelectPlugin(manager.data['active'],manager.track()['id'],par.eval())
+            except ValueError as exc:
+                par.val=manager.plugin()['id'];self._last_error=str(exc);self._publish()
         elif par.name in ("Trackname", "Pluginname"):
             manager=getattr(self,'_layouts',None)
             if manager is not None and manager.mutating:return
             if self._display_names()==dict(track_name=self._host.track_name,plugin_name=self._host.plugin_name):return
             try:
-                self.SetLayoutNames(**self._display_names())
+                if par.name=='Pluginname' and manager is not None and not manager.legacy:
+                    self.RenamePlugin(manager.data['active'],manager.track()['id'],manager.plugin()['id'],par.eval())
+                else:self.SetLayoutNames(**self._display_names())
             except ValueError as exc:
                 par.val = self._host.track_name if par.name == "Trackname" else self._host.plugin_name
                 self._last_error = str(exc)
             self._publish()
-        elif par.name == "Value":
+        elif par.name == 'Manualvalue' or par.name == 'Value' and getattr(par, 'owner', self.ownerComp) == self.ownerComp:
             value = par.eval()
             expected, self._mirror_expected = self._mirror_expected, None
             if value == expected:
@@ -1084,41 +1205,75 @@ class RotoPythonExt:
             elif self._binding.valid:
                 self.SetValue(self._binding.from_normalized(value))
 
+    def _request_delete(self, kind):
+        manager = self._layout_manager()
+        if kind == 'layout' and len(manager.data['records']) == 1:
+            raise ValueError('Cannot delete the last Layout')
+        if kind == 'track' and len(manager.layout()['tracks']) == 1:
+            raise ValueError('Cannot delete the last Track')
+        if kind == 'device' and len(manager.track()['plugins']) == 1:
+            raise ValueError('Cannot delete the last Device')
+        manager.guard()
+        label = manager.layout()['name'] if kind == 'layout' else manager.plugin()['plugin_name'] if kind == 'device' else manager.track()['name']
+        details = dict(kind=kind, manager=manager, layout_id=manager.data['active'],
+                       plugin_id=manager.plugin()['id'],
+                       track_id=manager.track()['id'], item='Delete ' + kind.capitalize() + ': ' + label)
+        self._delete_request = details
+        self._open_delete_menu(details)
+
+    def _open_delete_menu(self, details):
+        op.TDResources.op('popMenu').Open(items=['Cancel', details['item']],
+            callback=self._on_delete_choice, callbackDetails=details, autoClose=1,
+            title='Delete ' + details['kind'].capitalize() + '?')
+
+    def _on_delete_choice(self, info):
+        details = info.get('details')
+        if (details is not self._delete_request or not self.ownerComp.valid
+                or self.ownerComp.ext.RotoPythonExt is not self):
+            return
+        self._delete_request = None
+        if info.get('item') != details['item']:
+            return
+        manager = details['manager']
+        try:
+            if (manager is not self._layouts or manager.data['active'] != details['layout_id']
+                    or manager.track()['id'] != details['track_id'] or manager.plugin()['id'] != details['plugin_id']):
+                raise ValueError('Delete confirmation expired')
+            if details['kind'] == 'layout':
+                self.RemoveLayout(details['layout_id'])
+            elif details['kind'] == 'device':
+                self.RemovePlugin(details['layout_id'],details['track_id'],details['plugin_id'])
+            else:
+                self.RemoveTrack(details['layout_id'], details['track_id'])
+        except ValueError as exc:
+            self._last_error = str(exc)
+        self._publish()
+
     def onParPulse(self, par):
-        if par.name in ('Newtrack','Deletetrack','Confirmtrackdelete','Canceltrackdelete'):
+        if par.name in ('Newplugin','Deleteplugin'):
             manager=self._layout_manager();layout_id=manager.data['active'];track_id=manager.track()['id']
+            try:
+                if par.name=='Newplugin':
+                    self.SelectPlugin(layout_id,track_id,self.CreatePlugin(layout_id,track_id,self.ownerComp.par.Newpluginname.eval()))
+                else:self._request_delete('device')
+            except ValueError as exc:self._last_error=str(exc)
+            self._publish();return
+        if par.name in ('Newtrack','Deletetrack'):
+            manager=self._layout_manager();layout_id=manager.data['active']
             try:
                 if par.name=='Newtrack':
                     self.SelectTrack(layout_id,self.CreateTrack(layout_id,self.ownerComp.par.Newtrackname.eval()))
-                elif par.name=='Deletetrack':
-                    if len(manager.layout()['tracks'])==1:raise ValueError('Cannot delete the last Track')
-                    manager.track_delete_pending=(layout_id,track_id)
-                elif par.name=='Confirmtrackdelete':
-                    if manager.track_delete_pending!=(layout_id,track_id):raise ValueError('Delete confirmation expired')
-                    self.RemoveTrack(layout_id,track_id);manager.track_delete_pending=None
-                else:manager.track_delete_pending=None
+                else:self._request_delete('track')
             except ValueError as exc:self._last_error=str(exc)
-            enabled=manager.track_delete_pending is not None
-            self.ownerComp.par.Confirmtrackdelete.enable=self.ownerComp.par.Canceltrackdelete.enable=enabled
             self._publish();return
-        if par.name in ('Newlayout','Renamelayout','Deletelayout','Confirmdelete','Canceldelete'):
+        if par.name in ('Newlayout','Renamelayout','Deletelayout'):
             manager=self._layout_manager()
             try:
                 if par.name=='Newlayout':
                     self.SelectLayout(self.CreateLayout(self.ownerComp.par.Layoutname.eval()))
                 elif par.name=='Renamelayout':
                     self.RenameLayout(manager.data['active'],self.ownerComp.par.Layoutname.eval())
-                elif par.name=='Deletelayout':
-                    if len(manager.data['records'])==1:raise ValueError('Cannot delete the last Layout')
-                    manager.delete_pending=manager.data['active']
-                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=True
-                elif par.name=='Confirmdelete':
-                    if manager.delete_pending!=manager.data['active']:raise ValueError('Delete confirmation expired')
-                    self.RemoveLayout(manager.delete_pending);manager.delete_pending=None
-                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=False
-                else:
-                    manager.delete_pending=None
-                    self.ownerComp.par.Confirmdelete.enable=self.ownerComp.par.Canceldelete.enable=False
+                else:self._request_delete('layout')
             except ValueError as exc:
                 self._last_error=str(exc)
             self._publish();return
@@ -1145,8 +1300,16 @@ class RotoPythonExt:
         if learner is not None:
             learner.sync()
         process = self._process
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            # Observe the TD selection boundary before dispatching this batch.
+            follower.observe()
         if process is None:
+            if follower is not None:
+                follower.flush(); self._publish()
             return
+        if not self._receive and follower is not None:
+            self._receive_epoch = follower.token
         try:
             for _ in range(8):
                 try:
@@ -1173,21 +1336,27 @@ class RotoPythonExt:
                     self._host.start()
                 elif "midi" in event:
                     self._trace_control_midi(event["midi"])
-                    learner = getattr(self,"_free_learner",None)
-                    manager=getattr(self,'_layouts',None)
-                    consumed = manager.receive(event['midi']) if manager is not None else False
-                    if not consumed:
-                        consumed = learner.receive(event["midi"]) if learner is not None else False
-                    if not consumed:
-                        self._host.receive(event["midi"])
-                    if manager is not None:
-                        manager.acknowledge()
-                    if learner is not None:
-                        learner.sync()
+                    self._receive_midi(event['midi'], self._receive_epoch)
+                if follower is not None:
+                    # Buffered bytes retain their ingress epoch, including a
+                    # partial final line completed after context activation.
+                    if not self._receive:
+                        self._receive_epoch = follower.token
             if process.poll() is not None:
                 raise RuntimeError(f"MIDI process exited ({process.returncode})")
             if not self._transport_ready and time.monotonic() - self._started_at > 8:
                 raise TimeoutError("MIDI process did not become ready")
+        except (OSError, ValueError, RuntimeError) as exc:
+            self.Disconnect()
+            self._host.last_event = str(exc)
+            self._publish()
+            raise
+        if follower is not None:
+            try:
+                follower.flush(backlog=b'\n' in self._receive)
+            except (OSError, TimeoutError):
+                self.Disconnect(); raise
+        try:
             self._host.flush_display(time.monotonic())
             if self._pending:
                 try:
@@ -1203,4 +1372,7 @@ class RotoPythonExt:
             raise
 
     def onDestroyTD(self):
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            follower.refresh_links()
         self.Disconnect()

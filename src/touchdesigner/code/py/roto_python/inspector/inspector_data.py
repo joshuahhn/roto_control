@@ -81,6 +81,11 @@ def refresh(inspector, states):
     inspector.op('title').par.text = f"ROTO Inspector | {current['label']} | {count}/{len(states)} mapped | {status}"
     if current.get('locked'):
         inspector.op('title').par.text += ' | LOCK' + (' (selected Track differs)' if current.get('selected_track_id')!=current.get('track_id') else '')
+    parent = getattr(inspector, 'parent', None)
+    get_focus = getattr(parent() if parent is not None else None, 'GetCompContext', None)
+    if get_focus is not None:
+        focus = get_focus()
+        inspector.op('title').par.text += ' | Follow ' + focus['status']
     for name, label in [('clear_all','Clear All'),('clear_all_yes','Yes'),('clear_all_no','No')]:
         button = inspector.op(name)
         if button is not None:

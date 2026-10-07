@@ -1,0 +1,56 @@
+{
+  "expected": [
+    [
+      240,
+      0,
+      34,
+      3,
+      2,
+      10,
+      2,
+      247
+    ]
+  ],
+  "reference": [
+    [
+      240,
+      0,
+      34,
+      3,
+      2,
+      10,
+      2,
+      247
+    ]
+  ],
+  "reference_exact": true,
+  "native": {
+    "exact_order": false,
+    "missing": [
+      [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        2,
+        247
+      ]
+    ],
+    "unexpected": [],
+    "events": 0
+  },
+  "td": {
+    "pid": 30818,
+    "build": "2025.33230",
+    "version": "099",
+    "inputs": "MIDI (OCTA-CAPTURE)\r\nCTRL (OCTA-CAPTURE)\r\n",
+    "device": "id\tindevice\toutdevice\tdefinition\tchannel\r\n1\tROTO Native Probe\tNone\t\t1\r\n",
+    "errors": "",
+    "warnings": ""
+  },
+  "traffic": "ping",
+  "bytes_column": true,
+  "responsive": false
+}

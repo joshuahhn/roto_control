@@ -1,0 +1,78 @@
+{
+  "layout": "a6c5d0bb441c4591a86174308971f876",
+  "a": "track.940e31dd97b74c1592b16227e29ebe88",
+  "b": "track.b78a9182bc034c9d9d9b4de990b39187",
+  "aid": "parameter.5f2facb68ab44ba79b2466b5b2aebaa2",
+  "bid": "parameter.cfdc21f1b6bd4423bc63610b05a05261",
+  "physical_acceptance": false,
+  "selection_samples": [
+    {
+      "selected": [
+        "b"
+      ],
+      "current": "a"
+    },
+    {
+      "selected": [],
+      "current": "a"
+    },
+    {
+      "selected": [
+        "a",
+        "other_family"
+      ],
+      "current": "a"
+    },
+    {
+      "selected": [
+        "a",
+        "b"
+      ],
+      "current": "a"
+    }
+  ],
+  "native_api": true,
+  "native_selection": true,
+  "zero_mixed_multiple": true,
+  "no_idle_reinstall": true,
+  "unchanged_parameter_values": true,
+  "duplicate_rejected": true,
+  "same_batch_backlog_fence": true,
+  "fresh_recall_required": true,
+  "lock_learn_touch_deferral": true,
+  "locked_input_preserved": true,
+  "session_generation": true,
+  "disconnected_follow": true,
+  "native_pulse_exactly_once_and_fenced": true,
+  "presave_refresh_paused_follower": true,
+  "repeated_upgrade_preserves_links": true,
+  "tox_reload_baseline_only": true,
+  "no_midi_process": true,
+  "errors": "",
+  "actual_project_presave_callback": true,
+  "paused_timeline_immediate_rename_save": true,
+  "projectpresave_parameter_required": true,
+  "fresh_builder": true,
+  "generic_follow_links_reset": true,
+  "generic_reload_empty_disconnected": true,
+  "generic_no_file_dependencies": true,
+  "main_registry_identities_targets_libraries_preserved": true,
+  "main_custom_parameters_preserved": true,
+  "main_focus_links_empty": true,
+  "geometry": {
+    "networks": 4,
+    "groups": 18,
+    "operators": 64,
+    "containment": true,
+    "overlaps": false,
+    "backward_wires": false
+  },
+  "project_reopen_links_and_baseline": true,
+  "unit_tests": 192,
+  "final_generic_empty_reload": true,
+  "main_external_reconnect_recall": true,
+  "main_parameter": "Lowthresh",
+  "project_artifact": "roto_control_python.55.toe",
+  "export_artifact": "exports/roto_python.32.tox",
+  "physical_follow_acceptance": false
+}

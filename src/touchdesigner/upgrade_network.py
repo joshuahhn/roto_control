@@ -48,9 +48,13 @@ def upgrade(parent_comp, source_dir):
         par.default = par.val = 1
         page.appendPulse('Applybinding',label='Apply binding')
     for name in ('Targetcomp','Targetpar','Bindingid','Targetlabel','Useparrange'):
-        getattr(comp.par,name).enableExpr = "me.par.Setupmode == 'parameter'"
+        parameter = getattr(comp.par,name,None)
+        if parameter is not None:
+            parameter.enableExpr = "me.par.Setupmode == 'parameter'"
     for name in ('Minimum','Maximum'):
-        getattr(comp.par,name).enableExpr = "me.par.Setupmode == 'parameter' and not me.par.Useparrange"
+        parameter = getattr(comp.par,name,None)
+        if parameter is not None:
+            parameter.enableExpr = "me.par.Setupmode == 'parameter' and not me.par.Useparrange"
     if comp.op('registration') is None:
         hook = comp.create(textDAT,'registration')
         hook.viewer = True

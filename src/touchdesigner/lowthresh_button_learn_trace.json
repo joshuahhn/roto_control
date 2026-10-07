@@ -1,0 +1,989 @@
+{
+  "trace": [
+    {
+      "time": 552039.834518208,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": true,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.850813625,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.867432208,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.884131166,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.900857208,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.917449083,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.9342785,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.950870916,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.967541125,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552039.984211416,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.135202708,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.151682083,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.167779375,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.184657416,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.201143708,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.217804666,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.234349291,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.250983875,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.267633833,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.284278416,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.301218,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.317720458,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.334209541,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.484513375,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.5008935,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.534224375,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.567637625,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.634176625,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552040.651104416,
+      "event": "offer",
+      "parameter": "Lowthresh",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": false,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        55,
+        65,
+        83,
+        104,
+        0,
+        59
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552048.051991416,
+      "event": "offer",
+      "parameter": "Masksource",
+      "comp": "/roto_control_python/pixelSortV3",
+      "result": true,
+      "kind": "knob",
+      "index": 132,
+      "hash": [
+        116,
+        49,
+        100,
+        14,
+        16,
+        71
+      ],
+      "context": [
+        "3e6fc58800854c43bac1742c9063a87a",
+        "track.3e6fc58800854c43bac1742c9063a87a",
+        "plugin.3e6fc58800854c43bac1742c9063a87a"
+      ]
+    },
+    {
+      "time": 552050.150612958,
+      "event": "mapped",
+      "data": [
+        1,
+        0,
+        96,
+        89,
+        34,
+        63,
+        123,
+        42,
+        0,
+        0,
+        0
+      ],
+      "pending_parameter": "Masksource",
+      "pending_index": 132,
+      "pending_hash": [
+        116,
+        49,
+        100,
+        14,
+        16,
+        71
+      ],
+      "gated": false
+    },
+    {
+      "event": "after",
+      "targets": [
+        [
+          "knob",
+          1,
+          "Sortcrit"
+        ],
+        [
+          "knob",
+          3,
+          "Highthresh"
+        ],
+        [
+          "knob",
+          4,
+          "Mix"
+        ]
+      ],
+      "status": "Sort By mapped to knob 1"
+    },
+    {
+      "time": 552050.150832958,
+      "event": "mapped",
+      "data": [
+        1,
+        4,
+        116,
+        49,
+        100,
+        14,
+        16,
+        71,
+        1,
+        0,
+        0
+      ],
+      "pending_parameter": "Masksource",
+      "pending_index": 132,
+      "pending_hash": [
+        116,
+        49,
+        100,
+        14,
+        16,
+        71
+      ],
+      "gated": false
+    },
+    {
+      "event": "after",
+      "targets": [
+        [
+          "knob",
+          1,
+          "Sortcrit"
+        ],
+        [
+          "knob",
+          3,
+          "Highthresh"
+        ],
+        [
+          "knob",
+          4,
+          "Mix"
+        ]
+      ],
+      "status": "Cannot learn: use a knob for this parameter type"
+    },
+    {
+      "time": 552050.151440208,
+      "event": "mapped",
+      "data": [
+        1,
+        4,
+        55,
+        65,
+        83,
+        104,
+        0,
+        59,
+        0,
+        1,
+        0
+      ],
+      "pending_parameter": null,
+      "pending_index": null,
+      "pending_hash": null,
+      "gated": false
+    },
+    {
+      "event": "after",
+      "targets": [
+        [
+          "knob",
+          1,
+          "Sortcrit"
+        ],
+        [
+          "knob",
+          3,
+          "Highthresh"
+        ],
+        [
+          "knob",
+          4,
+          "Mix"
+        ]
+      ],
+      "status": "Mapping does not match configured control/target"
+    },
+    {
+      "time": 552050.151501541,
+      "event": "mapped",
+      "data": [
+        1,
+        2,
+        107,
+        40,
+        31,
+        122,
+        102,
+        45,
+        0,
+        2,
+        0
+      ],
+      "pending_parameter": null,
+      "pending_index": null,
+      "pending_hash": null,
+      "gated": false
+    },
+    {
+      "event": "after",
+      "targets": [
+        [
+          "knob",
+          1,
+          "Sortcrit"
+        ],
+        [
+          "knob",
+          3,
+          "Highthresh"
+        ],
+        [
+          "knob",
+          4,
+          "Mix"
+        ]
+      ],
+      "status": "High Threshold mapped to knob 3"
+    },
+    {
+      "time": 552050.151582083,
+      "event": "mapped",
+      "data": [
+        1,
+        3,
+        124,
+        62,
+        94,
+        22,
+        9,
+        17,
+        0,
+        3,
+        0
+      ],
+      "pending_parameter": null,
+      "pending_index": null,
+      "pending_hash": null,
+      "gated": false
+    },
+    {
+      "event": "after",
+      "targets": [
+        [
+          "knob",
+          1,
+          "Sortcrit"
+        ],
+        [
+          "knob",
+          3,
+          "Highthresh"
+        ],
+        [
+          "knob",
+          4,
+          "Mix"
+        ]
+      ],
+      "status": "Effect Mix mapped to knob 4"
+    }
+  ],
+  "states": [
+    {
+      "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+      "kind": "knob",
+      "slot": 1,
+      "mode": "value",
+      "label": "Sort By",
+      "value": 2,
+      "normalized": 0.2857142857142857,
+      "minimum": 0.0,
+      "maximum": 7.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Sortcrit",
+      "menu_names": [
+        "luminance",
+        "hue",
+        "saturation",
+        "value",
+        "red",
+        "green",
+        "blue",
+        "alpha"
+      ],
+      "menu_labels": [
+        "Brightness",
+        "Hue (Color)",
+        "Saturation",
+        "Value",
+        "Red",
+        "Green",
+        "Blue",
+        "Alpha"
+      ],
+      "value_label": "Saturation",
+      "parameter_style": "Menu",
+      "requires_relearn": false
+    },
+    {
+      "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+      "kind": "knob",
+      "slot": 3,
+      "mode": "value",
+      "label": "High Threshold",
+      "value": 0.4728682170542636,
+      "normalized": 0.4728682170542636,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Highthresh",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false
+    },
+    {
+      "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+      "kind": "knob",
+      "slot": 4,
+      "mode": "value",
+      "label": "Effect Mix",
+      "value": 0.4757980833791125,
+      "normalized": 0.4757980833791125,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Mix",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false
+    }
+  ],
+  "event": "Effect Mix mapped to knob 4",
+  "learning": false,
+  "pending": "None"
+}
