@@ -22,6 +22,39 @@ class DeviceTests(unittest.TestCase):
 
     def hw(self,e,index):e._receive_midi(sysex(11,7,(index,)))
 
+    def test_deleting_preceding_device_reindexes_later_metadata(self):
+        import json
+        for deleted_active,connected in ((False,False),(False,True),(True,False),(True,True)):
+            with self.subTest(deleted_active=deleted_active,connected=connected):
+                e,m,f,a,b,t,pa,pb,s,_=self.fixture()
+                pc=e.CreatePlugin('custom',t,'C')
+                e.SelectPlugin('custom',t,pa if deleted_active else pb)
+                e._host.connected=e._host.plugin=connected
+                e.RemovePlugin('custom',t,pa)
+                self.assertEqual(m.plugin()['id'],pb)
+                self.assertEqual(e._host.plugin_index,0)
+                e._host.connected=e._host.plugin=True
+                e._pending=b''
+                e.RenamePlugin('custom',t,pb,'Renamed B')
+                packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
+                details=[p for p in packets if p[5:7]==[11,5]]
+                self.assertTrue(details)
+                self.assertTrue(all(p[7]==0 for p in details if p[8:16]==list(digest(m.plugin()['device_id'],8))))
+                self.assertEqual([p['id'] for p in m.track()['plugins']],[pb,pc])
+
+    def test_track_rename_does_not_resend_device_metadata(self):
+        import json
+        e,m,f,a,b,t,pa,pb,s,_=self.fixture()
+        e.SelectPlugin('custom',t,pb)
+        m.capture(force=True)
+        before=copy.deepcopy(m.plugin());wire=e._host.controls['knob',1].target_id
+        e._pending=b'';e.RenameTrack('custom',t,'Renamed')
+        packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
+        self.assertFalse(any(p[5:7]==[11,5] for p in packets))
+        self.assertEqual(m.track()['name'],'Renamed')
+        self.assertEqual(m.plugin(),before)
+        self.assertEqual(e._host.controls['knob',1].target_id,wire)
+
     def test_same_track_a_b_a_reads_values_preserves_ids_and_libraries(self):
         e,m,f,a,b,t,pa,pb,s,_=self.fixture()
         initial=copy.deepcopy(m.plugin()['state']['page_targets']);wire=e._host.controls['knob',1].target_id

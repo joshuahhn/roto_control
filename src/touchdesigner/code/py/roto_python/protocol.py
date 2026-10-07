@@ -151,10 +151,11 @@ class Host:
             return False
         if self.learning:
             raise ValueError("Exit hardware LEARN before changing display names")
+        plugin_name_changed = plugin_name != self.plugin_name
         self.track_name, self.plugin_name = track_name, plugin_name
         if self.connected:
             self._command(GENERAL, 0x16, text13(self.track_name))
-            if self.plugin:
+            if self.plugin and plugin_name_changed:
                 self._device_details()
                 self._command(PLUGIN, 6)
         return True

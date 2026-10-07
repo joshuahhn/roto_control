@@ -448,7 +448,10 @@ class Layouts:
             if (layout_id,track_id)==(self.data['active'],self.track()['id']):
                 self.select_plugin(layout_id,track_id,successor)
             else:track['active_plugin']=successor
-        track['plugins'].remove(plugin);self.save();self.menu()
+        track['plugins'].remove(plugin)
+        if (layout_id,track_id)==(self.data['active'],self.track()['id']):
+            self.ext._host.plugin_index=track['plugins'].index(self.plugin())
+        self.save();self.menu()
         if (layout_id,track_id)==(self.data['active'],self.track()['id']) and self.ext._host.connected:self.announce()
         return True
 

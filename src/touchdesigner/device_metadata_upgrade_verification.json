@@ -1,0 +1,17 @@
+{
+  "native_build": "2025.33230",
+  "unit_tests": 230,
+  "saved_project": "roto_control_python.69.toe",
+  "export": "roto_python.38.tox",
+  "generic_reload": true,
+  "source_reload": true,
+  "mapping_configuration_preserved": true,
+  "assignment_metadata_hydrated_from_targets": true,
+  "target_values_preserved": true,
+  "reconnect": true,
+  "context": "T / T / pixelSortV3",
+  "pixelsort_mapped_controls": 5,
+  "fractal_power_identity": "parameter.3260e849bc3349c998632238c542f36c:2.0:16.0:0:value",
+  "physical_acceptance": false,
+  "errors": ""
+}
