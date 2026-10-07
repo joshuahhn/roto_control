@@ -9,6 +9,12 @@ except ModuleNotFoundError as error:
     from model import CatalogModel, StaleDraft, FIELDS
 
 EMPTY=('unconfigured','unconfigured','unconfigured')
+META_FIELDS=('id','mode','valid','binding_type','button_type','parameter_style','parameter_definition','definition_error','requires_relearn','available','error')
+DISPLAY_FIELDS=('value_label','mapped','connected','plugin','touched')
+
+def metadata_signature(row,info):
+    if not info:return None
+    return (row['Label'],row['Destination'],row['Minimum'],row['Maximum'])+tuple(info.get(n) for n in META_FIELDS)+tuple(info.get('menu_names',()))+tuple(info.get('menu_labels',()))
 
 def project_records(states):
     rows=[dict(Label='Unassigned',Destination='',Minimum=0.,Maximum=1.,Value=0.) for _ in range(16)]
@@ -24,10 +30,14 @@ def project_records(states):
 
 class ControllerCatalog(CatalogModel):
     """Pure cache/draft boundary; the adapter owns all authoritative data."""
-    def __init__(self,adapter,schedule=None):
+    def __init__(self,adapter,schedule=None,commands_factory=None):
         super().__init__(schedule=schedule,capacity=4)
         self.adapter=adapter;self._source=OrderedDict();self._revisions={};self._info={}
         self._serial=count(1);self._session=adapter.Session();self._status=adapter.Status();self._sync_count=0
+        if commands_factory is None:
+            from commands import CommandService
+            commands_factory=CommandService
+        self._commands=commands_factory(self)
 
     @property
     def IsLive(self):return True
@@ -36,6 +46,13 @@ class ControllerCatalog(CatalogModel):
     def ActiveContext(self):return self.adapter.ActiveContext()
     def Choices(self,name,context):return self.adapter.Choices(name,context)
     def HasContext(self,context):return self.adapter.Exists(tuple(context))
+    def Inspect(self,context,slot):
+        context=self._context(context);slot=self._slot(slot)
+        self.RefreshDefinitions(context,slot);self.Sync()
+        return self.Info(context,slot)
+    def RefreshDefinitions(self,context=None,slot=None):
+        refresh=getattr(self.adapter,'RefreshDefinitions',None)
+        if refresh:refresh(context,slot)
 
     def _context(self,context):
         if self._closed:raise RuntimeError('Model is closed')
@@ -58,9 +75,8 @@ class ControllerCatalog(CatalogModel):
             return
         slots=metadata=0
         for i,row in enumerate(rows):
-            signature=lambda r,s:tuple(r[n] for n in FIELDS if n!='Value')+tuple(s.get(n) for n in ('id','mode','valid','parameter_style','requires_relearn','available','error'))+tuple(s.get('menu_names',()))+tuple(s.get('menu_labels',()))
-            changed_meta=signature(row,info[i])!=signature(previous[i],old_info[i])
-            changed_display=tuple(info[i].get(n) for n in ('value_label','mapped','connected','plugin'))!=tuple(old_info[i].get(n) for n in ('value_label','mapped','connected','plugin'))
+            changed_meta=metadata_signature(row,info[i])!=metadata_signature(previous[i],old_info[i])
+            changed_display=bool(info[i] or old_info[i]) and tuple(info[i].get(n) for n in DISPLAY_FIELDS)!=tuple(old_info[i].get(n) for n in DISPLAY_FIELDS)
             if row!=previous[i] or changed_meta or changed_display:
                 slots|=1<<i
                 previous[i]=row
@@ -101,51 +117,15 @@ class ControllerCatalog(CatalogModel):
         for identity,(key,_) in list(self._subscribers.items()):
             if not self.adapter.Exists(key):self._queue(key,65535,65535)
 
-    def Commit(self,context,slot,record,token):
-        self.Sync();context=self._context(context);slot=self._slot(slot)
-        if token!=self.GetToken(context,slot):raise StaleDraft('Mapping changed; reopen this control')
-        old=self.GetCatalog(context)[slot];values=dict(record)
-        if set(values)!=set(FIELDS):raise ValueError('Invalid fields')
-        if any(values[n]!=old[n] for n in FIELDS if n!='Value'):
-            raise ValueError('Mapping metadata is read-only in this prototype')
-        info=self.Info(context,slot)
-        if not info or not info.get('valid') or not info.get('available'):raise ValueError('Target unavailable')
-        if info.get('mode')=='pulse':raise ValueError('Pulse targets do not have an editable Value')
-        value=self._number(values['Value'])
-        if not old['Minimum']<=value<=old['Maximum']:raise ValueError('Value is outside the range')
-        if value==old['Value']:return False
-        self.adapter.Write(context,info,value)
-        self.Sync()
-        return True
-
-    def _action_target(self,context,slot,token):
-        self.Sync();context=self._context(context);slot=self._slot(slot)
-        if token!=self.GetToken(context,slot):raise StaleDraft('Mapping changed; reopen this control')
-        if context!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
-        info=self.Info(context,slot)
-        if not info or not info.get('id'):raise ValueError('No mapping at this control')
-        return context,info
-
-    def Ping(self,context,slot,token):
-        context,info=self._action_target(context,slot,token)
-        if not info.get('valid'):raise ValueError(info.get('error') or 'Target unavailable')
-        if not info.get('connected') or not info.get('plugin'):raise ValueError('Connect to PLUGIN before Ping')
-        if not self.Learn:raise ValueError('Open HW LEARN, select this control, then Ping')
-        if not self.adapter.Ping(context,info):raise ValueError('Ping rejected; check hardware LEARN')
-        self.Sync()
-        return True
-
-    def CheckClear(self,context,slot,token):
-        context,info=self._action_target(context,slot,token)
-        if self.Learn:raise ValueError('Exit LEARN before Clear')
-        if info.get('touched'):raise ValueError('Release this control before Clear')
-        return context,info
-
-    def Clear(self,context,slot,token):
-        context,info=self.CheckClear(context,slot,token)
-        self.adapter.Clear(context,info)
-        self.Sync()
-        return True
+    def _reject_stale(self):raise StaleDraft('Mapping changed; reopen this control')
+    def Health(self,context,slot):return self._commands.Health(context,slot)
+    def Capabilities(self,context,slot):return self._commands.Capabilities(context,slot)
+    def MappingSchema(self,*args):return self._commands.MappingSchema(*args)
+    def Configure(self,*args):return self._commands.Configure(*args)
+    def Commit(self,*args):return self._commands.Commit(*args)
+    def Ping(self,*args):return self._commands.Ping(*args)
+    def CheckClear(self,*args):return self._commands.CheckClear(*args)
+    def Clear(self,*args):return self._commands.Clear(*args)
 
     def Stats(self):return dict(super().Stats(),data_mode='controller',sync_calls=self._sync_count)
 
@@ -156,7 +136,7 @@ class ControllerCatalog(CatalogModel):
     def ResetDemo(self):raise ValueError('Live controller data cannot be reset as a fixture')
 
 class TDControllerAdapter:
-    def __init__(self,owner):self.owner=owner
+    def __init__(self,owner):self.owner=owner;self._definitions_cache=OrderedDict();self._definition_session=None
     @property
     def controller(self):return self.owner.par.Controller.eval()
     def ActiveContext(self):
@@ -164,38 +144,88 @@ class TDControllerAdapter:
         return tuple(c.GetLayoutContext().get('key') or EMPTY) if c else EMPTY
     def Session(self):
         c=self.controller
-        if not c:return None
+        if not c:
+            self._definitions_cache.clear();self._definition_session=None
+            return None
         ext=c.ext.RotoPythonExt;follow=getattr(ext,'_follow',None)
-        return (id(ext),getattr(follow,'connection_generation',None))
+        session=(id(ext),getattr(follow,'connection_generation',None))
+        if session!=self._definition_session:self._definitions_cache.clear();self._definition_session=session
+        return session
     def Status(self):
         c=self.controller
         if not c:return dict(Connected=False,Learning=False,Label='Choose controller')
         state=c.State
-        return dict(Connected=state['Connected'],Learning=state['Learning'],Label=c.GetLayoutContext()['label'],Active=self.ActiveContext())
+        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=c.GetLayoutContext()['label'],Active=self.ActiveContext())
     def Exists(self,key):
         c=self.controller
         if not c:return key==EMPTY
-        try:c.ext.RotoPythonExt._layout_manager().plugin(*key);return True
+        manager=c.ext.RotoPythonExt._layout_manager()
+        if manager.legacy:return key==EMPTY
+        try:manager.plugin(*key);return True
         except ValueError:return False
     def Choices(self,name,key):
         c=self.controller
         if not c:return [('unconfigured','Choose controller')]
+        if c.GetLayoutContext().get('legacy'):return [('unconfigured','Python registration' if name=='Device' else '—')]
         records=c.GetLayouts() if name=='Layout' else c.GetTracks(key[0]) if name=='Track' else c.GetPlugins(key[0],key[1])
         return [(r['id'],r['name']) for r in records]
     def Read(self,key):
         c=self.controller
         if not c:return []
-        if key==self.ActiveContext():return c.GetControlCatalog()
-        record=c.ext.RotoPythonExt._layout_manager().plugin(*key)
-        specs,missing=c.ext.RotoPythonExt._layout_manager().resolve(record)
+        if key==self.ActiveContext():return self._definitions(c.GetControlCatalog(),key)
+        manager=c.ext.RotoPythonExt._layout_manager();record=manager.plugin(*key)
+        specs=[];missing=[]
+        # Resolve independently: a broken inactive target must not stop all views.
+        for target in record['targets']:
+            try:
+                resolved,unavailable=manager.resolve(dict(record,targets=[target]))
+                specs.extend(resolved);missing.extend(dict(t,error='Target unavailable') for t in unavailable)
+            except (ValueError,AttributeError) as error:missing.append(dict(target,error=str(error)))
         rows=[]
         for spec in specs:
             par=spec['parameter'];value=0 if spec['mode']=='pulse' else c.op('binding').module.parameter_value(par)
             menu_names=list(par.menuNames) if par.style=='Menu' else []
             menu_labels=list(par.menuLabels) if par.style=='Menu' else []
             rows.append(dict(spec,parameter=par.name,comp=par.owner.path,value=value,valid=par.owner.valid,binding_type='parameter',parameter_style=par.style,mapped=False,connected=False,plugin=False,value_label=(menu_labels[int(value)] if 0<=int(value)<len(menu_labels) else '') if menu_labels else '',menu_names=menu_names,menu_labels=menu_labels))
-        rows.extend(dict(t,value=None,valid=False,error='Target unavailable') for t in missing)
-        return rows
+        rows.extend(dict(t,comp=(c.op(t['comp']).path if c.op(t['comp']) else t['comp']),value=None,valid=False) for t in missing)
+        return self._definitions(rows,key)
+    def RefreshDefinitions(self,context=None,slot=None):
+        if context is None:self._definitions_cache.clear();return
+        cached=self._definitions_cache.get(tuple(context))
+        if cached is not None:
+            if slot is None:cached.clear()
+            else:
+                kind='knob' if slot<8 else 'button';number=slot%8+1
+                for id,(signature,_) in list(cached.items()):
+                    if signature[:2]==(kind,number):cached.pop(id,None)
+    def _definitions(self,records,key):
+        c=self.controller
+        cache=self._definitions_cache.setdefault(tuple(key),{})
+        self._definitions_cache.move_to_end(tuple(key))
+        while len(self._definitions_cache)>4:self._definitions_cache.popitem(last=False)
+        present=set()
+        for info in records:
+            if not info.get('parameter'):continue
+            id=info['id'];present.add(id)
+            signature=tuple(info.get(n) for n in ('kind','slot','comp','parameter','parameter_style','minimum','maximum','valid','error'))+tuple(info.get('menu_names',()))+tuple(info.get('menu_labels',()))
+            previous=cache.get(id)
+            if previous and previous[0]==signature:
+                info.update(previous[1]);continue
+            definition={}
+            target=op(info.get('comp',''))
+            par=getattr(target.par,info['parameter'],None) if target and target.valid else None
+            if par is None:
+                definition['definition_error']='Target unavailable'
+                cache[id]=(signature,definition);info.update(definition);continue
+            try:
+                chain=c.op('binding').module.parameter_chain(par)
+                definition['parameter_definition']=tuple((p.owner.id,p.owner.path,p.name,p.style,p.mode.name,p.readOnly,p.min,p.max,p.clampMin,p.clampMax) for p in chain)
+                if par.style in ('Float','Int') and any((p.clampMin and info['minimum']<p.min) or (p.clampMax and info['maximum']>p.max) for p in chain):
+                    raise ValueError('Binding range exceeds target or bind master clamp limits')
+            except (ValueError,AttributeError) as error:definition['definition_error']=str(error)
+            cache[id]=(signature,definition);info.update(definition)
+        for id in set(cache)-present:cache.pop(id,None)
+        return records
     def Write(self,key,info,value):
         c=self.controller
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device on the controller before editing')
@@ -209,11 +239,15 @@ class TDControllerAdapter:
     def Clear(self,key,info):
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
         return self.controller.RemoveControl(info['id'])
+    def Configure(self,key,info,values):
+        if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
+        return self.controller.ConfigureControl(info['id'],**values)
 
 class InspectorModel(ControllerCatalog):
     def __init__(self,ownerComp):
         self.ownerComp=ownerComp;self._queued_run=None;self._sync_run=None
-        super().__init__(TDControllerAdapter(ownerComp),schedule=self._schedule_flush)
+        factory=ownerComp.op('base_commands/InspectorCommands').module.CommandService
+        super().__init__(TDControllerAdapter(ownerComp),schedule=self._schedule_flush,commands_factory=factory)
         self._sync_context(self.ActiveContext());self.Sync()
     def _schedule_flush(self):self._queued_run=run('args[0].Dispatch()',self,endFrame=True)
     def Dispatch(self):self._queued_run=None;return super().Flush()
@@ -235,12 +269,16 @@ class InspectorModel(ControllerCatalog):
             for info in self._info.get(key,[]):
                 target=op(info.get('comp','')) if info else None
                 if target and target not in owners:owners.append(target)
+                for definition in info.get('parameter_definition',()):
+                    master=op(definition[1])
+                    if master and master not in owners:owners.append(master)
         return [o for o in owners if o]
     def WatchPars(self):
-        names={'Learning','Connected','Plugin','Targetid','text'}
+        names={'Learning','Connected','Plugin','Touched','Bindingvalid','Lasterror','Targetid','text'}
         for key in {context for context,_ in self._subscribers.values()}:
             for info in self._info.get(key,[]):
                 if info.get('parameter'):names.add(info['parameter'])
+                names.update(d[2] for d in info.get('parameter_definition',()))
         return ' '.join(sorted(names))
     def Subscribe(self,*args):
         result=super().Subscribe(*args);self.RefreshWatchers();return result

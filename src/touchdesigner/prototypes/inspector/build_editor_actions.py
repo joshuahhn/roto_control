@@ -2,7 +2,8 @@
 action_views=globals().get('action_views',[op('/inspector_below'),op('/inspector_popup')])
 for view in action_views:
     if not view:continue
-    for editor in (view.op('container_scroll/container_content/editor_below'),view.op('editor_popup')):
+    popup=view.op('editor_popup')
+    for editor in (view.op('container_scroll/container_content/editor_below'),popup.op('container_editor_content') or popup):
         if not editor:continue
         editor.par.h=178
         editor.op('text_heading').par.y=151
@@ -29,8 +30,7 @@ for view in action_views:
             button.par.y=148 if name in ('ping','clear') else 6
             button.par.x.expr='parent().width-%d'%(66 if name in ('ping','cancel') else 36)
             button.op('text_label').par.h.expr='parent().height'
-            button.op('text_label').par.text=dict(ping='↻',clear='⌫',cancel='×',apply='✓')[name]
-            button.op('text_label').par.fontsize=15
+            view.op('ui').module.action_icon(button.op('text_label'),name)
             callback=editor.op('click_'+name) or editor.create(panelexecuteDAT,'click_'+name)
             callback.viewer=True;callback.par.language='python'
             callback.par.panels=name;callback.par.panelvalue='lselect rollover';callback.par.offtoon=True;callback.par.ontooff=True
@@ -46,4 +46,3 @@ for view in action_views:
         editor.op('text_heading').par.w.expr='max(1,parent().width-84)'
         # Retain the existing five-column network convention, with clear gaps.
         for index,child in enumerate(editor.children):child.nodeX=(index%5)*200;child.nodeY=-(index//5)*160
-    if view.op('window_editor'):view.op('window_editor').par.winh=178

@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from live_model import ControllerCatalog
 from test_live_model import Adapter, KEY
-from ui import InspectorView
+from ui import InspectorView,ICONS
 
 class Panel:
     def __init__(self):self.par=SimpleNamespace(text='');self.children={}
@@ -23,7 +23,7 @@ class EditorActionsTests(TestCase):
     def test_clear_requires_second_click_and_keeps_parameter_value(self):
         original_value=self.adapter.records[KEY][0]['value']
         self.assertTrue(self.view.Action('clear'));self.assertEqual(self.adapter.clears,[])
-        for editor in self.view._editors:self.assertEqual(editor.op('clear/text_label').par.text,'?')
+        for editor in self.view._editors:self.assertEqual(editor.op('clear/text_label').par.text,ICONS['confirm'])
         self.assertTrue(self.view.Action('clear'))
         self.assertEqual(self.adapter.clears,[(KEY,'target')]);self.assertIsNone(self.view.selected)
         self.assertEqual(self.adapter.writes,[]);self.assertEqual(original_value,.4)

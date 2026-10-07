@@ -31,3 +31,20 @@ Evidence: `live_verification.json`, `live_performance.json`, `live_saved_state.j
 Both editors now have 24 × 24 icon buttons: Ping/Clear at the top right, Cancel/Apply on the right of the status/`Value edits live target` row. The user's spacing refinement gives 12px side insets, 6px row/control gaps and a 178px editor height, removing the spare footer space. Hovering names the action in its status line. Clear arms an inline eight-second confirmation rather than opening another window. Session/context/metadata tokens and LEARN/touch guards prevent stale removal. Ping only reoffers existing metadata in hardware LEARN and explicitly waits for a hardware ACK; it never claims an offer has been learned.
 
 `verify_editor_actions.py` passes against a disconnected native controller clone with captured output: a forgotten mapping emits a parameter-details packet, Ping without LEARN is rejected, Pulse Ping does not trigger its target, Clear requires two native callback invocations and removes only one registration, and parameter Value is preserved. The production catalog, registry and connected session remain unchanged. All four editors fit the icon controls with consistent row gaps, without network-node overlap or operator errors. The physical forgotten-map/re-LEARN cycle remains unverified. Evidence: `editor_actions_verification.json`. Current tests: 230 runtime + 33 Inspector model/editor tests. Latest checkpoint: `inspector_editor_actions.2.toe`.
+
+
+## Health and shared commands (2026-10-08)
+
+Milestone 1 is installed in Fold/Popup with compact row health markers, editor state and shared guarded Value/Ping/Clear commands. Native touch/mode callbacks, invalid inactive target isolation, six-context cache bounds, zero idle text writes and generic command reload pass. 230 runtime + 42 Inspector tests pass. Latest checkpoint: inspector_editor_actions.3.toe. See [HEALTH_REPORT.md](HEALTH_REPORT.md) for matched performance evidence and remaining replacement/hardware gates.
+
+
+## Mapping, dropdown header and live Value (2026-10-08)
+
+Milestone 2 adds collapsible Mapping configuration with separate Apply/Cancel, Device-first native dropdowns and direct continuous Value editing with no Value Apply/Cancel. Popup Size from Window fixes linked width/height resizing; real mouse drags verify each axis independently. Mapping expansion retains the window size and scrolls; selecting another control does not resize an open Popup to match the Inspector. Native configuration/live-value/resize fixtures preserve production state. 230 runtime + 61 Inspector tests pass. Latest checkpoint: inspector_editor_actions.4.toe. See [MAPPING_REPORT.md](MAPPING_REPORT.md) for evidence and remaining hardware/parity gates.
+
+
+## Popup accordion and native icons (2026-10-08)
+
+The user’s screenshots clarify that Mapping should grow the Popup downward. It now adds/removes 134px relative to the current manual size, preserving width/top-left and keeping the upper fields stationary. Main Inspector resizing remains independent; Value remains live. Four editor actions and Clear confirmation use TD’s bundled Material Design Icons font. Native size fixture and 230 runtime + 68 Inspector tests pass. Latest checkpoint: inspector_editor_actions.6.toe.
+
+A persistent bottom white strip was reproduced during native mouse resize; visibility/forced-cook probes did not fix it, while TD’s direct panel capture renders correctly. Native UI automation subsequently timed out. The resize rendering issue remains unresolved and is not covered by the passing geometry tests. See MAPPING_REPORT.md.

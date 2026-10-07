@@ -1,0 +1,10 @@
+{
+  "scope": "read-only projection and dispatch; excludes native rendering, MIDI and full TD frame cost",
+  "baseline_commit": "1d8111f81557717fc6044400fed4f1f090e57aee",
+  "contexts": 2,
+  "samples": 100,
+  "old_p95_ms": 0.222874921746552,
+  "new_p95_ms": 0.17691601533442736,
+  "old_mean_ms": 0.19636996556073427,
+  "new_mean_ms": 0.15587291098199785
+}

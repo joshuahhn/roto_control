@@ -137,6 +137,7 @@ for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list([cont
     for i,o in enumerate(p.children): o.nodeX=(i%5)*200; o.nodeY=-(i//5)*160
 action_namespace=dict(globals(),action_views=[c])
 exec(Path(project.folder+'/prototypes/inspector/build_editor_actions.py').read_text(),action_namespace)
+exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text(),dict(globals(),action_views=[c]))
 c.seq.ext.numBlocks=1;c.par.initextonstart=True
 c.par.ext0object="op('./ui').module.InspectorView(me)";c.par.ext0promote=True
 c.initializeExtensions(0)

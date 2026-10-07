@@ -19,11 +19,11 @@
       "clear_x": 174
     },
     {
-      "editor": "/inspector_below/editor_popup",
-      "width": 240.0,
+      "editor": "/inspector_below/editor_popup/container_editor_content",
+      "width": 348.0,
       "height": 178.0,
-      "ping_x": 174,
-      "clear_x": 204
+      "ping_x": 282,
+      "clear_x": 312
     },
     {
       "editor": "/inspector_popup/container_scroll/container_content/editor_below",
@@ -33,11 +33,11 @@
       "clear_x": 174
     },
     {
-      "editor": "/inspector_popup/editor_popup",
-      "width": 240.0,
+      "editor": "/inspector_popup/editor_popup/container_editor_content",
+      "width": 234.0,
       "height": 178.0,
-      "ping_x": 174,
-      "clear_x": 204
+      "ping_x": 168,
+      "clear_x": 198
     }
   ]
 }

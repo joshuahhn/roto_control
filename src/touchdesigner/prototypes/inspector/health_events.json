@@ -1,0 +1,9 @@
+{
+  "native_touch_callback": true,
+  "touch_keeps_token": true,
+  "native_same_value_mode_callback": true,
+  "definition_expires_token": true,
+  "no_manual_refresh_after_mutations": true,
+  "no_fixture_midi_or_value_writes": true,
+  "production_session_registry_catalog_preserved": true
+}

@@ -12,6 +12,8 @@ try:
     m.par.Controller=None;m.Sync();m.Flush()
     for v in views:
         for n,value in [('Label',''),('Destination',''),('Minimum',0),('Maximum',1),('Value',0)]:v.op('base_draft').par[n]=value
+        for n,value in [('Mapminimum',0),('Mapmaximum',1),('Mapmode',''),('Mapinput','')]:
+            if hasattr(v.op('base_draft').par,n):v.op('base_draft').par[n]=value
         v.Refresh()
         assert v.ext.InspectorView.Key()==('unconfigured',)*3
         assert all(not row['Destination'] for row in m.GetCatalog(v.ext.InspectorView.Key()))

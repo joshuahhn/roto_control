@@ -1,0 +1,20 @@
+{
+  "project": "inspector_editor_actions.4.toe",
+  "one_main": true,
+  "editors_closed": true,
+  "presentation": "popup",
+  "connected": true,
+  "subscribers": 2,
+  "errors": [
+    "",
+    "",
+    ""
+  ],
+  "controller_catalog_ids": [
+    "parameter.292f87cf1c224693a56c515c5e9e539b",
+    "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+    "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+    "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+    "parameter.2b5fa1105e1446be9f89c813f5484b1a"
+  ]
+}
