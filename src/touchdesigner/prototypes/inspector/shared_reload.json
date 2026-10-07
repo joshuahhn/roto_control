@@ -1,0 +1,37 @@
+{
+  "export_reload": true,
+  "shared_model": true,
+  "subscribers": 2,
+  "source_embedded": true,
+  "temporary_harness_removed": true,
+  "project": "roto_control_python.75.toe",
+  "build": "2025.33230",
+  "views": [
+    {
+      "context": [
+        "main",
+        "track1",
+        "pixelsort"
+      ],
+      "selected": null,
+      "dirty_slots": 0,
+      "notifications": 0,
+      "text_writes": 32,
+      "window_opens": 0,
+      "model_connected": true
+    },
+    {
+      "context": [
+        "main",
+        "track1",
+        "pixelsort"
+      ],
+      "selected": null,
+      "dirty_slots": 0,
+      "notifications": 0,
+      "text_writes": 32,
+      "window_opens": 0,
+      "model_connected": true
+    }
+  ]
+}

@@ -4,6 +4,7 @@ prototype_name=globals().get('prototype_name','inspector_below')
 prototype_style=globals().get('prototype_style','below')
 c=op('/'+prototype_name)
 if c:
+    if c.extensions[0] is not None:c.ext.InspectorView.Disconnect()
     popup=c.op('window_editor')
     if popup: popup.par.winclose.pulse()
     for name in [o.name for o in c.children]:
@@ -12,6 +13,8 @@ if c:
 else:
     c=op('/').create(containerCOMP,prototype_name); c.nodeX=400; c.nodeY=0
     c.par.w=240; c.par.h=390
+c.par.ext0object=''
+c.nodeX=400 if prototype_style=='below' else 750;c.nodeY=0
 c.viewer=True; c.par.parentshortcut='InspectorDemo'; c.par.opshortcut=''
 c.par.sizefromwindow=True; c.par.fit='off'; c.par.bgalpha=1
 if not c.customPages:
@@ -20,15 +23,20 @@ if not c.customPages:
         p=page.appendMenu(name)[0]; p.menuNames=choices; p.menuLabels=labels; p.val=choices[0]
 else:
     c.par.Device.menuLabels=['pixelSortV3','fractal_pop']
+if not hasattr(c.par,'Model'):
+    viewpage=c.appendCustomPage('View')
+    viewpage.appendOP('Model',label='Shared model')
+    presentation=viewpage.appendMenu('Presentation')[0];presentation.menuNames=['below','popup'];presentation.menuLabels=['Fold','Popup']
+c.par.Model.expr="getattr(op, 'InspectorModel', None)"
+c.par.Presentation=prototype_style
 d=c.create(baseCOMP,'base_draft'); d.viewer=True
 p=d.appendCustomPage('Mapping')
 for n in ('Label','Destination'): p.appendStr(n)
 for n in ('Minimum','Maximum','Value'): p.appendFloat(n)
 d.par.Maximum=1
 ui=c.create(textDAT,'ui'); ui.par.language='python'; ui.viewer=True
-ui.text=Path(project.folder+'/prototypes/inspector/ui.py').read_text().replace("style = 'below'", 'style = %r' % prototype_style)
+ui.text=Path(project.folder+'/prototypes/inspector/ui.py').read_text()
 u=ui.module
-u.style=prototype_style
 
 def panel(parent,typ,name,x,y,w,h,bg=None):
     o=parent.create(typ,name); o.name=name; o.viewer=True
@@ -88,39 +96,48 @@ for i in range(16):
     t=text(row,'text_arrow','+',0,0,12,24,12,u.MUTED); t.par.x.expr='parent().width-12'
     row.op('text_label').destroy()
 for name,parentcomp in [('editor_below',content),('editor_popup',c)]:
-    e=panel(parentcomp,containerCOMP,name,12 if name=='editor_below' else 0,0,210,194,u.SURFACE)
+    e=panel(parentcomp,containerCOMP,name,12 if name=='editor_below' else 0,0,210,178,u.SURFACE)
     if name=='editor_below': stretch(e,24)
     else:
         e.par.display=False
         e.par.w.expr="parent.InspectorDemo.op('window_editor').contentWidth if parent.InspectorDemo.op('window_editor').isOpen else parent.InspectorDemo.width"
-    t=text(e,'text_heading','',12,168,186,18,9,u.ACCENT); stretch(t,24)
-    for n,label,y in [('Label','Label',138),('Destination','Target',110),('Value','Value',54)]:
+    t=text(e,'text_empty','Select a control in the Inspector',12,64,186,44,11,u.MUTED); stretch(t,24)
+    t.par.type='multiline';t.par.wordwrap=True;t.par.alignx='center'
+    t=text(e,'text_heading','',12,151,186,18,9,u.ACCENT); stretch(t,24)
+    for n,label,y in [('Label','Label',120),('Destination','Target',92),('Value','Value',36)]:
         text(e,'label_'+n,label,12,y,46,22,10,u.MUTED)
         f=text(e,'field_'+n,'',62,y,136,22,11)
         f.par.clickthrough=False; f.par.editmode='editable'; f.par.textpaddingl=6; f.par.textpaddingr=6; f.par.textpaddingunits='panelunits'
         f.par.bgalpha=1; u.paint(f,(.08,.08,.08)); stretch(f,74)
         f.par.text.bindExpr="parent.InspectorDemo.op('base_draft').par.%s"%n
         if n=='Value': f.par.type='float'; f.par.precision=3
-    text(e,'label_Range','Range',12,82,46,22,10,u.MUTED)
+    text(e,'label_Range','Range',12,64,46,22,10,u.MUTED)
     for i,n in enumerate(('Minimum','Maximum')):
-        f=text(e,'field_'+n,'',62,82,65,22,11)
+        f=text(e,'field_'+n,'',62,64,65,22,11)
         f.par.clickthrough=False; f.par.editmode='editable'; f.par.type='float'; f.par.precision=3; f.par.textpaddingl=6; f.par.textpaddingr=6; f.par.textpaddingunits='panelunits'
         f.par.bgalpha=1; u.paint(f,(.08,.08,.08))
         f.par.w.expr='(parent().width-80)/2'; f.par.x.expr='62+%d*(me.width+6)'%i
         f.par.text.bindExpr="parent.InspectorDemo.op('base_draft').par.%s"%n
-    t=text(e,'text_status','',12,30,186,16,9,u.MUTED); stretch(t,24)
+    t=text(e,'text_status','',12,6,186,24,9,u.MUTED); stretch(t,24)
     for i,n in enumerate(('cancel','apply')):
         b=button(e,n,n.title(),12,6,100,22,(.23,.23,.23) if n=='apply' else (.17,.17,.17))
         b.par.w.expr='(parent().width-30)/2'; b.par.x.expr='12+%d*(me.width+6)'%i
         u.ink(b.op('text_label'),u.ACCENT if n=='apply' else u.TEXT)
 if not c.op('window_main'): c.create(windowCOMP,'window_main')
-for name,target,title,w,h in [('window_main','', 'Inspector / '+prototype_style.title(),240,390),('window_editor','editor_popup','Edit mapping',240,194)]:
+for name,target,title,w,h in [('window_main','', 'Inspector / '+('Fold' if prototype_style=='below' else 'Popup'),240,390),('window_editor','editor_popup','Edit mapping',240,178)]:
     o=c.op(name) or c.create(windowCOMP,name); o.viewer=True
     o.par.winop.expr='parent.InspectorDemo' if not target else "parent.InspectorDemo.op('editor_popup')"
     o.par.title=title; o.par.size='custom'; o.par.winw=w; o.par.winh=h; o.par.borders=True; o.par.bordersinsize=False
 cb=c.create(parameterexecuteDAT,'context_changed'); cb.viewer=True; cb.par.op.expr='parent.InspectorDemo'; cb.par.pars='Layout Track Device'; cb.par.builtin=False
 cb.text="def onValueChange(par,prev):\n    parent.InspectorDemo.op('ui').module.context()\n"
-for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list(u.editors()):
+windowcb=c.create(parameterexecuteDAT,'window_opened');windowcb.viewer=True
+windowcb.par.op='window_main';windowcb.par.pars='winopen';windowcb.par.custom=False;windowcb.par.builtin=True
+windowcb.text="def onPulse(par):\n    parent.InspectorDemo.OnWindowOpen()\n"
+for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list([content.op('editor_below'),c.op('editor_popup')]):
     for i,o in enumerate(p.children): o.nodeX=(i%5)*200; o.nodeY=-(i//5)*160
-u.render()
-print(c.path)
+action_namespace=dict(globals(),action_views=[c])
+exec(Path(project.folder+'/prototypes/inspector/build_editor_actions.py').read_text(),action_namespace)
+c.seq.ext.numBlocks=1;c.par.initextonstart=True
+c.par.ext0object="op('./ui').module.InspectorView(me)";c.par.ext0promote=True
+c.initializeExtensions(0)
+print(c.path,c.Stats())

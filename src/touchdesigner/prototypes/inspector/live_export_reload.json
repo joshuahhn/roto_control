@@ -1,0 +1,8 @@
+{
+  "generic_reload": true,
+  "unconfigured_controller": true,
+  "no_saved_destinations": true,
+  "embedded_sources": true,
+  "subscribers": 2,
+  "production_session_preserved": true
+}

@@ -1,0 +1,43 @@
+{
+  "native_build": "2025.33230",
+  "ping_without_learn_rejected": true,
+  "forgotten_map_metadata_offer": true,
+  "offer_not_claimed_as_ack": true,
+  "clear_native_callback_requires_confirmation": true,
+  "clear_one_mapping_only": true,
+  "pulse_ping_no_action": true,
+  "parameter_value_preserved": true,
+  "physical_ping_acceptance": false,
+  "production_catalog_registry_session_preserved": true,
+  "errors": "",
+  "geometry": [
+    {
+      "editor": "/inspector_below/container_scroll/container_content/editor_below",
+      "width": 210.0,
+      "height": 178.0,
+      "ping_x": 144,
+      "clear_x": 174
+    },
+    {
+      "editor": "/inspector_below/editor_popup",
+      "width": 240.0,
+      "height": 178.0,
+      "ping_x": 174,
+      "clear_x": 204
+    },
+    {
+      "editor": "/inspector_popup/container_scroll/container_content/editor_below",
+      "width": 210.0,
+      "height": 178.0,
+      "ping_x": 144,
+      "clear_x": 174
+    },
+    {
+      "editor": "/inspector_popup/editor_popup",
+      "width": 240.0,
+      "height": 178.0,
+      "ping_x": 174,
+      "clear_x": 204
+    }
+  ]
+}
