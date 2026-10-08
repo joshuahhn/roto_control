@@ -1,0 +1,16 @@
+{
+  "native_float_int_bounds_setters": true,
+  "native_clamp_flag_setters": true,
+  "live_value_default_preserved": true,
+  "real_k2_mapping_range_rejection": true,
+  "real_k2_noop_apply": true,
+  "production_catalog_registry_process_preserved": true,
+  "fixture_removed": true,
+  "details_height": 402,
+  "subscribers": 2,
+  "fold_popup_fixed_height": true,
+  "repeated_fold_cycles": 3,
+  "cua_clamp_toggle_draft_only": true,
+  "cua_slider_text_draft_only": true,
+  "real_matching_saved_ranges": 2
+}

@@ -1,0 +1,15 @@
+{
+  "reason": "complete",
+  "complete": true,
+  "soak_elapsed_s": 80.2129227090627,
+  "feeds": 568,
+  "matched": [],
+  "buckets": [],
+  "maxima": {},
+  "errors": [],
+  "production_preserved": true,
+  "subscribers": 2,
+  "physical_relearn_verified": false,
+  "native_resize_issue_6_deferred": true,
+  "duration_s": 0.0
+}

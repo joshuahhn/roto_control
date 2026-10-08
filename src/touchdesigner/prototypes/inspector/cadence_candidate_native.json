@@ -1,0 +1,702 @@
+{
+  "cases": [
+    {
+      "case": "closed_idle",
+      "deadline_lag_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66622733721629,
+        "p95": 17.387417028658092,
+        "maximum": 17.944624996744096,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.612078706317995,
+        "p95": 6.667083944194019,
+        "maximum": 8.36054200772196,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 13.066418978884082,
+        "p95": 17.286416958086193,
+        "maximum": 18.839624943211675,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.99190892724853,
+        "p95": 114.12849999032915,
+        "maximum": 117.94566607568413,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 420,
+        "mean": 16.706706645033723,
+        "p95": 20.03162493929267,
+        "maximum": 41.34716698899865,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 420,
+        "mean": 4.673442641173357,
+        "p95": 7.048333995044231,
+        "maximum": 14.124499983154237,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "fold_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 10.054430486568787,
+        "p95": 12.483375030569732,
+        "maximum": 13.850874966010451,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.01355535683355,
+        "p95": 103.49987505469471,
+        "maximum": 104.09570904448628,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.666286026023666,
+        "p95": 20.135958096943796,
+        "maximum": 21.82691707275808,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.739738406553741,
+        "p95": 7.063042023219168,
+        "maximum": 10.877583990804851,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 2.8434797439356925,
+        "p95": 4.166375030763447,
+        "maximum": 5.6712080258876085,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.96229940027531,
+        "p95": 101.29454208072275,
+        "maximum": 103.1213749665767,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 420,
+        "mean": 16.665201190404506,
+        "p95": 19.840541994199157,
+        "maximum": 20.929459016770124,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.707831753619157,
+        "p95": 6.768916035071015,
+        "maximum": 11.962707969360054,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_frozen_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 6.969411155654931,
+        "p95": 9.542208979837596,
+        "maximum": 10.044417111203074,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.00150357040444,
+        "p95": 102.30566607788205,
+        "maximum": 104.13020802661777,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66679928735155,
+        "p95": 20.089666009880602,
+        "maximum": 20.901458919979632,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.75559419108391,
+        "p95": 6.7194580333307385,
+        "maximum": 10.515582980588078,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_no_legacy_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 10.630644420096257,
+        "p95": 12.497375020757318,
+        "maximum": 14.900375041179359,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.02929345604831,
+        "p95": 102.31950005982071,
+        "maximum": 102.83608303871006,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.670375493866107,
+        "p95": 20.66029200796038,
+        "maximum": 22.542792023159564,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.829504565864518,
+        "p95": 6.681291968561709,
+        "maximum": 10.898875072598457,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_no_main_redraw_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 2.9972496435938165,
+        "p95": 5.022750003263354,
+        "maximum": 7.484374917112291,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.07481071432787,
+        "p95": 102.59087500162423,
+        "maximum": 104.02887489181012,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.67769121159877,
+        "p95": 20.585583057254553,
+        "maximum": 24.12049996200949,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 2.475566372846092,
+        "p95": 5.923957913182676,
+        "maximum": 10.26745792478323,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_no_main_redraw_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 7.330287823414194,
+        "p95": 10.860500042326748,
+        "maximum": 13.219875050708652,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.02265237105478,
+        "p95": 105.87679198943079,
+        "maximum": 106.80329205933958,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.67087698093175,
+        "p95": 23.20637507364154,
+        "maximum": 25.368041009642184,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 3.417360141758327,
+        "p95": 13.015208998695016,
+        "maximum": 14.51766595710069,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_no_publication_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 7.60538863759278,
+        "p95": 10.055665974505246,
+        "maximum": 10.691707953810692,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.00377381553075,
+        "p95": 103.57929090969265,
+        "maximum": 104.56795804202557,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66698683602979,
+        "p95": 17.286417074501514,
+        "maximum": 17.87991705350578,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.898601474302363,
+        "p95": 7.128290948458016,
+        "maximum": 8.905040915124118,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_no_publication_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 12.895076607786853,
+        "p95": 14.254416921176016,
+        "maximum": 15.124666970223188,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.01955417018118,
+        "p95": 102.69258299376816,
+        "maximum": 103.76550001092255,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66926583380277,
+        "p95": 17.29970902670175,
+        "maximum": 18.533958005718887,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.093172288249797,
+        "p95": 6.681124912574887,
+        "maximum": 7.951583014801145,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_no_main_redraw_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 8.842845368658153,
+        "p95": 10.354166035540402,
+        "maximum": 11.189457960426807,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.99677082856319,
+        "p95": 101.9687500083819,
+        "maximum": 102.68054204061627,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.666562648461312,
+        "p95": 20.813749986700714,
+        "maximum": 21.761041949503124,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 2.464686270975762,
+        "p95": 4.743000026792288,
+        "maximum": 8.956499979831278,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_no_main_redraw_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 7.369738513223407,
+        "p95": 9.289124980568886,
+        "maximum": 11.751583078876138,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.99891844178948,
+        "p95": 102.34745894558728,
+        "maximum": 105.11887504253536,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.6679205272829,
+        "p95": 20.649457932449877,
+        "maximum": 21.664375090040267,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 3.00490972834845,
+        "p95": 8.201541961170733,
+        "maximum": 9.969540988095105,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_no_legacy_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 4.6904949195892875,
+        "p95": 7.6318749925121665,
+        "maximum": 10.982582927681506,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.03679345661241,
+        "p95": 104.5631249435246,
+        "maximum": 107.20295796636492,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 420,
+        "mean": 16.667483333176712,
+        "p95": 20.303458906710148,
+        "maximum": 23.867291980423033,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.8392900075506855,
+        "p95": 6.96725002489984,
+        "maximum": 11.332749971188605,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_frozen_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 2.6935625208122,
+        "p95": 5.019458942115307,
+        "maximum": 5.695999949239194,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 100.01011964299583,
+        "p95": 102.9566660290584,
+        "maximum": 103.92470902297646,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 420,
+        "mean": 16.66685436669338,
+        "p95": 20.39270894601941,
+        "maximum": 21.374541916884482,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.742144679732514,
+        "p95": 7.252749986946583,
+        "maximum": 13.529749936424196,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 5.942821238701507,
+        "p95": 8.715957985259593,
+        "maximum": 9.63654089719057,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.99475892732984,
+        "p95": 103.00929204095155,
+        "maximum": 104.58183300215751,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.6666663684296,
+        "p95": 20.417458028532565,
+        "maximum": 21.817749948240817,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.750755548614327,
+        "p95": 7.156166946515441,
+        "maximum": 12.495582923293114,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "fold_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 9.137116244692407,
+        "p95": 11.184916947968304,
+        "maximum": 12.328832992352545,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.95913987181017,
+        "p95": 101.92279203329235,
+        "maximum": 102.74179198313504,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66727553441404,
+        "p95": 19.786874996498227,
+        "maximum": 21.027167094871402,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.6852276297706466,
+        "p95": 6.704667001031339,
+        "maximum": 10.534499888308346,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_14",
+      "deadline_lag_ms": {
+        "samples": 71,
+        "mean": 12.49018611392977,
+        "p95": 15.149792074225843,
+        "maximum": 16.548292012885213,
+        "total_samples": 71,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 70,
+        "mean": 99.99275357196373,
+        "p95": 104.15679204743356,
+        "maximum": 113.87404100969434,
+        "total_samples": 70,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.666246337247593,
+        "p95": 20.008499966934323,
+        "maximum": 21.426458028145134,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.783517200745323,
+        "p95": 7.1554589085280895,
+        "maximum": 13.450541999191046,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_idle",
+      "deadline_lag_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "feed_interval_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.667029491875702,
+        "p95": 17.25449995137751,
+        "maximum": 18.232750007882714,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.624527137430115,
+        "p95": 6.399875041097403,
+        "maximum": 7.215584046207368,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    }
+  ],
+  "reason": "complete",
+  "native_monitor_enabled": false,
+  "redraw_restored": true,
+  "notes": [
+    "Native monitor samples include monitor overhead; compare cadence against the unmonitored run.",
+    "Native redraw measures CPU/driver Window work, not isolated GPU execution.",
+    "no_publication is a fixture-only ablation; not a runtime change."
+  ]
+}

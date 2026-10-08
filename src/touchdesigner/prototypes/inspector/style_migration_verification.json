@@ -1,0 +1,41 @@
+{
+  "lossless_float_int_and_reverse": true,
+  "native_identity_page_order_metadata_preserved": true,
+  "expression_and_existing_par_reference_preserved": true,
+  "other_controller_blocked": true,
+  "unrelated_binding_preserved": true,
+  "inactive_and_page_identities_rewritten": true,
+  "new_page_ack_recall_and_return": true,
+  "old_active_and_page_ack_rejected": true,
+  "matching_ack_clears_prompt": true,
+  "registry_failure_restores_native_and_binding": true,
+  "watcher_restored": true,
+  "fold_popup_inline_style_preview_cancel": true,
+  "fixture_ready_for_native_click": true,
+  "native_style_dropdown_first_click_preview": true,
+  "native_style_apply_button": true,
+  "native_value_input_becomes_int": true,
+  "real_k2_draft_guards": [
+    {
+      "presentation": "Fold",
+      "fractional_default_rejected": true,
+      "fractional_value_rejected": true,
+      "cancelled": true
+    },
+    {
+      "presentation": "Popup",
+      "fractional_default_rejected": true,
+      "fractional_value_rejected": true,
+      "cancelled": true
+    }
+  ],
+  "real_k2_metadata_value_preserved": true,
+  "fixed_details_window": 402,
+  "native_ui_style_apply": true,
+  "production_catalog_registry_process_preserved": true,
+  "fixture_removed": true,
+  "no_physical_midi": true,
+  "subscribers": 2,
+  "native_controls_candidate_preflight": true,
+  "generic_style_draft_export_reload": true
+}

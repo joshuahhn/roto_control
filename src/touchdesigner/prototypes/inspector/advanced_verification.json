@@ -1,0 +1,36 @@
+{
+  "type_readout_and_separate_native_mapping_ranges": true,
+  "bounded_menu_preview": true,
+  "default_edit_refresh_without_value_write": true,
+  "bind_assigned_owner_and_master": true,
+  "expression_default_modes_visible": true,
+  "snapshot_reads_on_open_refresh_not_value_traffic": true,
+  "learn_touch_actions_guarded": true,
+  "callback_empty_disabled": true,
+  "fixed_section_viewport_and_icons_both_styles": true,
+  "internal_wheel_scroll": true,
+  "no_callback_or_pulse_dispatch": true,
+  "native_dialog_tests": [
+    {
+      "kind": "values",
+      "follow_on": true,
+      "two_dispatches": true,
+      "routing_preserved": true,
+      "pane_preserved": true,
+      "os_single_close_returns_to_inspector": true
+    },
+    {
+      "kind": "definition",
+      "follow_on": true,
+      "two_dispatches": true,
+      "routing_preserved": true,
+      "pane_preserved": true,
+      "os_single_close_returns_to_inspector": true
+    }
+  ],
+  "native_programmatic_root_height_matches_window": true,
+  "fixture_values_no_midi_preserved": true,
+  "production_catalog_registry_routing_process_session_preserved": true,
+  "subscribers": 2,
+  "errors": []
+}

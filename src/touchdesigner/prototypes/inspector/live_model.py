@@ -1,6 +1,8 @@
 """Shared controller projection. Browse never changes hardware routing."""
+from copy import deepcopy
 from collections import OrderedDict
 from itertools import count
+from posixpath import normpath
 import math
 try:
     from InspectorModel import CatalogModel, StaleDraft, FIELDS
@@ -137,6 +139,13 @@ class ControllerCatalog(CatalogModel):
     def PrepareClearDevice(self,*args):return self._commands.PrepareClearDevice(*args)
     def ClearDevice(self,*args):return self._commands.ClearDevice(*args)
     def Diagnostics(self):return self.adapter.Diagnostics()
+    def ParameterDefinition(self,*args):return self._commands.ParameterDefinition(*args)
+    def OpenNativeEditor(self,*args):return self._commands.OpenNativeEditor(*args)
+    def DefinitionDraft(self,*args):return self._commands.DefinitionDraft(*args)
+    def PreviewStyle(self,*args):return self._commands.PreviewStyle(*args)
+    def ApplyDefinition(self,*args):return self._commands.ApplyDefinition(*args)
+    def NativeEditorActions(self,definition,context,slot):
+        return self.adapter.DefinitionModule().editor_actions(definition,self.Learn,bool(self.Info(context,slot).get('touched')))
     def Reveal(self,context,slot,token):
         context,slot,info=self._commands._target(context,slot,token)
         return self.adapter.Reveal(info)
@@ -227,7 +236,9 @@ class TDControllerAdapter:
             par=spec['parameter'];value=0 if spec['mode']=='pulse' else c.op('binding').module.parameter_value(par)
             menu_names=list(par.menuNames) if par.style=='Menu' else []
             menu_labels=list(par.menuLabels) if par.style=='Menu' else []
-            rows.append(dict(spec,parameter=par.name,comp=par.owner.path,value=value,valid=par.owner.valid,binding_type='parameter',parameter_style=par.style,mapped=False,connected=False,plugin=False,value_label=(menu_labels[int(value)] if 0<=int(value)<len(menu_labels) else '') if menu_labels else '',menu_names=menu_names,menu_labels=menu_labels))
+            saved=next((t for t in record['targets'] if t['id']==spec['id']),{})
+            pending=spec['id'] in record.get('state',{}).get('needs_relearn',()) or bool(menu_names and (menu_names!=saved.get('menu_names',[]) or menu_labels!=saved.get('menu_labels',[])))
+            rows.append(dict(spec,parameter=par.name,comp=par.owner.path,value=value,valid=par.owner.valid,binding_type='parameter',parameter_style=par.style,mapped=False,connected=False,plugin=False,requires_relearn=pending,value_label=(menu_labels[int(value)] if 0<=int(value)<len(menu_labels) else '') if menu_labels else '',menu_names=menu_names,menu_labels=menu_labels))
         rows.extend(dict(t,comp=(c.op(t['comp']).path if c.op(t['comp']) else t['comp']),value=None,valid=False) for t in missing)
         return self._definitions(rows,key)
     def RefreshDefinitions(self,context=None,slot=None):
@@ -288,15 +299,199 @@ class TDControllerAdapter:
     def Diagnostics(self):
         c=self.controller
         return dict(state=dict(c.State),routing=dict(c.GetLayoutContext()),follow=dict(c.GetCompContext())) if c else dict(state={},routing={},follow={})
+    def DefinitionModule(self):return self.owner.op('base_commands/parameter_definition').module
+    def StyleModule(self):return self.owner.op('base_commands/style_migration').module
+    def EditModule(self):return self.owner.op('base_commands/definition_edit').module
+    def _definition_guard(self,key,info):
+        c=self.controller
+        if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
+        if c.State['Learning']:raise ValueError('Exit LEARN before editing native definition')
+        if c.State['Touched'] or c.GetControlState(info['id'])['touched']:raise ValueError('Release controls before editing native definition')
+    def DefinitionDraft(self,key,info):
+        self._definition_guard(key,info)
+        draft=self.EditModule().begin(info,self._native_parameter,self._definition_ranges(info))
+        if draft['style'] in ('Float','Int'):
+            draft['style_snapshot']=self.StyleModule().begin(self._native_parameter(info))
+            draft['style_library']=self._style_signature(info)
+        return draft
+    def ApplyDefinition(self,key,info,draft,patch):
+        self._definition_guard(key,info)
+        if patch.get('style',draft['style'])!=draft['style']:
+            return self._apply_style(key,info,draft,patch)
+        patch={k:v for k,v in patch.items() if k not in ('style','style_value')}
+        def reconcile():
+            # ConfigureControl preserves stable registration ID/index and replaces
+            # only changed wire semantics. It explicitly unmaps the old hardware.
+            c=self.controller
+            try:c.ConfigureControl(info['id'])
+            finally:
+                current=c.GetControlState(info['id'])
+                if not current['mapped']:
+                    c.store('needs_relearn',tuple(set(c.fetch('needs_relearn',()))|{info['id']}))
+                    c.ext.RotoPythonExt._publish()
+            c.ext.RotoPythonExt._layout_manager().capture(force=True)
+        return self.EditModule().apply(info,draft,patch,self._native_parameter,self._definition_ranges(info),
+            reconcile=reconcile if draft['style']=='Menu' else None)
+    def _style_signature(self,info):
+        c=self.controller;manager=c.ext.RotoPythonExt._layout_manager();rows=[];count=0
+        names=('id','kind','slot','mode','button_type','index','identity','label','minimum','maximum')
+        def add(scope,record,relative=True):
+            nonlocal count
+            count+=1
+            if count>16384:raise ValueError('Style library exceeds bounded scan limit')
+            if self.StyleModule().matches(record,info['comp'],info['parameter'],c.path):
+                rows.append((scope,tuple(record.get(n) for n in names)))
+        if not manager.legacy:
+            for layout in manager.data['records']:
+                for track in layout['tracks']:
+                    for plugin in track['plugins']:
+                        scope=(layout['id'],track['id'],plugin['id'])
+                        for record in plugin['targets']:add(scope,record)
+                        for key in ('page_targets','parameter_assignments'):
+                            for record in plugin['state'].get(key,[]):add(scope+(key,),record)
+            for record in c.fetch('page_targets',[]):add(('active-pages',),record)
+        # Include authoritative wire index/hash; Value/ACK traffic is excluded.
+        ext=c.ext.RotoPythonExt
+        if ext._collection:
+            for key,binding in ext._collection.bindings.items():
+                if binding.parameter is None:continue
+                target=ext._host.controls[key]
+                add(('active',),dict(c.GetControlState(binding.id),index=target.index,identity=target.target_id))
+        return tuple(sorted(rows,key=repr))
+
+    def _style_foreign_guard(self,info):
+        # Standard hosts can be named arbitrarily; identify their source DAT.
+        controllers={dat.parent().path:dat.parent() for dat in root.findChildren(name='RotoPythonExt',type=textDAT)}.values()
+        if len(controllers)>128:raise ValueError('Too many controller owners to audit Style inline')
+        module=self.StyleModule();count=0
+        for foreign in controllers:
+            if foreign==self.controller:continue
+            records=list(foreign.fetch('control_catalog',[]))
+            registry=foreign.fetch('layout_registry',{}) or {}
+            for layout in registry.get('records',[]):
+                for track in layout.get('tracks',[]):
+                    for plugin in track.get('plugins',[]):
+                        records.extend(plugin.get('targets',[]));records.extend(plugin.get('state',{}).get('page_targets',[]))
+            for record in records:
+                count+=1
+                if count>16384:raise ValueError('Other-controller Style audit exceeds bounded scan limit')
+                if module.matches(record,info['comp'],info['parameter'],foreign.path):
+                    raise ValueError('Another controller also registers this target; use TD Definition / coordinated repair')
+
+    def PreviewStyle(self,key,info,draft,patch):
+        self._definition_guard(key,info)
+        c=self.controller;ext=c.ext.RotoPythonExt;manager=ext._layout_manager()
+        if ext._collection is None or manager.legacy:raise ValueError('Style migration requires a managed parameter collection')
+        if self._style_signature(info)!=draft['style_library']:raise ValueError('Saved Style registrations changed; reopen draft')
+        self._style_foreign_guard(info)
+        candidate=self.StyleModule().plan(self._native_parameter(info),draft['style_snapshot'],patch,self._definition_ranges(info))
+        self._style_binding_guard(info,candidate)
+        parameter=self.StyleModule().ParameterPreview(self._native_parameter(info),candidate)
+        def identity(record):
+            controls=c.op('controls').module.Controls([dict(record,parameter=parameter)])
+            return next(controls.specs())['identity']
+        # Validate every related candidate before replacement or hardware clear.
+        self.StyleModule().rewrite_library(manager.data,c.fetch('page_targets',[]),
+            info['comp'],info['parameter'],c.path,identity,candidate['style'])
+        return candidate
+
+    def _style_binding_guard(self,info,candidate):
+        collection=self.controller.ext.RotoPythonExt._collection
+        binding=collection.bindings[collection.key(info['id'])]
+        if not binding.valid or binding.integer!=(binding.parameter.style=='Int'):
+            raise ValueError('Mapping numeric Style is stale; repair / re-LEARN before migration')
+        if binding.value!=candidate['value']:
+            raise ValueError('Value update is pending; retry Style preview after it settles')
+
+    def _apply_style(self,key,info,draft,patch):
+        self.PreviewStyle(key,info,draft,patch)
+        c=self.controller;ext=c.ext.RotoPythonExt;manager=ext._layout_manager()
+        # Capture preflight must succeed before native replacement or hardware clear.
+        manager.snapshot(manager.record()['id'],manager.record()['name'])
+        data=deepcopy(manager.data)
+        fields=('page_targets','parameter_assignments','control_overrides','needs_relearn')
+        stored={n:deepcopy(c.fetch(n,{} if n=='control_overrides' else [])) for n in fields}
+        key=ext._collection.key(info['id']);target=ext._host.controls[key];old_identity=target.target_id
+        watcher=c.op('base_targets/watch_'+key[0]+str(key[1]));watching=watcher.par.active.eval()
+        par=self._native_parameter(info)
+        def mark_pending():
+            c.store('needs_relearn',tuple(set(c.fetch('needs_relearn',()))|{info['id']}))
+            ext._publish()
+        def reconcile():
+            c.ConfigureControl(info['id'])
+            def identity(record):
+                candidate=c.op('controls').module.Controls([dict(record,parameter=par)])
+                return next(candidate.specs())['identity']
+            registry,pages,ids=self.StyleModule().rewrite_library(manager.data,c.fetch('page_targets',[]),
+                info['comp'],info['parameter'],c.path,identity,par.style)
+            manager.data=registry;manager.save();c.store('page_targets',pages)
+            c.store('needs_relearn',tuple(set(c.fetch('needs_relearn',()))|set(ids)))
+            mark_pending();ext._layout_dirty=True;manager.capture(force=True)
+        def compensate():
+            c.ConfigureControl(info['id'])
+            ext._host.controls[key].target_id=old_identity
+            manager.data=deepcopy(data);manager.save()
+            for name,value in stored.items():c.store(name,deepcopy(value))
+            mark_pending();ext._layout_dirty=True;manager.capture(force=True)
+        watcher.par.active=False
+        try:return self.StyleModule().apply(par,draft['style_snapshot'],patch,self._definition_ranges(info),reconcile,compensate)
+        finally:watcher.par.active=watching
+
+    def _definition_ranges(self,info):
+        c=self.controller;active=self.ActiveContext();ranges={};count=0
+        def add(context,record,relative=False):
+            nonlocal count
+            count+=1
+            if count>4096:raise ValueError('Mapping library exceeds inline bounds scan limit; use TD Definition')
+            if not record.get('parameter'):return
+            comp=record.get('comp','')
+            if not isinstance(comp,str):return
+            if relative and not comp.startswith('/'):comp=normpath(c.path+'/'+comp)
+            if comp==info['comp'] and record.get('parameter')==info['parameter']:
+                try:ranges[(tuple(context),record['id'])]=(float(record['minimum']),float(record['maximum']))
+                except (KeyError,TypeError,ValueError):raise ValueError('Saved mapping limits unavailable; repair mapping before editing bounds')
+        manager=c.ext.RotoPythonExt._layout_manager()
+        if not manager.legacy:
+            removed=set(c.fetch('removed_controls',[]))
+            for layout in manager.data['records']:
+                for track in layout['tracks']:
+                    for plugin in track['plugins']:
+                        context=(layout['id'],track['id'],plugin['id'])
+                        for record in plugin['targets']:
+                            if context!=active or record.get('id') not in removed:add(context,record,True)
+            for record in c.fetch('page_targets',[]):
+                if record.get('id') not in removed:add(active,record,True)
+        # Active catalog overwrites saved/page snapshots for the same stable ID.
+        for record in c.GetControlCatalog():add(active,record)
+        return tuple((context,id,low,high) for (context,id),(low,high) in sorted(ranges.items()))
+    def _native_parameter(self,info):
+        target=op(info.get('comp',''))
+        if not target or not target.valid:return None
+        return getattr(target.par,info.get('parameter',''),None)
+    def ParameterDefinition(self,info,learning=False,touched=False):
+        return self.DefinitionModule().read(info,self._native_parameter,learning,touched)
+    def OpenNativeEditor(self,info,kind,learning=False,touched=False):
+        return self.DefinitionModule().open_editor(info,kind,self._native_parameter,ui.openCOMPEditor,learning,touched)
     def Reveal(self,info):
         c=self.controller
         if not c or not info.get('parameter'):raise ValueError('No native target to reveal')
-        if c.GetCompContext().get('enabled'):raise ValueError('Turn off controller Follow before Reveal; pane selection can change routing')
         target=op(info.get('comp',''))
         if not target or not target.valid or not getattr(target.par,info['parameter'],None):raise ValueError('Target unavailable; use Target picker to repair')
         pane=ui.panes.current
-        if not pane or pane.type.name!='NETWORKEDITOR':raise ValueError('Reveal requires an existing Network Editor pane')
-        pane.owner=target
+        if not pane or not pane.open or pane.type.name!='NETWORKEDITOR':
+            pane=next((p for p in ui.panes if p.open and p.type.name=='NETWORKEDITOR'),None)
+        if not pane:raise ValueError('Reveal requires an existing Network Editor pane')
+        destination=target.parent()
+        # Follow samples selected children. Navigate with no selection so a saved
+        # child selection cannot silently route to another linked Device.
+        if c.GetCompContext().get('enabled'):
+            for child in tuple(destination.selectedChildren):child.selected=False
+        pane.owner=destination
+        # home() schedules native viewport changes beyond this call.
+        # Direct coordinates keep repeated Reveal at a readable fixed scale.
+        pane.zoom=1.0
+        pane.x=target.nodeX+target.nodeWidth/2
+        pane.y=target.nodeY+target.nodeHeight/2
         return target.path
     def Configure(self,key,info,values):
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')

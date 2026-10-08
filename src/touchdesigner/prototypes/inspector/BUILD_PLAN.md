@@ -1,6 +1,6 @@
 # Compact Inspector build plan
 
-2026-10-08. The initial scout below was read-only. Milestones 1–4 are implemented; milestones 5–6 remain planned.
+2026-10-08. The initial scout below was read-only. Milestones1–4 are implemented; milestone5 has completed functional/stability/physical evidence with remaining gates recorded in REPLACEMENT_REPORT.md. The user defers further performance work. Milestone6a is installed: native metadata inspection and TD editor access, verified in [ADVANCED_REPORT.md](ADVANCED_REPORT.md).
 
 Milestone 1 adds mapping health, shared commands/capabilities, bounded native definition caching and root callback cleanup in both views. Pure tests and isolated native fixtures pass, including automatic touch/mode updates and invalid inactive targets. See [HEALTH_REPORT.md](HEALTH_REPORT.md) for evidence and performance scope. Milestone 2 adds a separate collapsible Mapping draft and validated Range/Mode/Input configuration. The header now uses Device-first dropdowns with Layout | Track below. See [MAPPING_REPORT.md](MAPPING_REPORT.md). Milestone 3 adds shared bounded target discovery, explicit assignment/retargeting and typed Value controls; see [TARGET_REPORT.md](TARGET_REPORT.md). Milestone 4 adds filters, Details, scoped Clear Device and Reveal/Repair; see [PARITY_REPORT.md](PARITY_REPORT.md). The old Inspector remains available; replacement acceptance and native parameter definition editing remain later work.
 
@@ -132,7 +132,7 @@ For each milestone, use the skill's build sequence: infrastructure -> source mod
 - Before declaring replacement, run matched idle/redraw/editor/context/picker workloads and a 30-minute fixture soak. Log operator/subscriber/cache/queue counts and whole-process memory, plus sync/dispatch/native-render timing separately. Compare against a fresh baseline in the same project; investigate a >10% p95 regression rather than assuming that the historical 0.395ms sync result guarantees rendering performance. Native OS X/reopen churn is a separate scenario.
 - User hardware acceptance covers forgotten-map Ping/ACK, knob Range re-LEARN, button input adapters and Menu behavior, then all sixteen slots/cross-Device isolation. Sent metadata and unmap requests alone do not establish persistent hardware success.
 
-The next implementation slice is Milestone 5: replacement acceptance. Milestones 1–4 are implemented; the deferred resize bug remains tracked separately, and parameter definition changes remain later work.
+Milestone6a now provides native metadata inspection and TD editor access using the existing Details section; see [ADVANCED_REPORT.md](ADVANCED_REPORT.md). The first6b slice now edits native Label/default with a separate guarded definition draft; see DEFINITION_EDIT_REPORT.md. Native slider/clamp bounds are also installed with linked-controller library guards (DEFINITION_BOUNDS_REPORT.md). Static Menu labels are installed with binding reconciliation and explicit re-LEARN consequences (DEFINITION_MENU_REPORT.md). The first6c lossless scalar Float/Int Style slice is installed (STYLE_MIGRATION_REPORT.md); other Style conversions remain separate. Manual acceptance is consolidated in ACCEPTANCE_BATCH.md. Performance work and resize issue#6 are deferred; full replacement acceptance is not inferred.
 
 ## Source references
 

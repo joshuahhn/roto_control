@@ -1,0 +1,301 @@
+{
+  "scope": "Whole TD project with disconnected sixteen-slot fixture and existing compact views. Forward/reverse 8s cases, first1s excluded; medians of case p95s, not pooled.",
+  "comparison": [
+    {
+      "case": "closed_idle",
+      "before": {
+        "frame_p95_ms": 8.28602123260498,
+        "wall_gap_p95_ms": 19.31408350355923,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.561687469482422,
+        "wall_gap_p95_ms": 19.849292002618313,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "closed_14",
+      "before": {
+        "frame_p95_ms": 9.341729640960693,
+        "wall_gap_p95_ms": 24.27604200784117,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 9.03945779800415,
+        "wall_gap_p95_ms": 22.23604149185121,
+        "dropped_frames": 1.0
+      }
+    },
+    {
+      "case": "fold_14",
+      "before": {
+        "frame_p95_ms": 10.37347936630249,
+        "wall_gap_p95_ms": 23.72502052458003,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.577583312988281,
+        "wall_gap_p95_ms": 22.306583472527564,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "popup_14",
+      "before": {
+        "frame_p95_ms": 8.558562755584717,
+        "wall_gap_p95_ms": 23.37777055799961,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.604875087738037,
+        "wall_gap_p95_ms": 22.393833030946553,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "popup_frozen_14",
+      "before": {
+        "frame_p95_ms": 11.249979496002197,
+        "wall_gap_p95_ms": 24.16485402500257,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.74110460281372,
+        "wall_gap_p95_ms": 22.249437519349158,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "popup_no_legacy_14",
+      "before": {
+        "frame_p95_ms": 10.215021133422852,
+        "wall_gap_p95_ms": 23.281146015506238,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 9.046875,
+        "wall_gap_p95_ms": 21.15002105711028,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "popup_no_main_redraw_14",
+      "before": {
+        "frame_p95_ms": 15.476791381835938,
+        "wall_gap_p95_ms": 28.096875408664346,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.885416269302368,
+        "wall_gap_p95_ms": 23.25941645540297,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "closed_no_main_redraw_14",
+      "before": {
+        "frame_p95_ms": 16.68274974822998,
+        "wall_gap_p95_ms": 28.854375006631017,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 11.226062297821045,
+        "wall_gap_p95_ms": 25.214353983756155,
+        "dropped_frames": 0.0
+      }
+    },
+    {
+      "case": "closed_no_publication_14",
+      "before": {
+        "frame_p95_ms": 8.515333652496338,
+        "wall_gap_p95_ms": 19.71179200336337,
+        "dropped_frames": 0.0
+      },
+      "after": {
+        "frame_p95_ms": 8.695874691009521,
+        "wall_gap_p95_ms": 19.738645991310477,
+        "dropped_frames": 0.0
+      }
+    }
+  ],
+  "native_comparison": [
+    {
+      "case": "closed_idle",
+      "before": {
+        "native_frame_p95_ms": 7.719,
+        "window_redraw_p95_ms": 3.7755,
+        "maximum_sampled_frame_ms": 8.845,
+        "samples": 28
+      },
+      "after": {
+        "native_frame_p95_ms": 6.8905,
+        "window_redraw_p95_ms": 3.3419999999999996,
+        "maximum_sampled_frame_ms": 8.795,
+        "samples": 28
+      }
+    },
+    {
+      "case": "closed_14",
+      "before": {
+        "native_frame_p95_ms": 9.9305,
+        "window_redraw_p95_ms": 2.859,
+        "maximum_sampled_frame_ms": 14.47,
+        "samples": 84
+      },
+      "after": {
+        "native_frame_p95_ms": 8.328,
+        "window_redraw_p95_ms": 3.104,
+        "maximum_sampled_frame_ms": 11.306,
+        "samples": 84
+      }
+    },
+    {
+      "case": "popup_14",
+      "before": {
+        "native_frame_p95_ms": 11.9375,
+        "window_redraw_p95_ms": 3.2535,
+        "maximum_sampled_frame_ms": 14.378,
+        "samples": 84
+      },
+      "after": {
+        "native_frame_p95_ms": 8.4325,
+        "window_redraw_p95_ms": 3.354,
+        "maximum_sampled_frame_ms": 12.742,
+        "samples": 84
+      }
+    },
+    {
+      "case": "popup_no_legacy_14",
+      "before": {
+        "native_frame_p95_ms": 9.534,
+        "window_redraw_p95_ms": 3.8145,
+        "maximum_sampled_frame_ms": 15.276,
+        "samples": 84
+      },
+      "after": {
+        "native_frame_p95_ms": 6.9365000000000006,
+        "window_redraw_p95_ms": 3.5105,
+        "maximum_sampled_frame_ms": 11.365,
+        "samples": 84
+      }
+    },
+    {
+      "case": "popup_no_main_redraw_14",
+      "before": {
+        "native_frame_p95_ms": 15.36,
+        "window_redraw_p95_ms": 1.271,
+        "maximum_sampled_frame_ms": 19.629,
+        "samples": 84
+      },
+      "after": {
+        "native_frame_p95_ms": 13.147,
+        "window_redraw_p95_ms": 1.8835,
+        "maximum_sampled_frame_ms": 16.364,
+        "samples": 84
+      }
+    }
+  ],
+  "stress_60hz": [
+    {
+      "case": "closed_idle",
+      "requested_hz": 60.0,
+      "delivered_hz": 0.0,
+      "missed_synthetic_deadlines": 0,
+      "frame_p95_ms": 8.596875190734863,
+      "wall_gap_p95_ms": 19.6730000898242,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "popup_1",
+      "requested_hz": 60.0,
+      "delivered_hz": 59.75541708803696,
+      "missed_synthetic_deadlines": 2,
+      "frame_p95_ms": 7.567417144775391,
+      "wall_gap_p95_ms": 17.98875001259148,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "closed_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 59.893337094084934,
+      "missed_synthetic_deadlines": 1,
+      "frame_p95_ms": 7.718082904815674,
+      "wall_gap_p95_ms": 18.84375000372529,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "fold_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 59.865799410560726,
+      "missed_synthetic_deadlines": 1,
+      "frame_p95_ms": 7.700165748596191,
+      "wall_gap_p95_ms": 18.843165948055685,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "popup_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 60.05381806552018,
+      "missed_synthetic_deadlines": 0,
+      "frame_p95_ms": 8.05179214477539,
+      "wall_gap_p95_ms": 19.19241703581065,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "popup_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 59.9023491843999,
+      "missed_synthetic_deadlines": 1,
+      "frame_p95_ms": 7.7515411376953125,
+      "wall_gap_p95_ms": 19.59012495353818,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "fold_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 59.917300934591495,
+      "missed_synthetic_deadlines": 1,
+      "frame_p95_ms": 7.892499923706055,
+      "wall_gap_p95_ms": 19.44041601382196,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "closed_14",
+      "requested_hz": 60.0,
+      "delivered_hz": 49.470348577867725,
+      "missed_synthetic_deadlines": 74,
+      "frame_p95_ms": 8.55333423614502,
+      "wall_gap_p95_ms": 20.484125008806586,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "popup_1",
+      "requested_hz": 60.0,
+      "delivered_hz": 60.05277619406319,
+      "missed_synthetic_deadlines": 0,
+      "frame_p95_ms": 7.473124980926514,
+      "wall_gap_p95_ms": 18.406499992124736,
+      "dropped_frames": 0.0
+    },
+    {
+      "case": "closed_idle",
+      "requested_hz": 60.0,
+      "delivered_hz": 0.0,
+      "missed_synthetic_deadlines": 0,
+      "frame_p95_ms": 8.373957633972168,
+      "wall_gap_p95_ms": 19.524583010934293,
+      "dropped_frames": 0.0
+    }
+  ],
+  "production_preserved": true,
+  "strict_cadence_gate": "open",
+  "native_measurement": "CPU/driver Window timings, not isolated GPU execution; burst-aligned captures contain native monitor overhead.",
+  "notes": [
+    "The first cadence_native sparse snapshots mainly fell between bursts; retained as exploratory only. Native comparison uses corrected feed+following-frame captures.",
+    "Synthetic producer keeps the latest scheduled update when late; missed deadlines indicate reduced offered load, not observed MIDI packet loss. One reverse closed14 60Hz case delivered49.47Hz with74 missed synthetic deadlines; not a60Hz pass.",
+    "The14-value no-publication case is a fixture-only diagnostic, never shipped. Disabling main redraw made timings worse, so no runtime redraw setting changed.",
+    "One native verification attempt used the default Int range0..1 instead of intended0..7; corrected fixture range. Unfired Pulse ACK counter can be absent (runtime defaults0). Both failed fixture attempts cleaned up; final18-write native verification passes.",
+    "No30-minute soak or full project restart repeated after this synchronous publication change."
+  ]
+}

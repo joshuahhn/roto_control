@@ -1,0 +1,11 @@
+# Native definition draft: Label and Default
+
+2026-10-08. First6b slice installed in Fold/Popup. Details pencil opens an inline native Label/default draft; ✓ Apply and × Cancel are compact. Window stays402px, main390px; only internal Details scroll extent changes. Mapping/native readout remain separate. Default editing does not reset/write live Value. Native Label does not rename the Mapping Label/controller display or recreate the target.
+
+Shared definition_edit module supports independent scalar custom Float/Int with constant evaluation/default. Built-in/vector/sequence/clone/master-with-clones/Bind dependents/expression/export/read-only/other Styles give reasons and retain TD Definition access. Exact owner/group/index/native fingerprint is separate from Value-dependent state. Fresh active context/session/mapping token and hardware LEARN/touch guard Apply. Finite/typed/clamp default and label validation precede all setters. Setter/readback failure restores original metadata; incomplete rollback is explicitly reported. Arbitrary native setter callbacks cannot be made atomic.
+
+239 runtime/139 Inspector tests pass. Eight added pure cases cover ownership, invalid patches, exact external-default staleness, Value traffic, rollback, fresh hardware/session guards and unchanged mapping catalog. Disposable native Float/Int fixture changes and restores actual Label/default while live values/modes/group names stay unchanged, and rejects stale default changes. Real K2 pipeline uses no-op Apply plus changed draft/Cancel; original catalog/registry/MIDI process preserved. CUA text entry changes draft Default to0.5 while native Default stays0.25/live0.4872123543, then Cancel discards it. Both presentations retain fixed sizes. Fixture removed, two subscribers, scoped errors clear; measured cleanup includes draft subcontainers.
+
+Generic UI exports/reload must embed shared module, clear draft strings/state and hide form. Production metadata-change/physical Reset-to-default acceptance has not been requested or inferred. Slider/clamp/Menu metadata and Style migration remain later work. See DEFINITION_EDIT_PLAN.md and definition_edit_verification.json.
+
+Native slider/clamp bounds are now installed in the folded BOUNDS draft area; see [DEFINITION_BOUNDS_REPORT.md](DEFINITION_BOUNDS_REPORT.md). Static Menu labels/Style migration remain later work.

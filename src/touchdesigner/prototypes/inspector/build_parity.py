@@ -54,11 +54,39 @@ for view in globals().get('parity_views',[op('/inspector_below'),op('/inspector_
                 value.par.clickthrough=False;value.par.editmode='selectonly'
             group.nodeX=g*260;group.nodeY=0
             for i,o in enumerate(group.children):o.nodeX=(i%5)*200;o.nodeY=-(i//5)*160+130-o.nodeHeight
-        for name,label,x,w in [('refresh','Refresh',12,54),('reveal','Reveal',72,54),('repair','Repair',132,54)]:
-            button(section,name,label,'details_'+name,x,6,w,24)
-        for o in section.findChildren(maxDepth=4)+[info]:
+        native=panel(content,containerCOMP,'container_native',0,0,204,100);anchors(native,0,0)
+        native.nodeX=695;native.nodeY=0;native.nodeWidth=160;native.nodeHeight=130
+        heading=text(native,'text_heading','Native parameter',12,82,180,18,12);anchors(heading,12,-12)
+        heading.par.typeface='Bold';heading.par.fontcolorr=heading.par.fontcolorg=heading.par.fontcolorb=.90
+        for i in range(8):
+            label=text(native,'label'+str(i),'',12,0,78,18,9)
+            label.par.fontcolorr=label.par.fontcolorg=label.par.fontcolorb=.58
+            label.par.aligny='top';label.par.type='multiline';label.par.wordwrap=True
+            value=text(native,'value'+str(i),'',92,0,100,18,11);anchors(value,92,-12)
+            value.par.fontcolorr=value.par.fontcolorg=value.par.fontcolorb=.88
+            value.par.aligny='top';value.par.type='multiline';value.par.wordwrap=True
+            value.par.clickthrough=False;value.par.editmode='selectonly'
+        for i,o in enumerate(native.children):o.nodeX=(i%5)*200;o.nodeY=-(i//5)*210+130-o.nodeHeight
+        # Codepoints verified against TD's bundled MaterialDesignIconsMeta.json.
+        actions=[('refresh','details_refresh','\U000f0450'),('reveal','details_reveal','\U000f01a4'),
+                 ('repair','details_repair','\U000f0be0'),('native_values','native_values','\U000f066a'),
+                 ('native_definition','native_definition','\U000f04f0')]
+        for i,(name,action,icon) in enumerate(actions):
+            b=button(section,name,'',action,0,6,24,24)
+            anchors(b,-156+i*30,-132+i*30,1,1)
+            label=b.op('text_label');label.par.font='Material Design Icons';label.par.fontsize=15;label.par.text=icon
+            cb=section.op('click_'+name);cb.par.panelvalue='lselect rollover';cb.par.offtoon=cb.par.ontooff=True
+            cb.text=("def onOffToOn(panelValue):\n"
+                     "    if panelValue.name=='rollover':parent.InspectorDemo.Hint(%r,True)\n"
+                     "def onOnToOff(panelValue):\n"
+                     "    if panelValue.name=='rollover':parent.InspectorDemo.Hint(%r,False)\n"
+                     "    elif parent().op(%r).panel.inside:parent.InspectorDemo.Action(%r)\n")%(action,action,name,action)
+        for o in section.findChildren(maxDepth=5)+[info]:
             if o.OPType in ('textCOMP','containerCOMP'):
                 o.par.fit='off';o.par.scalex=o.par.scaley=1
                 if o.OPType=='textCOMP':o.par.scaletofit='never';o.par.fontsizeunits='panelunits'
         for i,o in enumerate(section.children):o.nodeX=(i%5)*200;o.nodeY=-(i//5)*160+130-o.nodeHeight
+        for i,name in enumerate(('native_values','native_definition')):
+            section.op(name).nodeX=1130+i*200;section.op(name).nodeY=0
+            section.op('click_'+name).nodeX=1130+i*200;section.op('click_'+name).nodeY=-210
 print('Compact filters, Details and Clear Device installed')

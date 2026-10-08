@@ -77,6 +77,17 @@ class PopupExpansionTests(TestCase):
         for extra in (MAPPING,250,MAPPING,0):v._sync_popup_expansion(extra)
         self.assertEqual(p.par.winopen.pulses,0)
 
+    def test_open_window_section_height_synchronizes_stale_panel_cache(self):
+        v=self.v;p=v._popup
+        host=SimpleNamespace(width=286,height=214,par=Pars(dict(h=214)))
+        v._popup_host=host
+        v._sync_popup_expansion(224)
+        self.assertEqual(p.contentHeight,438)
+        self.assertEqual(host.par.h.eval(),438)
+        v._sync_popup_expansion(0)
+        self.assertEqual(host.par.h.eval(),214)
+        self.assertEqual(p.par.winopen.pulses,0)
+
     def test_manual_expanded_resize_becomes_new_base(self):
         v=self.v;p=v._popup;v._sync_popup_expansion(MAPPING)
         p.contentWidth=320;p.contentHeight=388;p.height=420;p.y-=40
@@ -116,3 +127,27 @@ class PopupExpansionTests(TestCase):
         v=self.v;p=v._popup;p.isOpen=False;p.contentHeight=246
         v._popup_host=SimpleNamespace(width=286,height=214)
         v.OpenPopup();self.assertEqual(p.contentHeight,214)
+
+    def test_saved_expanded_window_restores_manual_base_on_startup(self):
+        v=self.v;p=v._popup;p.isOpen=False
+        saved={'inspector_popup_expansion':MAPPING}
+        v.ownerComp=SimpleNamespace(fetch=lambda key,default=None:saved.get(key,default),store=lambda key,value:saved.update({key:value}))
+        host=SimpleNamespace(width=376,height=354,par=Pars(dict(h=354)))
+        v._popup_host=host
+        v._restore_popup_base()
+        self.assertEqual((p.par.winw.eval(),p.par.winh.eval()),(376,220))
+        self.assertEqual(host.par.h.eval(),220)
+        self.assertEqual(saved['inspector_popup_expansion'],0)
+        self.assertFalse(p.isOpen)
+        v.OpenPopup();v._sync_popup_expansion(MAPPING)
+        self.assertEqual((p.contentWidth,p.contentHeight),(376,354))
+        self.assertEqual(saved['inspector_popup_expansion'],MAPPING)
+
+    def test_saved_collapsed_window_keeps_manual_base(self):
+        v=self.v;p=v._popup;p.isOpen=False
+        saved={}
+        v.ownerComp=SimpleNamespace(fetch=lambda key,default=None:saved.get(key,default),store=lambda key,value:saved.update({key:value}))
+        v._popup_host=SimpleNamespace(width=286,height=214)
+        v._restore_popup_base()
+        self.assertEqual((p.par.winw.eval(),p.par.winh.eval()),(286,214))
+        self.assertFalse(v._popup_size_pending)

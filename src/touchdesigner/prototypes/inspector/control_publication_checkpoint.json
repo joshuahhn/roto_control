@@ -1,0 +1,19 @@
+{
+  "project": "inspector_editor_actions.34.toe",
+  "catalog_exact": true,
+  "six_acks": true,
+  "connected": true,
+  "subscribers": 2,
+  "no_fixture_or_pending_projection": true,
+  "main": [
+    240,
+    390
+  ],
+  "popup": [
+    328,
+    312
+  ],
+  "mapping": "B1 TOGGLE / Value1",
+  "saved_path": "/Users/huihongnin/.t3/worktrees/roto_control/t3-8403675d/src/touchdesigner/inspector_editor_actions.34.toe",
+  "saved_exists": true
+}

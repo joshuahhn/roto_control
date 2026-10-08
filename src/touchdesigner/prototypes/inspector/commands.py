@@ -60,6 +60,31 @@ class CommandService:
         self.model.RefreshDefinitions(context,slot);self.model.Sync()
         return result
 
+    def ParameterDefinition(self,context,slot,token):
+        context,slot,info=self._target(context,slot,token)
+        return self.model.adapter.ParameterDefinition(info,self.model.Learn,bool(info.get('touched')))
+
+    def OpenNativeEditor(self,context,slot,token,kind):
+        context,slot,info=self._target(context,slot,token)
+        return self.model.adapter.OpenNativeEditor(info,kind,self.model.Learn,bool(info.get('touched')))
+
+    def DefinitionDraft(self,context,slot,token):
+        context,slot,info=self._target(context,slot,token)
+        if not self._active(context):raise ValueError('Browse only: activate this Device first')
+        return self.model.adapter.DefinitionDraft(context,info)
+
+    def PreviewStyle(self,context,slot,token,draft,patch):
+        context,slot,info=self._target(context,slot,token)
+        if not self._active(context):raise ValueError('Browse only: activate this Device first')
+        return self.model.adapter.PreviewStyle(context,info,draft,patch)
+
+    def ApplyDefinition(self,context,slot,token,draft,patch):
+        context,slot,info=self._target(context,slot,token)
+        if not self._active(context):raise ValueError('Browse only: activate this Device first')
+        result=self.model.adapter.ApplyDefinition(context,info,draft,patch)
+        self.model.RefreshDefinitions();self.model.Sync()
+        return result
+
     def MappingSchema(self,context,slot):
         info=self.model.Info(context,slot);style=info.get('parameter_style','')
         button=info.get('kind')=='button'
@@ -164,6 +189,11 @@ class InspectorCommands:
     def Capabilities(self,*args):return self._service().Capabilities(*args)
     def MappingSchema(self,*args):return self._service().MappingSchema(*args)
     def ValueSchema(self,*args):return self._service().ValueSchema(*args)
+    def ParameterDefinition(self,*args):return self._service().ParameterDefinition(*args)
+    def OpenNativeEditor(self,*args):return self._service().OpenNativeEditor(*args)
+    def DefinitionDraft(self,*args):return self._service().DefinitionDraft(*args)
+    def PreviewStyle(self,*args):return self._service().PreviewStyle(*args)
+    def ApplyDefinition(self,*args):return self._service().ApplyDefinition(*args)
     def Assign(self,*args):return self._service().Assign(*args)
     def Configure(self,*args):return self._service().Configure(*args)
     def Commit(self,*args):return self._service().Commit(*args)

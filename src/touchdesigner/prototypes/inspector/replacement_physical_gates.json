@@ -26,8 +26,17 @@
     "evidence": "User confirmed Device/Layout/Track first item clicks; see inline_selector_acceptance.json"
   },
   "declared_hw_adapter": {
-    "status": "not_verified",
-    "evidence": "No physical PUSH/TOGGLE adapter acceptance recorded"
+    "status": "accepted",
+    "toggle": "Corrected last three CCs127/0/127 produce three Cycle dispatches; user confirms normal.",
+    "push": "Twelve press/release pairs produce exactly twelve Cycle dispatches, zero release/extra dispatches; user confirms holds/releases do not switch.",
+    "scope": "B1 Menu/Cycle; input-only changes applied via compact editor in-window dropdown and Apply.",
+    "artifacts": [
+      "physical_button_toggle.json",
+      "physical_button_push.json",
+      "physical_button_adapter_setup.json"
+    ],
+    "restoration": "User confirmed hardware TYPE restored to TOGGLE; native TD TOGGLE/value1, all six original catalog rows and matching ACKs retained; recorder hooks/deadline removed.",
+    "checkpoint": "inspector_editor_actions.33.toe"
   },
   "native_resize": {
     "status": "deferred",

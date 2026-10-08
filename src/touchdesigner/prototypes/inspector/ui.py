@@ -1,6 +1,7 @@
 """Compact views over a shared demo or real controller catalog."""
 from time import monotonic
 from collections import Counter
+from math import ceil
 from editor_state import MappingDraft
 from parity import ClearRequest,filter_choices,visible_slots,detail_groups
 from context_menu import Dropdown,placement_for,editor_space_for
@@ -9,6 +10,11 @@ EDITOR=178
 MAPPING=134
 PICKER=250
 DETAILS=224
+DEFINITION_FIELDS=(('label','Nativelabel'),('default','Nativedefault'),
+    ('normMin','Nativeslidermin'),('normMax','Nativeslidermax'),('min','Nativelimitmin'),('max','Nativelimitmax'),
+    ('clampMin','Nativeclampmin'),('clampMax','Nativeclampmax'))
+STYLE_FIELDS=(('style','Nativestyle'),)
+MENU_FIELDS=tuple(('menu'+str(i),'Nativemenulabel'+str(i+1)) for i in range(24))
 BASE=(.085,.085,.085)
 SURFACE=(.12,.12,.12)
 ACCENT=(.76,.76,.76)
@@ -58,6 +64,9 @@ class InspectorView:
         self._details_open=False
         self._details_display=None
         self._diagnostics=None
+        self._native_definition=None
+        self._definition_draft=None
+        self._definition_bounds=False
         self._clear_device_request=None
         self._device_message=''
         self._picker_generation=0
@@ -92,6 +101,8 @@ class InspectorView:
             for name,icon in [('mapping_cancel','cancel'),('mapping_apply','apply')]:
                 label=editor.op('container_mapping/'+name+'/text_label')
                 if label:action_icon(label,icon)
+        self.DiscardDefinition()
+        self._restore_popup_base()
         self.Connect()
 
     def Key(self):return tuple(self.ownerComp.par[n].eval() for n in ('Layout','Track','Device'))
@@ -156,6 +167,13 @@ class InspectorView:
             self._device_message='Removed '+str(len(result['removed']))+' · '+str(len(result['remaining']))+' remain'+(' · '+result['error'] if result['error'] else '')
             self._update_main_status();return not bool(result['error'] or result['remaining'])
         except (ValueError,RuntimeError) as error:self._device_message=str(error);self._update_main_status();return False
+    def _capture_definition(self):
+        try:self._native_definition=self._model.ParameterDefinition(self._context,self.selected,self._token)
+        except (ValueError,RuntimeError) as error:
+            reason=str(error)
+            self._native_definition=dict(target=None,native=None,reason=reason,rows=(('Target',reason,'long'),),
+                actions={kind:dict(enabled=False,reason=reason) for kind in ('values','definition')})
+
     def _update_details(self):
         if not getattr(self,'_details_open',False) or self.selected is None or not self.IsLive():return
         info=self._model.Info(self._context,self.selected);status=self._model.Status
@@ -167,10 +185,40 @@ class InspectorView:
         try:selected=labels(selected_key)[1:]
         except (ValueError,RuntimeError):selected=tuple(str(n) for n in selected_key[1:])
         groups=detail_groups(info,self._model.Health(self._context,self.selected),status,self._diagnostics,labels(self._context),route,selected,self._follow_routing)
+        definition=getattr(self,'_native_definition',None)
+        if definition:groups=(('Native parameter',definition['rows']),)+groups
+        draft=getattr(self,'_definition_draft',None)
+        menu=bool(draft and draft['style']=='Menu')
+        style_preview=getattr(self,'_style_preview',None)
+        bounds=bool(draft and not menu and getattr(self,'_definition_bounds',False))
+        if draft and definition:
+            old=draft['original']
+            style_preview=getattr(self,'_style_preview',None)
+            groups=(('Native '+draft['style']+' · definition draft',
+                (('Choices',str(len(draft['menu_names']))+' · names / order fixed','short'),('Hardware','Label changes need re-LEARN','short')) if menu else
+                (('Before',draft['style']+' · default '+str(old['default']),'short'),)),)+groups[1:]
+            if style_preview and not menu:
+                desired=self._draft.par.Nativestyle.eval()
+                title='Native '+draft['style']+' → '+desired+' · draft'
+                if style_preview.get('reason'):
+                    rows=(('Blocked',style_preview['reason'],'long'),)
+                else:
+                    rows=(('Value',format(style_preview['value'],'.6g')+' · preserved','short'),
+                          ('Re-LEARN',str(style_preview['mappings'])+' related mappings','short'))
+                    if style_preview['metadata']['default']!=old['default']:
+                        rows+=(('Default',str(old['default'])+' → '+str(style_preview['metadata']['default']),'short'),)
+                groups=((title,rows),)+groups[1:]
+            if bounds and draft.get('mapping_ranges'):
+                ranges=draft['mapping_ranges'];low=min(r[2] for r in ranges);high=max(r[3] for r in ranges)
+                title,rows=groups[0]
+                groups=((title,rows+(('Mapped range',format(low,'.6g')+'–'+format(high,'.6g')+' · '+str(len(ranges))+' saved','short'),)),)+groups[1:]
         fresh=self._token==self._model.GetToken(self._context,self.selected)
-        reveal=bool(info.get('parameter') and not status.get('Follow') and fresh)
+        reveal=bool(info.get('parameter') and fresh)
         repair=self._model.Capabilities(self._context,self.selected)['assign']['enabled']
-        signature=(groups,reveal,repair)
+        native_actions=self._model.NativeEditorActions(definition,self._context,self.selected) if definition else {}
+        widths=tuple(e.width for e in self._editors)
+        editing_allowed=fresh and not status.get('Learning') and not status.get('Touched') and tuple(active)==tuple(self._context)
+        signature=(groups,reveal,repair,native_actions,fresh,widths,bool(draft),editing_allowed,bounds)
         if getattr(self,'_details_display',None)==signature:return
         self._details_display=signature
         message='\n'.join(title+'\n'+'\n'.join(label+'  '+value for label,value,kind in rows) for title,rows in groups)
@@ -180,27 +228,76 @@ class InspectorView:
             if section.op('text_details').par.text.eval()!=message:section.op('text_details').par.text=message
             content=section.op('container_readout/container_info')
             if content:
-                total=sum(18+sum(48 if kind=='long' else 18 for label,value,kind in rows)+6 for title,rows in groups)
+                def row_height(row):
+                    label,value,kind=row
+                    if kind=='short':return 18
+                    chars=max(8,int(max(1,editor.width-30)/6))
+                    return 16+max(2,sum(max(1,ceil(len(line)/chars)) for line in value.split('\n')))*14
+                form_height=34+28*len(draft['menu_names']) if menu else 118+(84 if bounds else 0)
+                total=sum(18+sum(row_height(row) for row in rows)+6 for title,rows in groups)+(form_height if draft else 0)
                 content.par.h=total
                 top=total
                 for g,(title,rows) in enumerate(groups):
-                    group=content.op('group'+str(g));height=18+sum(48 if kind=='long' else 18 for label,value,kind in rows)
+                    native=bool(definition and g==0)
+                    group=content.op('container_native' if native else 'group'+str(g-(1 if definition else 0)))
+                    if not group:continue
+                    height=18+sum(row_height(row) for row in rows)+(form_height if native and draft else 0)
                     group.par.y=top-height;group.par.h=height;top-=height+6
                     group.op('text_heading').par.y=height-18
                     y=height-18
-                    for i in range((3,5,6)[g]):
+                    group.op('text_heading').par.text=title
+                    for i in range(8 if native else (3,5,6)[g-(1 if definition else 0)]):
                         label_node=group.op('label'+str(i));value_node=group.op('value'+str(i));shown=i<len(rows)
                         label_node.par.display=value_node.par.display=shown
-                        if not shown:value_node.par.text='';continue
-                        label,value,kind=rows[i];h=48 if kind=='long' else 18;y-=h
+                        if not shown:label_node.par.text='';value_node.par.text='';continue
+                        label,value,kind=rows[i];h=row_height(rows[i]);y-=h
                         label_node.par.y=y+h-12 if kind=='long' else y;label_node.par.h=12 if kind=='long' else h
                         value_node.par.y=y;value_node.par.h=h-14 if kind=='long' else h
                         value_node.par.leftoffset=12 if kind=='long' else 92
                         label_node.par.text=label
                         if value_node.par.text.eval()!=value:value_node.par.text=value
                         value_node.par.fontsize=10 if kind=='long' else 11
+                    if native and group.op('container_edit'):
+                        form=group.op('container_edit');form.par.display=bool(draft)
+                        form.par.h=form_height
+                        offset=84 if bounds else 0
+                        for name in ('label','default'):
+                            form.op('label_'+name).par.display=form.op('field_'+name).par.display=not menu
+                        for i,(key,par_name) in enumerate(MENU_FIELDS):
+                            label_node= form.op('menu_name'+str(i));field=form.op('menu_label'+str(i))
+                            if not label_node or not field:continue
+                            shown=menu and i<len(draft['menu_names'])
+                            label_node.par.display=field.par.display=shown
+                            if shown:
+                                label_node.par.text=str(i+1)+' · '+draft['menu_names'][i]
+                                label_node.par.y=field.par.y=form_height-28*(i+1)
+                            else:label_node.par.text=''
+
+                        for name,y in (('label',90),('default',62)):
+                            form.op('label_'+name).par.y=form.op('field_'+name).par.y=y+offset
+                        style_button=form.op('style')
+                        if style_button:
+                            style_button.par.display=bool(draft and not menu)
+                            form.op('label_style').par.display=bool(draft and not menu)
+                            form.op('label_style').par.y=34+offset
+                            style_button.par.enable=bool(draft and editing_allowed and draft.get('style_snapshot'))
+                            style_button.par.y=34+offset
+                            style_button.op('text_label').par.text=(self._draft.par.Nativestyle.eval() or 'Style')+' ▾'
+                        if form.op('bounds'):
+                            form.op('bounds').par.display=not menu
+                            form.op('bounds/text_label').par.text='BOUNDS '+('▾' if bounds else '▸')
+                            for name in ('label_slider','label_limits','label_clamps','field_slidermin','field_slidermax','field_limitmin','field_limitmax','clamp_min','clamp_max'):
+                                form.op(name).par.display=bounds
+                            for name,par_name in (('min','Nativeclampmin'),('max','Nativeclampmax')):
+                                form.op('clamp_'+name+'/text_label').par.text=name.capitalize()+' '+('ON' if self._draft.par[par_name].eval() else 'OFF')
+                        group.op('edit').par.enable=bool(fresh and editing_allowed and definition.get('target',{}).get('custom'))
+                        form.op('definition_apply').par.enable=bool(draft and editing_allowed and not (style_preview and style_preview.get('reason')))
+                        group.op('text_heading').par.rightoffset=-42
             section.op('reveal').par.enable=reveal
             section.op('repair').par.enable=repair
+            for kind in ('values','definition'):
+                button=section.op('native_'+kind)
+                if button:button.par.enable=bool(fresh and native_actions.get(kind,{}).get('enabled'))
 
     def Connect(self):
         self.Disconnect()
@@ -258,6 +355,7 @@ class InspectorView:
         self.ClosePicker()
         if getattr(self,'_popup_extra',0):self._sync_popup_expansion(0)
         self._cancel_popup_geometry()
+        self._native_definition=None
         if self._model:self._model.Unsubscribe(self._identity,self.OnModelChange)
         self._model=None
 
@@ -641,9 +739,14 @@ class InspectorView:
 
     def Hint(self,name,hover):
         if self.selected is None or self._clear_pending:return
-        hints=dict(ping='Ping · resend mapping in HW LEARN',clear='Clear · remove this mapping',cancel='Cancel · discard Value draft',apply='Apply · write Value to target')
+        hints=dict(ping='Ping · resend mapping in HW LEARN',clear='Clear · remove this mapping',cancel='Cancel · discard Value draft',apply='Apply · write Value to target',
+            details_refresh='Refresh · reread native definition and diagnostics',details_reveal='Reveal · locate target in Network Editor',
+            details_repair='Repair · choose a replacement Target',native_values='Values · open TD parameter dialog',native_definition='Definition · open TD custom parameter editor')
         if name not in hints:return
-        reason=self._model.Capabilities(self._context,self.selected)['value' if name=='apply' else name]['reason'] if self.IsLive() and name!='cancel' else ''
+        reason=''
+        if self.IsLive() and name in ('ping','clear','apply'):reason=self._model.Capabilities(self._context,self.selected)['value' if name=='apply' else name]['reason']
+        if self.IsLive() and name.startswith('native_') and self._native_definition:
+            reason=self._model.NativeEditorActions(self._native_definition,self._context,self.selected)[name[7:]]['reason']
         text=(reason or hints[name]) if hover else (self._error or self._editor_status())
         for e in self._editors:e.op('text_status').par.text=text
 
@@ -791,6 +894,14 @@ class InspectorView:
             self._popup_size_pending=True
         return True
 
+    def _restore_popup_base(self):
+        # Window size persists, while selected control/section drafts do not.
+        # Remove only the saved section delta; retain the user's manual base.
+        extra=self.ownerComp.fetch('inspector_popup_expansion',0)
+        if isinstance(extra,(int,float)) and extra>0:
+            self._popup_extra=extra
+            self._sync_popup_expansion(0)
+
     def _sync_popup_expansion(self,extra):
         previous=getattr(self,'_popup_extra',0)
         if extra==previous:return
@@ -821,7 +932,13 @@ class InspectorView:
             popup.par.winoffsetx=corner[0];popup.par.winoffsety=corner[1]-border-target_height
         else:popup.par.winw=width
         popup.par.winh=target_height
+        # Opening Height can resize the native Window without updating the
+        # Size From Window panel cache. Keep programmatic section changes at
+        # 1:1 panel height; otherwise the new section is clipped and stretched.
+        if host and hasattr(host,'par') and host.par.h.eval()!=target_height:host.par.h=target_height
         self._popup_extra=extra;self._popup_size_pending=not popup.isOpen
+        store=getattr(getattr(self,'ownerComp',None),'store',None)
+        if store:store('inspector_popup_expansion',extra)
         self._cancel_popup_geometry()
         try:schedule=run
         except NameError:schedule=None
@@ -844,7 +961,7 @@ class InspectorView:
             self._context=context;self._model.Subscribe(self._identity,context,self.OnModelChange)
             self.selected=None;self._token=None;self._original=None;self._error='';self._display={};self._value_type=None
             self._mapping.Close();self._menu_generation+=1
-            self._clear_device_request=None;self._device_message='';self._details_open=False
+            self._clear_device_request=None;self._device_message='';self._details_open=False;self._native_definition=None
             self.ClosePicker()
             self._disarm_clear()
         for n in ('Layout','Track','Device'):
@@ -901,7 +1018,8 @@ class InspectorView:
         if getattr(self,'_context_menu',None):self.CloseContextMenu()
         self._value_scope=None
         self._value_type=None
-        self._details_open=False;self._diagnostics=None;self._details_display=None
+        self.DiscardDefinition()
+        self._details_open=False;self._diagnostics=None;self._details_display=None;self._native_definition=None
         for editor in getattr(self,'_editors',()):
             section=editor.op('container_details')
             if section:
@@ -911,13 +1029,85 @@ class InspectorView:
                     for group in content.children:
                         if group.OPType=='containerCOMP':
                             for field in group.children:
-                                if field.OPType=='textCOMP' and field.name.startswith('value'):field.par.text=''
+                                if field.OPType=='textCOMP' and (field.name.startswith('value') or group.name=='container_native' and field.name.startswith('label')):field.par.text=''
+                for name in ('native_values','native_definition'):
+                    button=section.op(name)
+                    if button:button.par.enable=False
         self.ClosePicker()
         self._menu_generation=getattr(self,'_menu_generation',0)+1
         self._disarm_clear()
         if getattr(self,'_mapping',None):self._mapping.Close()
         self.selected=None;self._token=None;self._original=None;self._error=''
         self._editor_layout();self._theme()
+
+    def _load_definition_draft(self,draft):
+        if draft['style']=='Menu':
+            for i,(key,name) in enumerate(MENU_FIELDS):
+                self._draft.par[name]=draft['original']['menuLabels'][i] if i<len(draft['menu_names']) else ''
+        else:
+            if hasattr(self._draft.par,'Nativestyle'):self._draft.par.Nativestyle=draft['style']
+            for key,name in DEFINITION_FIELDS:
+                value=draft['original'][key]
+                self._draft.par[name]=value if key.startswith('clamp') else str(value)
+
+    def _definition_patch(self):
+        if self._definition_draft['style']=='Menu':
+            return dict(menuLabels=tuple(self._draft.par[name].eval() for key,name in MENU_FIELDS[:len(self._definition_draft['menu_names'])]))
+        patch={key:self._draft.par[name].eval() for key,name in DEFINITION_FIELDS}
+        if hasattr(self._draft.par,'Nativestyle'):patch['style']=self._draft.par.Nativestyle.eval()
+        return patch
+
+    def OnDefinitionDraftChange(self):
+        draft=getattr(self,'_definition_draft',None)
+        if not draft or draft['style']=='Menu' or not draft.get('style_snapshot'):return
+        patch=self._definition_patch();self._style_preview=None
+        if patch.get('style')!=draft['style']:
+            try:self._style_preview=self._model.PreviewStyle(*self._definition_scope,draft,patch)
+            except (ValueError,RuntimeError) as error:self._style_preview=dict(reason=str(error))
+        self._details_display=None;self._update_details()
+
+    def OpenDefinitionStyle(self):
+        draft=self._definition_draft
+        if not draft or not draft.get('style_snapshot'):return False
+        context,slot,token=self._definition_scope
+        if self.Key()!=context or self.selected!=slot:return False
+        self._menu_generation+=1
+        details=dict(generation=self._menu_generation,context=context,slot=slot,token=token,
+                     model_generation=self._model.Stats()['generation'])
+        editor=self._editors[self.style=='popup']
+        button=editor.op('container_details/container_readout/container_info/container_native/container_edit/style')
+        return self.OpenInlineMenu(['Float','Int'],self.SelectDefinitionStyle,details,[self._draft.par.Nativestyle.eval()],editor,button)
+
+    def SelectDefinitionStyle(self,info):
+        value=info.get('item');details=info.get('details',{})
+        if (not self._definition_draft or details.get('generation')!=self._menu_generation or
+            details.get('model_generation')!=self._model.Stats()['generation'] or
+            (details.get('context'),details.get('slot'),details.get('token'))!=self._definition_scope or
+            self._token!=self._model.GetToken(self._context,self.selected) or value not in ('Float','Int')):return False
+        self._menu_generation+=1
+        self._draft.par.Nativestyle=value;self.OnDefinitionDraftChange();return True
+
+    def DiscardDefinition(self):
+        self._definition_draft=None
+        self._definition_bounds=False;self._style_preview=None
+        for key,name in DEFINITION_FIELDS+MENU_FIELDS+STYLE_FIELDS:
+            draft=getattr(self,'_draft',None)
+            if draft and hasattr(draft.par,name):draft.par[name]=False if key.startswith('clamp') else ''
+        for editor in getattr(self,'_editors',()):
+            form=editor.op('container_details/container_readout/container_info/container_native/container_edit')
+            if form:
+                form.par.display=False
+                style_button=form.op('style')
+                if style_button:
+                    style_button.par.display=False;style_button.par.enable=False;style_button.op('text_label').par.text=''
+                    form.op('label_style').par.display=False
+                for i in range(len(MENU_FIELDS)):
+                    label=form.op('menu_name'+str(i));field=form.op('menu_label'+str(i))
+                    if label:label.par.text='';label.par.display=False
+                    if field:field.par.display=False
+                if form.op('bounds'):
+                    form.op('bounds/text_label').par.text='BOUNDS ▸'
+                    for name in ('min','max'):form.op('clamp_'+name+'/text_label').par.text=name.capitalize()+' OFF'
 
     def BeginValueEdit(self):
         if self.selected is None or not self.IsLive():return False
@@ -955,17 +1145,71 @@ class InspectorView:
         elif name=='clear_device':return self.RequestClearDevice()
         elif name=='details_toggle':
             if self.selected is None or not self.IsLive():return False
+            self.DiscardDefinition()
             opened=getattr(self,'_details_open',False)
             self._mapping.Close();self.ClosePicker();self._details_open=not opened
-            if self._details_open:self._diagnostics=self._model.Diagnostics()
+            if self._details_open:self._diagnostics=self._model.Diagnostics();self._capture_definition()
+            else:self._native_definition=None
             self._editor_layout()
             if self._details_open:
                 for editor in self._editors:
                     viewport=editor.op('container_details/container_readout')
                     if viewport:viewport.panel.scrollv=0
         elif name=='details_refresh':
+            self.DiscardDefinition()
             if self.selected is None or not self.IsLive():return False
-            self._diagnostics=self._model.Diagnostics();self._model.Inspect(self._context,self.selected);self._update_details()
+            self._diagnostics=self._model.Diagnostics();self._model.Inspect(self._context,self.selected);self._capture_definition();self._update_details()
+        elif name=='definition_edit':
+            if self.selected is None or not self.IsLive() or not self._details_open:return False
+            if self._definition_draft:
+                self.DiscardDefinition();self._details_display=None;self._update_details();return True
+            try:
+                draft=self._model.DefinitionDraft(self._context,self.selected,self._token)
+                self._definition_draft=draft;self._definition_scope=(self._context,self.selected,self._token)
+                self._definition_bounds=False
+                self._load_definition_draft(draft);self._style_preview=None
+                self._details_display=None;self._update_details()
+                for editor in self._editors:editor.op('container_details/container_readout').panel.scrollv=0
+            except (ValueError,RuntimeError) as error:self._set_error(str(error));return False
+        elif name=='definition_style':return self.OpenDefinitionStyle()
+        elif name=='definition_cancel':
+            self.DiscardDefinition();self._details_display=None;self._update_details()
+        elif name=='definition_bounds':
+            if not self._definition_draft or self._definition_draft['style']=='Menu':return False
+            self._definition_bounds=not self._definition_bounds;self._details_display=None;self._update_details()
+            for editor in self._editors:
+                viewport=editor.op('container_details/container_readout');content=viewport.op('container_info')
+                native=content.op('container_native')
+                viewport.panel.scrollv=max(0.,min(1.,(native.height-viewport.height)/max(1,content.height-viewport.height))) if self._definition_bounds else 0
+        elif name in ('definition_clamp_min','definition_clamp_max'):
+            if not self._definition_draft:return False
+            par=self._draft.par['Nativeclamp'+name.rsplit('_',1)[-1]]
+            par.val=not par.eval();self._details_display=None;self._update_details()
+        elif name=='definition_apply':
+            if not self._details_open or not self._definition_draft:return False
+            context,slot,token=self._definition_scope
+            if self.Key()!=context or self.selected!=slot:return False
+            try:
+                menu=self._definition_draft['style']=='Menu'
+                patch=self._definition_patch();style_changed=patch.get('style',self._definition_draft['style'])!=self._definition_draft['style']
+                if style_changed:
+                    if not self._style_preview or self._style_preview.get('reason'):raise ValueError('Choose a valid Style preview first')
+                    patch['style_value']=self._style_preview['value']
+                changed=self._model.ApplyDefinition(context,slot,token,self._definition_draft,patch)
+                self._token=self._model.GetToken(context,slot)
+                self.DiscardDefinition();self._capture_definition();self._details_display=None;self._update_details()
+                if style_changed:self._value_type=None;self._update_editor(force=True)
+                if menu or style_changed:
+                    for editor in self._editors:editor.op('container_details/container_readout').panel.scrollv=0
+                self._set_error(('Native Style updated · Needs re-LEARN' if style_changed and changed else 'Menu labels updated · Needs re-LEARN' if menu and changed else 'Native definition '+('updated' if changed else 'unchanged')+' · Value / mapping unchanged'))
+            except (ValueError,RuntimeError) as error:self._set_error(str(error));return False
+        elif name in ('native_values','native_definition'):
+            if self.selected is None or not self.IsLive() or not self._details_open:return False
+            if self.Key()!=self._context:self.Refresh();return False
+            try:
+                self._model.OpenNativeEditor(self._context,self.selected,self._token,name[7:])
+                self._set_error(('Values' if name=='native_values' else 'Definition')+' editor opened')
+            except (ValueError,RuntimeError) as error:self._set_error(str(error));return False
         elif name=='details_repair':return self.OpenPicker()
         elif name=='details_reveal':
             if self.selected is None or not self.IsLive():return False
@@ -1071,7 +1315,7 @@ class InspectorView:
                     self.OpenPopup();return True
                 self.CloseEditor();return True
             if self.IsLive():self._model.Inspect(self._context,slot)
-            self._mapping.Close();self.ClosePicker();self._details_open=False;self._value_scope=None;self._value_type=None;self._menu_generation+=1
+            self._mapping.Close();self.ClosePicker();self._details_open=False;self._native_definition=None;self._value_scope=None;self._value_type=None;self._menu_generation+=1
             self.selected=slot;self._token=self._model.GetToken(self._context,slot)
             self._disarm_clear()
             self._original=dict(self._model.GetCatalog(self._context)[slot]);self._error=''

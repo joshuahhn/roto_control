@@ -15,8 +15,15 @@ try:
     assert m.op('base_targets/TargetCatalog').text==Path(project.folder+'/prototypes/inspector/target_catalog.py').read_text()
     assert m.op('base_commands/InspectorCommands').text==Path(project.folder+'/prototypes/inspector/commands.py').read_text()
     assert m.op('base_commands/parity').text==Path(project.folder+'/prototypes/inspector/parity.py').read_text()
+    assert m.op('base_commands/parameter_definition').text==Path(project.folder+'/prototypes/inspector/parameter_definition.py').read_text()
+    assert m.op('base_commands/definition_edit').text==Path(project.folder+'/prototypes/inspector/definition_edit.py').read_text()
+    assert m.op('base_commands/style_migration').text==Path(project.folder+'/prototypes/inspector/style_migration.py').read_text()
     for view in views:
         view.reload(project.folder+'/prototypes/inspector/'+view.name+'.tox');view.initializeExtensions(0)
+        assert view.ext.InspectorView._definition_draft is None
+        assert not view.op('base_draft').par.Nativelabel.eval() and not view.op('base_draft').par.Nativedefault.eval()
+        for key,name in view.op('ui').module.DEFINITION_FIELDS+view.op('ui').module.MENU_FIELDS+view.op('ui').module.STYLE_FIELDS:
+            assert not view.op('base_draft').par[name].eval()
         assert view.ext.InspectorView.Key()==('unconfigured',)*3
         assert all(not row['Destination'] for row in m.GetCatalog(view.ext.InspectorView.Key()))
         assert not view.op('base_draft').par.Destination.eval()
@@ -24,6 +31,7 @@ try:
         assert view.ext.InspectorView._picker is None
         assert view.ext.InspectorView._filter=='all' and view.ext.InspectorView._clear_device_request is None
         assert not view.ext.InspectorView._details_open and view.ext.InspectorView._diagnostics is None
+        assert view.ext.InspectorView._native_definition is None
         assert not view.ext.InspectorView._device_message
         assert view.op('parity').text==Path(project.folder+'/prototypes/inspector/parity.py').read_text()
         for name in ('Device','Layout','Track'):
@@ -40,6 +48,7 @@ try:
         assert all(not dropdown.op('row'+str(i)+'/text_label').par.text.eval() for i in range(8))
         assert all(not dropdown.op('row'+str(i)+'/text_check').par.display.eval() for i in range(8))
         assert not view.ext.InspectorView._mapping.open and view.ext.InspectorView._mapping.original is None
+        assert view.fetch('inspector_popup_expansion',0)==0
         assert view.op('base_draft').par.Mapminimum.eval()==0 and view.op('base_draft').par.Mapmaximum.eval()==1
         assert not view.op('base_draft').par.Mapmode.eval() and not view.op('base_draft').par.Mapinput.eval()
         assert view.op('editor_state').text==Path(project.folder+'/prototypes/inspector/editor_state.py').read_text()
@@ -60,6 +69,21 @@ try:
             assert not editor.op('container_details/text_details').par.text.eval()
             content=editor.op('container_details/container_readout/container_info')
             assert content and all(not field.par.text.eval() for group in content.children if group.OPType=='containerCOMP' for field in group.children if field.OPType=='textCOMP' and field.name.startswith('value'))
+            native=content.op('container_native');assert native
+            assert not native.op('container_edit').par.display.eval()
+            assert not native.op('container_edit/style/text_label').par.text.eval()
+            assert not native.op('container_edit/style').par.enable.eval()
+            assert view.ext.InspectorView._style_preview is None
+            assert view.op('base_draft/native_draft_changed').par.active.eval()
+            for i in range(len(view.op('ui').module.MENU_FIELDS)):
+                form=native.op('container_edit')
+                assert not form.op('menu_name'+str(i)).par.text.eval()
+                assert not form.op('menu_label'+str(i)).par.text.eval()
+                assert not form.op('menu_name'+str(i)).par.display.eval()
+                assert not form.op('menu_label'+str(i)).par.display.eval()
+            assert all(not field.par.text.eval() for field in native.children if field.OPType=='textCOMP' and field.name.startswith(('label','value')))
+            for kind in ('values','definition'):
+                assert not editor.op('container_details/native_'+kind).par.enable.eval()
             picker=editor.op('container_picker')
             assert not picker.op('text_status').par.text.eval()
             assert all(not picker.op('row'+str(i)+'/text_label').par.text.eval() for i in range(6))
@@ -81,5 +105,6 @@ finally:
 assert controller.GetControlCatalog()==before
 assert controller.State['Connected']
 result['production_session_preserved']=True
+result['native_definition_embedded_and_snapshot_fields_empty']=True
 Path(project.folder+'/prototypes/inspector/live_export_reload.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

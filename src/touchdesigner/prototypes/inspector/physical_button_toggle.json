@@ -1,0 +1,436 @@
+{
+  "phase": "toggle",
+  "reason": "user_done",
+  "active": false,
+  "started": 642090.291530708,
+  "elapsed": 106.22683666704688,
+  "expected_physical_presses": 3,
+  "event_count": 12,
+  "dropped_events": 0,
+  "events": [
+    {
+      "time": 41.89255137508735,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        0
+      ],
+      "control_only": false
+    },
+    {
+      "time": 41.89277537504677,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 0,
+      "label": "Source (Input 1)",
+      "error": ""
+    },
+    {
+      "time": 42.45891520800069,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        127
+      ],
+      "control_only": false
+    },
+    {
+      "time": 42.45911745808553,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 1,
+      "label": "Control (Input 2)",
+      "error": ""
+    },
+    {
+      "time": 43.058878917014226,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        0
+      ],
+      "control_only": false
+    },
+    {
+      "time": 43.059081125073135,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 0,
+      "label": "Source (Input 1)",
+      "error": ""
+    },
+    {
+      "time": 58.75888958305586,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        127
+      ],
+      "control_only": false
+    },
+    {
+      "time": 58.75925341702532,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 1,
+      "label": "Control (Input 2)",
+      "error": ""
+    },
+    {
+      "time": 61.22597329202108,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        0
+      ],
+      "control_only": false
+    },
+    {
+      "time": 61.226246332982555,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 0,
+      "label": "Source (Input 1)",
+      "error": ""
+    },
+    {
+      "time": 62.692470957990736,
+      "kind": "midi",
+      "bytes": [
+        191,
+        20,
+        127
+      ],
+      "control_only": false
+    },
+    {
+      "time": 62.692683917004615,
+      "kind": "dispatch",
+      "input": 1,
+      "value": 1,
+      "label": "Control (Input 2)",
+      "error": ""
+    }
+  ],
+  "dispatch_count": 6,
+  "midi_values": [
+    0,
+    127,
+    0,
+    127,
+    0,
+    127
+  ],
+  "before": [
+    {
+      "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+      "kind": "knob",
+      "slot": 1,
+      "mode": "value",
+      "label": "Sort By",
+      "value": 2,
+      "normalized": 0.2857142857142857,
+      "minimum": 0.0,
+      "maximum": 7.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Sortcrit",
+      "menu_names": [
+        "luminance",
+        "hue",
+        "saturation",
+        "value",
+        "red",
+        "green",
+        "blue",
+        "alpha"
+      ],
+      "menu_labels": [
+        "Brightness",
+        "Hue (Color)",
+        "Saturation",
+        "Value",
+        "Red",
+        "Green",
+        "Blue",
+        "Alpha"
+      ],
+      "value_label": "Saturation",
+      "parameter_style": "Menu",
+      "requires_relearn": false,
+      "last_mapped": true
+    },
+    {
+      "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+      "kind": "button",
+      "slot": 1,
+      "mode": "cycle",
+      "label": "Mask Image",
+      "value": 1,
+      "normalized": 1.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": "toggle",
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Masksource",
+      "menu_names": [
+        "source",
+        "control"
+      ],
+      "menu_labels": [
+        "Source (Input 1)",
+        "Control (Input 2)"
+      ],
+      "value_label": "Control (Input 2)",
+      "parameter_style": "Menu",
+      "requires_relearn": false,
+      "last_mapped": true
+    },
+    {
+      "id": "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+      "kind": "knob",
+      "slot": 2,
+      "mode": "value",
+      "label": "Low Threshold",
+      "value": 0.343039,
+      "normalized": 0.343039,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Lowthresh",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    },
+    {
+      "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+      "kind": "knob",
+      "slot": 3,
+      "mode": "value",
+      "label": "High Threshold",
+      "value": 0.795398,
+      "normalized": 0.795398,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Highthresh",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    },
+    {
+      "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+      "kind": "knob",
+      "slot": 4,
+      "mode": "value",
+      "label": "Effect Mix",
+      "value": 0.436,
+      "normalized": 0.436,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Mix",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    },
+    {
+      "id": "parameter.d140395409be447c8c13fb71c8862e70",
+      "kind": "knob",
+      "slot": 5,
+      "mode": "value",
+      "label": "Max Chunk (%)",
+      "value": 17.7447,
+      "normalized": 0.16913838383838387,
+      "minimum": 1.0,
+      "maximum": 100.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_control_python/pixelSortV3",
+      "parameter": "Spanpercent",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    }
+  ],
+  "state": {
+    "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+    "kind": "button",
+    "slot": 1,
+    "mode": "cycle",
+    "label": "Mask Image",
+    "value": 1,
+    "normalized": 1.0,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mapped": true,
+    "touched": false,
+    "valid": true,
+    "connected": true,
+    "plugin": true,
+    "error": "",
+    "button_type": "toggle",
+    "binding_type": "parameter",
+    "comp": "/roto_control_python/pixelSortV3",
+    "parameter": "Masksource",
+    "menu_names": [
+      "source",
+      "control"
+    ],
+    "menu_labels": [
+      "Source (Input 1)",
+      "Control (Input 2)"
+    ],
+    "value_label": "Control (Input 2)",
+    "parameter_style": "Menu",
+    "requires_relearn": false
+  },
+  "context": [
+    "3e6fc58800854c43bac1742c9063a87a",
+    "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin.3e6fc58800854c43bac1742c9063a87a"
+  ],
+  "current_context": [
+    "3e6fc58800854c43bac1742c9063a87a",
+    "track.3e6fc58800854c43bac1742c9063a87a",
+    "plugin.3e6fc58800854c43bac1742c9063a87a"
+  ],
+  "observer_errors": [],
+  "physical_observation": {
+    "status": "accepted_corrected_three_press_segment",
+    "user_report": "First three presses were mistakes; following three were normal.",
+    "excluded_first_presses": 3,
+    "accepted_events": [
+      {
+        "time": 58.75888958305586,
+        "kind": "midi",
+        "bytes": [
+          191,
+          20,
+          127
+        ],
+        "control_only": false
+      },
+      {
+        "time": 58.75925341702532,
+        "kind": "dispatch",
+        "input": 1,
+        "value": 1,
+        "label": "Control (Input 2)",
+        "error": ""
+      },
+      {
+        "time": 61.22597329202108,
+        "kind": "midi",
+        "bytes": [
+          191,
+          20,
+          0
+        ],
+        "control_only": false
+      },
+      {
+        "time": 61.226246332982555,
+        "kind": "dispatch",
+        "input": 1,
+        "value": 0,
+        "label": "Source (Input 1)",
+        "error": ""
+      },
+      {
+        "time": 62.692470957990736,
+        "kind": "midi",
+        "bytes": [
+          191,
+          20,
+          127
+        ],
+        "control_only": false
+      },
+      {
+        "time": 62.692683917004615,
+        "kind": "dispatch",
+        "input": 1,
+        "value": 1,
+        "label": "Control (Input 2)",
+        "error": ""
+      }
+    ],
+    "accepted_midi_values": [
+      127,
+      0,
+      127
+    ],
+    "accepted_dispatch_count": 3,
+    "accepted_values": [
+      1,
+      0,
+      1
+    ],
+    "extra_dispatches": 0,
+    "hold_release": "User reports the corrected instructed sequence normal; trace has no additional dispatches.",
+    "lcd_led": "Not separately described in reply; prior Cycle LCD/LED acceptance remains separate."
+  },
+  "note": "Real input only. Dispatch count is evidence; physical press count, hold/release and LCD/LED require user confirmation."
+}

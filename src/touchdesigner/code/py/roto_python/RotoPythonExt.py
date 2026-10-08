@@ -256,12 +256,12 @@ class RotoPythonExt:
         catalog=self.ownerComp.fetch('control_catalog',None)
         return copy.deepcopy(self.GetControlStates() if catalog is None else catalog)
 
-    def _update_catalog(self):
+    def _update_catalog(self, states=None):
         if self._restore_pending:
             return
         previous={state['id']:state for state in self.ownerComp.fetch('control_catalog', [])}
         records=[]
-        for state in self.GetControlStates():
+        for state in self.GetControlStates() if states is None else states:
             old=previous.get(state['id'], {})
             record=dict(state)
             for field in ('comp','parameter'):
@@ -822,10 +822,11 @@ class RotoPythonExt:
         manager=getattr(self,'_layouts',None)
         if manager is not None and manager.mutating:
             return
-        self._update_catalog()
+        states=self.GetControlStates()
+        self._update_catalog(states)
         pending = self.ownerComp.fetch('needs_relearn', ())
         if pending:
-            mapped = {state['id']:state['mapped'] for state in self.GetControlStates()}
+            mapped = {state['id']:state['mapped'] for state in states}
             remaining = tuple(id for id in pending if not mapped.get(id, False))
             if remaining != pending:
                 self.ownerComp.store('needs_relearn', remaining)
@@ -858,7 +859,7 @@ class RotoPythonExt:
         marker = self.ownerComp.op("base_targets/mapping_marks")
         if marker is not None:
             try:
-                marker.module.update(self.ownerComp, self.GetControlStates())
+                marker.module.update(self.ownerComp, states)
                 self.ownerComp.store("mapping_mark_error", "")
             except Exception as exc:
                 self.ownerComp.store("mapping_mark_error", str(exc))
@@ -1091,12 +1092,21 @@ class RotoPythonExt:
             table.text = content
         output = self.ownerComp.op("base_targets/controls_values")
         values = {key[0] + str(key[1]): binding.value for key, binding in self._collection.bindings.items()}
-        if getattr(self, "_output_values", None) != values:
+        previous=getattr(self, "_output_values", None)
+        rebuild=(previous is None or previous.keys()!=values.keys()
+                 or getattr(self,"_output_op_id",None)!=output.id
+                 or output.numSamples!=1 or output.numChans!=len(values))
+        changed=[(name,value) for name,value in values.items()
+                 if previous is None or previous.get(name)!=value]
+        channels=[] if rebuild else [(output[name],value) for name,value in changed]
+        if rebuild or any(channel is None for channel,value in channels):
             output.clear()
             output.numSamples = 1
             for name, value in values.items():
                 output.appendChan(name)[0] = value
-            self._output_values = values
+        else:
+            for channel,value in channels:channel[0]=value
+        self._output_values=values;self._output_op_id=output.id
         first = self._collection.bindings.get(("knob", 1))
         self.ownerComp.op("base_state").par.Targetvalue = first.value if first is not None else 0
         self.ownerComp.op("base_state").par.Targetid = self._host.device_id

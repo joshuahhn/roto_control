@@ -1,0 +1,94 @@
+[
+  {
+    "editor": "/inspector_below/container_scroll/container_content/editor_below",
+    "native_rows": 8,
+    "footer_actions": 5,
+    "measured_containment": true,
+    "no_overlap": true,
+    "section_groups": [
+      {
+        "name": "annotate_section",
+        "x": -25,
+        "y": -235,
+        "w": 980,
+        "h": 425
+      },
+      {
+        "name": "annotate_native",
+        "x": 975,
+        "y": -235,
+        "w": 410,
+        "h": 425
+      }
+    ]
+  },
+  {
+    "editor": "/inspector_below/base_popup/editor_popup/container_editor_content",
+    "native_rows": 8,
+    "footer_actions": 5,
+    "measured_containment": true,
+    "no_overlap": true,
+    "section_groups": [
+      {
+        "name": "annotate_section",
+        "x": -25,
+        "y": -235,
+        "w": 980,
+        "h": 425
+      },
+      {
+        "name": "annotate_native",
+        "x": 975,
+        "y": -235,
+        "w": 410,
+        "h": 425
+      }
+    ]
+  },
+  {
+    "editor": "/inspector_popup/container_scroll/container_content/editor_below",
+    "native_rows": 8,
+    "footer_actions": 5,
+    "measured_containment": true,
+    "no_overlap": true,
+    "section_groups": [
+      {
+        "name": "annotate_section",
+        "x": -25,
+        "y": -235,
+        "w": 980,
+        "h": 425
+      },
+      {
+        "name": "annotate_native",
+        "x": 975,
+        "y": -235,
+        "w": 410,
+        "h": 425
+      }
+    ]
+  },
+  {
+    "editor": "/inspector_popup/base_popup/editor_popup/container_editor_content",
+    "native_rows": 8,
+    "footer_actions": 5,
+    "measured_containment": true,
+    "no_overlap": true,
+    "section_groups": [
+      {
+        "name": "annotate_section",
+        "x": -25,
+        "y": -235,
+        "w": 980,
+        "h": 425
+      },
+      {
+        "name": "annotate_native",
+        "x": 975,
+        "y": -235,
+        "w": 410,
+        "h": 425
+      }
+    ]
+  }
+]

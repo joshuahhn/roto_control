@@ -1,0 +1,19 @@
+{
+  "pane_owner": "/roto_control_python",
+  "target": "/roto_control_python/pixelSortV3",
+  "parent_network": true,
+  "status": "Revealed /roto_control_python/pixelSortV3",
+  "follow": true,
+  "catalog_preserved": true,
+  "registry_preserved": true,
+  "process_preserved": true,
+  "session_preserved": true,
+  "subscribers": 2,
+  "zoom": 1.0,
+  "repeat_reveal_keeps_readable_zoom": true,
+  "repeats": 3,
+  "viewport_method": "direct_coordinates_no_home",
+  "settled_zoom_verified": true,
+  "x": 330.0,
+  "y": 65.0
+}

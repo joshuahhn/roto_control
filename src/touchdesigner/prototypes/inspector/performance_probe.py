@@ -20,7 +20,7 @@ class CostProbe(AcceptanceProbe):
         self.results=[];self.case_index=-1;self.coalesce=False;self.active=False
         self.case_seconds=globals().get('cost_seconds',6)
         self.prefix=globals().get('cost_prefix','callback_cost')
-        self.configs=[('closed_idle','below',0,None,False,False),
+        self.configs=globals().get('cost_configs',[('closed_idle','below',0,None,False,False),
                       ('fold_idle','below',0,'rows',False,False),
                       ('popup_idle','popup',0,'editor',False,False),
                       ('closed_14','below',14,None,False,False),
@@ -31,7 +31,7 @@ class CostProbe(AcceptanceProbe):
                       ('popup_1','popup',1,'editor',False,False),
                       ('popup_frozen_14','popup',14,'editor',True,False),
                       ('closed_coalesced_14','below',14,None,False,True),
-                      ('popup_coalesced_14','popup',14,'editor',False,True)]
+                      ('popup_coalesced_14','popup',14,'editor',False,True)])
         self.configs+=list(reversed(self.configs))
         super().__init__(owner,0)
         self.artifact_prefix=self.prefix
@@ -152,26 +152,27 @@ class CostProbe(AcceptanceProbe):
             v.Action('slot'+str(s['selected']));v.Action('mapping_toggle')
             u._mapping.message=section['message'];u._update_mapping();p.par.winoffsetx=x;p.par.winoffsety=y
 
-assert not op('/base_inspector_acceptance'),'Another probe is running'
-original_sections=[dict(mapping=op(p).ext.InspectorView._mapping.open,
-                        message=op(p).ext.InspectorView._mapping.message)
-                   for p in ('/inspector_below','/inspector_popup')]
-probe=op('/').create(baseCOMP,'base_inspector_acceptance');probe.viewer=True
-probe.par.parentshortcut='AcceptanceProbe';probe.nodeX=1500;probe.nodeY=-1100
-perform=probe.create(performCHOP,'perform_frame');perform.viewer=True
-for p in perform.pars():
-    if p.style=='Toggle' and p.name!='timeslice':p.val=p.name in ('msec','fps','droppedframes')
-output=probe.create(nullCHOP,'null_frame');output.viewer=True;output.nodeX=175
-output.inputConnectors[0].connect(perform.outputConnectors[0])
-callback=probe.create(executeDAT,'sample_frame');callback.viewer=True;callback.nodeX=350
-callback.par.language='python';callback.par.active=False;callback.par.framestart=False;callback.par.frameend=True
-callback.text="def onFrameEnd(frame):\n    parent.AcceptanceProbe.fetch('runner').Tick(frame)\n"
-try:
-    runner=CostProbe(probe);probe.store('runner',runner);callback.par.active=True
-    print('Finite callback cost probe started:',len(runner.configs),'cases x',runner.case_seconds,'seconds')
-except Exception:
-    if probe.valid:
-        pending=probe.fetch('runner',None)
-        if pending and getattr(pending,'clone',None):pending.Stop('initialization_failure')
-        elif probe.valid:probe.destroy()
-    raise
+if not globals().get('cost_define_only',False):
+    assert not op('/base_inspector_acceptance'),'Another probe is running'
+    original_sections=[dict(mapping=op(p).ext.InspectorView._mapping.open,
+                            message=op(p).ext.InspectorView._mapping.message)
+                       for p in ('/inspector_below','/inspector_popup')]
+    probe=op('/').create(baseCOMP,'base_inspector_acceptance');probe.viewer=True
+    probe.par.parentshortcut='AcceptanceProbe';probe.nodeX=1500;probe.nodeY=-1100
+    perform=probe.create(performCHOP,'perform_frame');perform.viewer=True
+    for p in perform.pars():
+        if p.style=='Toggle' and p.name!='timeslice':p.val=p.name in ('msec','fps','droppedframes')
+    output=probe.create(nullCHOP,'null_frame');output.viewer=True;output.nodeX=175
+    output.inputConnectors[0].connect(perform.outputConnectors[0])
+    callback=probe.create(executeDAT,'sample_frame');callback.viewer=True;callback.nodeX=350
+    callback.par.language='python';callback.par.active=False;callback.par.framestart=False;callback.par.frameend=True
+    callback.text="def onFrameEnd(frame):\n    parent.AcceptanceProbe.fetch('runner').Tick(frame)\n"
+    try:
+        runner=CostProbe(probe);probe.store('runner',runner);callback.par.active=True
+        print('Finite callback cost probe started:',len(runner.configs),'cases x',runner.case_seconds,'seconds')
+    except Exception:
+        if probe.valid:
+            pending=probe.fetch('runner',None)
+            if pending and getattr(pending,'clone',None):pending.Stop('initialization_failure')
+            elif probe.valid:probe.destroy()
+        raise

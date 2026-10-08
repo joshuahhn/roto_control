@@ -1,0 +1,14 @@
+{
+  "native_float_int_setters": true,
+  "live_value_mode_identity_preserved": true,
+  "native_stale_draft_rejected": true,
+  "production_ui_noop_apply_cancel": true,
+  "production_catalog_registry_process_preserved": true,
+  "details_height": 402,
+  "fixture_removed": true,
+  "subscribers": 2,
+  "fold_popup_fixed_height": true,
+  "cua_text_input_draft_only": true,
+  "main_height": 390,
+  "draft_group_height": 152
+}
