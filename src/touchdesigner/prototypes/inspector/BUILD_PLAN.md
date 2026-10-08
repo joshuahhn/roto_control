@@ -67,7 +67,7 @@ The controller is the only authoritative mapping store. Picker tables and caches
 | Assign/retarget | Proposed `Assign(context, slot, target_handle, token)` -> `AssignParameter` | Support empty slots; revalidate OP/Par and duplicate ownership at execution; preserve other registrations |
 | Ping / Clear | Existing methods, delegated to shared commands | Preserve current guards/confirmation; offer is not an ACK; Clear keeps target Value |
 | Clear All | Proposed `ClearDevice(context, confirmation)` -> `RemoveAllControls` | Confirm explicit Layout/Track/Device and full registration fingerprint; report remaining/removed targets on partial failure |
-| Explicit activation | Later command -> existing SelectLayout/SelectTrack/SelectPlugin | Separate action from browsing; honor controller routing/session guards |
+| Explicit activation | Installed compact Activate -> one existing SelectPlugin(full context) | Separate from browse; fresh session/routing, LEARN/touch/LOCK/selection guards; isolated native and export verification |
 | Diagnostics | Public snapshots/context plus existing state DATs | Read only; distinguish controller Follow/LOCK/selected-routing state from view-following |
 
 Use the view's Model OP parameter and parent shortcuts across components. There are no new signal wires, TOP/CHOP conversion chains, in/out operators or null endpoints required for this command-based design. Callback execution routes UI -> shared commands -> controller API -> existing publication -> shared model -> view. Commands must not call back into a second write through the refresh path.

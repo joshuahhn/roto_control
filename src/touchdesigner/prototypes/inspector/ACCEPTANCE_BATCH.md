@@ -9,7 +9,7 @@ In the same session:
 1. LEARN the temporary numeric/Menu targets, then leave hardware LEARN.
 2. Inspector native Style dropdown: choose Int and check preview says Value3 preserved and related mappings need re-LEARN. Apply. Re-LEARN/Ping the numeric target; verify controller steps/LCD and TD integer Values agree, then convert back to Float/re-LEARN and check fractional Value/motor feedback.
 3. Edit one Menu display label, Apply and re-LEARN/Ping it. Turn to that choice; verify the new LCD label, unchanged internal choice/order and cleared Needs re-LEARN after ACK.
-4. Check dropdown selection, both presentations and their internal scroll in that same test Device. Native resize deformation is not a pass criterion for this slice.
+4. Browse the original Device and confirm routing stays in the temporary bank; Activate it once, verify controller Track/Device LCD context and mapping recall, then browse/Activate the temporary bank again. Check dropdown selection, both presentations and their internal scroll in that same test Device. Native resize deformation is not a pass criterion for this slice.
 5. Clear/remove the temporary Device/COMP, restore the original active context and confirm original catalog/registry/values/identities and their hardware recall. Record the user's physical outcomes once in HANDOFF.md and the gate evidence; do not infer physical acceptance from synthetic ACKs.
 
 No production label/default/Style changes are required for this acceptance bank. Extra ownership/Menu→Toggle/group/reference migration cases require their own future prototype scope.

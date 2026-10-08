@@ -1,0 +1,21 @@
+{
+  "device_track_layout_activation_no_value_write": true,
+  "fresh_learn_touch_lock_backlog_pause_guards": true,
+  "stale_session_rejected": true,
+  "native_install_rollback_no_false_success": true,
+  "follow_preference_and_unchanged_selection_preserved": true,
+  "fold_popup_footer_action": true,
+  "fixture_ready_for_native_click": true,
+  "native_footer_click": true,
+  "production_catalog_registry_process_session_preserved": true,
+  "fixture_removed": true,
+  "no_physical_midi": true,
+  "subscribers": 2,
+  "new_nodes_no_overlap": true,
+  "annotations_no_overlap": true,
+  "scoped_errors_clear": true,
+  "generic_export_reload": true,
+  "source_docs_embedded": true,
+  "checkpoint": "inspector_editor_actions.45.toe",
+  "saved_file_verified": true
+}

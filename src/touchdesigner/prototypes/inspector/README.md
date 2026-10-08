@@ -93,3 +93,9 @@ The first acceptance soak stopped at 352 seconds upon finding this height bug; i
 The backend legacy Inspector projection now retains one transient signature and at most one owned end-frame render when data changes. It coalesces JSON/table rebuilding without delaying authoritative state or MIDI/Value/Pulse dispatch. Direct UI refresh remains immediate; Disconnect cancels and flushes owned work. The shared compact model still uses its bounded context caches. Matched before/after results, limitations and native source/export evidence are in [PERFORMANCE_REPORT.md](PERFORMANCE_REPORT.md). Fixed-cadence headroom remains open; this is not an isolated GPU drawing benchmark.
 
 Full TD process restart is verified on checkpoint31: disconnected startup, six matching ACKs after explicit Connect, exact binding definitions/context and two subscribers. The saved Popup section offset is removed at startup so a Mapping-height save reopens at its manual base (178px, then312px for Mapping). See [REPLACEMENT_REPORT.md](REPLACEMENT_REPORT.md) for strict Float save/load precision observations and remaining gates.
+
+## Explicit Device activation
+
+DEVICE/LAYOUT/TRACK selectors browse saved mappings. When browsing an inactive bank, the existing bottom-right footer shows Activate. One click activates that complete context on the controller and follows its live routing; Clear Device returns in the same space. LIVE in the header returns to current routing without activating the browsed bank.
+
+Activation rejects stale session/routing, removed context, LEARN/touch/LOCK and pending/paused/backlogged selection. It preserves Follow preference and Network Editor selection. Offline saved-bank selection is supported when no transport is running. Existing controller install/rollback and per-control ACK semantics remain authoritative. See ACTIVATION_PLAN.md / ACTIVATION_REPORT.md. Physical activation belongs to ACCEPTANCE_BATCH.md.

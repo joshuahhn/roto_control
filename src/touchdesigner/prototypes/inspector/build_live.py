@@ -44,6 +44,7 @@ exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text(),d
 exec(Path(project.folder+'/prototypes/inspector/build_targets.py').read_text(),dict(globals(),target_views=views))
 exec(Path(project.folder+'/prototypes/inspector/build_parity.py').read_text(),dict(globals(),parity_views=views))
 exec(Path(project.folder+'/prototypes/inspector/build_definition_edit.py').read_text(),dict(globals()))
+exec(Path(project.folder+'/prototypes/inspector/build_activation.py').read_text(),dict(globals()))
 exec(Path(project.folder+'/prototypes/inspector/build_context_menu.py').read_text(),dict(globals(),context_views=views,reload_context_views=False))
 for c in views:
     if not c:continue

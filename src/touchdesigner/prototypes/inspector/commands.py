@@ -7,6 +7,28 @@ FIELDS=('Label','Destination','Minimum','Maximum','Value')
 class CommandService:
     def __init__(self,model):self.model=model
 
+    def ActivationToken(self,context):
+        return (self.model.Generation,tuple(context),tuple(self.model.Status.get('Active') or self.model.ActiveContext()))
+
+    def ActivationCapability(self,context):
+        m=self.model
+        reason=('Choose a controller with Device activation support' if not hasattr(m.adapter,'Activate') else
+                'Context was removed' if not m.HasContext(context) else
+                'Already the active Device' if self._active(context) else
+                m.Status.get('ActivationReason',''))
+        return MappingProxyType(dict(enabled=not reason,reason=reason))
+
+    def Activate(self,context,token):
+        m=self.model;m.Sync();context=m._context(context)
+        if token!=self.ActivationToken(context):raise ValueError('Controller session or routing changed; choose Activate again')
+        capability=self.ActivationCapability(context)
+        if not capability['enabled']:raise ValueError(capability['reason'])
+        try:
+            m.adapter.Activate(context)
+            if tuple(m.adapter.ActiveContext())!=context:raise ValueError('Controller did not activate the requested Device')
+        finally:m.Sync()
+        return True
+
     def _active(self,context):
         active=self.model.Status.get('Active')
         return tuple(context)==tuple(active if active is not None else self.model.ActiveContext())
@@ -185,6 +207,9 @@ class InspectorCommands:
         model=self.ownerComp.par.Model.eval()
         if not model:raise ValueError('Choose the shared Inspector model')
         return model.ext.InspectorModel._commands
+    def ActivationToken(self,*args):return self._service().ActivationToken(*args)
+    def ActivationCapability(self,*args):return self._service().ActivationCapability(*args)
+    def Activate(self,*args):return self._service().Activate(*args)
     def Health(self,*args):return self._service().Health(*args)
     def Capabilities(self,*args):return self._service().Capabilities(*args)
     def MappingSchema(self,*args):return self._service().MappingSchema(*args)

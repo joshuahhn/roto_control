@@ -16,7 +16,8 @@ The authoritative old UI columns/actions are in `code/py/roto_python/inspector/i
 | Clear registration and Clear All | Confirmed Clear and scoped Clear Device | parity_verification.json |
 | COMP/callback pages | Compact footer filters | parity_verification.json |
 | ID/error/current context/Follow/LOCK readout | Details with separate controller/view state | parity_verification.json |
-| Native parameter Style conversion | Compact exposes TD Definition editor; direct Inspector Style migration remains unimplemented | ADVANCED_REPORT.md / later migration scope |
+| Native parameter Style conversion | Lossless scalar Float/Int preview and Apply installed; other conversions remain outside scope | STYLE_MIGRATION_REPORT.md; physical gate pending |
+| Explicit Device/context activation | Compact Activate on an inactive browsed bank; selectors still browse only | ACTIVATION_REPORT.md; physical gate pending |
 
 Physical K2 Range re-LEARN now has user-confirmed 0.25/0.75 endpoints and a matching native ACK. This exposed a stale Mapping message and erroneous Value-token invalidation after ACK. Both are fixed with pure/native regression evidence; the user also confirmed restored 0/1 endpoints and the hardware acknowledged message. The original live Value is restored, completing this physical gate. B1 Menu/Cycle PUSH/TOGGLE input adapter physical acceptance and restoration pass. Header first-click selection, real K2/LEARN alert, target assignment and Ping have prior user acceptance. Source/evidence: replacement_physical_gates.json and physical_range_relearn.json. Native drag deformation remains separately deferred in issue #6.
 

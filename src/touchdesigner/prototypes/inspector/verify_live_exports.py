@@ -13,6 +13,7 @@ try:
     assert not m.ext.InspectorModel.adapter._definitions_cache
     assert m.op('base_targets').Stats()['entries']==0 and m.op('base_targets').Stats()['jobs']==0
     assert m.op('base_targets/TargetCatalog').text==Path(project.folder+'/prototypes/inspector/target_catalog.py').read_text()
+    assert m.op('live_model').text==Path(project.folder+'/prototypes/inspector/live_model.py').read_text()
     assert m.op('base_commands/InspectorCommands').text==Path(project.folder+'/prototypes/inspector/commands.py').read_text()
     assert m.op('base_commands/parity').text==Path(project.folder+'/prototypes/inspector/parity.py').read_text()
     assert m.op('base_commands/parameter_definition').text==Path(project.folder+'/prototypes/inspector/parameter_definition.py').read_text()
@@ -32,6 +33,10 @@ try:
         assert view.ext.InspectorView._filter=='all' and view.ext.InspectorView._clear_device_request is None
         assert not view.ext.InspectorView._details_open and view.ext.InspectorView._diagnostics is None
         assert view.ext.InspectorView._native_definition is None
+        assert not view.op('activate_device').par.display.eval() and not view.op('activate_device').par.enable.eval()
+        assert view.op('click_activate_device').par.ontooff.eval()
+        assert 'delayFrames' not in view.op('click_activate_device').text
+        assert view.ext.InspectorView._activation_token[1]==('unconfigured',)*3
         assert not view.ext.InspectorView._device_message
         assert view.op('parity').text==Path(project.folder+'/prototypes/inspector/parity.py').read_text()
         for name in ('Device','Layout','Track'):
@@ -105,6 +110,7 @@ finally:
 assert controller.GetControlCatalog()==before
 assert controller.State['Connected']
 result['production_session_preserved']=True
+result['activation_embedded_unconfigured_hidden']=True
 result['native_definition_embedded_and_snapshot_fields_empty']=True
 Path(project.folder+'/prototypes/inspector/live_export_reload.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

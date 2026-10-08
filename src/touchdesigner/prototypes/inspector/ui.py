@@ -69,6 +69,7 @@ class InspectorView:
         self._definition_bounds=False
         self._clear_device_request=None
         self._device_message=''
+        self._activation_token=None
         self._picker_generation=0
         self._menu_generation=0
         self._context_menu=None
@@ -124,7 +125,26 @@ class InspectorView:
         label=choices.get(getattr(self,'_filter','all'),'All controls')
         if label.startswith('/'):label=label.rsplit('/',1)[-1]
         self.ownerComp.op('text_footer').par.text=label+' ▾'
-        self.ownerComp.op('clear_device').par.enable=self.IsLive()
+        live=self.IsLive();inactive=live and self._context!=self._model.ActiveContext()
+        clear=self.ownerComp.op('clear_device');clear.par.display=not inactive;clear.par.enable=live
+        activate=self.ownerComp.op('activate_device')
+        if activate:
+            activate.par.display=inactive
+            activate.par.enable=inactive and self._model.ActivationCapability(self._context)['enabled']
+        self._activation_token=self._model.ActivationToken(self._context) if live else None
+    def ActivationHint(self,hover):
+        if not self.IsLive():return
+        self.ownerComp.op('text_status').par.text=(self._model.ActivationCapability(self._context)['reason'] or 'Activate browsed Device on controller') if hover else (self._main_message or '')
+
+    def ActivateDevice(self):
+        if not self.IsLive() or self.Key()!=self._context:return False
+        context=self._context;token=self._activation_token
+        try:self._model.Activate(context,token)
+        except (ValueError,RuntimeError) as error:
+            self._device_message=str(error);self.Refresh();return False
+        self.CloseEditor();self._follow_routing=True;self._device_message='';self.Refresh()
+        return True
+
     def OpenFilter(self):
         if not self.IsLive():return False
         choices=filter_choices(self._filter_info())
@@ -1143,6 +1163,7 @@ class InspectorView:
             return self.OpenContextMenu(n)
         elif name=='filter':return self.OpenFilter()
         elif name=='clear_device':return self.RequestClearDevice()
+        elif name=='activate_device':return self.ActivateDevice()
         elif name=='details_toggle':
             if self.selected is None or not self.IsLive():return False
             self.DiscardDefinition()

@@ -13,3 +13,5 @@ Collection configuration lives in base_targets/targets; per-target diagnostics i
 See functions/controls.md for collection registration, functions/binding.md for registration and functions/lifecycle.md for connection, learning, failures and demos. New binding hardware acceptance is recorded separately from simulated MIDI checks in HANDOFF.md.
 
 The public interface adds GetValue(id) and GetControlState(id). Saved registration.onRegister supports mixed parameter/callback controls. See functions/portability.md for exporting an embedded-code component independent of demo layout.
+
+Compact Inspector now separates browsing from explicit Activate: one guarded full-context selection reuses controller routing/rollback and preserves Follow preference. Isolated native/export checks pass; physical LCD/recall joins the pending acceptance batch.

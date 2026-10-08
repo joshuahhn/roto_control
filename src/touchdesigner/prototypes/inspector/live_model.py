@@ -120,6 +120,9 @@ class ControllerCatalog(CatalogModel):
             if not self.adapter.Exists(key):self._queue(key,65535,65535)
 
     def _reject_stale(self):raise StaleDraft('Mapping changed; reopen this control')
+    def ActivationToken(self,*args):return self._commands.ActivationToken(*args)
+    def ActivationCapability(self,*args):return self._commands.ActivationCapability(*args)
+    def Activate(self,*args):return self._commands.Activate(*args)
     def Health(self,context,slot):return self._commands.Health(context,slot)
     def Capabilities(self,context,slot):return self._commands.Capabilities(context,slot)
     def MappingSchema(self,*args):return self._commands.MappingSchema(*args)
@@ -200,12 +203,33 @@ class TDControllerAdapter:
             self._definitions_cache.clear();self._definition_session=session
             if self.Targets:self.Targets.Reset()
         return session
+    def ActivationReason(self):
+        c=self.controller
+        if not c:return 'Choose a controller'
+        e=c.ext.RotoPythonExt;m=e._layout_manager();h=e._host;f=getattr(e,'_follow',None)
+        if m.legacy:return 'Device activation requires Parameter mapping'
+        if h.learning:return 'Exit LEARN before activating Device'
+        if h.touched or m.touched:return 'Release all controls before activating Device'
+        if m.locked:return 'Unlock hardware before activating Device'
+        if m.mutating or e._dispatching:return 'Wait for controller activation to finish'
+        if f and f.paused:return 'Repair paused controller selection before activating Device'
+        if f and (f.gated or f.backlog or f.pending):return 'Wait for pending controller selection to finish'
+        if e._process is not None and not (h.connected and h.plugin):return 'Connect to PLUGIN before activating Device'
+        return ''
+
+    def Activate(self,key):
+        reason=self.ActivationReason()
+        if reason:raise ValueError(reason)
+        c=self.controller
+        if not self.Exists(key):raise ValueError('Context was removed')
+        return c.SelectPlugin(*key)
+
     def Status(self):
         c=self.controller
         if not c:return dict(Connected=False,Learning=False,Label='Choose controller')
         state=c.State
         routing=c.GetLayoutContext();follow=c.GetCompContext()
-        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False))
+        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False),ActivationReason=self.ActivationReason())
     def Exists(self,key):
         c=self.controller
         if not c:return key==EMPTY
