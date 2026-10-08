@@ -1,6 +1,6 @@
 # Replacement acceptance checkpoint
 
-2026-10-08, TD 2025.33230. **Replacement is not accepted yet.** The old Inspector remains available. Runtime/native parity regression fixtures pass, but the first 30-minute soak was stopped after 352 seconds when the user reported an oversized Popup. This uncovered a reproducible UI lifecycle bug; it does not establish a completed memory/performance soak.
+2026-10-08, TD 2025.33230. **Replacement is not accepted yet.** The old Inspector remains available. After fixing the Popup lifecycle height bug, a new full 1800-second soak completed with no errors, bounded state and unchanged production mappings/session. Height and long-run state stability pass; frame-time headroom and physical replacement gates remain open.
 
 ## Parity against the old Inspector
 
@@ -18,15 +18,37 @@ The authoritative old UI columns/actions are in `code/py/roto_python/inspector/i
 | ID/error/current context/Follow/LOCK readout | Details with separate controller/view state | parity_verification.json |
 | Native parameter Style conversion | Neither old nor compact Inspector implements conversion | Additional Advanced workspace scope |
 
-Physical Range re-LEARN is explicitly **not tested**, as reported by the user. Declared PUSH/TOGGLE adapter physical acceptance remains unverified. Header first-click selection, real K2/LEARN alert, target assignment and Ping have prior user acceptance. Source/evidence: replacement_physical_gates.json. Native drag deformation remains separately deferred in issue #6.
+Physical K2 Range re-LEARN now has user-confirmed 0.25/0.75 endpoints and a matching native ACK. This exposed a stale Mapping message and erroneous Value-token invalidation after ACK. Both are fixed with pure/native regression evidence; the user also confirmed restored 0/1 endpoints and the hardware acknowledged message. The original live Value is restored, completing this physical gate. Declared PUSH/TOGGLE adapter physical acceptance remains unverified. Header first-click selection, real K2/LEARN alert, target assignment and Ping have prior user acceptance. Source/evidence: replacement_physical_gates.json and physical_range_relearn.json. Native drag deformation remains separately deferred in issue #6.
 
 ## Automated workloads
 
 `acceptance_probe.py` is finite and cancellable: real-data read-only matched frame cases, then a disconnected sixteen-slot mixed Float/Int/Menu/Toggle/Pulse fixture. It uses a temporary Perform CHOP/null and frame sampler, bounded recent windows, one active Inspector, alternating Fold/Popup, section/picker/menu operations, fixture LEARN/touch state, retargeting and 10 Hz parameter updates. Pulse parameters are never fired. Production mappings and MIDI are not changed. `sample_process_memory.py` samples whole-process RSS externally, rather than launching subprocesses in TD's frame loop. All temporary operators are destroyed on Stop; pre-test Popup rectangles are restored. Fixture-phase geometry is normalized separately. Short smoke captures use a separate artifact prefix and cannot overwrite the incomplete 30-minute capture.
 
-Twenty matched real-data cases (forward/reverse order) recorded p95 whole-project Perform CHOP frame cost between 7.15 and 9.13 ms; closed-window baseline repeats were 8.82 and 7.36 ms. These measurements include observer/project work and have order drift; they are not isolated GPU drawing timings or an old-versus-new application benchmark.
+The new twenty matched real-data cases (forward/reverse order) recorded p95 whole-project Perform CHOP frame cost between 6.67 and 8.82 ms; closed-window baseline repeats were 7.97 and 8.14 ms. These measurements include observer/project work and have order drift; they are not isolated GPU drawing timings or an old-versus-new application benchmark. Fold rows exceeded its forward baseline by about 10.6%, but the reverse repeat was below baseline; this does not establish a consistent regression or a performance pass.
 
-The interrupted soak recorded two subscriptions, at most two source/catalog/definition contexts, one pending context/14 slots, two picker snapshots/34 entries, zero fixture MIDI queue bytes and unchanged view operator counts. Whole-process RSS ranged 3413.0–3425.7 MiB during this partial run. This is insufficient for the planned 30-minute memory gate. A repeated-row toggle in the harness initially skipped Details/Picker; it was corrected at 160 seconds. Subsequent picker snapshots were observed. The retained capture is replacement_acceptance.json / replacement_rss.jsonl, with `complete=false` and `reason=height_bug_investigation`.
+The interrupted soak recorded bounded state and whole-process RSS of 3413.0–3425.7 MiB. It remains an incomplete capture, archived as replacement_acceptance_interrupted.json / replacement_rss_interrupted.jsonl with `complete=false` and `reason=height_bug_investigation`. A repeated-row toggle initially skipped Details/Picker; it was corrected at 160 seconds. The new run uses the corrected harness from the start.
+
+## Completed 30-minute soak
+
+The new run completed 1800.01 seconds and 16,437 batches of fourteen non-Pulse parameter updates, alternating Fold/Popup every minute and changing editor sections every five seconds. Opening/settled-height guards reported no drift. View operator counts remained unchanged. Production catalog, registry, routing and adapter session were preserved; the fixture/probe were destroyed and the external sampler exited. The original real K1 Popup rectangle was restored to 328x178 at (272,312), with two subscriptions and no pending model work or geometry callbacks.
+
+| Measurement | Result | Interpretation |
+| --- | --- | --- |
+| Model/definition contexts | At most 2 each; capacity 4 | Bounded |
+| Pending model work | At most 1 context / 14 slots | Bounded |
+| Picker snapshots | At most 2 pages / 34 entries; no sampled pending jobs | Bounded |
+| Fixture MIDI queue | 0 bytes; no MIDI process opened | Isolated |
+| Whole-process RSS after first 2 soak minutes | 3452.94–3454.28 MiB; first/last 3453.31/3453.41 MiB | No sustained growth observed in this run |
+| Last 10 minutes RSS | 3453.16–3453.41 MiB | Plateau within the observed interval |
+| Minute-bucket Sync + Flush p95 | 0.665–0.782 ms | Only explicit model sync/flush is timed |
+| Minute-bucket whole-project frame p95 | 15.25–19.46 ms | Some buckets exceed the 16.67 ms budget at 60 Hz |
+| Minute-bucket wall frame-gap p95 | 28.70–31.57 ms | Cadence spikes remain; headroom gate is open |
+
+The 186 RSS samples cover the whole TD process, including the fixture and observer. These numbers do not isolate Inspector memory. Perform CHOP reported zero dropped frames at bucket boundaries, which is insufficient to rule out intervening cadence spikes. Soak `case` labels record state at the interval boundary, after the next style transition; they cannot attribute each minute's timing to Fold or Popup. Use the matched cases for style comparison.
+
+Evidence: replacement_acceptance.json, replacement_rss.jsonl, replacement_summary.json and replacement_restoration_before.json. Fresh external builder verification passes with current embedded source, three fixed dropdown pools, no opened test windows, empty geometry state and production preserved (replacement_builder_verification.json). Generic reload is verified separately in live_export_reload.json.
+
+Before a performance acceptance claim, profile parameter dispatch/callback work and native panel drawing separately under the same update workload, then repeat a matched baseline. The shared caches are bounded, but further caching alone is not demonstrated to solve the frame spikes.
 
 ## Popup height regression found and fixed
 
@@ -38,12 +60,21 @@ Evidence: popup_reopen_height_before.json fails; popup_reopen_height_after.json 
 
 ## Remaining gates
 
-- Re-run the full 30-minute soak with the new opening/actual-height guards; the interrupted run is not a pass.
-- Complete fresh builder/generic reload/project restart acceptance for final replacement.
-- Physical Range change -> Apply -> hardware LEARN -> new range, then restore/re-LEARN original mapping. Choose a valid temporary range containing the current Value; preserve original bounds.
+- Establish fixed-cadence headroom after the publication optimization; short callback/visibility ablations isolate repeated backend projection as a main bottleneck, but wall-gap spikes remain.
+- Complete full project restart acceptance for final replacement; fresh builder and generic reload checks pass independently.
 - Physical declared input adapter acceptance; physical wheel/OS Escape and deferred resize visual acceptance.
 - Native custom-parameter metadata/editor link and Style migration remain later Advanced workspace scope.
 
 No commit or push. The stress probe and external sampler are stopped; the model is restored to the real production controller.
 
-Fixed checkpoint: inspector_editor_actions.27.toe. Generic reload verifies no owned geometry/settlement state and collapsed178px hosts. Separate popup_height_fix_smoke_acceptance.json is a10-second fixture smoke after shortened matched cases, with no errors and unchanged production; it does not satisfy the30-minute gate.
+Fixed UI checkpoint: inspector_editor_actions.27.toe; the acceptance snapshot uses the active project save filename. Generic reload verifies no owned geometry/settlement state and collapsed 178px hosts. The earlier popup_height_fix_smoke_acceptance.json remains a separate 10-second smoke; the new full run supplies the 30-minute stability evidence.
+
+## Physical Range test: ACK message refinement
+
+The 0.25–0.75 physical test received a matching K2 ACK: runtime mapped=True, requires_relearn=False, and the user confirmed both endpoints. The open editor nevertheless retained its Apply-time message, while treating the health flag's change as a configuration revision. Live reproduction caught both misleading text and disabled Value editing. requires_relearn now participates in display notifications rather than configuration tokens; target/Range/Mode/definition/session changes still fence drafts. Mapping status resolves the saved pending message against current health, and the completed Range/Mode Ping notice clears on ACK. A stale or replaced target cannot gain an acknowledged message.
+
+116 Inspector tests and 230 runtime tests pass. mapping_verification.json verifies native ACK publication updates both editor roots, retains the token and Value editability, and performs no Value dispatch. This refinement follows the completed height soak; that soak was not rerun for the message change. Production controller sources and MIDI session remain unchanged. The user confirmed the restored 0/1 endpoints and hardware acknowledged message. The original live Value is restored, completing physical Range acceptance. Generic export/reload also passes with the revised Inspector sources.
+
+## Publication optimization follow-up
+
+[PERFORMANCE_REPORT.md](PERFORMANCE_REPORT.md) records matched closed/Fold/Popup/frozen workloads and a scoped optional UI publication change. Forward/reverse median frame p95: Fold17.55→7.99ms, Popup15.86→9.57ms, Details17.27→8.38ms. Wall gaps improve to about23–24ms but remain above a uniform60Hz cadence. A transient projection signature and one owned end-frame render coalesce legacy JSON/table rebuilding while keeping authoritative state, Value/Pulse/MIDI dispatch and ACK processing synchronous.236 runtime /116 Inspector tests pass. Live upgrade reconnects MIDI and preserves all original bindings/Values, with six mappings re-ACKed. Generic controller export41 reloads disconnected with no registered destinations and revised embedded sources. The30-minute soak was not rerun after this observer change; fixed-cadence and full project restart gates remain open.

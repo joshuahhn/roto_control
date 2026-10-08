@@ -3,6 +3,9 @@ from unittest import TestCase
 from live_model import ControllerCatalog,StaleDraft
 from editor_state import MappingDraft
 from test_live_model import Adapter,KEY,state
+from test_editor_actions import Panel
+from ui import InspectorView
+from types import SimpleNamespace
 
 class ConfigAdapter(Adapter):
     def __init__(self):super().__init__();self.configures=[]
@@ -70,3 +73,37 @@ class MappingTests(TestCase):
         draft=MappingDraft();draft.Open(self.model,KEY,1);draft.Close()
         self.assertFalse(draft.open);self.assertIsNone(draft.token);self.assertIsNone(draft.original)
         self.assertEqual(self.adapter.configures,[]);self.assertEqual(self.adapter.writes,[])
+
+    def test_physical_ack_refreshes_open_editor_without_expiring_mapping_or_value(self):
+        draft=MappingDraft();values=draft.Open(self.model,KEY,1);values['maximum']=2
+        draft.Apply(self.model,KEY,1,values)
+        view=InspectorView.__new__(InspectorView)
+        view._model=self.model;view._context=KEY;view.selected=1;view._mapping=draft
+        view._editors=(Panel(),Panel());view._token=self.model.GetToken(KEY,1)
+        view._notifications=0;view._dirty=0;view._metadata_dirty=0;view._value_scope=None
+        view._draft=SimpleNamespace(par=SimpleNamespace(Value=.4));view._error='Ping sent · awaiting hardware ACK'
+        view._visible=lambda:True;view._refresh_rows=lambda *args:False
+        view._update_editor=lambda:view._update_mapping()
+        view._update_mapping()
+        self.assertIn('needs re-LEARN',view._editors[1].op('container_mapping').op('text_status').par.text)
+        self.model.Flush();self.model.Subscribe('view',KEY,view.OnModelChange)
+        token=view._token
+        self.adapter.records[KEY][0].update(mapped=True,requires_relearn=False)
+        self.model.Sync();self.model.Flush()
+        message=view._editors[1].op('container_mapping').op('text_status').par.text
+        self.assertNotIn('needs re-LEARN',message)
+        self.assertIn('acknowledged',message)
+        self.assertEqual(view._error,'')
+        self.assertEqual(self.model.GetToken(KEY,1),token)
+        self.assertFalse(draft.IsStale(self.model,KEY,1))
+        self.assertEqual(self.adapter.writes,[])
+
+    def test_ack_does_not_revalidate_changed_target_or_range(self):
+        for patch in (dict(id='replacement'),dict(maximum=3)):
+            draft=MappingDraft();values=draft.Open(self.model,KEY,1);values['minimum']-=1
+            draft.Apply(self.model,KEY,1,values)
+            self.adapter.records[KEY][0].update(mapped=True,requires_relearn=False,**patch)
+            self.model.Sync()
+            self.assertTrue(draft.IsStale(self.model,KEY,1))
+            self.assertNotIn('acknowledged',draft.Status(self.model,KEY,1))
+            with self.assertRaises(StaleDraft):draft.Apply(self.model,KEY,1,values)

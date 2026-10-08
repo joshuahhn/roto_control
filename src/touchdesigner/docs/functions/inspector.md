@@ -73,3 +73,7 @@ Configuration overrides persist in controller storage by stable target ID and ap
 ## Menu parameters
 
 Custom Menu parameters support knobs (quantized option selection) and buttons (Cycle: advance and wrap on each press). Use hardware LEARN, select the destination, then change the menu. Inspector pickers support both kinds. PUSH ignores release/held duplicates; TOGGLE accepts each latched press. Menu ranges are fixed at indices 0..N-1, and SetValue uses those indices. State includes menu_names, menu_labels and value_label. LCD feedback uses the option label. Menu options must have 2..24 unique names and matching labels, following the official Ableton quantized-step limit. Changing names, labels or order suspends the binding; assign and re-learn it.
+
+## Projection scheduling
+
+Runtime publication keeps authoritative catalog/control state synchronous. Optional Inspector JSON/table projection compares a transient signature of data, context, page, confirmation, action status and Follow status. Changed inputs schedule at most one owned end-frame render that reads the latest snapshot; direct UI commands still refresh immediately. Disconnect forces the final disconnected projection and cancels the callback, including during export/destruction. No persistent user mapping cache or extra polling loop is added.

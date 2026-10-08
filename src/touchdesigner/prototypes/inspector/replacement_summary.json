@@ -1,0 +1,59 @@
+{
+  "complete": true,
+  "reason": "complete",
+  "soak_elapsed_s": 1800.0114085830282,
+  "feeds": 16437,
+  "errors": [],
+  "production_preserved": true,
+  "subscribers": 2,
+  "maxima": {
+    "fixture_midi_pending_bytes": 0,
+    "definition_contexts": 2,
+    "cache_contexts": 2,
+    "source_contexts": 2,
+    "pending_contexts": 1,
+    "pending_slots": 14,
+    "subscribers": 2,
+    "targets_pages": 2,
+    "targets_entries": 34,
+    "targets_jobs": 0,
+    "targets_pending": 0
+  },
+  "matched_frame_p95_ms_range": [
+    6.666791915893555,
+    8.819832801818848
+  ],
+  "closed_p95_ms": [
+    7.974416732788086,
+    8.144499778747559
+  ],
+  "minute_frame_p95_ms_range": [
+    15.2544584274292,
+    19.455291748046875
+  ],
+  "minute_wall_gap_p95_ms_range": [
+    28.70095905382186,
+    31.56666597351432
+  ],
+  "minute_sync_p95_ms_range": [
+    0.6652920274063945,
+    0.7823749911040068
+  ],
+  "rss_samples": 186,
+  "steady_rss_mib_range": [
+    3452.9375,
+    3454.28125
+  ],
+  "steady_rss_first_last_mib": [
+    3453.3125,
+    3453.40625
+  ],
+  "last_ten_minute_rss_mib_range": [
+    3453.15625,
+    3453.40625
+  ],
+  "max_bucket_dropped_frames": 0.0,
+  "bucket_style_note": "case records state at the interval boundary; do not infer per-style cost from soak labels",
+  "replacement_accepted": false,
+  "performance_headroom": "requires isolated frame/callback/render profiling"
+}

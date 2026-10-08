@@ -9,8 +9,8 @@ except ModuleNotFoundError as error:
     from model import CatalogModel, StaleDraft, FIELDS
 
 EMPTY=('unconfigured','unconfigured','unconfigured')
-META_FIELDS=('id','mode','valid','binding_type','button_type','parameter_style','parameter_definition','definition_error','requires_relearn','available','error')
-DISPLAY_FIELDS=('value_label','mapped','connected','plugin','touched')
+META_FIELDS=('id','mode','valid','binding_type','button_type','parameter_style','parameter_definition','definition_error','available','error')
+DISPLAY_FIELDS=('value_label','mapped','connected','plugin','touched','requires_relearn')
 
 def metadata_signature(row,info):
     if not info:return None

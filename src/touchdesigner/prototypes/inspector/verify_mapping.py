@@ -46,6 +46,18 @@ def verify():
         assert model.Health(key,1)['code']=='relearn'
         assert values()==initial and len(packets)==1  # One unmap; no Value/Pulse dispatch.
         assert v.op('base_draft').par.Value.eval()==.37
+        # A matching ACK changes health, not the configured target/token.
+        token=model.GetToken(key,1)
+        u._error='Ping sent · awaiting hardware ACK'
+        host.controls[('knob',2)].mapped=True;host._sync();ext._publish();model.Sync();model.Flush()
+        assert model.GetToken(key,1)==token and not u._mapping.IsStale(model,key,1)
+        assert not clone.GetControlState(ids['Amount'])['requires_relearn']
+        assert not u._error and model.Health(key,1)['code']=='mapped'
+        for e in u._editors:
+            assert e.op('container_mapping/text_status').par.text.eval()=='Mapping saved · hardware acknowledged'
+            assert e.op('field_Value').par.editmode.eval()=='editablecontinuous'
+            assert e.op('container_mapping/mapping_apply').par.enable.eval()
+        assert values()==initial and len(packets)==1
         v.Action('mapping_cancel');assert editor.height==178 and not u._mapping.open
         # Native Menu/Toggle/Pulse retain fixed compatible Mode and Range.
         for slot,mode in [(8,'cycle'),(9,'toggle'),(10,'pulse')]:
@@ -94,7 +106,8 @@ def verify():
                     one_configure_one_unmap_no_value_write=True,input_only_keeps_ack=True,
                     native_menu_toggle_pulse_fixed_schema=True,integer_guard=True,
                     stale_touch_learn_guards=True,callback_factory_mode_change_no_dispatch=True,
-                    mapping_cancel_local_only=True,fixture_native_values_preserved=True)
+                    mapping_cancel_local_only=True,fixture_native_values_preserved=True,
+                    ack_refreshes_both_editor_statuses_without_staling_value=True)
     finally:
         for v,style in zip(views,styles):v.ext.InspectorView.style=style;v.CloseEditor();v.op('window_editor').par.winclose.pulse()
         model.par.Controller=production;model.Sync();model.Flush()

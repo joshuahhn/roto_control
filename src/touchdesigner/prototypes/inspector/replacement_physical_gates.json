@@ -1,8 +1,17 @@
 {
   "date": "2026-10-08",
   "range_relearn": {
-    "status": "not_tested",
-    "evidence": "User replied 未試 to new Inspector Mapping Range / Apply / controller re-LEARN question"
+    "status": "accepted",
+    "test_range": [
+      0.25,
+      0.75
+    ],
+    "original_range": [
+      0,
+      1
+    ],
+    "evidence": "User confirmed temporary physical endpoints 0.25 / 0.75 and restored endpoints 0 / 1 with hardware acknowledged message. Native matching ACK, current token and Value editability verified; original live Value restored. Stale ACK message/token bugs fixed with pure and native regressions.",
+    "artifact": "physical_range_relearn.json"
   },
   "typed_live_value": {
     "status": "accepted",

@@ -181,20 +181,21 @@ class AcceptanceProbe:
         finally:
             if self.owner.valid:self.owner.destroy()
 
-assert not op('/base_inspector_acceptance'),'Acceptance probe already running'
-probe=op('/').create(baseCOMP,'base_inspector_acceptance');probe.viewer=probe.display=True;probe.par.parentshortcut='AcceptanceProbe';probe.nodeX=1500;probe.nodeY=-1100
-perform=probe.create(performCHOP,'perform_frame');perform.viewer=True
-for par in perform.pars():
-    if par.name in ('fps','msec','droppedframes','cpumemused','gpumemused','activeops','totalops'):par.val=True
-    elif par.style=='Toggle' and par.name not in ('timeslice',):par.val=False
-output=probe.create(nullCHOP,'null_frame');output.viewer=True;output.nodeX=175;output.inputConnectors[0].connect(perform.outputConnectors[0])
-callback=probe.create(executeDAT,'sample_frame');callback.viewer=True;callback.par.language='python';callback.nodeX=350
-callback.par.framestart=False;callback.par.frameend=True;callback.par.active=False
-callback.text="def onFrameEnd(frame):\n    parent.AcceptanceProbe.fetch('runner').Tick(frame)\n"
-try:
-    runner=AcceptanceProbe(probe,globals().get('duration',1800));probe.store('runner',runner)
-    callback.par.active=True
-    print('Finite acceptance started',os.getpid(),'soak seconds',runner.duration,'CHOP channels',[c.name for c in output.chans()])
-except Exception:
-    if probe.valid:probe.destroy()
-    raise
+if not globals().get('define_only',False):
+    assert not op('/base_inspector_acceptance'),'Acceptance probe already running'
+    probe=op('/').create(baseCOMP,'base_inspector_acceptance');probe.viewer=probe.display=True;probe.par.parentshortcut='AcceptanceProbe';probe.nodeX=1500;probe.nodeY=-1100
+    perform=probe.create(performCHOP,'perform_frame');perform.viewer=True
+    for par in perform.pars():
+        if par.name in ('fps','msec','droppedframes','cpumemused','gpumemused','activeops','totalops'):par.val=True
+        elif par.style=='Toggle' and par.name not in ('timeslice',):par.val=False
+    output=probe.create(nullCHOP,'null_frame');output.viewer=True;output.nodeX=175;output.inputConnectors[0].connect(perform.outputConnectors[0])
+    callback=probe.create(executeDAT,'sample_frame');callback.viewer=True;callback.par.language='python';callback.nodeX=350
+    callback.par.framestart=False;callback.par.frameend=True;callback.par.active=False
+    callback.text="def onFrameEnd(frame):\n    parent.AcceptanceProbe.fetch('runner').Tick(frame)\n"
+    try:
+        runner=AcceptanceProbe(probe,globals().get('duration',1800));probe.store('runner',runner)
+        callback.par.active=True
+        print('Finite acceptance started',os.getpid(),'soak seconds',runner.duration,'CHOP channels',[c.name for c in output.chans()])
+    except Exception:
+        if probe.valid:probe.destroy()
+        raise

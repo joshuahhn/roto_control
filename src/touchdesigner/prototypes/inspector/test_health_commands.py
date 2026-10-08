@@ -46,11 +46,11 @@ class HealthCommandsTests(TestCase):
     def test_runtime_health_and_touch_notify_without_expiring_value_draft(self):
         events=[];self.model.Subscribe('view',KEY,lambda *args:events.append(args))
         token=self.model.GetToken(KEY,1)
-        for fields in [dict(mapped=False),dict(touched=True),dict(touched=False,connected=False)]:
+        for fields in [dict(mapped=False),dict(touched=True),dict(touched=False,connected=False),dict(requires_relearn=True),dict(requires_relearn=False)]:
             self.update(**fields);self.model.Flush()
             self.assertEqual(self.model.GetToken(KEY,1),token)
             self.assertEqual(events[-1][1],2);self.assertEqual(events[-1][2],0)
-        self.assertEqual(len(events),3)
+        self.assertEqual(len(events),5)
     def test_adapter_and_native_definition_changes_expire_old_commands(self):
         for field,value in [('button_type','push'),('binding_type','callback'),('parameter_definition',(('owner','Threshold','Float','BIND'),))]:
             token=self.model.GetToken(KEY,1);self.update(**{field:value})

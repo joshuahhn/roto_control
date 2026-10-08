@@ -9,6 +9,7 @@
   "callback_factory_mode_change_no_dispatch": true,
   "mapping_cancel_local_only": true,
   "fixture_native_values_preserved": true,
+  "ack_refreshes_both_editor_statuses_without_staling_value": true,
   "production_catalog_registry_session_preserved": true,
   "subscribers": 2,
   "errors": ""

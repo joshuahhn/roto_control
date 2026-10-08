@@ -1,4 +1,5 @@
 """Inspector projection, confirmation and validated controller API edits."""
+import copy
 COLUMNS = ('Control', 'Mapped', 'Learn', 'ClearLearn', 'COMP', 'Parameter', 'Mode', 'Hardware', 'Min', 'Max', 'Value', 'ID', 'Error')
 
 
@@ -19,6 +20,20 @@ def context(inspector):
     controller=parent() if parent is not None else None
     get_context=getattr(controller,'GetLayoutContext',None)
     return get_context() if get_context is not None else dict(key=None,label='')
+
+
+def projection_signature(inspector, states):
+    """Inputs read by refresh; states is the caller's detached catalog snapshot.
+
+    The controller holds at most one signature in transient extension state.
+    Direct refresh calls from UI commands still run unconditionally.
+    """
+    parent=getattr(inspector,'parent',None)
+    get_focus=getattr(parent() if parent is not None else None,'GetCompContext',None)
+    focus=get_focus().get('status') if get_focus is not None else None
+    return (states,context(inspector),inspector.fetch('selected_page','All COMPs'),
+            copy.deepcopy(inspector.fetch('pending_clear',None)),
+            inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value'),focus)
 
 
 def refresh(inspector, states):

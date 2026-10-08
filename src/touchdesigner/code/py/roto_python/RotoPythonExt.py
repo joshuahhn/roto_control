@@ -32,6 +32,7 @@ class RotoPythonExt:
         self._delete_request = None
         self._follow = None
         self._receive_epoch = None
+        self._inspector_refresh_run = None
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
@@ -252,7 +253,8 @@ class RotoPythonExt:
 
     def GetControlCatalog(self):
         """Persisted registered target data, independent of live mapping/session."""
-        return copy.deepcopy(self.ownerComp.fetch('control_catalog', self.GetControlStates()))
+        catalog=self.ownerComp.fetch('control_catalog',None)
+        return copy.deepcopy(self.GetControlStates() if catalog is None else catalog)
 
     def _update_catalog(self):
         if self._restore_pending:
@@ -862,12 +864,27 @@ class RotoPythonExt:
                 self.ownerComp.store("mapping_mark_error", str(exc))
         self._publish_inspector()
 
-    def _publish_inspector(self):
+    def _publish_inspector(self, force=False):
+        if not force and getattr(self,'_inspector_refresh_run',None) is not None:return
         inspector = self.ownerComp.op("inspector")
         if inspector is None:
             return
         try:
-            inspector.op("inspector_data").module.refresh(inspector, self.GetControlCatalog())
+            data=inspector.op("inspector_data").module
+            states=self.GetControlCatalog()
+            signature=getattr(data,'projection_signature',None)
+            key=(getattr(inspector,'id',id(inspector)),data.refresh,signature(inspector,states)) if signature else None
+            if not force and key is not None and key==getattr(self,'_inspector_projection',None) and not inspector.fetch('refresh_error',''):
+                return
+            if not force and key is not None:
+                try:
+                    self._inspector_refresh_run=run('args[0]._flush_inspector()',self,endFrame=True)
+                    return
+                except NameError:
+                    pass  # Pure Python callers have no TD event scheduler.
+            if force:self._cancel_inspector_refresh()
+            data.refresh(inspector,states)
+            self._inspector_projection=key
             inspector.store("refresh_error", "")
         except Exception as exc:
             # An optional UI observer must not break transport or target dispatch.
@@ -875,6 +892,19 @@ class RotoPythonExt:
             title = inspector.op("title")
             if title is not None:
                 title.par.text = "Inspector unavailable: " + str(exc)
+
+    def _cancel_inspector_refresh(self):
+        pending=getattr(self,'_inspector_refresh_run',None)
+        if pending is not None:pending.kill()
+        self._inspector_refresh_run=None
+
+    def _flush_inspector(self):
+        self._inspector_refresh_run=None
+        if not getattr(self.ownerComp,'valid',True):return
+        current=getattr(getattr(self.ownerComp,'ext',None),'RotoPythonExt',self)
+        if current is not self:return
+        # Read the latest catalog and UI scope after the full callback burst.
+        self._publish_inspector(force=True)
 
     def _leave_collection(self):
         if self._collection is None:
@@ -1103,6 +1133,7 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        self._cancel_inspector_refresh()
         follower = getattr(self, '_follow', None)
         if follower is not None:
             follower.session_boundary()
@@ -1132,6 +1163,8 @@ class RotoPythonExt:
             learner.pending = None
             learner.sync()
         self._publish()
+        if getattr(self,'_inspector_refresh_run',None) is not None:
+            self._publish_inspector(force=True)
 
     def Offerparameter(self, id=None):
         if self._collection is None:

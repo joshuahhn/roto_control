@@ -619,6 +619,12 @@ class InspectorView:
             self._disarm_clear()
             self._set_error('Mapping changed; reopen this control')
             if getattr(self,'_picker',None):self.ClosePicker();self._editor_layout()
+        elif self.selected is not None and self._error=='Ping sent · awaiting hardware ACK':
+            # A Range/Mode commit already recorded the unacknowledged state.
+            # Its matching ACK updates health without changing target metadata.
+            if self._mapping.message=='Mapping saved · needs re-LEARN' and not self._mapping.IsStale(self._model,self._context,self.selected):
+                info=self._model.Info(self._context,self.selected)
+                if info.get('mapped') and not info.get('requires_relearn'):self._error=''
         if self.selected is not None and slots&(1<<self.selected) and not self._value_scope:
             self._draft.par.Value=self._model.GetCatalog(self._context)[self.selected]['Value']
         if self._visible() and self.selected is not None and (slots&(1<<self.selected) or learn_changed):self._update_editor()
@@ -697,7 +703,7 @@ class InspectorView:
         enabled=not schema['reason'] and self._mapping.open and not self._mapping.IsStale(self._model,self._context,self.selected)
         row=self._model.GetCatalog(self._context)[self.selected]
         caption='MAPPING  '+format(row['Minimum'],'.4g')+'–'+format(row['Maximum'],'.4g')+'  '+('▾' if self._mapping.open else '▸')
-        message=self._mapping.message or schema['reason'] or ('Mapping changed · reopen section' if self._mapping.open and not enabled else 'Range / Mode changes need re-LEARN')
+        message=self._mapping.Status(self._model,self._context,self.selected) or schema['reason'] or ('Mapping changed · reopen section' if self._mapping.open and not enabled else 'Range / Mode changes need re-LEARN')
         for e in self._editors:
             toggle=e.op('mapping_toggle')
             if not toggle:continue
