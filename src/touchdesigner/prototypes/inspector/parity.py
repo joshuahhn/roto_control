@@ -1,6 +1,13 @@
 """Scalar filter/confirmation helpers; importing this module performs no writes."""
 from time import monotonic
 
+def ownership_label(metadata):
+    category=metadata.get('category','LEGACY')
+    owner=metadata.get('owner') or {}
+    if category=='COMP':
+        return 'COMP: '+str(owner.get('path') or 'Unavailable')+' · '+str(owner.get('state') or 'unavailable')
+    return 'CUSTOM' if category=='CUSTOM' else 'Legacy-unclassified'
+
 def detail_groups(info,health,status,snapshot,view_labels,route_labels,selected_labels,following):
     """Readable labels first; long identities stay in the scrollable technical group."""
     state=(snapshot or {}).get('state',{})
@@ -14,9 +21,9 @@ def detail_groups(info,health,status,snapshot,view_labels,route_labels,selected_
              ('LOCK / Gate',('ON' if status.get('Locked') else 'OFF')+' / '+('ON' if status.get('Gated') else 'OFF'),'short')]
     target=info.get('comp','')+'.'+info['parameter'] if info.get('parameter') else 'Python callback' if info.get('id') else '—'
     technical=[('Target',target,'long'),('ID',str(info.get('id') or 'Unassigned'),'long'),
-               ('Viewing',' / '.join(view_labels)+(' · follows routing' if following else ' · browse pinned'),'long'),
+               ('Viewing',ownership_label(status.get('ViewingOwner',{}))+' · '+' / '.join(view_labels)+(' · follows routing' if following else ' · browse pinned'),'long'),
                ('Selected',' / '.join(selected_labels),'long'),
-               ('Follow status',follow.replace('_',' '),'long'),
+               ('Owner / Follow',ownership_label(status.get('RoutingOwner',{}))+' · '+('Needs Activate · ' if status.get('Quarantined') else '')+follow.replace('_',' '),'long'),
                ('RX / TX / Rej',' / '.join(str(state.get(n,'—')) for n in ('Rx','Tx','Rejected')),'short')]
     return (('Mapping',tuple(mapping)),('Hardware routing',tuple(routing)),('Technical · Refresh snapshot',tuple(technical)))
 

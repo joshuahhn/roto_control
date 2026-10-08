@@ -80,8 +80,9 @@ class HealthCommandsTests(TestCase):
                 target=record['targets'][0]
                 if target['id']=='broken':raise ValueError('Readonly target')
                 return [dict(target,parameter=par)],[]
-        controller=SimpleNamespace(ext=SimpleNamespace(RotoPythonExt=SimpleNamespace(_layout_manager=Manager)),
-                                   op=lambda path:SimpleNamespace(path='/effect',module=SimpleNamespace(parameter_value=lambda p:.7)))
+        library=[dict(broken,value=None,valid=False,error='Readonly target'),dict(healthy,value=.7,valid=True)]
+        controller=SimpleNamespace(path='/controller',GetPluginTargets=lambda *key:library,ext=SimpleNamespace(RotoPythonExt=SimpleNamespace(_layout_manager=Manager)),
+                                   op=lambda path:SimpleNamespace(path='/effect',valid=True,par=SimpleNamespace(Threshold=par),module=SimpleNamespace(parameter_value=lambda p:.7)))
         owner=SimpleNamespace(par=SimpleNamespace(Controller=SimpleNamespace(eval=lambda:controller)))
         adapter=TDControllerAdapter(owner);adapter.ActiveContext=lambda:KEY
         adapter._definitions=lambda records,key:records

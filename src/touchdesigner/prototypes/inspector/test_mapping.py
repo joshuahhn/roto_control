@@ -107,3 +107,45 @@ class MappingTests(TestCase):
             self.assertTrue(draft.IsStale(self.model,KEY,1))
             self.assertNotIn('acknowledged',draft.Status(self.model,KEY,1))
             with self.assertRaises(StaleDraft):draft.Apply(self.model,KEY,1,values)
+
+    def test_ping_ack_clears_waiting_text_without_a_mapping_range_draft(self):
+        # Native Menu/Style edits and ordinary Ping do not open MappingDraft.
+        self.adapter.records[KEY][0].update(mapped=False,requires_relearn=True)
+        self.model.Sync();self.model.Flush()
+        view=InspectorView.__new__(InspectorView)
+        view._model=self.model;view._context=KEY;view.selected=1;view._mapping=MappingDraft()
+        view._token=self.model.GetToken(KEY,1);view._clear_pending=None
+        view._notifications=0;view._dirty=0;view._metadata_dirty=0;view._value_scope=None
+        view._draft=SimpleNamespace(par=SimpleNamespace(Value=.4));view._error='Ping sent · awaiting hardware ACK'
+        view._visible=lambda:False;view._update_editor=lambda:None
+        self.model.Subscribe('view',KEY,view.OnModelChange)
+        self.adapter.records[KEY][0].update(mapped=True,requires_relearn=False)
+        self.model.Sync();self.model.Flush()
+        self.assertEqual(view._error,'')
+        self.assertEqual(self.adapter.writes,[])
+
+    def test_ping_waiting_text_needs_both_ack_and_current_semantics(self):
+        for mapped,relearn in ((False,False),(True,True)):
+            view=InspectorView.__new__(InspectorView)
+            view._model=self.model;view._context=KEY;view.selected=1
+            view._token=self.model.GetToken(KEY,1);view._clear_pending=None
+            view._notifications=0;view._dirty=0;view._metadata_dirty=0;view._value_scope=None
+            view._draft=SimpleNamespace(par=SimpleNamespace(Value=.4));view._error='Ping sent · awaiting hardware ACK'
+            view._visible=lambda:False
+            self.adapter.records[KEY][0].update(mapped=mapped,requires_relearn=relearn)
+            self.model.Sync()
+            view.OnModelChange(KEY,2,0,False,0)
+            self.assertEqual(view._error,'Ping sent · awaiting hardware ACK')
+
+    def test_ping_ack_for_replaced_target_keeps_stale_warning(self):
+        view=InspectorView.__new__(InspectorView)
+        view._model=self.model;view._context=KEY;view.selected=1
+        view._token=self.model.GetToken(KEY,1);view._clear_pending=None
+        view._notifications=0;view._dirty=0;view._metadata_dirty=0;view._value_scope=None
+        view._draft=SimpleNamespace(par=SimpleNamespace(Value=.4));view._error='Ping sent · awaiting hardware ACK'
+        view._visible=lambda:False;view._editors=()
+        view._set_error=lambda message:setattr(view,'_error',message)
+        self.adapter.records[KEY][0].update(id='replacement',mapped=True,requires_relearn=False)
+        self.model.Sync()
+        view.OnModelChange(KEY,2,0,False,0)
+        self.assertIn('Mapping changed',view._error)

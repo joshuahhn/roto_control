@@ -3,7 +3,7 @@ from time import monotonic
 from collections import Counter
 from math import ceil
 from editor_state import MappingDraft
-from parity import ClearRequest,filter_choices,visible_slots,detail_groups
+from parity import ClearRequest,filter_choices,visible_slots,detail_groups,ownership_label
 from context_menu import Dropdown,placement_for,editor_space_for
 ROW=26
 EDITOR=178
@@ -126,11 +126,15 @@ class InspectorView:
         if label.startswith('/'):label=label.rsplit('/',1)[-1]
         self.ownerComp.op('text_footer').par.text=label+' ▾'
         live=self.IsLive();inactive=live and self._context!=self._model.ActiveContext()
-        clear=self.ownerComp.op('clear_device');clear.par.display=not inactive;clear.par.enable=live
+        capability=self._model.ActivationCapability(self._context) if live else {}
+        recovery=bool(capability.get('recover'))
+        clear=self.ownerComp.op('clear_device');clear.par.display=not (inactive or recovery);clear.par.enable=live and not self._model.Status.get('Quarantined') if live else False
         activate=self.ownerComp.op('activate_device')
         if activate:
-            activate.par.display=inactive
-            activate.par.enable=inactive and self._model.ActivationCapability(self._context)['enabled']
+            activate.par.display=inactive or recovery
+            activate.par.enable=(inactive or recovery) and capability['enabled']
+            label=activate.op('text_label')
+            if label:label.par.text='Recover' if recovery else 'Activate'
         self._activation_token=self._model.ActivationToken(self._context) if live else None
     def ActivationHint(self,hover):
         if not self.IsLive():return
@@ -196,14 +200,17 @@ class InspectorView:
 
     def _update_details(self):
         if not getattr(self,'_details_open',False) or self.selected is None or not self.IsLive():return
-        info=self._model.Info(self._context,self.selected);status=self._model.Status
+        info=self._model.Info(self._context,self.selected);status=dict(self._model.Status)
+        owners=status.get('ContextOwners',{})
+        status['ViewingOwner']=owners.get(self._context[0],{})
+        status['RoutingOwner']=owners.get(tuple(status.get('Active') or self._model.ActiveContext())[0],{})
         def labels(key):
             return tuple(dict(self._model.Choices(n,key)).get(key[i],str(key[i])) for i,n in enumerate(('Layout','Track','Device')))
         active=tuple(status.get('Active') or self._model.ActiveContext())
         route=labels(active)
-        selected_key=(active[0],status.get('SelectedTrack') or active[1],status.get('SelectedDevice') or active[2])
-        try:selected=labels(selected_key)[1:]
-        except (ValueError,RuntimeError):selected=tuple(str(n) for n in selected_key[1:])
+        track=status.get('SelectedTrack') or active[1];device=status.get('SelectedDevice') or active[2]
+        # LOCK can retain a selected Track outside the routing Device parent.
+        selected=(dict(self._model.Choices('Track',active)).get(track,str(track)),dict(self._model.Choices('Device',active)).get(device,str(device)))
         groups=detail_groups(info,self._model.Health(self._context,self.selected),status,self._diagnostics,labels(self._context),route,selected,self._follow_routing)
         definition=getattr(self,'_native_definition',None)
         if definition:groups=(('Native parameter',definition['rows']),)+groups
@@ -738,11 +745,11 @@ class InspectorView:
             self._set_error('Mapping changed; reopen this control')
             if getattr(self,'_picker',None):self.ClosePicker();self._editor_layout()
         elif self.selected is not None and self._error=='Ping sent · awaiting hardware ACK':
-            # A Range/Mode commit already recorded the unacknowledged state.
-            # Its matching ACK updates health without changing target metadata.
-            if self._mapping.message=='Mapping saved · needs re-LEARN' and not self._mapping.IsStale(self._model,self._context,self.selected):
-                info=self._model.Info(self._context,self.selected)
-                if info.get('mapped') and not info.get('requires_relearn'):self._error=''
+            # Matching ACK health also covers ordinary Ping and Native edits,
+            # which need not have opened a Mapping Range draft. The fresh
+            # target token above still rejects replacement/definition drift.
+            info=self._model.Info(self._context,self.selected)
+            if info.get('mapped') and not info.get('requires_relearn'):self._error=''
         if self.selected is not None and slots&(1<<self.selected) and not self._value_scope:
             self._draft.par.Value=self._model.GetCatalog(self._context)[self.selected]['Value']
         if self._visible() and self.selected is not None and (slots&(1<<self.selected) or learn_changed):self._update_editor()
@@ -788,11 +795,17 @@ class InspectorView:
         elif self.IsLive():
             info=[self._model.Info(self._context,i) for i in range(16)]
             registered=sum(bool(r.get('id')) for r in info)
-            if self.Key()!=self._model.ActiveContext():message=str(registered)+' saved · browse'
-            elif not self._model.Status.get('Connected'):message='Disconnected · '+str(registered)+' saved'
+            status=self._model.Status;metadata=status.get('ContextOwners',{}).get(self._context[0],{})
+            owner=metadata.get('owner') or {}
+            ownership=ownership_label(metadata)
+            if metadata.get('category')=='COMP' and owner.get('state')!='bound':message=ownership
+            elif status.get('Quarantined') and self.Key()==self._model.ActiveContext():message=ownership+' · Needs Activate'
+            elif status.get('FollowStatus')=='paused' or status.get('Gated'):message=ownership+' · '+(status.get('ActivationReason') or 'Routing gated')
+            elif self.Key()!=self._model.ActiveContext():message=ownership+' · '+str(registered)+' saved · browse'
+            elif not status.get('Connected'):message=ownership+' · Disconnected · '+str(registered)+' saved'
             else:
                 mapped=sum(self._model.Health(self._context,i)['code']=='mapped' for i in range(16))
-                message='Connected · '+str(mapped)+'/'+str(registered)+' mapped'
+                message=ownership+' · '+str(mapped)+'/'+str(registered)+' mapped'
         else:message='16 controls · click to edit'
         if getattr(self,'_device_message','') and not self._model.Learn:message=self._device_message
         if message!=self._main_message:
@@ -1300,7 +1313,11 @@ class InspectorView:
                 if name=='ping':
                     self._disarm_clear()
                     self._model.Ping(self._context,self.selected,self._token)
-                    self._set_error('Ping sent · awaiting hardware ACK')
+                    # Ping validates and refreshes this target before offering;
+                    # use that refreshed health, not an earlier cached ACK bit.
+                    info=self._model.Info(self._context,self.selected)
+                    acknowledged=bool(info.get('mapped') and not info.get('requires_relearn'))
+                    self._set_error('Ping sent · mapping already acknowledged' if acknowledged else 'Ping sent · awaiting hardware ACK')
                 else:
                     self._model.CheckClear(self._context,self.selected,self._token)
                     pending=(self._context,self.selected,self._token)

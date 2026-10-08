@@ -27,6 +27,11 @@ cb=m.op('controller_catalog') or m.create(datexecuteDAT,'controller_catalog');cb
 cb.par.dat.expr='parent.InspectorModel.ControllerData()';cb.par.tablechange=True
 for n in ('rowchange','colchange','cellchange','sizechange'):cb.par[n]=False
 cb.text="def onTableChange(dat):\n    parent.InspectorModel.RequestSync()\n";cb.nodeX=475;cb.nodeY=0
+registry=m.op('controller_registry') or m.create(datexecuteDAT,'controller_registry')
+registry.viewer=True;registry.par.active=False;registry.par.dat.expr='parent.InspectorModel.ControllerMetadata()';registry.par.tablechange=True
+for n in ('rowchange','colchange','cellchange','sizechange'):registry.par[n]=False
+registry.text="def onTableChange(dat):\n    parent.InspectorModel.RequestSync()\n";registry.nodeX=475;registry.nodeY=-150
+registry.par.active=True
 watch=m.op('controller_parameters') or m.create(parameterexecuteDAT,'controller_parameters');watch.viewer=True;watch.par.active=False
 watch.par.custom=True;watch.par.builtin=True;watch.par.valuechange=True;watch.par.onpulse=False;watch.par.modechange=True
 watch.par.op.expr='';watch.par.op=' '.join(o.path for o in m.WatchOwners());watch.par.pars=m.WatchPars()

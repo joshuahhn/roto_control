@@ -44,7 +44,7 @@ class ActivationTests(TestCase):
         manager=S(legacy=False,touched=False,locked=False,mutating=False)
         f=S(paused=False,gated=False,backlog=False,pending=None)
         e=S(_host=h,_layout_manager=lambda:manager,_follow=f,_dispatching=False,_process=S())
-        calls=[];c=S(ext=S(RotoPythonExt=e),SelectPlugin=lambda *k:calls.append(k))
+        calls=[];c=S(ext=S(RotoPythonExt=e),GetLayouts=lambda:[],GetLayoutContext=lambda:dict(key=OTHER,quarantined=False),SelectPlugin=lambda *k:calls.append(k))
         adapter=TDControllerAdapter(S(par=S(Controller=S(eval=lambda:c))));adapter.Exists=lambda key:True
         guards=((manager,'legacy',True),(h,'learning',True),(h,'touched',True),(manager,'touched',True),
             (manager,'locked',True),(manager,'mutating',True),(e,'_dispatching',True),

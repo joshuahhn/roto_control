@@ -1,4 +1,4 @@
-"""User-tagged COMPs own independent Devices within the active Layout/Track."""
+"""User-tagged COMPs allocate independent owner Layouts without changing routing."""
 import unittest
 from types import SimpleNamespace
 import test_assignment
@@ -6,18 +6,31 @@ import test_device_context
 from free_learn import FreeLearner
 
 
+def persistent(comp,parent=None):
+    storage={}
+    # Model native OP.fetch: local first, then parent only when search=True.
+    def fetch(key,default=None,search=True):
+        if key in storage:return storage[key]
+        if search and parent is not None:return parent.fetch(key,default,search=True)
+        return default
+    comp.fetch=fetch
+    comp.store=lambda key,value:storage.__setitem__(key,value)
+    return comp
+
+
 class TagDeviceTests(unittest.TestCase):
     def fixture(self):
         e,m,f,a,b,t,pa,pb,s,_=test_device_context.DeviceTests().fixture()
         for p in (a,b):
             p.owner.name=p.owner.path.rsplit('/',1)[-1]
-            p.owner.tags=set()
+            p.owner.tags=set();persistent(p.owner)
         tagged=[];f.tag_sampler=lambda:tuple(tagged)
         return e,m,f,a,b,t,pa,pb,s,tagged
 
     def target(self,path='/new'):
         p=test_assignment.AssignmentTests().parameter();p.owner.path=path;p.owner.name=path.rsplit('/',1)[-1]
         p.owner.id=30;p.owner.isCOMP=True;p.owner.tags={'roto_device'};p.owner.par=SimpleNamespace(Speed=p)
+        persistent(p.owner)
         return p
 
     def test_tag_registers_empty_device_without_switching_or_writing(self):
@@ -25,19 +38,22 @@ class TagDeviceTests(unittest.TestCase):
         old=e.ownerComp.op;e.ownerComp.op=lambda n:p.owner if n=='../new' else old(n)
         ids=f.sync_tags(force=True)
         self.assertEqual(len(ids),1)
-        device=m.track()['plugins'][-1]
+        layout=m.layout(e.LookupCompLayout(p.owner));device=layout['tracks'][0]['plugins'][0]
+        self.assertEqual(layout['category'],'COMP')
         self.assertEqual((device['plugin_name'],device['comp_name'],device['name_mode']),('new','new','comp'))
-        self.assertEqual(device['focus_comp'],dict(path='../new',state='bound'))
+        self.assertEqual(device['focus_comp'],dict(path='../new',state='bound',owner_id=layout['owner']['id']))
         self.assertEqual(device['targets'],[])
         self.assertEqual((m.plugin()['id'],p.eval(),a.eval()),(pa,5,5))
         self.assertEqual(f.sync_tags(force=True),[])
-        self.assertEqual(len(m.track()['plugins']),3)
+        self.assertEqual(len(m.track()['plugins']),2)
+        self.assertEqual(len(m.data['records']),2)
 
-    def test_existing_link_reused_across_tracks_and_tag_removal_keeps_mapping(self):
+    def test_existing_legacy_link_not_moved_and_tag_removal_keeps_mapping(self):
         import test_comp_follow
         e,m,f,a,b,t,tb,s,_=test_comp_follow.FollowTests().fixture()
-        b.owner.tags={'roto_device'};f.tag_sampler=lambda:(b.owner,)
-        self.assertEqual(f.sync_tags(force=True),[])
+        b.owner.tags={'roto_device'};persistent(b.owner);f.tag_sampler=lambda:(b.owner,)
+        self.assertEqual(f.sync_tags(force=True),[b.owner.id])
+        self.assertEqual(m.layout(e.LookupCompLayout(b.owner))['tracks'][0]['plugins'][0]['targets'],[])
         b.owner.tags.clear();f.sync_tags(force=True)
         self.assertEqual(m.plugin('custom',tb)['targets'][0]['parameter'],'Speed')
         self.assertEqual(len(m.track('custom',t)['plugins']),1)
@@ -65,22 +81,24 @@ class TagDeviceTests(unittest.TestCase):
         s[0]=(s[0][0],(p.owner,));f.observe(force=True)
         self.assertEqual(f.status,'failed')
         p.owner.tags.add('roto_device');tagged.append(p.owner);f.next_tag_scan=0
-        f.observe(force=True);self.assertIsNotNone(f.pending);f.flush()
+        f.observe(force=True);self.assertIsNone(f.pending);f.flush()
         self.assertEqual(m.data['active'],'custom')
         self.assertEqual(m.track()['id'],t)
-        self.assertEqual(m.plugin()['focus_comp']['path'],'../new')
+        self.assertIsNotNone(e.LookupCompLayout(p.owner))
+        self.assertEqual(m.plugin()['id'],pa)
         self.assertEqual((p.eval(),a.eval()),(5,5))
 
-    def test_untagged_deleted_internal_and_over_capacity_never_register(self):
+    def test_ineligible_never_register_and_full_custom_track_does_not_limit_owner_layout(self):
         e,m,f,a,b,t,pa,pb,s,tagged=self.fixture();p=self.target()
         p.owner.tags.clear();tagged.append(p.owner);self.assertEqual(f.sync_tags(force=True),[])
         p.owner.tags.add('roto_device');p.owner.valid=False;self.assertEqual(f.sync_tags(force=True),[])
         p.owner.valid=True;p.owner.path=e.ownerComp.path+'/internal';self.assertEqual(f.sync_tags(force=True),[])
         p.owner.path='/new'
         m.track()['plugins'].extend(m.empty_plugin('Dummy') for _ in range(125))
-        self.assertEqual(f.sync_tags(force=True),[])
-        self.assertIn('capacity',f.tag_error)
+        self.assertEqual(f.sync_tags(force=True),[p.owner.id])
+        self.assertEqual(f.tag_error,'')
         self.assertEqual(len(m.track()['plugins']),127)
+        self.assertEqual(len(m.layout(e.LookupCompLayout(p.owner))['tracks'][0]['plugins']),1)
 
     def test_tag_registration_is_transactional_when_menu_observer_fails(self):
         e,m,f,a,b,t,pa,pb,s,tagged=self.fixture();p=self.target();tagged.append(p.owner)

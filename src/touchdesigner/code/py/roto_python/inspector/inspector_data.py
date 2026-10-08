@@ -38,6 +38,13 @@ def projection_signature(inspector, states):
 
 def refresh(inspector, states):
     current=context(inspector)
+    metadata=inspector.op('context_state')
+    if metadata is not None:
+        import json
+        controller=inspector.parent()
+        snapshot=dict(routing={k:v for k,v in current.items() if k!='revision'},layouts=controller.GetLayouts() if current.get('key') is not None and not current.get('legacy') else [])
+        content=json.dumps(snapshot,ensure_ascii=True,sort_keys=True)+'\n'
+        if metadata.text.replace('\r\n','\n')!=content:metadata.text=content
     pending = inspector.fetch('pending_clear', None)
     if pending and (pending['fingerprint'] != fingerprint(states) or pending.get('context')!=current['key']):
         inspector.store('pending_clear', None)
@@ -67,7 +74,7 @@ def refresh(inspector, states):
             continue
         destination = state['comp'] or ('Python callback' if state['binding_type']=='callback' else 'Unavailable')
         parameter = state['parameter'] or '\u2014'
-        value = (format(state['value'],'.3f').rstrip('0').rstrip('.') or '0') if state['value'] is not None else 'Unavailable'
+        value = 'Pulse' if state.get('mode')=='pulse' or state.get('value_source')=='pulse' else (format(state['value'],'.3f').rstrip('0').rstrip('.') or '0') if state['value'] is not None else 'Unavailable'
         confirm = pending and pending['id'] == state['id']
         rows.append([state['kind'].capitalize()+' '+str(state['slot']),
                      'Invalid' if not state['valid'] else 'Yes' if state['mapped'] else 'No',
@@ -94,6 +101,10 @@ def refresh(inspector, states):
     count = sum(state['mapped'] for state in states)
     status = inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value')
     inspector.op('title').par.text = f"ROTO Inspector | {current['label']} | {count}/{len(states)} mapped | {status}"
+    owner=current.get('owner') or {}
+    category=current.get('category','LEGACY')
+    ownership=('COMP: '+str(owner.get('path') or 'Unavailable')+' · '+str(owner.get('state') or 'unavailable')) if category=='COMP' else 'CUSTOM' if category=='CUSTOM' else 'Legacy-unclassified'
+    inspector.op('title').par.text += ' | '+ownership+(' · Needs Activate' if current.get('quarantined') else '')
     if current.get('locked'):
         inspector.op('title').par.text += ' | LOCK' + (' (selected Track differs)' if current.get('selected_track_id')!=current.get('track_id') else '')
     parent = getattr(inspector, 'parent', None)

@@ -1,5 +1,6 @@
 """Shared controller projection. Browse never changes hardware routing."""
 from copy import deepcopy
+from contextlib import nullcontext
 from collections import OrderedDict
 from itertools import count
 from posixpath import normpath
@@ -25,7 +26,7 @@ def project_records(states):
         kind=state.get('kind');slot=state.get('slot')
         if kind not in ('knob','button') or type(slot) is not int or not 1<=slot<=8:continue
         i=slot-1+(8 if kind=='button' else 0)
-        value=state.get('value');available=isinstance(value,(int,float)) and math.isfinite(value)
+        value=state.get('value');available=state.get('mode')!='pulse' and state.get('value_source')!='pulse' and isinstance(value,(int,float)) and math.isfinite(value)
         rows[i]=dict(Label=str(state.get('label') or 'Unavailable'),Destination=(str(state.get('comp') or '')+'.'+str(state.get('parameter') or '')) if state.get('parameter') else 'Python callback',Minimum=float(state.get('minimum',0)),Maximum=float(state.get('maximum',1)),Value=float(value) if available else 0.)
         info[i]=dict(state,available=available)
     return rows,info
@@ -95,10 +96,15 @@ class ControllerCatalog(CatalogModel):
     def ValueText(self,context,slot):
         info=self.Info(context,slot);row=self.GetCatalog(context)[slot]
         if not info:return '—'
+        if info.get('mode')=='pulse' or info.get('value_source')=='pulse':return 'Pulse'
         if not info['available']:return 'Unavailable'
         return format(row['Value'],'.4g')
 
     def Sync(self):
+        observation=getattr(self.adapter,'Observation',nullcontext)
+        with observation():self._sync_observation()
+
+    def _sync_observation(self):
         self._sync_count+=1
         session=self.adapter.Session()
         session_changed=session!=self._session
@@ -123,6 +129,9 @@ class ControllerCatalog(CatalogModel):
     def ActivationToken(self,*args):return self._commands.ActivationToken(*args)
     def ActivationCapability(self,*args):return self._commands.ActivationCapability(*args)
     def Activate(self,*args):return self._commands.Activate(*args)
+    def Library(self,*args):return self._commands.Library(*args)
+    def PrepareRename(self,*args,**kwargs):return self._commands.PrepareRename(*args,**kwargs)
+    def Rename(self,*args):return self._commands.Rename(*args)
     def Health(self,context,slot):return self._commands.Health(context,slot)
     def Capabilities(self,context,slot):return self._commands.Capabilities(context,slot)
     def MappingSchema(self,*args):return self._commands.MappingSchema(*args)
@@ -198,11 +207,16 @@ class TDControllerAdapter:
             if self.Targets:self.Targets.Reset()
             return None
         ext=c.ext.RotoPythonExt;follow=getattr(ext,'_follow',None)
-        session=(id(ext),getattr(follow,'connection_generation',None))
+        routing=c.GetLayoutContext()
+        session=(id(ext),getattr(follow,'connection_generation',None),getattr(follow,'routing_epoch',None),routing.get('quarantined'),repr(routing.get('owner')))
         if session!=self._definition_session:
             self._definitions_cache.clear();self._definition_session=session
             if self.Targets:self.Targets.Reset()
         return session
+    def Observation(self):
+        c=self.controller
+        return c.ext.RotoPythonExt._layout_manager().owner_observation() if c else nullcontext()
+
     def ActivationReason(self):
         c=self.controller
         if not c:return 'Choose a controller'
@@ -222,14 +236,19 @@ class TDControllerAdapter:
         if reason:raise ValueError(reason)
         c=self.controller
         if not self.Exists(key):raise ValueError('Context was removed')
-        return c.SelectPlugin(*key)
+        metadata=next((r for r in c.GetLayouts() if r['id']==key[0]),{})
+        if metadata.get('category')=='COMP' and (metadata.get('owner') or {}).get('state')!='bound':raise ValueError('Layout owner unavailable')
+        result=c.SelectPlugin(*key)
+        routing=c.GetLayoutContext()
+        if tuple(routing.get('key') or ())!=tuple(key) or routing.get('quarantined'):raise ValueError('Controller did not recover requested routing')
+        return result
 
     def Status(self):
         c=self.controller
         if not c:return dict(Connected=False,Learning=False,Label='Choose controller')
         state=c.State
         routing=c.GetLayoutContext();follow=c.GetCompContext()
-        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False),ActivationReason=self.ActivationReason())
+        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False),ActivationReason=self.ActivationReason(),Legacy=routing.get('legacy',False),Quarantined=routing.get('quarantined',False),RoutingEpoch=getattr(c.ext.RotoPythonExt._follow,'routing_epoch',None),ContextOwners={r['id']:dict(category=r.get('category','LEGACY'),owner=deepcopy(r.get('owner'))) for r in c.GetLayouts()} if not routing.get('legacy') else {})
     def Exists(self,key):
         c=self.controller
         if not c:return key==EMPTY
@@ -242,29 +261,61 @@ class TDControllerAdapter:
         if not c:return [('unconfigured','Choose controller')]
         if c.GetLayoutContext().get('legacy'):return [('unconfigured','Python registration' if name=='Device' else '—')]
         records=c.GetLayouts() if name=='Layout' else c.GetTracks(key[0]) if name=='Track' else c.GetPlugins(key[0],key[1])
+        if name=='Layout':
+            return [(r['id'],('COMP' if r.get('category')=='COMP' else 'CUSTOM' if r.get('category')=='CUSTOM' else 'Legacy')+' · '+r['name']) for r in records]
         return [(r['id'],r['name']) for r in records]
+    def Registry(self):return self.controller.GetLayoutRegistry()
+
+    def Rename(self,key,name,intent,fingerprint,validate):
+        # All reads, preflight and mutation execute synchronously in this TD call.
+        c=self.controller;snapshot=c.GetLayoutRegistry()
+        if fingerprint(snapshot,key)!=intent['fingerprint']:raise ValueError('Rename definition changed; reopen draft')
+        status=self.Status()
+        validate(status)
+        reason=self.ActivationReason()
+        if reason:raise ValueError(reason)
+        if status.get('Quarantined'):raise ValueError('Recover the Layout before Rename')
+        layout=next(r for r in snapshot['records'] if r['id']==key[0])
+        if layout.get('category')=='COMP' and (layout.get('owner') or {}).get('state')!='bound':raise ValueError('Layout owner unavailable')
+        track=next(t for t in layout['tracks'] if t['id']==key[1]);device=next(p for p in track['plugins'] if p['id']==key[2])
+        kind=intent['kind']
+        if kind not in ('Layout','Track','Device'):raise ValueError('Invalid Rename scope')
+        if kind=='Device' and device.get('focus_comp') and device.get('name_mode')!='manual' and not intent['manual']:
+            raise ValueError('Linked Device naming requires explicit manual naming opt-out')
+        c.CheckLayoutRevision(snapshot['revision'])
+        if kind=='Layout':return c.RenameLayout(key[0],name)
+        if kind=='Track':return c.RenameTrack(key[0],key[1],name)
+        return c.RenamePlugin(*key,name)
+
+    def Library(self,key):
+        c=self.controller;rows=deepcopy(c.GetPluginTargets(*key))
+        active=key==self.ActiveContext()
+        for row in rows:
+            locator=row.get('comp','')
+            row['comp']=normpath(c.path+'/'+locator) if locator and not locator.startswith('/') else locator
+            target=c.op(locator) if locator else None
+            par=getattr(target.par,row.get('parameter',''),None) if target and target.valid else None
+            row['parameter_style']=par.style if par is not None else ''
+            row.update(library_key=tuple(key)+(row['id'],),mapped=False,connected=False,plugin=False,projection='library' if active else 'last-saved preview')
+            if row.get('mode')=='pulse':row['value']=None
+        return rows
+
     def Read(self,key):
         c=self.controller
         if not c:return []
-        if key==self.ActiveContext():return self._definitions(c.GetControlCatalog(),key)
-        manager=c.ext.RotoPythonExt._layout_manager();record=manager.plugin(*key)
-        specs=[];missing=[]
-        # Resolve independently: a broken inactive target must not stop all views.
-        for target in record['targets']:
-            try:
-                resolved,unavailable=manager.resolve(dict(record,targets=[target]))
-                specs.extend(resolved);missing.extend(dict(t,error='Target unavailable') for t in unavailable)
-            except (ValueError,AttributeError) as error:missing.append(dict(target,error=str(error)))
-        rows=[]
-        for spec in specs:
-            par=spec['parameter'];value=0 if spec['mode']=='pulse' else c.op('binding').module.parameter_value(par)
-            menu_names=list(par.menuNames) if par.style=='Menu' else []
-            menu_labels=list(par.menuLabels) if par.style=='Menu' else []
-            saved=next((t for t in record['targets'] if t['id']==spec['id']),{})
-            pending=spec['id'] in record.get('state',{}).get('needs_relearn',()) or bool(menu_names and (menu_names!=saved.get('menu_names',[]) or menu_labels!=saved.get('menu_labels',[])))
-            rows.append(dict(spec,parameter=par.name,comp=par.owner.path,value=value,valid=par.owner.valid,binding_type='parameter',parameter_style=par.style,mapped=False,connected=False,plugin=False,requires_relearn=pending,value_label=(menu_labels[int(value)] if 0<=int(value)<len(menu_labels) else '') if menu_labels else '',menu_names=menu_names,menu_labels=menu_labels))
-        rows.extend(dict(t,comp=(c.op(t['comp']).path if c.op(t['comp']) else t['comp']),value=None,valid=False) for t in missing)
+        manager=c.ext.RotoPythonExt._layout_manager()
+        if key==self.ActiveContext() and not c.GetLayoutContext().get('quarantined'):
+            # Current bindings are complete snapshots; catalog can include history.
+            rows=c.GetControlStates()
+        else:
+            record=manager.plugin(*key);library={r['id']:r for r in self.Library(key)}
+            rows=[]
+            for target in record['targets']:
+                row=dict(library.get(target['id'],target),binding_type='parameter',mapped=False,connected=False,plugin=False,projection='last-saved preview')
+                if key==self.ActiveContext() and manager.quarantined:row.update(value=None,valid=False,error='Activate the repaired Layout first')
+                rows.append(row)
         return self._definitions(rows,key)
+
     def RefreshDefinitions(self,context=None,slot=None):
         if context is None:self._definitions_cache.clear();return
         cached=self._definitions_cache.get(tuple(context))
@@ -329,6 +380,7 @@ class TDControllerAdapter:
     def _definition_guard(self,key,info):
         c=self.controller
         if key!=self.ActiveContext():raise ValueError('Browse only: activate this Device first')
+        if c.GetLayoutContext().get('quarantined'):raise ValueError('Activate the repaired Layout first')
         if c.State['Learning']:raise ValueError('Exit LEARN before editing native definition')
         if c.State['Touched'] or c.GetControlState(info['id'])['touched']:raise ValueError('Release controls before editing native definition')
     def DefinitionDraft(self,key,info):
@@ -538,6 +590,9 @@ class InspectorModel(ControllerCatalog):
     def ControllerData(self):
         c=self.adapter.controller
         return c.op('inspector/targets') if c else None
+    def ControllerMetadata(self):
+        c=self.adapter.controller
+        return c.op('inspector/context_state') if c else None
     def WatchOwners(self):
         c=self.adapter.controller
         if not c:return []
@@ -563,6 +618,8 @@ class InspectorModel(ControllerCatalog):
     def Unsubscribe(self,*args):super().Unsubscribe(*args);self.RefreshWatchers()
     def RefreshWatchers(self):
         watcher=self.ownerComp.op('controller_parameters')
+        metadata=self.ownerComp.op('controller_registry')
+        if metadata:metadata.par.active=bool(self.adapter.controller)
         catalog=self.ownerComp.op('controller_catalog')
         if catalog:catalog.par.active=bool(self.adapter.controller)
         if watcher:

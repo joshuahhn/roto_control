@@ -52,6 +52,7 @@ class FreeLearner:
     def parameter_in_scope(self, parameter):
         """A linked Device learns only its own COMP/public descendants."""
         manager = getattr(self.extension,'_layouts',None)
+        if manager is not None and (not manager.owner_ready() or manager.quarantined and not manager.legacy):return False
         follower = getattr(self.extension,'_follow',None)
         if manager is None or manager.legacy or follower is None:
             return True

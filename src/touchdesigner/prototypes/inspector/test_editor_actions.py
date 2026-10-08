@@ -48,7 +48,28 @@ class EditorActionsTests(TestCase):
         self.view.Action('clear');self.adapter.learning=True
         self.assertTrue(self.view.Action('ping'));self.assertIsNone(self.view._clear_pending)
         self.assertEqual(self.adapter.clears,[]);self.assertEqual(len(self.adapter.pings),1)
-        self.assertIn('awaiting hardware ACK',self.view._error)
+        self.assertIn('mapping already acknowledged',self.view._error)
+
+    def test_ping_already_acknowledged_does_not_claim_a_new_ack(self):
+        self.adapter.learning=True
+        self.assertTrue(self.view.Action('ping'))
+        self.assertEqual(self.view._error,'Ping sent · mapping already acknowledged')
+        self.assertEqual(len(self.adapter.pings),1)
+
+    def test_ping_unacknowledged_mapping_waits_for_hardware(self):
+        self.adapter.records[KEY][0].update(mapped=False,requires_relearn=True)
+        self.model.Sync();self.view._token=self.model.GetToken(KEY,1)
+        self.adapter.learning=True
+        self.assertTrue(self.view.Action('ping'))
+        self.assertEqual(self.view._error,'Ping sent · awaiting hardware ACK')
+
+    def test_ping_refreshes_cached_ack_before_describing_readiness(self):
+        self.assertTrue(self.model.Info(KEY,1)['mapped'])
+        self.adapter.records[KEY][0].update(mapped=False,requires_relearn=True)
+        self.adapter.learning=True
+        # No manual Sync: the validated Ping command must refresh this target.
+        self.assertTrue(self.view.Action('ping'))
+        self.assertEqual(self.view._error,'Ping sent · awaiting hardware ACK')
 
     def test_ping_without_learn_explains_required_step_and_does_not_offer(self):
         self.assertFalse(self.view.Action('ping'))

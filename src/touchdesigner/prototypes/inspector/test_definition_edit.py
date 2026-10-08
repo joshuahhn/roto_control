@@ -59,7 +59,7 @@ from test_live_model import KEY
 class WriteAdapter(DefinitionAdapter):
     def __init__(self):
         super().__init__();self.par=par()
-        self.controller=SimpleNamespace(State=dict(Learning=False,Touched=False),
+        self.controller=SimpleNamespace(GetLayoutContext=lambda:dict(quarantined=False),State=dict(Learning=False,Touched=False),
             GetControlState=lambda id:dict(touched=False))
     def DefinitionDraft(self,key,info):
         TDControllerAdapter._definition_guard(self,key,info)

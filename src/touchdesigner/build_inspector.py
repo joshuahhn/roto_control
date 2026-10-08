@@ -15,6 +15,8 @@ def build(controller, source_dir):
     config = inspector.copy(op.TDTox.op('lister').par.Configcomp.eval(),name='listerConfig')
     config.viewer = True
     config.nodeX,config.nodeY = 0,-400
+    metadata=inspector.create(textDAT,'context_state');metadata.par.language='json';metadata.viewer=True
+    metadata.nodeX,metadata.nodeY=1050,-130
     table = inspector.create(tableDAT,'targets');table.viewer=True
     table.nodeX,table.nodeY,table.nodeWidth,table.nodeHeight=350,-170,280,130
     module = inspector.create(textDAT,'inspector_data');module.viewer=True

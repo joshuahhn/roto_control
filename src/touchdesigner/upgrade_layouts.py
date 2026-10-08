@@ -39,6 +39,8 @@ def upgrade(controller,source_dir):
         box.nodeX,box.nodeY=515,-815;box.nodeWidth,box.nodeHeight=355,225
     for name in ('protocol','collection_protocol','binding','free_learn','RotoPythonExt','setup','lifecycle_callbacks'):
         controller.op(name).text=(source/'code/py/roto_python'/f'{name}.py').read_text(encoding='utf-8')
+    metadata=controller.op('inspector/context_state') or controller.op('inspector').create(textDAT,'context_state')
+    metadata.par.language='json';metadata.viewer=True;metadata.nodeX,metadata.nodeY=1050,-130
     controller.op('lifecycle_callbacks').par.projectpresave=True
     controller.op('inspector/inspector_data').text=(source/'code/py/roto_python/inspector/inspector_data.py').read_text(encoding='utf-8')
     controller.op('parameter_callbacks').par.pars='Value Trackname Pluginname Layout Track Newtrack Deletetrack Connect Disconnect Offerparameter Applybinding Newlayout Renamelayout Deletelayout'

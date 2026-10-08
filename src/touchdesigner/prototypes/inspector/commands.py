@@ -1,22 +1,61 @@
 """Shared capability/command boundary; importing this module performs no writes."""
 from types import MappingProxyType
+from copy import deepcopy
 from parity import registration_fingerprint
 
 FIELDS=('Label','Destination','Minimum','Maximum','Value')
+
+
+def semantic_fingerprint(snapshot,context):
+    """Registry definition identity, excluding Value/ACK/capture observations."""
+    layout=next((r for r in snapshot['records'] if r['id']==context[0]),None)
+    if layout is None:raise ValueError('Context was removed')
+    track=next((t for t in layout['tracks'] if t['id']==context[1]),None)
+    if track is None or not any(p['id']==context[2] for p in track['plugins']):raise ValueError('Context was removed')
+    observations={'revision','value','normalized','last_mapped','mapped','connected','plugin','touched','valid','error','value_source','value_label','active_track','active_plugin','active'}
+    state_definitions={'page_targets','parameter_assignments','assignment_device_id','control_overrides','removed_controls'}
+    count=0
+    def freeze(value):
+        nonlocal count
+        count+=1
+        if count>262144:raise ValueError('Rename definition exceeds bounded scan limit')
+        if isinstance(value,dict):
+            return tuple(sorted((k,freeze({n:v for n,v in v.items() if n in state_definitions} if k=='state' and isinstance(v,dict) else v)) for k,v in value.items() if k not in observations))
+        if isinstance(value,(list,tuple)):return tuple(freeze(v) for v in value)
+        return value
+    return freeze(layout)
+
+def owner_reason(status,context):
+    metadata=status.get('ContextOwners',{}).get(context[0],{})
+    owner=metadata.get('owner') or {}
+    if metadata.get('category')=='COMP' and owner.get('state')!='bound':
+        return 'Layout owner '+str(owner.get('state') or 'unavailable')
+    return ''
+
+def recovery_available(status,context):
+    metadata=status.get('ContextOwners',{}).get(context[0],{})
+    return bool(not status.get('Legacy') and status.get('Quarantined') and tuple(status.get('Active') or ())==tuple(context) and metadata.get('category')=='COMP' and (metadata.get('owner') or {}).get('state')=='bound')
+
+def ownership_stamp(status,context):
+    metadata=status.get('ContextOwners',{}).get(context[0],{})
+    owner=metadata.get('owner') or {}
+    return (status.get('RoutingEpoch'),status.get('Legacy'),status.get('Quarantined'),metadata.get('category'),tuple(owner.get(k) for k in ('id','path','state','entry_plugin_id')))
 
 class CommandService:
     def __init__(self,model):self.model=model
 
     def ActivationToken(self,context):
-        return (self.model.Generation,tuple(context),tuple(self.model.Status.get('Active') or self.model.ActiveContext()))
+        return (self.model.Generation,tuple(context),tuple(self.model.Status.get('Active') or self.model.ActiveContext()),ownership_stamp(self.model.Status,context))
 
     def ActivationCapability(self,context):
         m=self.model
         reason=('Choose a controller with Device activation support' if not hasattr(m.adapter,'Activate') else
                 'Context was removed' if not m.HasContext(context) else
-                'Already the active Device' if self._active(context) else
-                m.Status.get('ActivationReason',''))
-        return MappingProxyType(dict(enabled=not reason,reason=reason))
+                owner_reason(m.Status,context) or
+                ('Already the active Device' if self._active(context) and not recovery_available(m.Status,context) else
+                 'Layout recovery unavailable' if self._active(context) and m.Status.get('Quarantined') and not recovery_available(m.Status,context) else
+                 m.Status.get('ActivationReason','')))
+        return MappingProxyType(dict(enabled=not reason,reason=reason,recover=recovery_available(m.Status,context)))
 
     def Activate(self,context,token):
         m=self.model;m.Sync();context=m._context(context)
@@ -25,13 +64,33 @@ class CommandService:
         if not capability['enabled']:raise ValueError(capability['reason'])
         try:
             m.adapter.Activate(context)
-            if tuple(m.adapter.ActiveContext())!=context:raise ValueError('Controller did not activate the requested Device')
+            if tuple(m.adapter.ActiveContext())!=context or m.adapter.Status().get('Quarantined'):raise ValueError('Controller did not recover the requested Device')
         finally:m.Sync()
         return True
 
     def _active(self,context):
         active=self.model.Status.get('Active')
         return tuple(context)==tuple(active if active is not None else self.model.ActiveContext())
+
+    def Library(self,context):
+        context=self.model._context(context)
+        return deepcopy(self.model.adapter.Library(context))
+
+    def PrepareRename(self,context,kind,manual=False):
+        m=self.model;m.Sync();context=m._context(context)
+        if kind not in ('Layout','Track','Device'):raise ValueError('Invalid Rename scope')
+        snapshot=m.adapter.Registry()
+        m.Sync()
+        return dict(context=context,kind=kind,manual=bool(manual),fingerprint=semantic_fingerprint(snapshot,context),token=self.ActivationToken(context),session=m.adapter.Session())
+
+    def Rename(self,context,name,intent):
+        m=self.model;m.Sync();context=m._context(context)
+        if intent.get('context')!=context or intent.get('token')!=self.ActivationToken(context):raise ValueError('Rename session or routing changed; reopen draft')
+        def validate(status):
+            token=(m.Generation,context,tuple(status.get('Active') or m.adapter.ActiveContext()),ownership_stamp(status,context))
+            if m.adapter.Session()!=intent['session'] or token!=intent['token']:raise ValueError('Rename session or routing changed; reopen draft')
+        try:return m.adapter.Rename(context,name,intent,semantic_fingerprint,validate)
+        finally:m.Sync()
 
     def Health(self,context,slot):
         info=self.model.Info(context,slot)
@@ -57,7 +116,8 @@ class CommandService:
     def Capabilities(self,context,slot):
         info=self.model.Info(context,slot)
         common=('No mapping at this control' if not info.get('id') else
-                'Browse only: activate this Device first' if not self._active(context) else '')
+                'Browse only: activate this Device first' if not self._active(context) else
+                owner_reason(self.model.Status,context) or ('Activate the repaired Layout first' if self.model.Status.get('Quarantined') else ''))
         invalid=info.get('definition_error') or (info.get('error') or 'Target unavailable' if not info.get('valid') else '')
         blocked='Exit LEARN before editing Value' if self.model.Learn else 'Release the control before editing' if info.get('touched') else ''
         value_reason=common or invalid or ('Pulse targets do not have an editable Value' if info.get('mode')=='pulse' else '') or ('Target unavailable' if not info.get('available') else '') or blocked
@@ -65,9 +125,11 @@ class CommandService:
         clear_reason=common or ('Exit LEARN before Clear' if self.model.Learn else 'Release this control before Clear' if info.get('touched') else '')
         mapping_reason=common or invalid or ('Exit LEARN before configuring mapping' if self.model.Learn else 'Release the control before configuring mapping' if info.get('touched') else '')
         if info.get('binding_type')=='value':mapping_reason=mapping_reason or 'Mapping configuration requires a collection'
-        assign_reason=('Browse only: activate this Device first' if not self._active(context) else
-                       'Release the control before assigning' if info.get('touched') else
-                       'Choose a controller with target assignment support' if not hasattr(self.model.adapter,'Assign') else '')
+        assign_reason=(owner_reason(self.model.Status,context) or
+                       ('Activate the repaired Layout first' if self.model.Status.get('Quarantined') else '') or
+                       ('Browse only: activate this Device first' if not self._active(context) else '') or
+                       ('Release the control before assigning' if info.get('touched') else '') or
+                       ('Choose a controller with target assignment support' if not hasattr(self.model.adapter,'Assign') else ''))
         return MappingProxyType({name:MappingProxyType(dict(enabled=not reason,reason=reason)) for name,reason in [('value',value_reason),('ping',ping_reason),('clear',clear_reason),('mapping',mapping_reason),('assign',assign_reason)]})
 
     def ValueSchema(self,context,slot):
@@ -177,6 +239,7 @@ class CommandService:
         m=self.model;context=m._context(context)
         m.RefreshDefinitions(context);m.Sync()
         if not self._active(context):raise ValueError('Browse only: activate this Device before Clear Device')
+        if m.Status.get('Quarantined') or owner_reason(m.Status,context):raise ValueError('Recover Layout owner before Clear Device')
         if m.Learn:raise ValueError('Exit LEARN before Clear Device')
         info=tuple(m.Info(context,i) for i in range(16))
         if m.Status.get('Touched') or any(r.get('touched') for r in info):raise ValueError('Release all controls before Clear Device')
@@ -210,6 +273,9 @@ class InspectorCommands:
     def ActivationToken(self,*args):return self._service().ActivationToken(*args)
     def ActivationCapability(self,*args):return self._service().ActivationCapability(*args)
     def Activate(self,*args):return self._service().Activate(*args)
+    def Library(self,*args):return self._service().Library(*args)
+    def PrepareRename(self,*args,**kwargs):return self._service().PrepareRename(*args,**kwargs)
+    def Rename(self,*args):return self._service().Rename(*args)
     def Health(self,*args):return self._service().Health(*args)
     def Capabilities(self,*args):return self._service().Capabilities(*args)
     def MappingSchema(self,*args):return self._service().MappingSchema(*args)

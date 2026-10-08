@@ -57,13 +57,17 @@ class InspectorPublicationTests(unittest.TestCase):
         self.inspector.id=8;self.ext._publish_inspector();self.assertEqual(len(self.calls),2)
         self.module.refresh=lambda *args:original(*args)
         self.ext._publish_inspector();self.assertEqual(len(self.calls),3)
-    def test_manual_refresh_forces_render_and_cached_catalog_avoids_eager_live_scan(self):
+    def test_manual_refresh_forces_render_and_getter_returns_fresh_detached_catalog(self):
         self.ext._publish_inspector();self.ext._publish_inspector(force=True);self.assertEqual(len(self.calls),2)
         self.ext._publish_inspector();self.assertEqual(len(self.calls),2)
         catalog=[dict(id='saved')];self.ext.ownerComp.store('control_catalog',catalog)
-        self.ext.GetControlStates=lambda: (_ for _ in ()).throw(AssertionError('eager live scan'))
-        detached=self.ext.GetControlCatalog();detached[0]['id']='changed'
-        self.assertEqual(catalog[0]['id'],'saved')
+        scans=[]
+        self.ext.GetControlStates=lambda:scans.append(True) or [dict(id='saved',value=8,valid=True,mapped=False,value_source='live')]
+        detached=self.ext.GetControlCatalog();self.assertEqual(detached[0]['value'],8)
+        detached[0]['id']='changed';self.assertEqual(catalog[0]['id'],'saved');self.assertEqual(scans,[True])
+        self.ext.GetControlStates=lambda: (_ for _ in ()).throw(AssertionError('publication rescanned states'))
+        self.ext._publish_inspector(force=True,states=[dict(id='saved',value=9,valid=True,mapped=False)])
+        self.assertEqual(self.calls[-1][0]['value'],9)
 
     def test_burst_queues_one_owned_callback_and_projects_latest_authoritative_state(self):
         queued=[]

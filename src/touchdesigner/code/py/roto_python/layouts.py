@@ -4,12 +4,15 @@ Callbacks remain supported by the legacy API, but cannot be converted without a
 reconstruction factory. No target value or callable is persisted as a preset.
 """
 import copy
+import math
 import os
 import uuid
+from contextlib import contextmanager
 from protocol import digest, display_name, text13
 from binding import parameter_value
 
 VERSION=3
+OWNER_KEY='roto_control_owner_id'
 PLUGIN_FIELDS=("group_id","device_id","plugin_name","targets","state")
 FIELDS=('parameter_assignments','assignment_device_id','control_overrides','removed_controls','pending_unmaps','needs_relearn','control_catalog','pending_unmap_identities','page_targets')
 DEFAULTS=([],None,{},[],[],(),[],[],[])
@@ -29,11 +32,16 @@ class Layouts:
         self.selected_track=None
         self.selected_plugin=None
         self.legacy=False
+        self.owner_handles={}
+        self.quarantined=False
+        self._owner_observation_depth=0
         data=self.owner.fetch('layout_registry',None)
+        fresh=data is None
         if data is None:
             record=self.snapshot('custom','Custom')
             data=dict(version=1,active='custom',records=[record])
         data=self.migrate(data)
+        if fresh:data['records'][0]['category']='CUSTOM'
         self.validate(data)
         self.data=copy.deepcopy(data)
         self.owner.store('page_targets',copy.deepcopy(self.plugin()['state'].get('page_targets',[])))
@@ -61,7 +69,10 @@ class Layouts:
                         plugin['name_mode']='comp' if plugin.get('focus_comp') else 'manual'
             data['version']=VERSION
         if data.get('version')==VERSION:
+            data.setdefault('ownership_version',1)
+            data.setdefault('revision',0)
             for layout in data['records']:
+                layout.setdefault('category','LEGACY')
                 for track in layout['tracks']:
                     for plugin in track['plugins']:
                         plugin.setdefault('name_mode','manual')
@@ -81,7 +92,21 @@ class Layouts:
         if not isinstance(records,list) or not records:
             raise ValueError('Layout database needs at least one Layout')
         ids=set();track_ids=set();plugin_ids=set();groups=set();devices=set()
+        owners=set()
+        if data.get('ownership_version',1)!=1:raise ValueError('Unsupported ownership metadata version')
+        if type(data.get('revision',0)) is not int or data.get('revision',0)<0:raise ValueError('Invalid registry revision')
         for layout in records:
+            if not isinstance(layout,dict):raise ValueError('Invalid Layout record')
+            category=layout.get('category','LEGACY')
+            if category not in ('COMP','CUSTOM','LEGACY'):raise ValueError('Invalid Layout category')
+            owner=layout.get('owner')
+            if category=='COMP':
+                if (not isinstance(owner,dict) or not isinstance(owner.get('id'),str) or not owner['id']
+                        or owner['id'] in owners or owner.get('state') not in ('bound','missing','conflict','unregistered')
+                        or not isinstance(owner.get('path'),str) or not owner['path'] or owner['path'].startswith('/')):
+                    raise ValueError('Invalid or duplicate Layout owner')
+                owners.add(owner['id'])
+            elif owner is not None:raise ValueError('Only COMP Layouts have owners')
             if not isinstance(layout,dict) or not isinstance(layout.get('id'),str) or not layout['id'] or layout['id'] in ids:
                 raise ValueError('Invalid or duplicate Layout ID')
             ids.add(layout['id'])
@@ -89,7 +114,7 @@ class Layouts:
             tracks=layout.get('tracks')
             if not isinstance(tracks,list) or not 1<=len(tracks)<=16383:raise ValueError('Layout needs 1..16383 Tracks')
             if layout.get('active_track') not in [t['id'] for t in tracks]:raise ValueError('Active Track is missing')
-            focus_paths=set()
+            focus_paths={}
             for track in tracks:
                 if not isinstance(track.get('id'),str) or not track['id'] or track['id'] in track_ids:raise ValueError('Invalid or duplicate Track ID')
                 track_ids.add(track['id']);display_name(track['name'])
@@ -103,9 +128,15 @@ class Layouts:
                         if (not isinstance(link,dict) or link.get('state') not in ('bound','missing')
                                 or not isinstance(link.get('path'),str) or not link['path'] or link['path'].startswith('/')):
                             raise ValueError('Invalid Focus COMP link')
+                        qualified=category=='COMP' and link.get('owner_id')==owner['id']
+                        if link.get('owner_id') is not None and not qualified:raise ValueError('Invalid Focus owner identity')
+                        if qualified and link['path']!=owner['path']:raise ValueError('Owner Focus path differs from owner locator')
                         if link['state']=='bound':
-                            if link['path'] in focus_paths:raise ValueError('Duplicate Focus COMP link in Layout')
-                            focus_paths.add(link['path'])
+                            # Qualified same-owner variants are atomic independent configs.
+                            # Unqualified Focus remains unique; it cannot infer ownership.
+                            if link['path'] in focus_paths and not (qualified and focus_paths[link['path']]):
+                                raise ValueError('Duplicate Focus COMP link in Layout')
+                            focus_paths[link['path']]=qualified
                     if not isinstance(record.get('id'),str) or not record['id'] or record['id'] in plugin_ids:raise ValueError('Invalid or duplicate Plugin ID')
                     plugin_ids.add(record['id'])
                     for field,seen in (('group_id',groups),('device_id',devices)):
@@ -118,11 +149,230 @@ class Layouts:
                         key=(target['kind'],target['slot'])
                         if key[0] not in ('knob','button') or type(key[1]) is not int or not 1<=key[1]<=8 or key in slots or target['id'] in target_ids:raise ValueError('Invalid or duplicate Plugin target slot/ID')
                         slots.add(key);target_ids.add(target['id'])
+            if category=='COMP' and owner.get('entry_plugin_id') not in [p['id'] for t in tracks for p in t['plugins']]:
+                raise ValueError('Owner Device is missing')
         if data.get('active') not in ids:raise ValueError('Active Layout is missing')
 
     def save(self):
         self.validate(self.data)
-        if self.owner.fetch('layout_registry',None)!=self.data:self.owner.store('layout_registry',copy.deepcopy(self.data))
+        stored=self.owner.fetch('layout_registry',None)
+        left=copy.deepcopy(stored);right=copy.deepcopy(self.data)
+        if isinstance(left,dict):left.pop('revision',None)
+        right.pop('revision',None)
+        if left!=right:
+            self.data['revision']=(stored or {}).get('revision',0)+1
+            self.owner.store('layout_registry',copy.deepcopy(self.data))
+        elif stored is not None:self.data['revision']=stored.get('revision',0)
+
+    def registry_snapshot(self):
+        """Detached source for planning. Flush definitions without writing target values."""
+        self.refresh_owners(force=True);self.capture(force=True)
+        return copy.deepcopy(self.data)
+
+    def check_revision(self, revision):
+        """Preflight for a future serialized migration transaction, not a commit API."""
+        current=self.registry_snapshot()['revision']
+        if type(revision) is not int or revision!=current:raise ValueError('Layout registry revision changed; rebuild plan')
+        return current
+
+    def owner_candidates(self, extra=()):
+        """Identity inventory, including untagged COMPs; names never identify owners."""
+        follower=getattr(self.ext,'_follow',None)
+        candidates=list(extra)+list(self.owner_handles.values())
+        if follower is not None:candidates.extend(follower.owner_candidates())
+        for layout in self.data['records']:
+            if layout.get('owner'):candidates.append(self.owner.op(layout['owner']['path']))
+        return list({c.path:c for c in candidates if c is not None and getattr(c,'valid',False)
+                     and getattr(c,'isCOMP',False)}.values())
+
+    @staticmethod
+    def owner_token(comp):
+        """A COMP's local storage token; OP.fetch defaults to parent inheritance."""
+        fetch=getattr(comp,'fetch',None)
+        return fetch(OWNER_KEY,None,search=False) if callable(fetch) else None
+
+    @contextmanager
+    def owner_observation(self):
+        """One inventory for a synchronous read/Tick batch, never a timed cache."""
+        if not self._owner_observation_depth:self.refresh_owners()
+        self._owner_observation_depth+=1
+        try:yield
+        finally:self._owner_observation_depth-=1
+
+    def refresh_owners(self, extra=(), force=False):
+        if self._owner_observation_depth and not (extra or force):return
+        if not any(r.get('owner') for r in self.data['records']):return
+        inventory={}
+        for comp in self.owner_candidates(extra):
+            token=self.owner_token(comp)
+            if isinstance(token,str) and token:inventory.setdefault(token,[]).append(comp)
+        changed=False
+        follower=getattr(self.ext,'_follow',None)
+        for layout in self.data['records']:
+            owner=layout.get('owner')
+            if not owner:continue
+            matches=inventory.get(owner['id'],[])
+            state=owner['state']
+            if state=='unregistered':continue
+            # A clone conflict is latched, even after one copy disappears.
+            new_state='conflict' if len(matches)>1 or state=='conflict' else 'bound' if matches else 'missing'
+            if new_state!=state:
+                owner['state']=new_state;changed=True
+                if layout['id']==self.data['active'] and not self.legacy:
+                    if new_state!='bound':self.quarantined=True
+                    self.confirmed=False
+                    for target in self.ext._host.controls.values():target.mapped=False
+                    if follower:
+                        follower.routing_epoch+=1;follower.pending=None;follower.clear_controls()
+                        self.ext._discard_context_output()
+            if new_state!='bound':
+                self.owner_handles.pop(owner['id'],None)
+                continue
+            comp=matches[0];self.owner_handles[owner['id']]=comp
+            path=os.path.relpath(comp.path,self.owner.path)
+            if path!=owner['path']:
+                if follower:follower._rebase_targets(None,owner['path'],path)
+                owner['path']=path;changed=True
+            # Owner entry is a Focus link too, but Focus is not ownership.
+            for plugin in (p for t in layout['tracks'] for p in t['plugins']):
+                if plugin['id']!=owner['entry_plugin_id'] and (plugin.get('focus_comp') or {}).get('owner_id')!=owner['id']:continue
+                link=dict(path=path,state='bound',owner_id=owner['id'])
+                if plugin.get('focus_comp')!=link:plugin['focus_comp']=link;changed=True
+                if follower:follower.handles[plugin['id']]=comp
+        if changed:self.save()
+
+    def owner_ready(self, layout_id=None, required=False):
+        if self.legacy and layout_id is None:return True  # separate callback registration routing
+        # Mutations/writes always revalidate inventory. Nested getters borrow the
+        # current synchronous observation but still check their live handle/token.
+        if required or not self._owner_observation_depth:self.refresh_owners(force=required)
+        owner=self.layout(layout_id).get('owner')
+        if owner and owner['state']=='bound':
+            comp=self.owner_handles.get(owner['id'])
+            if (comp is None or not getattr(comp,'valid',False) or self.owner_token(comp)!=owner['id']
+                    or os.path.relpath(comp.path,self.owner.path)!=owner['path']):
+                self.refresh_owners(force=True)
+        ready=owner is None or owner['state']=='bound'
+        if required and not ready:raise ValueError('Layout owner '+owner['state']+'; explicitly repair ownership before Activate')
+        return ready
+
+    def register_comp(self, comp, new_identity=False):
+        """Enroll without selecting. Clone re-keying is explicit and transactional."""
+        follower=getattr(self.ext,'_follow',None)
+        if follower is None or not follower.eligible(comp):raise ValueError('Choose a valid external COMP')
+        if not callable(getattr(comp,'fetch',None)) or not callable(getattr(comp,'store',None)):
+            raise ValueError('COMP must support persistent storage')
+        self.owner_guard();self.refresh_owners((comp,))
+        old_token=self.owner_token(comp)
+        if old_token is not None and (not isinstance(old_token,str) or not old_token):
+            raise ValueError('Invalid durable owner token; explicit repair is required')
+        existing=next((r for r in self.data['records'] if old_token and r.get('owner',{}).get('id')==old_token),None)
+        if existing and not new_identity:
+            state=existing['owner']['state']
+            if state=='unregistered':raise ValueError('Owner unregistered; use RelinkLayoutOwner to resume')
+            if state!='bound':raise ValueError('Owner '+state+'; use explicit relink or clone identity')
+            return existing['id']
+        if new_identity and existing and existing['owner']['state']!='conflict':
+            raise ValueError('Cannot re-key an existing owner; clone conflict must be resolved explicitly')
+        token='owner.'+uuid.uuid4().hex if new_identity or not old_token else old_token
+        matches=[c for c in self.owner_candidates((comp,)) if self.owner_token(c)==token]
+        if len(matches)>1:raise ValueError('Duplicate owner token; explicitly register clone with new_identity=True')
+        self.capture(force=True)
+        previous=copy.deepcopy(self.data);handles=dict(self.owner_handles);focus=dict(follower.handles)
+        name=getattr(comp,'name',comp.path.rsplit('/',1)[-1])
+        track=self.empty_track('EFFECT');plugin=track['plugins'][0]
+        plugin.update(plugin_name=''.join(c if 32<=ord(c)<=126 else '?' for c in name)[:12] or 'COMP',
+                      name_mode='comp',comp_name=name,
+                      focus_comp=dict(path=os.path.relpath(comp.path,self.owner.path),state='bound',owner_id=token))
+        layout=dict(id=uuid.uuid4().hex,name=name,category='COMP',active_track=track['id'],tracks=[track],
+                    owner=dict(id=token,path=plugin['focus_comp']['path'],state='bound',entry_plugin_id=plugin['id']))
+        try:
+            comp.store(OWNER_KEY,token);self.owner_handles[token]=comp;follower.handles[plugin['id']]=comp
+            self.data['records'].append(layout);self.save();self.menu()
+        except Exception as original:
+            self._owner_rollback(previous,handles,focus,[(comp,old_token)],{},original)
+            raise
+        return layout['id']
+
+    def _owner_rollback(self, previous, handles, focus, tokens, stores, original):
+        follower=self.ext._follow
+        try:
+            for comp,token in tokens:comp.store(OWNER_KEY,token)
+            self.data=previous;self.owner_handles=handles;follower.handles=focus
+            for key,value in stores.items():self.owner.store(key,value)
+            self.save();self.menu()
+        except Exception as rollback:
+            follower.pending=None;follower.paused=True;follower.fence()
+            follower.error=str(original)+'; rollback failed: '+str(rollback);follower.status='paused'
+            raise ActivationRollbackError(follower.error) from original
+
+    def relink_owner(self, layout_id, comp):
+        """Explicit recovery keeps all mapping/wire IDs and rebinds saved destinations."""
+        layout=self.layout(layout_id);owner=layout.get('owner');follower=getattr(self.ext,'_follow',None)
+        if owner is None:raise ValueError('Layout has no owner')
+        self.owner_guard()
+        if layout_id==self.data['active']:raise ValueError('Activate another Layout before relinking this owner')
+        if follower is None or not follower.eligible(comp):raise ValueError('Choose a valid external COMP')
+        if not callable(getattr(comp,'store',None)) or not callable(getattr(comp,'fetch',None)):
+            raise ValueError('COMP must support persistent storage')
+        self.refresh_owners((comp,))
+        token=self.owner_token(comp)
+        if token and token!=owner['id']:raise ValueError('COMP already has another durable identity')
+        if any(c is not comp and self.owner_token(c)==owner['id']
+               for c in self.owner_candidates((comp,))):raise ValueError('Owner identity still exists on another COMP')
+        handles=dict(self.owner_handles);focus=dict(follower.handles)
+        # Capture the routing configuration before rebasing its external references.
+        self.capture(force=True);previous=copy.deepcopy(self.data)
+        stores={key:copy.deepcopy(self.owner.fetch(key,[])) for key in ('parameter_assignments','page_targets','control_catalog')}
+        try:
+            comp.store(OWNER_KEY,owner['id'])
+            path=os.path.relpath(comp.path,self.owner.path)
+            follower._rebase_targets(None,owner['path'],path,layout_id=layout_id)
+            owner.update(path=path,state='bound');self.owner_handles[owner['id']]=comp
+            self.refresh_owners((comp,));self.save();self.menu();follower.invalidate()
+        except Exception as original:
+            self._owner_rollback(previous,handles,focus,[(comp,token)],stores,original)
+            raise
+        return layout_id
+
+    def unregister_owner(self, layout_id):
+        layout=self.layout(layout_id);owner=layout.get('owner')
+        if owner is None:raise ValueError('Layout has no owner')
+        self.owner_guard();self.capture(force=True)
+        if layout_id==self.data['active']:raise ValueError('Activate another Layout before unregistering this owner')
+        previous=copy.deepcopy(self.data);handles=dict(self.owner_handles);focus=dict(self.ext._follow.handles)
+        try:
+            owner['state']='unregistered';self.owner_handles.pop(owner['id'],None)
+            self.save();self.menu()
+        except Exception as original:
+            self._owner_rollback(previous,handles,focus,[],{},original)
+            raise
+        return layout_id
+
+    def plugin_targets(self, layout_id=None, track_id=None, plugin_id=None):
+        """Read live values for an inactive library; never trust saved catalog values."""
+        layout=self.layout(layout_id);track=self.track(layout['id'],track_id)
+        plugin=self.plugin(layout['id'],track['id'],plugin_id)
+        ready=self.owner_ready(layout['id'])
+        library={t['id']:copy.deepcopy(t) for t in plugin['state'].get('page_targets',[])}
+        targets=plugin['targets']
+        if (layout['id'],track['id'],plugin['id'])==self.context().get('key'):
+            library.update({t['id']:copy.deepcopy(t) for t in self.owner.fetch('page_targets',[])})
+            targets=self.snapshot(layout['id'],layout['name'])['targets']
+        library.update({t['id']:copy.deepcopy(t) for t in targets})
+        result=[]
+        for target in library.values():
+            target.update(value=None,valid=False,value_source='unavailable')
+            try:
+                comp=self.owner.op(target['comp']) if ready else None
+                par=getattr(comp.par,target['parameter'],None) if comp is not None and getattr(comp,'valid',False) else None
+                if par is not None:
+                    value=None if target['mode']=='pulse' else parameter_value(par)
+                    if value is not None and not math.isfinite(value):raise ValueError('Target value is not finite')
+                    target.update(value=value,valid=True,value_source='pulse' if target['mode']=='pulse' else 'live')
+            except (ValueError,AttributeError,RuntimeError,TypeError):pass
+            result.append(target)
+        return result
 
     def layout(self,id=None):
         id=self.data['active'] if id is None else id
@@ -152,12 +402,14 @@ class Layouts:
     def context(self):
         if self.legacy:return dict(legacy=True,label='Python registration',key=None)
         layout=self.layout();track=self.track();plugin=self.plugin()
-        return dict(legacy=False,layout_id=layout['id'],track_id=track['id'],plugin_id=plugin['id'],
+        return dict(legacy=False,category=layout.get('category','LEGACY'),owner=copy.deepcopy(layout.get('owner')),
+                    revision=self.data['revision'],quarantined=self.quarantined,
+                    layout_id=layout['id'],track_id=track['id'],plugin_id=plugin['id'],
                     selected_track_id=self.selected_track or track['id'],locked=self.locked,
                     selected_plugin_id=self.selected_plugin or plugin['id'],first_plugin=self.first_plugin,
                     plugin_count=len(track['plugins']),
                     key=(layout['id'],track['id'],plugin['id']),
-                    label=layout['name']+' / '+track['name']+' / '+plugin['plugin_name'])
+                    label=layout.get('category','LEGACY')+' / '+layout['name']+' / '+track['name']+' / '+plugin['plugin_name'])
 
     def snapshot(self,id,name):
         ext=self.ext;targets=[]
@@ -180,8 +432,11 @@ class Layouts:
             target['menu_labels']=list(binding.menu_labels) if binding is not None else []
             if not getattr(parameter.owner,'valid',True):
                 previous=next((t for t in old['targets'] if t['id']==target['id']),None) if old else None
+                if previous is None:
+                    previous=next((t for t in self.owner.fetch('parameter_assignments',[]) if t['id']==target['id']),None)
                 if previous is None:raise ValueError('Unavailable target needs a saved Layout record')
-                targets.append(copy.deepcopy(previous));continue
+                target.update(comp=previous['comp'],parameter=previous['parameter'])
+                targets.append(target);continue
             target.update(comp=os.path.relpath(parameter.owner.path,self.owner.path),parameter=parameter.name)
             targets.append(target)
         old=self.record(id) if hasattr(self,'data') and any(r['id']==id for r in self.data['records']) else None
@@ -214,7 +469,9 @@ class Layouts:
         for name,records,active in (('Layout',self.data['records'],self.data['active']),('Track',self.layout()['tracks'],self.layout()['active_track'])):
             par=getattr(self.owner.par,name,None)
             if par is not None:
-                par.menuNames=[r['id'] for r in records];par.menuLabels=[r['name'] for r in records];par.val=active
+                par.menuNames=[r['id'] for r in records]
+                par.menuLabels=[r.get('category','LEGACY')+' / '+r['name'] for r in records] if name=='Layout' else [r['name'] for r in records]
+                par.val=active
         par=getattr(self.owner.par,'Plugin',None)
         if par is not None:
             par.menuNames=[p['id'] for p in self.track()['plugins']]
@@ -269,7 +526,19 @@ class Layouts:
         if self.locked and not hardware:raise ValueError('Unlock hardware before switching Layout')
         if not self.legacy:self.snapshot(self.record()['id'],self.record()['name'])  # callback preflight
 
-    def resolve(self,record):
+    def owner_guard(self):
+        self.guard()
+        follower=getattr(self.ext,'_follow',None);host=self.ext._host
+        if self.legacy:raise ValueError('Owner Layouts require Parameter mapping')
+        if follower and (follower.paused or follower.gated or follower.pending or follower.backlog):
+            raise ValueError('Wait for routing recovery before changing Layout ownership')
+        if getattr(self.ext,'_process',None) is not None and not (host.connected and host.plugin):
+            raise ValueError('Wait for MIDI connection before changing Layout ownership')
+
+    def resolve(self,record,quarantine=False):
+        if not self.owner_ready(record.get('id')):
+            if quarantine:return [],copy.deepcopy(record['targets'])
+            self.owner_ready(record.get('id'),required=True)
         specs=[];unavailable=[]
         for target in record['targets']:
             comp=self.owner.op(target['comp']);par=getattr(comp.par,target['parameter'],None) if comp is not None else None
@@ -286,8 +555,8 @@ class Layouts:
         self.owner.op('controls').module.Controls(specs,allow_empty=True)
         return specs,unavailable
 
-    def install(self,record,hardware=False):
-        specs,unavailable=self.resolve(record)  # all resolvable targets validate before mutation
+    def install(self,record,hardware=False,quarantine=False):
+        specs,unavailable=self.resolve(record,quarantine)  # preflight before mutation
         ext=self.ext;host=ext._host;session=(host.connected,host.plugin,host.learning)
         self.mutating=True
         try:
@@ -341,6 +610,7 @@ class Layouts:
             ext._host.last_event=self.context()['label']+': awaiting per-control recall' if session[0] else self.context()['label']+': disconnected'
             ext._last_error=''
             ext._layout_ready=True
+            self.quarantined=quarantine
         finally:
             self.mutating=False
 
@@ -362,8 +632,9 @@ class Layouts:
 
     def _select(self,layout_id,track_id,hardware=False,plugin_id=None):
         follower = getattr(self.ext, '_follow', None)
+        self.owner_ready(layout_id,required=True)
         plugin_id=self.plugin(layout_id,track_id,plugin_id)['id']
-        if (layout_id,track_id,plugin_id)==self.context().get('key') and not self.legacy:
+        if (layout_id,track_id,plugin_id)==self.context().get('key') and not self.legacy and not self.quarantined:
             if follower is not None and not follower.committing:
                 follower.before_manual(layout_id,track_id,plugin_id);follower.after_manual()
             if not self.locked:self.selected_track=track_id
@@ -372,6 +643,7 @@ class Layouts:
         destination=self.record(layout_id,track_id,plugin_id);self.resolve(destination);self.capture(force=True)
         if follower is not None:follower.before_manual(layout_id,track_id,plugin_id)
         previous=copy.deepcopy(self.data);old_selected=self.selected_track;old_page=self.first_track
+        old_quarantine=self.quarantined
         old_plugin=self.selected_plugin;old_plugin_page=self.first_plugin
         session=(self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning)
         self.legacy=False;self.owner.store('layout_registry_suspended',False)
@@ -386,7 +658,7 @@ class Layouts:
             self.data=previous;self.selected_track=old_selected;self.first_track=old_page
             self.selected_plugin=old_plugin;self.first_plugin=old_plugin_page
             self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning=session
-            try:self.install(self.record())
+            try:self.install(self.record(),quarantine=old_quarantine)
             except Exception as rollback:
                 if isinstance(rollback,OSError):raise
                 if follower is not None:
@@ -405,7 +677,7 @@ class Layouts:
         self.selected_plugin=self.plugin()['id']
         self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
         self.first_plugin=(self.track()['plugins'].index(self.plugin())//8)*8
-        self.install(self.record());self.ext._restore_pending=False;self.ext._publish()
+        self.install(self.record(),quarantine=not self.owner_ready());self.ext._restore_pending=False;self.ext._publish()
 
     @staticmethod
     def empty_plugin(name):
@@ -440,6 +712,8 @@ class Layouts:
         self.ext._publish();return plugin_id
 
     def remove_plugin(self,layout_id,track_id,plugin_id):
+        if self.layout(layout_id).get('owner',{}).get('entry_plugin_id')==plugin_id:
+            raise ValueError('Owner Device cannot be deleted; unregister preserves its recovery entry')
         track=self.track(layout_id,track_id);plugin=self.plugin(layout_id,track_id,plugin_id)
         if len(track['plugins'])==1:raise ValueError('Cannot delete the last Device')
         self.guard()
@@ -458,7 +732,7 @@ class Layouts:
     def create(self,name):
         if not isinstance(name,str) or not name.strip():raise ValueError('Layout name is required')
         self.guard();self.capture(force=True);id=uuid.uuid4().hex;track=self.empty_track('EFFECT')
-        self.data['records'].append(dict(id=id,name=name.strip(),active_track=track['id'],tracks=[track]))
+        self.data['records'].append(dict(id=id,name=name.strip(),category='CUSTOM',active_track=track['id'],tracks=[track]))
         self.save();self.menu();return id
 
     def create_track(self,layout_id,name):
@@ -484,7 +758,7 @@ class Layouts:
         return track_id
 
     def remove(self,id):
-        self.layout(id)
+        if self.layout(id).get('owner'):raise ValueError('Use UnregisterLayoutOwner; owner Layouts retain recovery records')
         if len(self.data['records'])==1:raise ValueError('Cannot delete the last Layout')
         self.guard()
         if id==self.data['active']:self.select(next(r['id'] for r in self.data['records'] if r['id']!=id))
@@ -493,6 +767,8 @@ class Layouts:
 
     def remove_track(self,layout_id,track_id):
         layout=self.layout(layout_id);track=self.track(layout_id,track_id)
+        if layout.get('owner',{}).get('entry_plugin_id') in [p['id'] for p in track['plugins']]:
+            raise ValueError('Owner Track cannot be deleted; unregister preserves its recovery entry')
         if len(layout['tracks'])==1:raise ValueError('Cannot delete the last Track')
         self.guard()
         if layout['active_track']==track_id:

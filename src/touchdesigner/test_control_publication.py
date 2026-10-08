@@ -58,7 +58,8 @@ class ControlPublicationTests(unittest.TestCase):
 
     def test_one_publish_uses_one_detached_snapshot_for_catalog_ack_and_marks(self):
         e=self.ext;del e._publish
-        e._publish_inspector=lambda:None
+        inspector=[]
+        e._publish_inspector=lambda states=None:inspector.append(states)
         e.ownerComp.store('needs_relearn',('speed',))
         e._host.controls['knob',2].mapped=True
         original=e.GetControlStates;calls=[]
@@ -68,6 +69,7 @@ class ControlPublicationTests(unittest.TestCase):
         e._publish()
         self.assertEqual(len(calls),1)
         self.assertIs(self.marked[0],calls[0])
+        self.assertIs(inspector[0],calls[0])
         self.assertEqual(e.ownerComp.fetch('needs_relearn'),())
         self.assertEqual(e.GetControlCatalog()[0]['value'],e.GetValue('speed'))
         self.assertEqual(self.output['knob2'][0],e.GetValue('speed'))
