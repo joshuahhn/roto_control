@@ -1,0 +1,44 @@
+{
+  "native_mouse_width_only": {
+    "before": [
+      334,
+      250
+    ],
+    "after": [
+      374,
+      250
+    ]
+  },
+  "native_mouse_height_only": {
+    "before": [
+      374,
+      250
+    ],
+    "after": [
+      374,
+      280
+    ]
+  },
+  "independent_axes": true,
+  "sizefromwindow": true,
+  "fixedaspect": "off",
+  "native_popup_resize_independent": true,
+  "selection_preserves_popup_size": true,
+  "viewport_fits_own_window": true,
+  "mapping_expansion_adds_134_height": true,
+  "mapping_expansion_preserves_width_and_top_left": true,
+  "manual_expanded_size_preserved_after_collapse": true,
+  "closed_expanded_reopen_collapsed": true,
+  "native_reopen_ignores_closed_title_bar_cache": true,
+  "native_reopen_content_size": [
+    334,
+    318
+  ],
+  "fitted_content_heights": {
+    "collapsed": 178,
+    "expanded": 312,
+    "width": 334,
+    "top_left_preserved": true,
+    "main_preserved": true
+  }
+}

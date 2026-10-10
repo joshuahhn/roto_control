@@ -1,0 +1,39 @@
+{
+  "value_apply": true,
+  "event_driven_row_refresh": true,
+  "stats": {
+    "received": 0,
+    "changed": 0,
+    "flushes": 1,
+    "notifications": 2,
+    "hits": 58,
+    "misses": 1,
+    "rejected": 0,
+    "cache_contexts": 1,
+    "cache_capacity": 4,
+    "source_contexts": 1,
+    "subscribers": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "scheduled": false,
+    "subscriber_errors": [],
+    "generation": 1,
+    "data_mode": "controller",
+    "sync_calls": 5
+  },
+  "open_windows": [
+    "/inspector_below/window_main"
+  ],
+  "inactive_device_real_values": true,
+  "browse_keeps_hardware_route": true,
+  "inactive_value_readonly": true,
+  "one_inspector_style_switch": true,
+  "inactive_parameter_event_refresh": true,
+  "physical_knob_and_learn_confirmed_by_user": true,
+  "saved_project_reload": true,
+  "startup_disconnected": true,
+  "reload_user_value_max_delta": 1.7170237442964975e-07,
+  "single_open_inspector": [
+    "/inspector_below/window_main"
+  ]
+}

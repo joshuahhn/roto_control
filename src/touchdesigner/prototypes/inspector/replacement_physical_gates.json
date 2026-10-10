@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-08",
+  "range_relearn": {
+    "status": "accepted",
+    "test_range": [
+      0.25,
+      0.75
+    ],
+    "original_range": [
+      0,
+      1
+    ],
+    "evidence": "User confirmed temporary physical endpoints 0.25 / 0.75 and restored endpoints 0 / 1 with hardware acknowledged message. Native matching ACK, current token and Value editability verified; original live Value restored. Stale ACK message/token bugs fixed with pure and native regressions.",
+    "artifact": "physical_range_relearn.json"
+  },
+  "typed_live_value": {
+    "status": "accepted",
+    "evidence": "User confirmed real K2 value and controller LEARN alert updates earlier in this thread"
+  },
+  "target_assignment_and_ping": {
+    "status": "accepted",
+    "evidence": "User confirmed target assignment and Ping earlier in this thread; see targets_hardware_acceptance.json"
+  },
+  "header_first_click": {
+    "status": "accepted",
+    "evidence": "User confirmed Device/Layout/Track first item clicks; see inline_selector_acceptance.json"
+  },
+  "declared_hw_adapter": {
+    "status": "accepted",
+    "toggle": "Corrected last three CCs127/0/127 produce three Cycle dispatches; user confirms normal.",
+    "push": "Twelve press/release pairs produce exactly twelve Cycle dispatches, zero release/extra dispatches; user confirms holds/releases do not switch.",
+    "scope": "B1 Menu/Cycle; input-only changes applied via compact editor in-window dropdown and Apply.",
+    "artifacts": [
+      "physical_button_toggle.json",
+      "physical_button_push.json",
+      "physical_button_adapter_setup.json"
+    ],
+    "restoration": "User confirmed hardware TYPE restored to TOGGLE; native TD TOGGLE/value1, all six original catalog rows and matching ACKs retained; recorder hooks/deadline removed.",
+    "checkpoint": "inspector_editor_actions.33.toe"
+  },
+  "native_resize": {
+    "status": "deferred",
+    "issue": "https://github.com/joshuahhn/roto_control/issues/6"
+  }
+}

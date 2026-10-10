@@ -1,0 +1,26 @@
+[
+  {
+    "editor": "/inspector_below/container_scroll/container_content/editor_below",
+    "nodes": 46,
+    "picker_rows": 6,
+    "no_overlap": true
+  },
+  {
+    "editor": "/inspector_below/base_popup/editor_popup/container_editor_content",
+    "nodes": 46,
+    "picker_rows": 6,
+    "no_overlap": true
+  },
+  {
+    "editor": "/inspector_popup/container_scroll/container_content/editor_below",
+    "nodes": 46,
+    "picker_rows": 6,
+    "no_overlap": true
+  },
+  {
+    "editor": "/inspector_popup/base_popup/editor_popup/container_editor_content",
+    "nodes": 46,
+    "picker_rows": 6,
+    "no_overlap": true
+  }
+]

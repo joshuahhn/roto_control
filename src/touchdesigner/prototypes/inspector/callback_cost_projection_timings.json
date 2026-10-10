@@ -1,0 +1,2983 @@
+{
+  "cases": [
+    {
+      "case": "closed_idle",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.286449066428251,
+        "p95": 7.81345796585083,
+        "maximum": 9.854666709899902,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.663414036678738,
+        "p95": 18.85429199319333,
+        "maximum": 20.827249973081052,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 301,
+          "mean": 0.153956655954379,
+          "p95": 0.25329203344881535,
+          "maximum": 0.6527499062940478,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 301,
+          "mean": 0.0027744915565333494,
+          "p95": 0.004207948222756386,
+          "maximum": 0.012457952834665775,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 301,
+          "mean": 0.08421167700344145,
+          "p95": 0.13091601431369781,
+          "maximum": 0.1585830468684435,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 301,
+          "mean": 0.26623295090993576,
+          "p95": 0.31479098834097385,
+          "maximum": 0.3536250442266464,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 301,
+          "mean": 0.7119835280903005,
+          "p95": 0.8783329976722598,
+          "maximum": 1.1960830306634307,
+          "total_samples": 301,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2001,
+        "notifications": 4002,
+        "hits": 18495,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4068
+      }
+    },
+    {
+      "case": "fold_idle",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.279942971131335,
+        "p95": 7.458250045776367,
+        "maximum": 9.382166862487793,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.66602754789061,
+        "p95": 17.601957893930376,
+        "maximum": 20.527041982859373,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 301,
+          "mean": 0.14626758135978962,
+          "p95": 0.23295904975384474,
+          "maximum": 0.38529199082404375,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 301,
+          "mean": 0.0027775423341365748,
+          "p95": 0.0037079444155097008,
+          "maximum": 0.018749968148767948,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 301,
+          "mean": 0.08179278668337982,
+          "p95": 0.12112502008676529,
+          "maximum": 0.2180830342695117,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 301,
+          "mean": 0.2645495582829876,
+          "p95": 0.3040831070393324,
+          "maximum": 0.3344169817864895,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 301,
+          "mean": 0.6962854262794124,
+          "p95": 0.8166249608621001,
+          "maximum": 1.038749935105443,
+          "total_samples": 301,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2001,
+        "notifications": 4002,
+        "hits": 18529,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4068
+      }
+    },
+    {
+      "case": "popup_idle",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.73441882941414,
+        "p95": 8.214875221252441,
+        "maximum": 10.20775032043457,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.661646594510003,
+        "p95": 18.260792014189065,
+        "maximum": 21.392707945778966,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 301,
+          "mean": 0.12981556116160858,
+          "p95": 0.1986249117180705,
+          "maximum": 0.3663329407572746,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 301,
+          "mean": 0.002395194194022801,
+          "p95": 0.003582914359867573,
+          "maximum": 0.008833943866193295,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 301,
+          "mean": 0.07510784954649467,
+          "p95": 0.09804207365959883,
+          "maximum": 0.14241598546504974,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 301,
+          "mean": 0.24239627251469614,
+          "p95": 0.29933301266282797,
+          "maximum": 0.36049995105713606,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 301,
+          "mean": 0.6316201421014495,
+          "p95": 0.8030419703572989,
+          "maximum": 0.9542080806568265,
+          "total_samples": 301,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2001,
+        "notifications": 4002,
+        "hits": 18568,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4069
+      }
+    },
+    {
+      "case": "closed_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.279177197586263,
+        "p95": 14.321541786193848,
+        "maximum": 16.532207489013672,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.686469408531867,
+        "p95": 25.516416993923485,
+        "maximum": 26.795207988470793,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9948570984712941,
+        "p95": 1.142291002906859,
+        "maximum": 1.4711659168824553,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 956,
+          "mean": 0.08548361141620414,
+          "p95": 0.12191699352115393,
+          "maximum": 0.3102499758824706,
+          "total_samples": 956,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 956,
+          "mean": 0.001406242046115538,
+          "p95": 0.002540997229516506,
+          "maximum": 0.005040899850428104,
+          "total_samples": 956,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 956,
+          "mean": 0.10284149147877976,
+          "p95": 0.14595896936953068,
+          "maximum": 0.216791988350451,
+          "total_samples": 956,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 1003,
+          "mean": 0.21695725388587234,
+          "p95": 0.25100004859268665,
+          "maximum": 0.9047500789165497,
+          "total_samples": 1003,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 956,
+          "mean": 0.5220614928239762,
+          "p95": 0.6339580286294222,
+          "maximum": 0.8514580549672246,
+          "total_samples": 956,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 140,
+          "mean": 0.6395634072500148,
+          "p95": 0.7672500796616077,
+          "maximum": 0.907834037207067,
+          "total_samples": 140,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.003602828810665202,
+          "p95": 0.004292000085115433,
+          "maximum": 0.010124989785254002,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 655,
+          "mean": 0.5441991836259156,
+          "p95": 0.67679095081985,
+          "maximum": 0.9640000062063336,
+          "total_samples": 655,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6229583114544128,
+          "p95": 0.6853750674054027,
+          "maximum": 0.6984160281717777,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2047,
+        "notifications": 4094,
+        "hits": 18568,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "scheduled": true,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4209
+      }
+    },
+    {
+      "case": "fold_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.21210904929329,
+        "p95": 14.284041404724121,
+        "maximum": 17.03125,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.665742388753177,
+        "p95": 25.62558394856751,
+        "maximum": 27.682165964506567,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9501116583123803,
+        "p95": 1.0776669951155782,
+        "maximum": 1.1174579849466681,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "model.Sync": {
+          "samples": 139,
+          "mean": 0.6322263188914751,
+          "p95": 0.7542499806731939,
+          "maximum": 0.8339169435203075,
+          "total_samples": 139,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0034104834528679543,
+          "p95": 0.004042056389153004,
+          "maximum": 0.004542060196399689,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller._update_catalog": {
+          "samples": 944,
+          "mean": 0.08658200472305229,
+          "p95": 0.11350004933774471,
+          "maximum": 0.2940420527011156,
+          "total_samples": 944,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 944,
+          "mean": 0.0013791762639657926,
+          "p95": 0.002166023477911949,
+          "maximum": 0.005166977643966675,
+          "total_samples": 944,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 944,
+          "mean": 0.10510950861794685,
+          "p95": 0.1497080083936453,
+          "maximum": 0.21412502974271774,
+          "total_samples": 944,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 990,
+          "mean": 0.22266061818979757,
+          "p95": 0.2530000638216734,
+          "maximum": 0.962749938480556,
+          "total_samples": 990,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 944,
+          "mean": 0.5361640817728446,
+          "p95": 0.6469159852713346,
+          "maximum": 0.7720829453319311,
+          "total_samples": 944,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 644,
+          "mean": 0.5642214800109682,
+          "p95": 0.6809169426560402,
+          "maximum": 0.8485419675707817,
+          "total_samples": 644,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.6268549933219734,
+          "p95": 0.6850420031696558,
+          "maximum": 0.7457080064341426,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.20917206142178696,
+          "p95": 0.24250010028481483,
+          "maximum": 0.2622499596327543,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2094,
+        "notifications": 4188,
+        "hits": 19307,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4349
+      }
+    },
+    {
+      "case": "popup_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.962483645277562,
+        "p95": 13.756625175476074,
+        "maximum": 17.90908432006836,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.65956602993412,
+        "p95": 25.79662494827062,
+        "maximum": 28.264834079891443,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 46,
+        "mean": 0.9102491337967955,
+        "p95": 1.1279999744147062,
+        "maximum": 1.224542036652565,
+        "total_samples": 46,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 945,
+          "mean": 0.08277292375664705,
+          "p95": 0.12999994214624166,
+          "maximum": 0.32433297019451857,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 945,
+          "mean": 0.0013630371540784836,
+          "p95": 0.002500019036233425,
+          "maximum": 0.008750008419156075,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 945,
+          "mean": 0.09849157083345941,
+          "p95": 0.15254190657287836,
+          "maximum": 0.22204092238098383,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 991,
+          "mean": 0.20796609511476774,
+          "p95": 0.2677920274436474,
+          "maximum": 0.9624580852687359,
+          "total_samples": 991,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 945,
+          "mean": 0.5060739615666014,
+          "p95": 0.6886670598760247,
+          "maximum": 0.9978339076042175,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 138,
+          "mean": 0.586404575649109,
+          "p95": 0.8053330238908529,
+          "maximum": 0.8687499212101102,
+          "total_samples": 138,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 46,
+          "mean": 0.0032290851737817993,
+          "p95": 0.004249974153935909,
+          "maximum": 0.004708999767899513,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 644,
+          "mean": 0.533113834015759,
+          "p95": 0.7188750896602869,
+          "maximum": 1.184666994959116,
+          "total_samples": 644,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.5676195420243818,
+          "p95": 0.7126668933779001,
+          "maximum": 0.7415830623358488,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.19196280197280904,
+          "p95": 0.2626249333843589,
+          "maximum": 0.2822499955072999,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 46,
+          "mean": 0.001938413808365231,
+          "p95": 0.002749962732195854,
+          "maximum": 0.003459048457443714,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 46,
+          "mean": 0.11617664510951094,
+          "p95": 0.15966698992997408,
+          "maximum": 0.16616703942418098,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 46,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2141,
+        "notifications": 4282,
+        "hits": 20145,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4490
+      }
+    },
+    {
+      "case": "details_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.22397383740574,
+        "p95": 14.40320873260498,
+        "maximum": 16.604833602905273,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.665449196185012,
+        "p95": 25.95054206904024,
+        "maximum": 28.15733291208744,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9688706300716768,
+        "p95": 1.0836250148713589,
+        "maximum": 1.2019589776173234,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 945,
+          "mean": 0.08685754072512426,
+          "p95": 0.11079199612140656,
+          "maximum": 0.3098329761996865,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 945,
+          "mean": 0.0014078872347319568,
+          "p95": 0.002209097146987915,
+          "maximum": 0.0030419323593378067,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 945,
+          "mean": 0.10469404810536949,
+          "p95": 0.14749995898455381,
+          "maximum": 0.2156250411644578,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 991,
+          "mean": 0.22432365768150203,
+          "p95": 0.24704192765057087,
+          "maximum": 0.9454169776290655,
+          "total_samples": 991,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 945,
+          "mean": 0.5375933159566509,
+          "p95": 0.6446250481531024,
+          "maximum": 0.8040829561650753,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 139,
+          "mean": 0.6318831206600872,
+          "p95": 0.7531659211963415,
+          "maximum": 0.8796249749138951,
+          "total_samples": 139,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0033661713229214893,
+          "p95": 0.0038750004023313522,
+          "maximum": 0.004458008334040642,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 644,
+          "mean": 0.5673405993440599,
+          "p95": 0.6766669685021043,
+          "maximum": 0.8802079828456044,
+          "total_samples": 644,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.6328831355937797,
+          "p95": 0.6975829601287842,
+          "maximum": 0.7232499774545431,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.2074464978447751,
+          "p95": 0.23500004317611456,
+          "maximum": 0.2566250041127205,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 46,
+          "mean": 0.09843389220211816,
+          "p95": 0.1106249401345849,
+          "maximum": 0.12441596481949091,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 46,
+          "mean": 0.22063128974126733,
+          "p95": 0.24750002194195986,
+          "maximum": 0.2745420206338167,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2187,
+        "notifications": 4374,
+        "hits": 20968,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4630
+      }
+    },
+    {
+      "case": "closed_1",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.4323576106581575,
+        "p95": 8.274666786193848,
+        "maximum": 10.945542335510254,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.66429055819096,
+        "p95": 18.81720800884068,
+        "maximum": 21.30770799703896,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 46,
+        "mean": 0.8366812202755524,
+        "p95": 0.9509579977020621,
+        "maximum": 0.9618749609217048,
+        "total_samples": 46,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 347,
+          "mean": 0.1310589558898501,
+          "p95": 0.20083296112716198,
+          "maximum": 0.6554999854415655,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 347,
+          "mean": 0.002320618999408027,
+          "p95": 0.0030830269679427147,
+          "maximum": 0.006332993507385254,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 347,
+          "mean": 0.09856472846646645,
+          "p95": 0.20050001330673695,
+          "maximum": 0.3427499905228615,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 393,
+          "mean": 0.3335484790523316,
+          "p95": 0.9615829912945628,
+          "maximum": 1.1978339171037078,
+          "total_samples": 393,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 347,
+          "mean": 0.6688125713349935,
+          "p95": 0.8115839445963502,
+          "maximum": 1.36824999935925,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 138,
+          "mean": 0.7615325798658465,
+          "p95": 0.8952920325100422,
+          "maximum": 0.9969589300453663,
+          "total_samples": 138,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 46,
+          "mean": 0.003682105275599853,
+          "p95": 0.004249974153935909,
+          "maximum": 0.004458008334040642,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 46,
+          "mean": 0.8313252221104568,
+          "p95": 0.9036670671775937,
+          "maximum": 1.060458947904408,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.757383182644844,
+          "p95": 0.8492500055581331,
+          "maximum": 0.9405830642208457,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 46,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2234,
+        "notifications": 4468,
+        "hits": 20968,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4770
+      }
+    },
+    {
+      "case": "popup_1",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.412665400394173,
+        "p95": 8.125832557678223,
+        "maximum": 12.267999649047852,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.669002076552136,
+        "p95": 18.868374987505376,
+        "maximum": 24.688500096090138,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 46,
+        "mean": 0.8509937198022786,
+        "p95": 0.9030000073835254,
+        "maximum": 0.9810409974306822,
+        "total_samples": 46,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 347,
+          "mean": 0.12626380308045435,
+          "p95": 0.14870800077915192,
+          "maximum": 0.33495796378701925,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 347,
+          "mean": 0.002169411264424365,
+          "p95": 0.002750079147517681,
+          "maximum": 0.003374996595084667,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 347,
+          "mean": 0.09581868191885759,
+          "p95": 0.20170898642390966,
+          "maximum": 0.26229198556393385,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 393,
+          "mean": 0.3340435673485086,
+          "p95": 1.0525829857215285,
+          "maximum": 1.1708750389516354,
+          "total_samples": 393,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 347,
+          "mean": 0.6538974406380175,
+          "p95": 0.7972079329192638,
+          "maximum": 0.9498749859631062,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 138,
+          "mean": 0.762066425944584,
+          "p95": 0.8642079774290323,
+          "maximum": 0.9618750773370266,
+          "total_samples": 138,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 46,
+          "mean": 0.0038153324883593164,
+          "p95": 0.004334026016294956,
+          "maximum": 0.004625064320862293,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 46,
+          "mean": 0.8311902613217093,
+          "p95": 0.8880000095814466,
+          "maximum": 1.0842089541256428,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.7804837255009814,
+          "p95": 0.8658339502289891,
+          "maximum": 0.9133749408647418,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.05340770028693521,
+          "p95": 0.06320804823189974,
+          "maximum": 0.06616697646677494,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 46,
+          "mean": 0.002441090106478204,
+          "p95": 0.0029170187190175056,
+          "maximum": 0.0038329744711518288,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 46,
+          "mean": 0.15814313108263456,
+          "p95": 0.17975002992898226,
+          "maximum": 0.19408296793699265,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 46,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2280,
+        "notifications": 4560,
+        "hits": 21191,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 4909
+      }
+    },
+    {
+      "case": "popup_frozen_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.863241402413758,
+        "p95": 14.476791381835938,
+        "maximum": 16.566957473754883,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.67572882032622,
+        "p95": 26.077707996591926,
+        "maximum": 27.937499922700226,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9124113861075107,
+        "p95": 1.106458017602563,
+        "maximum": 1.1963750002905726,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 959,
+          "mean": 0.08321741626940753,
+          "p95": 0.11379201896488667,
+          "maximum": 0.3885410260409117,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 959,
+          "mean": 0.0013392525448291965,
+          "p95": 0.002249958924949169,
+          "maximum": 0.003500026650726795,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 959,
+          "mean": 0.10132942942570317,
+          "p95": 0.15033292584121227,
+          "maximum": 0.23300002794712782,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 1006,
+          "mean": 0.21638168312727693,
+          "p95": 0.26416697073727846,
+          "maximum": 1.0187089210376143,
+          "total_samples": 1006,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 959,
+          "mean": 0.5168222683376018,
+          "p95": 0.657375087030232,
+          "maximum": 0.8408330613747239,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6168333215784307,
+          "p95": 0.7786669302731752,
+          "maximum": 0.8687920635566115,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0032188786946712655,
+          "p95": 0.004082918167114258,
+          "maximum": 0.004958012141287327,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.543851131505381,
+          "p95": 0.6846670294180512,
+          "maximum": 0.9163750801235437,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6221302988086926,
+          "p95": 0.7269999478012323,
+          "maximum": 0.805750023573637,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2327,
+        "notifications": 4654,
+        "hits": 21277,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5051
+      }
+    },
+    {
+      "case": "closed_coalesced_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.421792640242466,
+        "p95": 8.731207847595215,
+        "maximum": 10.756124496459961,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.65774418584124,
+        "p95": 19.168209051713347,
+        "maximum": 21.060416009277105,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 45,
+        "mean": 0.9964490309357643,
+        "p95": 1.1965829180553555,
+        "maximum": 1.2116249417886138,
+        "total_samples": 45,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 346,
+          "mean": 0.12245096469491806,
+          "p95": 0.1917920308187604,
+          "maximum": 0.3392499638721347,
+          "total_samples": 346,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 346,
+          "mean": 0.002186564389465517,
+          "p95": 0.0030419323593378067,
+          "maximum": 0.006791902706027031,
+          "total_samples": 346,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 346,
+          "mean": 0.09472506535320269,
+          "p95": 0.1983750844374299,
+          "maximum": 0.2774160820990801,
+          "total_samples": 346,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 391,
+          "mean": 0.3068836252836277,
+          "p95": 0.9457089472562075,
+          "maximum": 1.1198330903425813,
+          "total_samples": 391,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 346,
+          "mean": 0.6309761719595146,
+          "p95": 0.8109580958262086,
+          "maximum": 0.9961669566109776,
+          "total_samples": 346,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 135,
+          "mean": 0.6841061369481461,
+          "p95": 0.8582500740885735,
+          "maximum": 0.9035409893840551,
+          "total_samples": 135,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 45,
+          "mean": 0.0034239867495165933,
+          "p95": 0.004165922291576862,
+          "maximum": 0.004625064320862293,
+          "total_samples": 45,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 630,
+          "mean": 0.019390141916653468,
+          "p95": 0.06362504791468382,
+          "maximum": 0.12024992611259222,
+          "total_samples": 630,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 45,
+          "mean": 0.6777009642165568,
+          "p95": 0.848833005875349,
+          "maximum": 0.8582499576732516,
+          "total_samples": 45,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 45,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2372,
+        "notifications": 4744,
+        "hits": 21277,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5186
+      }
+    },
+    {
+      "case": "popup_coalesced_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.369098526298802,
+        "p95": 8.395000457763672,
+        "maximum": 12.304458618164062,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.666158501977762,
+        "p95": 19.387583015486598,
+        "maximum": 23.1084170518443,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9780584418393196,
+        "p95": 1.143750036135316,
+        "maximum": 1.3157919747754931,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 348,
+          "mean": 0.12024233770695911,
+          "p95": 0.16754190437495708,
+          "maximum": 0.35945791751146317,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 348,
+          "mean": 0.0020406184177417523,
+          "p95": 0.0028329668566584587,
+          "maximum": 0.003917026333510876,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 348,
+          "mean": 0.0895578223521468,
+          "p95": 0.1876669703051448,
+          "maximum": 0.23462495300918818,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 395,
+          "mean": 0.30640296349184043,
+          "p95": 0.9482080349698663,
+          "maximum": 1.1969590559601784,
+          "total_samples": 395,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 348,
+          "mean": 0.6124357219207389,
+          "p95": 0.7657919777557254,
+          "maximum": 1.0443750070407987,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6779441519158212,
+          "p95": 0.840499997138977,
+          "maximum": 0.9872498922049999,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0032633344860787086,
+          "p95": 0.00400003045797348,
+          "maximum": 0.004249974153935909,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.01928434915285795,
+          "p95": 0.06220792420208454,
+          "maximum": 0.11895806528627872,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6892348644620878,
+          "p95": 0.819541048258543,
+          "maximum": 0.9289999725297093,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 47,
+          "mean": 0.2248750261447214,
+          "p95": 0.27895800303667784,
+          "maximum": 0.28904201462864876,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 47,
+          "mean": 0.002098405991304428,
+          "p95": 0.0027080532163381577,
+          "maximum": 0.0030410010367631912,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 47,
+          "mean": 0.13191221737639702,
+          "p95": 0.16279099509119987,
+          "maximum": 0.1824999926611781,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2419,
+        "notifications": 4838,
+        "hits": 22115,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5328
+      }
+    },
+    {
+      "case": "popup_coalesced_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.884080698323804,
+        "p95": 8.088582992553711,
+        "maximum": 9.090208053588867,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.66971234538193,
+        "p95": 19.14866699371487,
+        "maximum": 20.828875014558434,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.8966923874624549,
+        "p95": 1.0973330354318023,
+        "maximum": 1.1998749105259776,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 348,
+          "mean": 0.10697511038154192,
+          "p95": 0.15804101713001728,
+          "maximum": 0.35745801869779825,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 348,
+          "mean": 0.001979254831121057,
+          "p95": 0.0030410010367631912,
+          "maximum": 0.007291906513273716,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 348,
+          "mean": 0.08187095444628048,
+          "p95": 0.17725001089274883,
+          "maximum": 0.20883395336568356,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 395,
+          "mean": 0.27163816097227833,
+          "p95": 0.9302080143243074,
+          "maximum": 1.0867909295484424,
+          "total_samples": 395,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 348,
+          "mean": 0.5425302925300196,
+          "p95": 0.7366660283878446,
+          "maximum": 0.9969590464606881,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6183120554167751,
+          "p95": 0.7820409955456853,
+          "maximum": 0.9079580195248127,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0030293396892065697,
+          "p95": 0.0038750004023313522,
+          "maximum": 0.005041947588324547,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.016545589714619616,
+          "p95": 0.04441593773663044,
+          "maximum": 0.10516704060137272,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6235443313229592,
+          "p95": 0.750000006519258,
+          "maximum": 0.8129579946398735,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 47,
+          "mean": 0.22187676686952088,
+          "p95": 0.26629201602190733,
+          "maximum": 0.2844580449163914,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 47,
+          "mean": 0.0019813045621552366,
+          "p95": 0.002459040842950344,
+          "maximum": 0.0029999064281582832,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 47,
+          "mean": 0.12561529280340417,
+          "p95": 0.15358300879597664,
+          "maximum": 0.16166700515896082,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2466,
+        "notifications": 4932,
+        "hits": 22953,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5470
+      }
+    },
+    {
+      "case": "closed_coalesced_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.363834139516583,
+        "p95": 8.35083293914795,
+        "maximum": 9.464292526245117,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.667300113167403,
+        "p95": 18.732332973740995,
+        "maximum": 21.896083024330437,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9302756912570368,
+        "p95": 1.0939170606434345,
+        "maximum": 1.1704160133376718,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 348,
+          "mean": 0.12243891886874349,
+          "p95": 0.20687503274530172,
+          "maximum": 0.6677500205114484,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 348,
+          "mean": 0.0022280992720618673,
+          "p95": 0.00300002284348011,
+          "maximum": 0.01595797948539257,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 348,
+          "mean": 0.09271252870923657,
+          "p95": 0.19520893692970276,
+          "maximum": 0.3214579774066806,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 395,
+          "mean": 0.2912468562798598,
+          "p95": 0.851375050842762,
+          "maximum": 1.108874916099012,
+          "total_samples": 395,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 348,
+          "mean": 0.6088265331579779,
+          "p95": 0.7977919885888696,
+          "maximum": 1.2760000536218286,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6387367207187076,
+          "p95": 0.7762089371681213,
+          "maximum": 0.8864579722285271,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0032030462109028024,
+          "p95": 0.003999914042651653,
+          "maximum": 0.004208995960652828,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.019179514501708076,
+          "p95": 0.07141695823520422,
+          "maximum": 0.12254202738404274,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6255380452630368,
+          "p95": 0.7340420270338655,
+          "maximum": 0.859375111758709,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2513,
+        "notifications": 5026,
+        "hits": 22953,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5611
+      }
+    },
+    {
+      "case": "popup_frozen_14",
+      "frame_ms": {
+        "samples": 300,
+        "mean": 6.274509701728821,
+        "p95": 14.272791862487793,
+        "maximum": 16.25112533569336,
+        "total_samples": 300,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 300,
+        "mean": 16.707713056821376,
+        "p95": 26.114749955013394,
+        "maximum": 27.799166971817613,
+        "total_samples": 300,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.972563918541245,
+        "p95": 1.143834087997675,
+        "maximum": 1.245458028279245,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 958,
+          "mean": 0.0891084996652877,
+          "p95": 0.13379089068621397,
+          "maximum": 0.3420840948820114,
+          "total_samples": 958,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 958,
+          "mean": 0.0014540780430935744,
+          "p95": 0.0024579931050539017,
+          "maximum": 0.005500041879713535,
+          "total_samples": 958,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 958,
+          "mean": 0.10619471994343375,
+          "p95": 0.154959037899971,
+          "maximum": 0.2466660225763917,
+          "total_samples": 958,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 1005,
+          "mean": 0.22403682067767897,
+          "p95": 0.2835829509422183,
+          "maximum": 0.9429999627172947,
+          "total_samples": 1005,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 958,
+          "mean": 0.545858079373121,
+          "p95": 0.6971659604460001,
+          "maximum": 0.9058340219780803,
+          "total_samples": 958,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 140,
+          "mean": 0.6277014235300677,
+          "p95": 0.8163750171661377,
+          "maximum": 0.9044159669429064,
+          "total_samples": 140,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0034077860850920067,
+          "p95": 0.004332978278398514,
+          "maximum": 0.004790956154465675,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.5707901201527962,
+          "p95": 0.7425840012729168,
+          "maximum": 1.0111249284818769,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.599313760176301,
+          "p95": 0.7108750287443399,
+          "maximum": 0.7254579104483128,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 300,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2559,
+        "notifications": 5118,
+        "hits": 23038,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "scheduled": true,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5752
+      }
+    },
+    {
+      "case": "popup_1",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.457978004632994,
+        "p95": 8.293167114257812,
+        "maximum": 10.856583595275879,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.668848837246234,
+        "p95": 18.8701250590384,
+        "maximum": 22.145166993141174,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 46,
+        "mean": 0.7574990740977228,
+        "p95": 0.8769159903749824,
+        "maximum": 0.9360830299556255,
+        "total_samples": 46,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 347,
+          "mean": 0.12462403254867974,
+          "p95": 0.17658306751400232,
+          "maximum": 0.4630840849131346,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 347,
+          "mean": 0.002484252644160639,
+          "p95": 0.0033329706639051437,
+          "maximum": 0.01391698606312275,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 347,
+          "mean": 0.09546158781613327,
+          "p95": 0.20337500609457493,
+          "maximum": 0.2400419907644391,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 393,
+          "mean": 0.29000030853015396,
+          "p95": 0.8508340688422322,
+          "maximum": 1.1125419987365603,
+          "total_samples": 393,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 347,
+          "mean": 0.6143164029881701,
+          "p95": 0.7960830116644502,
+          "maximum": 0.964541919529438,
+          "total_samples": 347,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 138,
+          "mean": 0.6543777147442966,
+          "p95": 0.8219591109082103,
+          "maximum": 0.9080839809030294,
+          "total_samples": 138,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 46,
+          "mean": 0.003479109854315934,
+          "p95": 0.004083034582436085,
+          "maximum": 0.005292007699608803,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 46,
+          "mean": 0.7658723524123754,
+          "p95": 0.8771250722929835,
+          "maximum": 1.0147920111194253,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.635337876662126,
+          "p95": 0.753333093598485,
+          "maximum": 0.8591250516474247,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.05299191537272671,
+          "p95": 0.06283295806497335,
+          "maximum": 0.07433409336954355,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 46,
+          "mean": 0.002231094581277474,
+          "p95": 0.0029579969123005867,
+          "maximum": 0.0030830269679427147,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 46,
+          "mean": 0.1460451900999507,
+          "p95": 0.17891707830131054,
+          "maximum": 0.1888750120997429,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 46,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2606,
+        "notifications": 5212,
+        "hits": 23278,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 5892
+      }
+    },
+    {
+      "case": "closed_1",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.94260005935086,
+        "p95": 7.715958118438721,
+        "maximum": 8.7648344039917,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.67895792028944,
+        "p95": 18.452291027642787,
+        "maximum": 19.62229097262025,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.7330922959768709,
+        "p95": 0.8280840702354908,
+        "maximum": 0.87779201567173,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 348,
+          "mean": 0.11451160347881331,
+          "p95": 0.1590839819982648,
+          "maximum": 0.4318749997764826,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 348,
+          "mean": 0.002213711944012635,
+          "p95": 0.0029999064281582832,
+          "maximum": 0.02920802216976881,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 348,
+          "mean": 0.08944395077200713,
+          "p95": 0.19708299078047276,
+          "maximum": 0.22129202261567116,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 395,
+          "mean": 0.2801500702913426,
+          "p95": 0.8542080176994205,
+          "maximum": 1.0722079314291477,
+          "total_samples": 395,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 348,
+          "mean": 0.5705068115380475,
+          "p95": 0.7272079819813371,
+          "maximum": 0.9960829047486186,
+          "total_samples": 348,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6538986324180737,
+          "p95": 0.7843750063329935,
+          "maximum": 0.84304204210639,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0033439706733569188,
+          "p95": 0.004041008651256561,
+          "maximum": 0.004958943463861942,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 47,
+          "mean": 0.7183201254365292,
+          "p95": 0.8098339894786477,
+          "maximum": 0.8640839951112866,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6427163446440975,
+          "p95": 0.7370829116553068,
+          "maximum": 0.8225840283557773,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2653,
+        "notifications": 5306,
+        "hits": 23278,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6033
+      }
+    },
+    {
+      "case": "details_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.342482841688137,
+        "p95": 14.377833366394043,
+        "maximum": 16.585250854492188,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.665823780467417,
+        "p95": 25.964458007365465,
+        "maximum": 27.871791971847415,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9512508367287352,
+        "p95": 1.1390000581741333,
+        "maximum": 1.2015830725431442,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 941,
+          "mean": 0.08682373269806506,
+          "p95": 0.13270904310047626,
+          "maximum": 0.3504999913275242,
+          "total_samples": 941,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 941,
+          "mean": 0.0013637978249050353,
+          "p95": 0.002291053533554077,
+          "maximum": 0.003416091203689575,
+          "total_samples": 941,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 941,
+          "mean": 0.10331025531200749,
+          "p95": 0.14954200014472008,
+          "maximum": 0.2412919420748949,
+          "total_samples": 941,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 987,
+          "mean": 0.21818530035281616,
+          "p95": 0.2684580394998193,
+          "maximum": 0.9476249106228352,
+          "total_samples": 987,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 941,
+          "mean": 0.53047260487755,
+          "p95": 0.6743749836459756,
+          "maximum": 0.8815409382805228,
+          "total_samples": 941,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 139,
+          "mean": 0.6120788635310831,
+          "p95": 0.797332962974906,
+          "maximum": 0.8744590450078249,
+          "total_samples": 139,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0032917224861522937,
+          "p95": 0.004375004209578037,
+          "maximum": 0.005583977326750755,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 640,
+          "mean": 0.5544345061935019,
+          "p95": 0.6851659854874015,
+          "maximum": 0.9556669974699616,
+          "total_samples": 640,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.5951051084000779,
+          "p95": 0.7107080891728401,
+          "maximum": 0.742041040211916,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.19930071025357946,
+          "p95": 0.2354169264435768,
+          "maximum": 0.28804095927625895,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 46,
+          "mean": 0.0957346384656494,
+          "p95": 0.11720904149115086,
+          "maximum": 0.14641694724559784,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 46,
+          "mean": 0.2130080854682171,
+          "p95": 0.25108293630182743,
+          "maximum": 0.299583887681365,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2699,
+        "notifications": 5398,
+        "hits": 24097,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6173
+      }
+    },
+    {
+      "case": "popup_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.2474746403108,
+        "p95": 14.65725040435791,
+        "maximum": 16.408084869384766,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.66502422572692,
+        "p95": 26.220332947559655,
+        "maximum": 27.852750034071505,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.9649716258207535,
+        "p95": 1.0831250110641122,
+        "maximum": 1.142708002589643,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 959,
+          "mean": 0.08673758993296261,
+          "p95": 0.11200003791600466,
+          "maximum": 0.28808298520743847,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 959,
+          "mean": 0.0013924411151313434,
+          "p95": 0.0022080494090914726,
+          "maximum": 0.004083034582436085,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 959,
+          "mean": 0.1048317593760299,
+          "p95": 0.14941603876650333,
+          "maximum": 0.22058305330574512,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 1006,
+          "mean": 0.2239150042362348,
+          "p95": 0.2605409827083349,
+          "maximum": 0.9408749174326658,
+          "total_samples": 1006,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 959,
+          "mean": 0.5375401976851434,
+          "p95": 0.646792002953589,
+          "maximum": 0.916167045943439,
+          "total_samples": 959,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 141,
+          "mean": 0.6336477462942085,
+          "p95": 0.7562499959021807,
+          "maximum": 0.8613750105723739,
+          "total_samples": 141,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.0032438782658031646,
+          "p95": 0.0037909485399723053,
+          "maximum": 0.004041939973831177,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 658,
+          "mean": 0.5679856736346015,
+          "p95": 0.6809580372646451,
+          "maximum": 0.9849169291555882,
+          "total_samples": 658,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 47,
+          "mean": 0.6216578383712058,
+          "p95": 0.6849579513072968,
+          "maximum": 0.7325420156121254,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 47,
+          "mean": 0.21164715686377059,
+          "p95": 0.24166598450392485,
+          "maximum": 0.2740829950198531,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_details": {
+          "samples": 47,
+          "mean": 0.002078835832628798,
+          "p95": 0.002540997229516506,
+          "maximum": 0.0028330832719802856,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "view._update_editor": {
+          "samples": 47,
+          "mean": 0.12851667719239251,
+          "p95": 0.14408305287361145,
+          "maximum": 0.16287504695355892,
+          "total_samples": 47,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2747,
+        "notifications": 5494,
+        "hits": 24952,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6317
+      }
+    },
+    {
+      "case": "fold_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 5.781424535073315,
+        "p95": 14.499208450317383,
+        "maximum": 17.34637451171875,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.660013564853028,
+        "p95": 25.90537501964718,
+        "maximum": 27.63904200401157,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 46,
+        "mean": 0.9120643245177749,
+        "p95": 1.1161250295117497,
+        "maximum": 1.1545830639079213,
+        "total_samples": 46,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 945,
+          "mean": 0.08177542824928881,
+          "p95": 0.10970898438245058,
+          "maximum": 0.28920802287757397,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 945,
+          "mean": 0.001334285279785199,
+          "p95": 0.002250075340270996,
+          "maximum": 0.0031659146770834923,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 945,
+          "mean": 0.0994523515353206,
+          "p95": 0.1479580532759428,
+          "maximum": 0.20658306311815977,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 991,
+          "mean": 0.2124174674230465,
+          "p95": 0.25333394296467304,
+          "maximum": 0.9983750060200691,
+          "total_samples": 991,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 945,
+          "mean": 0.5077513230461923,
+          "p95": 0.6503750337287784,
+          "maximum": 0.7821670733392239,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 138,
+          "mean": 0.6044794471286561,
+          "p95": 0.7583339465782046,
+          "maximum": 0.8634579135105014,
+          "total_samples": 138,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 46,
+          "mean": 0.0032109345066482606,
+          "p95": 0.004041008651256561,
+          "maximum": 0.005249981768429279,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 644,
+          "mean": 0.5367263138904497,
+          "p95": 0.6769170286133885,
+          "maximum": 0.8370000869035721,
+          "total_samples": 644,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.6034899928161631,
+          "p95": 0.7085410179570317,
+          "maximum": 0.784000032581389,
+          "total_samples": 46,
+          "retained_limit": 2400
+        },
+        "view._refresh_rows": {
+          "samples": 46,
+          "mean": 0.20105533969953007,
+          "p95": 0.24433399084955454,
+          "maximum": 0.2556669060140848,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 46,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2793,
+        "notifications": 5586,
+        "hits": 25676,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6455
+      }
+    },
+    {
+      "case": "closed_14",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.246019791131004,
+        "p95": 14.73395824432373,
+        "maximum": 16.6629581451416,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.662804956742843,
+        "p95": 26.035165996290743,
+        "maximum": 27.773916954174638,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 47,
+        "mean": 0.994665793420628,
+        "p95": 1.1325000086799264,
+        "maximum": 1.230417052283883,
+        "total_samples": 47,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 945,
+          "mean": 0.08930986840770673,
+          "p95": 0.11670798994600773,
+          "maximum": 0.3275410272181034,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 945,
+          "mean": 0.0014548989446469085,
+          "p95": 0.002291053533554077,
+          "maximum": 0.0037079444155097008,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 945,
+          "mean": 0.10772796049615536,
+          "p95": 0.15083292964845896,
+          "maximum": 0.2090840134769678,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 991,
+          "mean": 0.2311104571439258,
+          "p95": 0.2561669098213315,
+          "maximum": 0.9525830391794443,
+          "total_samples": 991,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 945,
+          "mean": 0.5548336761190541,
+          "p95": 0.6613340228796005,
+          "maximum": 0.8633750258013606,
+          "total_samples": 945,
+          "retained_limit": 2400
+        },
+        "model.Sync": {
+          "samples": 139,
+          "mean": 0.6596912619852119,
+          "p95": 0.7656250381842256,
+          "maximum": 0.9188749827444553,
+          "total_samples": 139,
+          "retained_limit": 2400
+        },
+        "model.Flush": {
+          "samples": 47,
+          "mean": 0.00355934397258023,
+          "p95": 0.004416913725435734,
+          "maximum": 0.004792003892362118,
+          "total_samples": 47,
+          "retained_limit": 2400
+        },
+        "controller.onControlChange": {
+          "samples": 644,
+          "mean": 0.5840458184110452,
+          "p95": 0.7039170013740659,
+          "maximum": 0.8586249314248562,
+          "total_samples": 644,
+          "retained_limit": 2400
+        },
+        "legacy.refresh": {
+          "samples": 46,
+          "mean": 0.6397845395638243,
+          "p95": 0.7105419645085931,
+          "maximum": 0.7301670266315341,
+          "total_samples": 46,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 47,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2839,
+        "notifications": 5678,
+        "hits": 25676,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6594
+      }
+    },
+    {
+      "case": "popup_idle",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.318551473839339,
+        "p95": 8.25233268737793,
+        "maximum": 10.063457489013672,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.66009925233132,
+        "p95": 19.304041983559728,
+        "maximum": 21.04962500743568,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 301,
+          "mean": 0.14447773059526847,
+          "p95": 0.20020792726427317,
+          "maximum": 0.32466696575284004,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 301,
+          "mean": 0.002529202539634665,
+          "p95": 0.003249966539442539,
+          "maximum": 0.007915892638266087,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 301,
+          "mean": 0.08407293739991628,
+          "p95": 0.09995896834880114,
+          "maximum": 0.16658299136906862,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 301,
+          "mean": 0.2645003149886167,
+          "p95": 0.2935000229626894,
+          "maximum": 0.39466703310608864,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 301,
+          "mean": 0.6940534158124034,
+          "p95": 0.8296250598505139,
+          "maximum": 1.0415409924462438,
+          "total_samples": 301,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2840,
+        "notifications": 5680,
+        "hits": 25732,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6597
+      }
+    },
+    {
+      "case": "fold_idle",
+      "frame_ms": {
+        "samples": 301,
+        "mean": 6.2321600106071395,
+        "p95": 8.13208293914795,
+        "maximum": 10.809165954589844,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 301,
+        "mean": 16.65632350507975,
+        "p95": 18.691917066462338,
+        "maximum": 20.633207983337343,
+        "total_samples": 301,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 301,
+          "mean": 0.1415109352372661,
+          "p95": 0.19462499767541885,
+          "maximum": 0.32104109413921833,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 301,
+          "mean": 0.00248492449410631,
+          "p95": 0.003250082954764366,
+          "maximum": 0.005375011824071407,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 301,
+          "mean": 0.08400039286337224,
+          "p95": 0.09574997238814831,
+          "maximum": 0.20524999126791954,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 301,
+          "mean": 0.26751605970197145,
+          "p95": 0.296834041364491,
+          "maximum": 0.3602079814299941,
+          "total_samples": 301,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 301,
+          "mean": 0.6926595863802637,
+          "p95": 0.8220409508794546,
+          "maximum": 0.9593749418854713,
+          "total_samples": 301,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 301,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2840,
+        "notifications": 5680,
+        "hits": 25766,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6597
+      }
+    },
+    {
+      "case": "closed_idle",
+      "frame_ms": {
+        "samples": 300,
+        "mean": 6.293982756932577,
+        "p95": 8.43274974822998,
+        "maximum": 10.059791564941406,
+        "total_samples": 300,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 300,
+        "mean": 16.671827776590362,
+        "p95": 19.338791025802493,
+        "maximum": 21.004874957725406,
+        "total_samples": 300,
+        "retained_limit": 3600
+      },
+      "feed_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "methods": {
+        "controller._update_catalog": {
+          "samples": 300,
+          "mean": 0.14501643017865717,
+          "p95": 0.2256670268252492,
+          "maximum": 0.5546669708564878,
+          "total_samples": 300,
+          "retained_limit": 2400
+        },
+        "registry.capture": {
+          "samples": 300,
+          "mean": 0.002681120919684569,
+          "p95": 0.0038750004023313522,
+          "maximum": 0.015374971553683281,
+          "total_samples": 300,
+          "retained_limit": 2400
+        },
+        "controller._publish_controls": {
+          "samples": 300,
+          "mean": 0.08527789963409305,
+          "p95": 0.1052080187946558,
+          "maximum": 0.23716595023870468,
+          "total_samples": 300,
+          "retained_limit": 2400
+        },
+        "controller._publish_inspector": {
+          "samples": 300,
+          "mean": 0.2661199025654544,
+          "p95": 0.3042910248041153,
+          "maximum": 0.37691695615649223,
+          "total_samples": 300,
+          "retained_limit": 2400
+        },
+        "controller._publish": {
+          "samples": 300,
+          "mean": 0.6999116480195274,
+          "p95": 0.84454205352813,
+          "maximum": 1.1922080302610993,
+          "total_samples": 300,
+          "retained_limit": 2400
+        }
+      },
+      "feeds": 0,
+      "dropped_frames": 0.0,
+      "frame_samples": 300,
+      "stats": {
+        "received": 0,
+        "changed": 0,
+        "flushes": 2840,
+        "notifications": 5680,
+        "hits": 25766,
+        "misses": 11,
+        "rejected": 0,
+        "cache_contexts": 2,
+        "cache_capacity": 4,
+        "source_contexts": 2,
+        "subscribers": 2,
+        "pending_contexts": 0,
+        "pending_slots": 0,
+        "scheduled": false,
+        "subscriber_errors": [],
+        "generation": 16,
+        "data_mode": "controller",
+        "sync_calls": 6597
+      }
+    }
+  ],
+  "errors": [],
+  "reason": "complete",
+  "method_times": "inclusive; nested timings must not be added",
+  "coalescing": "fixture-only publication proof; not a production change",
+  "visibility": "matched window/frozen-projection ablations; not isolated GPU timing"
+}

@@ -1,0 +1,410 @@
+{
+  "cases": [
+    {
+      "case": "closed_idle",
+      "deadline_lag_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.0123833330580965,
+      "feed_interval_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.666528306494417,
+        "p95": 17.235416918992996,
+        "maximum": 27.44783298112452,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.330057394746116,
+        "p95": 6.472540902905166,
+        "maximum": 7.378875045105815,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_1",
+      "deadline_lag_ms": {
+        "samples": 419,
+        "mean": 9.758582367864049,
+        "p95": 11.870957561768591,
+        "maximum": 16.00516668986529,
+        "total_samples": 419,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.011916582938284,
+      "feed_interval_ms": {
+        "samples": 418,
+        "mean": 16.75348744018039,
+        "p95": 17.99929200205952,
+        "maximum": 30.821167048998177,
+        "total_samples": 418,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 2,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.668525634216245,
+        "p95": 19.085458014160395,
+        "maximum": 22.89704093709588,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.589076514240806,
+        "p95": 5.865541053935885,
+        "maximum": 8.800667012110353,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_14",
+      "deadline_lag_ms": {
+        "samples": 420,
+        "mean": 12.325268229635965,
+        "p95": 14.082583249546587,
+        "maximum": 15.974500216543674,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.012466166983359,
+      "feed_interval_ms": {
+        "samples": 419,
+        "mean": 16.709435761179375,
+        "p95": 18.89679196756333,
+        "maximum": 26.288334047421813,
+        "total_samples": 419,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 1,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.66505878869745,
+        "p95": 18.790332949720323,
+        "maximum": 19.875917001627386,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.989829041880076,
+        "p95": 6.362708983942866,
+        "maximum": 11.30270806606859,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "fold_14",
+      "deadline_lag_ms": {
+        "samples": 420,
+        "mean": 13.680426983462114,
+        "p95": 15.827999683097005,
+        "maximum": 16.65162469726056,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.015691832988523,
+      "feed_interval_ms": {
+        "samples": 419,
+        "mean": 16.716430489382837,
+        "p95": 18.844665959477425,
+        "maximum": 27.561791008338332,
+        "total_samples": 419,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 1,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.671309382278658,
+        "p95": 20.17662499565631,
+        "maximum": 22.445500013418496,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.295492096465621,
+        "p95": 6.365207955241203,
+        "maximum": 11.725582997314632,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_14",
+      "deadline_lag_ms": {
+        "samples": 421,
+        "mean": 9.89895874513822,
+        "p95": 12.143791769631207,
+        "maximum": 13.614249997772276,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.010378583101556,
+      "feed_interval_ms": {
+        "samples": 420,
+        "mean": 16.67055674534779,
+        "p95": 19.19241703581065,
+        "maximum": 20.316042006015778,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.668759601084503,
+        "p95": 20.31012496445328,
+        "maximum": 21.167999948374927,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.501290578937109,
+        "p95": 6.606124923564494,
+        "maximum": 7.857666932977736,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_14",
+      "deadline_lag_ms": {
+        "samples": 420,
+        "mean": 10.721852186889876,
+        "p95": 12.847624602727592,
+        "maximum": 16.228083055466413,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.011411166982725,
+      "feed_interval_ms": {
+        "samples": 419,
+        "mean": 16.70783502383153,
+        "p95": 19.591208081692457,
+        "maximum": 24.44212499540299,
+        "total_samples": 419,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 1,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.670137272999487,
+        "p95": 20.49424999859184,
+        "maximum": 22.125374991446733,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.613093741123085,
+        "p95": 6.298666936345398,
+        "maximum": 12.013625004328787,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "fold_14",
+      "deadline_lag_ms": {
+        "samples": 420,
+        "mean": 11.283309706154146,
+        "p95": 13.669291627593338,
+        "maximum": 15.430124360136688,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.009661540971138,
+      "feed_interval_ms": {
+        "samples": 419,
+        "mean": 16.708456742219397,
+        "p95": 19.456374924629927,
+        "maximum": 22.42608298547566,
+        "total_samples": 419,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 1,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.664895883566675,
+        "p95": 20.178040955215693,
+        "maximum": 21.5660419780761,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.48814086939237,
+        "p95": 6.49487494956702,
+        "maximum": 12.256624992005527,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_14",
+      "deadline_lag_ms": {
+        "samples": 347,
+        "mean": 9.934388297363064,
+        "p95": 15.860416693612933,
+        "maximum": 16.604749718680978,
+        "total_samples": 347,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.014302708092146,
+      "feed_interval_ms": {
+        "samples": 346,
+        "mean": 20.23407538432219,
+        "p95": 28.844125103205442,
+        "maximum": 31.9217499345541,
+        "total_samples": 346,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 74,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.670047011859097,
+        "p95": 19.20291595160961,
+        "maximum": 20.307958940975368,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 5.393798366817259,
+        "p95": 7.049291045404971,
+        "maximum": 11.173625010997057,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "popup_1",
+      "deadline_lag_ms": {
+        "samples": 421,
+        "mean": 11.282712473609262,
+        "p95": 12.956541031599045,
+        "maximum": 15.994499321095645,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.010500208009034,
+      "feed_interval_ms": {
+        "samples": 420,
+        "mean": 16.67193621175275,
+        "p95": 18.406499992124736,
+        "maximum": 22.188124945387244,
+        "total_samples": 420,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.6662969121006,
+        "p95": 19.04762489721179,
+        "maximum": 20.315707894042134,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.656166868282132,
+        "p95": 5.819750018417835,
+        "maximum": 8.545916993170977,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    },
+    {
+      "case": "closed_idle",
+      "deadline_lag_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "requested_hz": 60.0,
+      "measurement_seconds": 7.013087208033539,
+      "feed_interval_ms": {
+        "samples": 0,
+        "total_samples": 0,
+        "retained_limit": 3600
+      },
+      "missed_deadlines": 0,
+      "frame_start_gap_ms": {
+        "samples": 421,
+        "mean": 16.664987729448658,
+        "p95": 17.324957996606827,
+        "maximum": 18.685083952732384,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "start_to_end_ms": {
+        "samples": 421,
+        "mean": 4.560530670164175,
+        "p95": 6.12137489952147,
+        "maximum": 7.229250040836632,
+        "total_samples": 421,
+        "retained_limit": 3600
+      },
+      "native_samples": 0,
+      "native_ms": {},
+      "worst_native_frame": null
+    }
+  ],
+  "reason": "complete",
+  "native_monitor_enabled": false,
+  "redraw_restored": true,
+  "notes": [
+    "Native monitor samples include monitor overhead; compare cadence against the unmonitored run.",
+    "Native redraw measures CPU/driver Window work, not isolated GPU execution.",
+    "no_publication is a fixture-only ablation; not a runtime change."
+  ]
+}

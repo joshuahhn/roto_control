@@ -1,0 +1,18 @@
+[
+  {
+    "view": "/inspector_below",
+    "pools": 3,
+    "rows_per_pool": 8,
+    "no_overlap": true,
+    "contained": true,
+    "menu_windows": 0
+  },
+  {
+    "view": "/inspector_popup",
+    "pools": 3,
+    "rows_per_pool": 8,
+    "no_overlap": true,
+    "contained": true,
+    "menu_windows": 0
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "samples": 100,
+  "sync_p95_ms": 0.18966593779623508,
+  "scope": "installed read-only sync/dispatch; excludes rendering and physical MIDI",
+  "idle_text_write_delta": 0,
+  "accordion_cycles": 25,
+  "operators_before": [
+    530,
+    530
+  ],
+  "operators_after": [
+    530,
+    530
+  ],
+  "subscribers": 2,
+  "errors": []
+}

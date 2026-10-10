@@ -1,0 +1,19 @@
+{
+  "active_binding_rebuilt": true,
+  "stable_id_index_names_default_value": true,
+  "unrelated_registration_preserved": true,
+  "inactive_device_requires_relearn": true,
+  "old_ack_rejected": true,
+  "matching_ack_clears_prompt": true,
+  "both_views_native_menu_drafts": true,
+  "all_24_choices_bounded_scroll": true,
+  "window_height": 402,
+  "native_keyboard_and_apply_button": true,
+  "native_mouse_scroll": true,
+  "native_24th_label_ui_apply": true,
+  "cancel_scrubs_without_write": true,
+  "production_catalog_registry_process_preserved": true,
+  "fixture_removed": true,
+  "no_physical_midi": true,
+  "subscribers": 2
+}

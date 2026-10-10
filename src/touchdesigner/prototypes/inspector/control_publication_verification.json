@@ -1,0 +1,9 @@
+{
+  "native_api_writes": 18,
+  "synchronous_values_and_channel_shape": true,
+  "one_state_scan_per_publication": true,
+  "no_pulse_dispatch": true,
+  "no_midi_process_or_queue": true,
+  "errors": [],
+  "production_preserved": true
+}

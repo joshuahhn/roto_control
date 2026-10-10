@@ -1,0 +1,26 @@
+{
+  "virtual_mouse_only": true,
+  "physical_item_fix_verified": false,
+  "samples": [
+    {
+      "button": "Device",
+      "opened_while_held": false,
+      "opened_after_release": true,
+      "drag_out_cancelled": true
+    },
+    {
+      "button": "Layout",
+      "opened_while_held": false,
+      "opened_after_release": true,
+      "drag_out_cancelled": true
+    },
+    {
+      "button": "Track",
+      "opened_while_held": false,
+      "opened_after_release": true,
+      "drag_out_cancelled": true
+    }
+  ],
+  "all_pass": true,
+  "routing_session_preserved": true
+}

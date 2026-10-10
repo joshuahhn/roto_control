@@ -60,8 +60,8 @@ class CompFollower:
         except (NameError, AttributeError, RuntimeError):
             return None, ()
 
-    def _tagged(self):
-        """Find explicit user tags below this controller's parent scope."""
+    def _components(self):
+        """Inventory external COMPs, including untagged copies of owner tokens."""
         parent = getattr(self.owner,'parent',None)
         stack = [parent()] if callable(parent) else []
         result = []
@@ -72,61 +72,58 @@ class CompFollower:
             lookup = getattr(comp,'op',None)
             if callable(lookup) and lookup('RotoPythonExt') is not None and lookup('protocol') is not None:
                 continue  # other controllers and their implementation details
-            if DEVICE_TAG in getattr(comp,'tags',()):
-                result.append(comp)
+            result.append(comp)
             stack.extend(child for child in getattr(comp,'children',()) if child.isCOMP)
         return sorted(result,key=lambda comp:comp.path)
 
+    def _tagged(self):
+        return [comp for comp in self._components() if DEVICE_TAG in getattr(comp,'tags',())]
+
+    def owner_candidates(self):
+        components=self._components()
+        # The default tag sampler is derived from this same inventory.
+        tagged=list(self.tag_sampler()) if self.tag_sampler!=self._tagged else []
+        return components+tagged+list(self.handles.values())
+
     def sync_tags(self, force=False):
-        """Register tagged Devices while idle; leave routing/values untouched."""
-        now = time.monotonic()
-        if not force and now < self.next_tag_scan:
-            return []
-        self.next_tag_scan = now+1
-        m = self.manager; h = self.e._host
+        """Allocate owner Layouts while idle; never select or move legacy mappings."""
+        now=time.monotonic()
+        if not force and now<self.next_tag_scan:return []
+        self.next_tag_scan=now+1
+        m=self.manager;h=self.e._host
         if (m.legacy or self.paused or self.gated or self.pending or self.backlog
                 or m.locked or m.mutating or m.touched or h.touched or h.learning or self.e._dispatching
                 or getattr(self.e,'_process',None) is not None and not (h.connected and h.plugin)):
             return []
-        self.refresh_links()
-        existing = [self.handles.get(p['id']) for t in m.layout()['tracks'] for p in t['plugins']
-                    if p.get('focus_comp') and p['focus_comp']['state']=='bound']
         try:
-            candidates = [comp for comp in self.tag_sampler() if self.eligible(comp)
-                          and DEVICE_TAG in getattr(comp,'tags',()) and comp not in existing]
-            # A sampler may return duplicates; commit each COMP only once.
-            candidates = list({comp.path:comp for comp in candidates}.values())
-            if not candidates:
-                self.tag_error = ''; return []
-            track = m.track()
-            if len(track['plugins'])+len(candidates)>127:
-                raise ValueError('Tagged Devices exceed this Track capacity (127)')
+            self.refresh_links()
+            candidates=list({comp.path:comp for comp in self.tag_sampler() if self.eligible(comp)
+                             and DEVICE_TAG in getattr(comp,'tags',())}.values())
             m.guard();m.capture(force=True)
-            previous = copy.deepcopy(m.data); handles = dict(self.handles)
-            created = []
-            for comp in candidates:
-                name = getattr(comp,'name',comp.path.rsplit('/',1)[-1])
-                hardware = ''.join(c if 32<=ord(c)<=126 else '?' for c in name)[:12]
-                plugin = m.empty_plugin(hardware)
-                plugin.update(name_mode='comp',comp_name=name,
-                    focus_comp=dict(path=os.path.relpath(comp.path,self.owner.path),state='bound'))
-                created.append(plugin);self.handles[plugin['id']] = comp
+            previous=copy.deepcopy(m.data);handles=dict(self.handles);owners=dict(m.owner_handles)
+            tokens=[];created=[]
             try:
-                track['plugins'].extend(created);m.save();m.menu()
-                if h.connected and h.plugin:m.announce(select=False)
-            except Exception:
-                m.data = previous;self.handles = handles;m.save();m.menu()
+                for comp in candidates:
+                    if not callable(getattr(comp,'fetch',None)):
+                        raise ValueError('COMP must support persistent storage')
+                    token=m.owner_token(comp)
+                    known=next((r for r in m.data['records'] if token and r.get('owner',{}).get('id')==token),None)
+                    if known and known['owner']['state']=='unregistered':continue
+                    tokens.append((comp,token))
+                    layout_id=m.register_comp(comp)
+                    if not any(r['id']==layout_id for r in previous['records']):created.append(getattr(comp,'id',comp.path))
+            except Exception as original:
+                m._owner_rollback(previous,owners,handles,tokens,{},original)
                 raise
-            self.tag_error = ''
-            return [getattr(comp,'id',comp.path) for comp in candidates]
+            self.tag_error='';return created
         except (ValueError,RuntimeError,AttributeError) as exc:
-            self.tag_error = str(exc)
-            return []
+            self.tag_error=str(exc);return []
 
     def refresh_links(self):
         m = getattr(self.e, '_layouts', None)
         if m is None:
             return
+        m.refresh_owners()
         changed = False
         present = set()
         for layout in m.data['records']:
@@ -136,6 +133,10 @@ class CompFollower:
                     if not link:
                         continue
                     tid = plugin['id']; present.add(tid)
+                    if (layout.get('owner',{}).get('entry_plugin_id')==tid or link.get('owner_id')) and layout['owner']['state']!='bound':
+                        if link['state']!='missing':link['state']='missing';changed=True
+                        self.handles.pop(tid,None)
+                        continue
                     if link['state'] == 'missing':
                         self.handles.pop(tid, None)
                         continue
@@ -174,7 +175,7 @@ class CompFollower:
             m.save()
             m.menu()
 
-    def _rebase_targets(self, plugin, old_path, new_path):
+    def _rebase_targets(self, plugin, old_path, new_path, layout_id=None):
         """Rebase only destinations inside this linked live COMP, keeping hashes."""
         old_absolute = os.path.normpath(self.owner.path + '/' + old_path)
         new_absolute = os.path.normpath(self.owner.path + '/' + new_path)
@@ -191,10 +192,12 @@ class CompFollower:
             elif isinstance(value, (list, tuple)):
                 for child in value:rebase(child)
         m = self.manager
-        # Other saved mapping variants may target this COMP without a Focus link.
-        for record in m.all_plugins():
+        # A live rename moves the same target everywhere. Explicit owner relink
+        # changes only that owner's configuration, preserving Custom references.
+        records=m.all_plugins() if layout_id is None else (p for t in m.layout(layout_id)['tracks'] for p in t['plugins'])
+        for record in records:
             rebase(record['targets']);rebase(record['state'])
-        if not m.legacy:
+        if not m.legacy and (layout_id is None or layout_id==m.data['active']):
             for field in ('parameter_assignments', 'page_targets', 'control_catalog'):
                 value = copy.deepcopy(self.owner.fetch(field, []));rebase(value)
                 self.owner.store(field, value)
@@ -220,6 +223,8 @@ class CompFollower:
         if m.legacy:
             raise ValueError('Focus links require Parameter mapping')
         plugin = m.plugin(layout_id, track_id, plugin_id)
+        if m.layout(layout_id).get('owner',{}).get('entry_plugin_id')==plugin_id:
+            raise ValueError('Use RelinkLayoutOwner to change the owner Device link')
         self.refresh_links()
         if comp is not None:
             if not self.eligible(comp):
@@ -227,8 +232,13 @@ class CompFollower:
             for other in m.layout(layout_id)['tracks']:
                 for other_plugin in other['plugins']:
                     if other_plugin['id'] != plugin_id and self.handles.get(other_plugin['id']) == comp:
-                        raise ValueError('COMP already has a Follow link in this Layout')
-        plugin['focus_comp'] = dict(path=os.path.relpath(comp.path, self.owner.path), state='bound') if comp else None
+                        owner=m.layout(layout_id).get('owner')
+                        if not owner or m.owner_handles.get(owner['id']) is not comp:
+                            raise ValueError('COMP already has a Follow link in this Layout')
+        link=dict(path=os.path.relpath(comp.path,self.owner.path),state='bound') if comp else None
+        owner=m.layout(layout_id).get('owner')
+        if link and owner and m.owner_handles.get(owner['id']) is comp:link['owner_id']=owner['id']
+        plugin['focus_comp'] = link
         plugin['name_mode'] = 'comp' if comp else 'manual'
         self.handles.pop(plugin_id, None)
         if comp is not None:
@@ -238,17 +248,38 @@ class CompFollower:
         return copy.deepcopy(plugin['focus_comp'])
 
     def resolve(self, comp):
-        if self.manager.legacy:
+        m = self.manager
+        if m.legacy:
             raise ValueError('COMP Follow is unavailable in Python registration')
         self.refresh_links()
         if not self.eligible(comp):
             raise ValueError('Choose a valid external COMP')
-        matches = [(t['id'], p['id']) for t in self.manager.layout()['tracks'] for p in t['plugins']
+        layout_id = self.e.LookupCompLayout(comp)
+        if layout_id is not None:
+            layout = m.layout(layout_id); owner = layout['owner']
+            track = m.track(layout_id); plugin = m.plugin(layout_id)
+            link = plugin.get('focus_comp') or {}
+            # The saved choice is authoritative among qualified variants. The
+            # registration entry is not a fallback or a wire Device identity.
+            if (link.get('owner_id') != owner['id'] or link.get('state') != 'bound'
+                    or link.get('path') != owner['path'] or self.handles.get(plugin['id']) is not comp):
+                raise ValueError('Owner saved Device has no bound qualified Follow link; explicitly choose a variant')
+            if layout_id == m.data['active'] and m.quarantined:
+                raise ValueError('Explicitly Activate the quarantined owner before Follow')
+            return layout_id, track['id'], plugin['id']
+        # Preserve unmigrated, active-Layout Focus behavior only for LEGACY.
+        # A token or unavailable registered locator must never fall back to an
+        # unrelated mapping of that COMP, including a same-path replacement.
+        path = os.path.relpath(comp.path, self.owner.path)
+        if (m.layout().get('category') != 'LEGACY' or m.owner_token(comp) is not None
+                or any(r.get('owner', {}).get('path') == path for r in m.data['records'])):
+            raise ValueError('COMP has no unique bound owner Layout')
+        matches = [(t['id'], p['id']) for t in m.layout()['tracks'] for p in t['plugins']
                    if p.get('focus_comp') and p['focus_comp']['state'] == 'bound'
                    and self.handles.get(p['id']) == comp]
         if len(matches) != 1:
-            raise ValueError('COMP has no unique Follow link in Active Layout')
-        return self.manager.data['active'], *matches[0]
+            raise ValueError('COMP has no unique Follow link in Active LEGACY Layout')
+        return m.data['active'], *matches[0]
 
     def invalidate(self):
         self.pending = None
@@ -315,13 +346,14 @@ class CompFollower:
     def request(self, layout_id, track_id, source, comp=None, plugin_id=None):
         m = self.manager
         if self.scope is None:
-            self.scope = m.data['active'], m.legacy
+            self.scope = m.legacy
         plugin_id = m.plugin(layout_id, track_id, plugin_id)['id']
         if source.startswith('hardware') and not (self.e._host.connected and self.e._host.plugin):
             return
         self.sequence += 1
         self.pending = dict(layout_id=layout_id, track_id=track_id, plugin_id=plugin_id, source=source,
-                            sequence=self.sequence, generation=self.connection_generation, comp=comp)
+                            sequence=self.sequence, generation=self.connection_generation, comp=comp,
+                            origin_key=m.context()['key'], owner_id=m.layout(layout_id).get('owner', {}).get('id'))
         self.error = ''
         if (not m.locked or source == 'hardware_plugin') and (layout_id, track_id, plugin_id) != m.context()['key']:
             self.fence()
@@ -369,7 +401,9 @@ class CompFollower:
 
     def _observe(self, force=False, explicit=False):
         m = self.manager
-        scope = m.data['active'], m.legacy
+        # Layout commits do not constitute a new pane selection. Retain the
+        # baseline across Follow/manual activation and fresh commit-time intents.
+        scope = m.legacy
         if self.scope != scope:
             self.invalidate(); self.scope = scope
         now = time.monotonic()
@@ -432,7 +466,10 @@ class CompFollower:
             return
         m = self.manager; h = self.e._host
         explicit_device = bool(self.pending and self.pending['source'] == 'hardware_plugin')
-        if m.legacy or (m.locked and not explicit_device) or m.touched or h.touched or h.learning or m.mutating or self.e._dispatching:
+        automatic_follow = bool(self.pending and self.pending['source'] == 'td')
+        if (m.legacy or (m.locked and not explicit_device) or
+                (not automatic_follow and (m.touched or h.touched)) or
+                h.learning or m.mutating or self.e._dispatching):
             return
         if getattr(self.e, '_process', None) is not None and not (h.connected and h.plugin):
             self.status = 'waiting_for_transport'; return
@@ -445,16 +482,25 @@ class CompFollower:
         if request['generation'] != self.connection_generation:
             return
         try:
-            if request['layout_id'] != m.data['active']:
+            if request['origin_key'] != m.context()['key']:
                 raise ValueError('Follow context expired')
-            if request['source'] == 'td' and self.resolve(request['comp']) != (request['layout_id'], request['track_id'], request['plugin_id']):
-                raise ValueError('Follow link expired')
+            if request['source'] == 'td':
+                if (self.resolve(request['comp']) != (request['layout_id'], request['track_id'], request['plugin_id'])
+                        or m.layout(request['layout_id']).get('owner', {}).get('id') != request['owner_id']):
+                    raise ValueError('Follow destination expired')
+            elif request['layout_id'] != m.data['active'] or (explicit_device and request['track_id'] != m.track()['id']):
+                raise ValueError('Hardware selection context expired')
             m.resolve(m.record(request['layout_id'], request['track_id'], request['plugin_id']))
             self.committing = True
-            m.select_plugin(request['layout_id'], request['track_id'], request['plugin_id'], hardware=explicit_device)
-            if self.gated:
+            m.select_plugin(request['layout_id'], request['track_id'], request['plugin_id'],
+                            hardware=explicit_device, automatic_follow=automatic_follow)
+            if self.pending is not None:
+                # A newer request made during install belongs to the next pass;
+                # do not reopen input/ACK/feedback in between the transitions.
+                self.fence(); self.clear_controls()
+            elif self.gated:
                 self.recover()
-            self.status = 'ready'; self.error = ''
+            self.status = 'pending' if self.pending else 'ready'; self.error = ''
         except (OSError, TimeoutError):
             raise
         except Exception as exc:
@@ -462,7 +508,10 @@ class CompFollower:
             if getattr(exc, 'rollback_failed', False):
                 self.paused = True; self.fence(); self.status = 'paused'
             elif self.gated:
-                self.recover()
+                if self.pending is not None:
+                    self.clear_controls()  # rollback may have installed bindings
+                else:
+                    self.recover()
         finally:
             self.committing = False
 
@@ -477,7 +526,8 @@ class CompFollower:
         pending = self.pending
         m = self.manager; h = self.e._host
         reasons = [name for name, active in (('paused',self.paused), ('backlog',self.backlog),
-                    ('LOCK',m.locked), ('LEARN',h.learning), ('touch',bool(m.touched or h.touched)),
+                    ('LOCK',m.locked), ('LEARN',h.learning),
+                    ('touch',bool(m.touched or h.touched) and not (pending and pending['source']=='td')),
                     ('activation',m.mutating or self.e._dispatching),
                     ('transport',getattr(self.e,'_process',None) is not None and not (h.connected and h.plugin))) if active]
         routing = self.handles.get(m.plugin()['id'])
@@ -489,7 +539,10 @@ class CompFollower:
                     gated=self.gated, source=pending['source'] if pending else None,
                     sequence=pending['sequence'] if pending else None,
                     requested_comp=pending['comp'].path if pending and self.eligible(pending['comp']) else '',
+                    pending_layout_id=pending['layout_id'] if pending else None,
+                    pending_owner_id=pending['owner_id'] if pending else None,
                     pending_track_id=pending['track_id'] if pending else None,
                     pending_plugin_id=pending['plugin_id'] if pending else None,
+                    follow_destination_policy='saved_active_owner_qualified_device',
                     focus_comp=copy.deepcopy(self.manager.plugin().get('focus_comp')),
                     **self.manager.context())

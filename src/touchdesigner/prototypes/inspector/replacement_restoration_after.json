@@ -1,0 +1,33 @@
+{
+  "views": [
+    {
+      "view": "/inspector_below",
+      "rect": [
+        328,
+        178,
+        272,
+        312
+      ],
+      "main": true,
+      "popup": true,
+      "selected": 0,
+      "geometry_clear": true
+    },
+    {
+      "view": "/inspector_popup",
+      "rect": [
+        240.0,
+        178.0,
+        520,
+        312
+      ],
+      "main": false,
+      "popup": false,
+      "selected": null,
+      "geometry_clear": true
+    }
+  ],
+  "production_connected": true,
+  "subscribers": 2,
+  "probe_removed": true
+}

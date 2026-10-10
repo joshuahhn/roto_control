@@ -1,0 +1,58 @@
+[
+  {
+    "view": "/inspector_below",
+    "functional_nodes": 34,
+    "no_overlap": true,
+    "groups": [
+      [
+        "View",
+        -25,
+        -825,
+        1010,
+        1015
+      ],
+      [
+        "Events",
+        1110,
+        -235,
+        880,
+        175
+      ],
+      [
+        "State",
+        1110,
+        -25,
+        355,
+        175
+      ]
+    ]
+  },
+  {
+    "view": "/inspector_popup",
+    "functional_nodes": 34,
+    "no_overlap": true,
+    "groups": [
+      [
+        "View",
+        -25,
+        -825,
+        1010,
+        1015
+      ],
+      [
+        "Events",
+        1110,
+        -235,
+        880,
+        175
+      ],
+      [
+        "State",
+        1110,
+        -25,
+        355,
+        175
+      ]
+    ]
+  }
+]

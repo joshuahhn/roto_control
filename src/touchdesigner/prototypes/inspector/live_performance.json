@@ -1,0 +1,28 @@
+{
+  "sync_ms_p95": 0.3950000973418355,
+  "sync_ms_max": 0.6665840046480298,
+  "same_data_text_write_delta": 0,
+  "burst_requests": 1000,
+  "queued_sync_runs": 1,
+  "stats": {
+    "received": 0,
+    "changed": 0,
+    "flushes": 215,
+    "notifications": 429,
+    "hits": 518,
+    "misses": 2,
+    "rejected": 0,
+    "cache_contexts": 2,
+    "cache_capacity": 4,
+    "source_contexts": 2,
+    "subscribers": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "scheduled": false,
+    "subscriber_errors": [],
+    "generation": 1,
+    "data_mode": "controller",
+    "sync_calls": 327
+  },
+  "frame_polling_dats": 0
+}

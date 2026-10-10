@@ -1,0 +1,1909 @@
+{
+  "reason": "complete",
+  "complete": true,
+  "soak_elapsed_s": 1800.0114085830282,
+  "feeds": 16437,
+  "matched": [
+    {
+      "case": "closed",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.795810424728899,
+        "p95": 7.974416732788086,
+        "maximum": 9.668749809265137,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.659735377403038,
+        "p95": 19.41654202528298,
+        "maximum": 21.498542046174407,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_rows",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 6.126554328084781,
+        "p95": 8.819832801818848,
+        "maximum": 9.439957618713379,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.680893212223783,
+        "p95": 19.8676660656929,
+        "maximum": 20.64737502951175,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_editor",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.73133304419107,
+        "p95": 7.290625095367432,
+        "maximum": 9.519042015075684,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.660516006125768,
+        "p95": 18.1260829558596,
+        "maximum": 20.94325004145503,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_details",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 4.922416112280839,
+        "p95": 6.8335418701171875,
+        "maximum": 9.704957962036133,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.6771266553921,
+        "p95": 18.45591701567173,
+        "maximum": 20.779000013135374,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_menu",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.603938181668718,
+        "p95": 7.215875148773193,
+        "maximum": 9.156457901000977,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.6607400663012,
+        "p95": 17.69749994855374,
+        "maximum": 20.46637493185699,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_picker",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.713628574712387,
+        "p95": 7.464125156402588,
+        "maximum": 9.743499755859375,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.67681733063046,
+        "p95": 18.86770804412663,
+        "maximum": 20.70341701619327,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_editor",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.764654585857265,
+        "p95": 7.859250068664551,
+        "maximum": 9.735082626342773,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.662255795333312,
+        "p95": 18.596624955534935,
+        "maximum": 21.01783303078264,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_details",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.846021854324846,
+        "p95": 7.853041172027588,
+        "maximum": 9.256999969482422,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.682805734785237,
+        "p95": 18.700124928727746,
+        "maximum": 20.71541699115187,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_menu",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.671825563670784,
+        "p95": 7.602042198181152,
+        "maximum": 9.960541725158691,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.667050775140524,
+        "p95": 17.75837503373623,
+        "maximum": 21.26850001513958,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_picker",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.4243054137324656,
+        "p95": 7.066041946411133,
+        "maximum": 10.59970760345459,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.680722953659167,
+        "p95": 17.827208037488163,
+        "maximum": 21.227833931334317,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_picker",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 4.732734561755957,
+        "p95": 6.666791915893555,
+        "maximum": 8.95787525177002,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.653084715007996,
+        "p95": 17.77133299037814,
+        "maximum": 20.437750034034252,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_menu",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.698932969806999,
+        "p95": 7.441333770751953,
+        "maximum": 10.088042259216309,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.67193211892632,
+        "p95": 18.637500004842877,
+        "maximum": 20.202083978801966,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_details",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.671871191618458,
+        "p95": 7.465875148773193,
+        "maximum": 9.000207901000977,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.66525523841307,
+        "p95": 18.602791940793395,
+        "maximum": 20.222540944814682,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "popup_editor",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.69985019292263,
+        "p95": 8.148750305175781,
+        "maximum": 10.024540901184082,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.669190953646027,
+        "p95": 19.000709056854248,
+        "maximum": 20.66250005736947,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_picker",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 6.038042242163854,
+        "p95": 7.88824987411499,
+        "maximum": 9.817375183105469,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.670695913875388,
+        "p95": 19.101542071439326,
+        "maximum": 20.937583060003817,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_menu",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 6.03699307725919,
+        "p95": 7.904208183288574,
+        "maximum": 9.53962516784668,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.664108721730578,
+        "p95": 18.98079097736627,
+        "maximum": 20.759916049428284,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_details",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.963662561201891,
+        "p95": 7.5094170570373535,
+        "maximum": 10.033458709716797,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.66769647002467,
+        "p95": 17.74199993815273,
+        "maximum": 20.951000042259693,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_editor",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 4.91529578720497,
+        "p95": 7.177916049957275,
+        "maximum": 9.202500343322754,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.678884106577183,
+        "p95": 17.466707970015705,
+        "maximum": 20.425416994839907,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "fold_rows",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.58910480398216,
+        "p95": 7.74229097366333,
+        "maximum": 9.269290924072266,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.670224616082002,
+        "p95": 18.44983291812241,
+        "maximum": 20.351249957457185,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    },
+    {
+      "case": "closed",
+      "frame_ms": {
+        "samples": 151,
+        "mean": 5.619448109178354,
+        "p95": 8.144499778747559,
+        "maximum": 9.618624687194824,
+        "total_samples": 151,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 151,
+        "mean": 16.667812364175916,
+        "p95": 19.610749906860292,
+        "maximum": 22.374458028934896,
+        "total_samples": 151,
+        "retained_limit": 3600
+      }
+    }
+  ],
+  "buckets": [
+    {
+      "elapsed_s": 60.01067308301572,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3592,
+        "mean": 5.140712257615707,
+        "p95": 16.45166778564453,
+        "maximum": 139.56228637695312,
+        "total_samples": 3592,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3591,
+        "mean": 16.687191868552574,
+        "p95": 29.593833023682237,
+        "maximum": 36.942666047252715,
+        "total_samples": 3591,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 544,
+        "mean": 0.5784208014494439,
+        "p95": 0.6678329082205892,
+        "maximum": 0.9937919676303864,
+        "total_samples": 544,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.8124170303344727,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.3536376953125,
+        "active_ops": 24.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.011962890625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 1,
+        "targets_entries": 17,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 120.01395112497266,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.062726387452788,
+        "p95": 16.174999237060547,
+        "maximum": 31.849624633789062,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.676842146180363,
+        "p95": 28.70095905382186,
+        "maximum": 44.018917018547654,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 551,
+        "mean": 0.5703847453897369,
+        "p95": 0.6878339918330312,
+        "maximum": 1.046875026077032,
+        "total_samples": 551,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.170332908630371,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4302368164062,
+        "active_ops": 90.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.224365234375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 180.03081450005993,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.357760651831232,
+        "p95": 16.840999603271484,
+        "maximum": 30.739124298095703,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.680617947495072,
+        "p95": 29.108916991390288,
+        "maximum": 38.41875004582107,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 551,
+        "mean": 0.5554148615481579,
+        "p95": 0.6990840192884207,
+        "maximum": 0.9940000018104911,
+        "total_samples": 551,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 8.808916091918945,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4541625976562,
+        "active_ops": 47.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.7001953125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 240.03574554203078,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3599,
+        "mean": 5.342855396917311,
+        "p95": 15.2544584274292,
+        "maximum": 27.714874267578125,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3599,
+        "mean": 16.672667697129995,
+        "p95": 28.889624984003603,
+        "maximum": 38.25049998704344,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 549,
+        "mean": 0.5570418743810231,
+        "p95": 0.6848339689895511,
+        "maximum": 1.0965419933199883,
+        "total_samples": 549,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 9.014625549316406,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4552612304688,
+        "active_ops": 158.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.73291015625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 300.0399805000052,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3600,
+        "mean": 5.143602723015679,
+        "p95": 17.00754165649414,
+        "maximum": 28.90216636657715,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3600,
+        "mean": 16.667843043881778,
+        "p95": 29.622458037920296,
+        "maximum": 39.589749998413026,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.5842468590227836,
+        "p95": 0.6732499459758401,
+        "maximum": 0.8257500594481826,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 13.95704174041748,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4570922851562,
+        "active_ops": 12.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.765625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 360.0409600830171,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3596,
+        "mean": 5.267862761113482,
+        "p95": 17.02924919128418,
+        "maximum": 26.670499801635742,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3596,
+        "mean": 16.68547819327362,
+        "p95": 29.51979194767773,
+        "maximum": 42.73554205428809,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.6070852764548922,
+        "p95": 0.7310420041903853,
+        "maximum": 0.9779589017853141,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 6.084708213806152,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.459228515625,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.781982421875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 420.0424352079863,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3596,
+        "mean": 5.074061651847784,
+        "p95": 16.2410831451416,
+        "maximum": 25.776958465576172,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3596,
+        "mean": 16.685615996932466,
+        "p95": 29.80995806865394,
+        "maximum": 35.853040986694396,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.5907010500652528,
+        "p95": 0.6772499764338136,
+        "maximum": 0.958082964643836,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 11.010832786560059,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4570922851562,
+        "active_ops": 118.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.81494140625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 480.0571051670704,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3600,
+        "mean": 5.220188530948427,
+        "p95": 16.74945831298828,
+        "maximum": 29.173791885375977,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3600,
+        "mean": 16.670741655301146,
+        "p95": 29.45945900864899,
+        "maximum": 45.353249995969236,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 547,
+        "mean": 0.5994184096760953,
+        "p95": 0.7179999956861138,
+        "maximum": 0.9571249829605222,
+        "total_samples": 547,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.412125110626221,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4645385742188,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.798583984375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 540.0702273329953,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.636516411679529,
+        "p95": 18.59833335876465,
+        "maximum": 29.404207229614258,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.67957814505972,
+        "p95": 31.017791014164686,
+        "maximum": 39.655374945141375,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 553,
+        "mean": 0.6214615103248069,
+        "p95": 0.7200409891083837,
+        "maximum": 0.9968329686671495,
+        "total_samples": 553,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 3.7018749713897705,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4597778320312,
+        "active_ops": 26.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.864013671875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 600.0791576670017,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3597,
+        "mean": 5.732453510169357,
+        "p95": 19.144458770751953,
+        "maximum": 33.29291534423828,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3597,
+        "mean": 16.683049856548912,
+        "p95": 31.101542059332132,
+        "maximum": 44.67691690661013,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 550,
+        "mean": 0.6496484111994505,
+        "p95": 0.7762499153614044,
+        "maximum": 0.9923750767484307,
+        "total_samples": 550,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.179291725158691,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4628295898438,
+        "active_ops": 90.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.88037109375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 660.0909705000231,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3600,
+        "mean": 5.728442002733549,
+        "p95": 19.455291748046875,
+        "maximum": 28.842750549316406,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3600,
+        "mean": 16.66994800917261,
+        "p95": 31.56666597351432,
+        "maximum": 38.4208329487592,
+        "total_samples": 3600,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 554,
+        "mean": 0.6313677444307652,
+        "p95": 0.7122500101104379,
+        "maximum": 1.0472079738974571,
+        "total_samples": 554,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.892874717712402,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4627075195312,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.929443359375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 720.1060133330757,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3599,
+        "mean": 5.5898897054295436,
+        "p95": 18.610332489013672,
+        "maximum": 24.647708892822266,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3599,
+        "mean": 16.675477308433614,
+        "p95": 31.138166086748242,
+        "maximum": 35.25683295447379,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 551,
+        "mean": 0.6469217777258959,
+        "p95": 0.7591249886900187,
+        "maximum": 1.089792000129819,
+        "total_samples": 551,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 4.072999954223633,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4635620117188,
+        "active_ops": 27.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.88037109375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 780.1195904579945,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3593,
+        "mean": 5.761366539070475,
+        "p95": 19.29312515258789,
+        "maximum": 28.804542541503906,
+        "total_samples": 3593,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3593,
+        "mean": 16.702915982443308,
+        "p95": 31.506708939559758,
+        "maximum": 38.48833392839879,
+        "total_samples": 3593,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 556,
+        "mean": 0.6224858097601413,
+        "p95": 0.7145829731598496,
+        "maximum": 0.9563330095261335,
+        "total_samples": 556,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 59.0,
+        "msec": 4.375332832336426,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4620971679688,
+        "active_ops": 82.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.94580078125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 840.1281465829816,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.18979983908922,
+        "p95": 16.709875106811523,
+        "maximum": 24.498374938964844,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.678309095327148,
+        "p95": 29.7709999140352,
+        "maximum": 39.2907919595018,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 544,
+        "mean": 0.6055953678750323,
+        "p95": 0.7167919538915157,
+        "maximum": 0.9894999675452709,
+        "total_samples": 544,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.929957866668701,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4635620117188,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.896728515625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 900.1352441670606,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3597,
+        "mean": 5.094229198807904,
+        "p95": 16.475500106811523,
+        "maximum": 27.549999237060547,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3597,
+        "mean": 16.682540334745347,
+        "p95": 29.797042021527886,
+        "maximum": 38.78429101314396,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.5816028133000529,
+        "p95": 0.6743329577147961,
+        "maximum": 0.9774579666554928,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 3.4149580001831055,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.46142578125,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.96240234375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 960.1504850829951,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.191593153931287,
+        "p95": 16.927749633789062,
+        "maximum": 34.83733367919922,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.68016701387842,
+        "p95": 29.57108395639807,
+        "maximum": 47.01474995817989,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 546,
+        "mean": 0.6075524833759518,
+        "p95": 0.7252920186147094,
+        "maximum": 0.9241250809282064,
+        "total_samples": 546,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 59.0,
+        "msec": 4.503666877746582,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4655151367188,
+        "active_ops": 87.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.929443359375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1020.1542075830512,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.144753722564057,
+        "p95": 16.492250442504883,
+        "maximum": 27.127416610717773,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.67696567539078,
+        "p95": 29.829624923877418,
+        "maximum": 42.351416079327464,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 543,
+        "mean": 0.5853804393069438,
+        "p95": 0.7022919598966837,
+        "maximum": 0.9116670116782188,
+        "total_samples": 543,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.8260409832000732,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4607543945312,
+        "active_ops": 26.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.94580078125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1080.161186750047,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3597,
+        "mean": 5.1480161954801815,
+        "p95": 16.83129119873047,
+        "maximum": 24.249582290649414,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3597,
+        "mean": 16.68250741367688,
+        "p95": 29.594624997116625,
+        "maximum": 35.3916670428589,
+        "total_samples": 3597,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 546,
+        "mean": 0.6053508845696929,
+        "p95": 0.6971670081838965,
+        "maximum": 0.9817080572247505,
+        "total_samples": 546,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 59.0,
+        "msec": 3.9709999561309814,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4635620117188,
+        "active_ops": 25.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.9130859375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1140.162896416965,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3592,
+        "mean": 5.652795062896138,
+        "p95": 19.043415069580078,
+        "maximum": 24.734542846679688,
+        "total_samples": 3592,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3592,
+        "mean": 16.704262156714375,
+        "p95": 31.539166113361716,
+        "maximum": 40.83587497007102,
+        "total_samples": 3592,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 553,
+        "mean": 0.629309314525405,
+        "p95": 0.7513751043006778,
+        "maximum": 0.9792909258976579,
+        "total_samples": 553,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.126666069030762,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4634399414062,
+        "active_ops": 85.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.929443359375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1200.1828192080138,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3594,
+        "mean": 5.8983355042797765,
+        "p95": 19.412790298461914,
+        "maximum": 24.604625701904297,
+        "total_samples": 3594,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3594,
+        "mean": 16.700034165567303,
+        "p95": 31.44916705787182,
+        "maximum": 36.08433296903968,
+        "total_samples": 3594,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 554,
+        "mean": 0.6539368245915412,
+        "p95": 0.7691250648349524,
+        "maximum": 0.934499897994101,
+        "total_samples": 554,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 3.8035409450531006,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4641723632812,
+        "active_ops": 87.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.978759765625
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1260.1851737080142,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3596,
+        "mean": 5.716310190478209,
+        "p95": 18.026166915893555,
+        "maximum": 34.11145782470703,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3596,
+        "mean": 16.685860539488424,
+        "p95": 30.848374939523637,
+        "maximum": 45.606791973114014,
+        "total_samples": 3596,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 550,
+        "mean": 0.5934132434512404,
+        "p95": 0.7813750999048352,
+        "maximum": 1.1014160700142384,
+        "total_samples": 550,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 3.3368749618530273,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4620971679688,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.94580078125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1320.1885648330208,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3595,
+        "mean": 5.608687927129371,
+        "p95": 18.48316764831543,
+        "maximum": 24.458250045776367,
+        "total_samples": 3595,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3595,
+        "mean": 16.69079029902826,
+        "p95": 30.91108298394829,
+        "maximum": 35.709124989807606,
+        "total_samples": 3595,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 547,
+        "mean": 0.6539410401997199,
+        "p95": 0.7823749911040068,
+        "maximum": 1.1508750030770898,
+        "total_samples": 547,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.07450008392334,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4635620117188,
+        "active_ops": 26.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.96240234375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1380.195860958076,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3593,
+        "mean": 5.689509428081624,
+        "p95": 18.81458282470703,
+        "maximum": 24.168874740600586,
+        "total_samples": 3593,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3593,
+        "mean": 16.70116786113423,
+        "p95": 31.233667046763003,
+        "maximum": 53.85954200755805,
+        "total_samples": 3593,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 552,
+        "mean": 0.6281479588284603,
+        "p95": 0.7295829709619284,
+        "maximum": 0.8993750670924783,
+        "total_samples": 552,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.7684998512268066,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.46142578125,
+        "active_ops": 26.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3620.9951171875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1440.1989919999614,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3594,
+        "mean": 5.167146759359586,
+        "p95": 16.701250076293945,
+        "maximum": 25.427749633789062,
+        "total_samples": 3594,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3594,
+        "mean": 16.695362003863483,
+        "p95": 29.847416910342872,
+        "maximum": 44.16087502613664,
+        "total_samples": 3594,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 544,
+        "mean": 0.6140354645835674,
+        "p95": 0.7517499616369605,
+        "maximum": 0.9419999551028013,
+        "total_samples": 544,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 4.612292289733887,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4655151367188,
+        "active_ops": 90.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.011474609375
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1500.2085826250259,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3599,
+        "mean": 5.014760810953274,
+        "p95": 15.645000457763672,
+        "maximum": 26.609500885009766,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3599,
+        "mean": 16.673962385402735,
+        "p95": 29.780999990180135,
+        "maximum": 36.47562500555068,
+        "total_samples": 3599,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 544,
+        "mean": 0.5809022045201239,
+        "p95": 0.6652920274063945,
+        "maximum": 0.9362919954583049,
+        "total_samples": 544,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.326208114624023,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4607543945312,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.076904296875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1560.2231085830135,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.122533477234006,
+        "p95": 16.500207901000977,
+        "maximum": 23.36579132080078,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.679968304054377,
+        "p95": 29.68412498012185,
+        "maximum": 35.3751250077039,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.6042968765875205,
+        "p95": 0.7137920474633574,
+        "maximum": 0.9779590182006359,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.999166965484619,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4635620117188,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.02783203125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1620.2334052920341,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3595,
+        "mean": 5.108964747281664,
+        "p95": 16.545209884643555,
+        "maximum": 27.579666137695312,
+        "total_samples": 3595,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3595,
+        "mean": 16.69271118470671,
+        "p95": 29.93129100650549,
+        "maximum": 42.21654206048697,
+        "total_samples": 3595,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 543,
+        "mean": 0.587215017000793,
+        "p95": 0.696792034432292,
+        "maximum": 0.8810829604044557,
+        "total_samples": 543,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.668084144592285,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4634399414062,
+        "active_ops": 82.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.060546875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1680.2410467920126,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.217763651603457,
+        "p95": 17.113750457763672,
+        "maximum": 25.118125915527344,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.67805489160047,
+        "p95": 29.64924997650087,
+        "maximum": 37.602083990350366,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 544,
+        "mean": 0.6075927406474126,
+        "p95": 0.7055000169202685,
+        "maximum": 0.953375012613833,
+        "total_samples": 544,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 3.6833748817443848,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 674.4641723632812,
+        "active_ops": 11.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.09326171875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1740.2642190420302,
+      "case": "popup",
+      "frame_ms": {
+        "samples": 3598,
+        "mean": 5.579691552466455,
+        "p95": 18.4285831451416,
+        "maximum": 32.765708923339844,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3598,
+        "mean": 16.682371386886473,
+        "p95": 31.182582955807447,
+        "maximum": 42.75541694369167,
+        "total_samples": 3598,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 551,
+        "mean": 0.6274810107762904,
+        "p95": 0.7487080292776227,
+        "maximum": 0.954875024035573,
+        "total_samples": 551,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 61.0,
+        "msec": 4.784667015075684,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4620971679688,
+        "active_ops": 85.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.126220703125
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    },
+    {
+      "elapsed_s": 1800.0062156670028,
+      "case": "fold",
+      "frame_ms": {
+        "samples": 3579,
+        "mean": 5.561762452825017,
+        "p95": 18.30158233642578,
+        "maximum": 23.382375717163086,
+        "total_samples": 3579,
+        "retained_limit": 3600
+      },
+      "wall_gap_ms": {
+        "samples": 3579,
+        "mean": 16.69237122798901,
+        "p95": 31.0356670524925,
+        "maximum": 40.188874932937324,
+        "total_samples": 3579,
+        "retained_limit": 3600
+      },
+      "sync_ms": {
+        "samples": 545,
+        "mean": 0.6495815208352623,
+        "p95": 0.7626250153407454,
+        "maximum": 0.9312920738011599,
+        "total_samples": 545,
+        "retained_limit": 1200
+      },
+      "metrics": {
+        "fps": 60.0,
+        "msec": 4.161874771118164,
+        "dropped_frames": 0.0,
+        "gpu_mem_used": 679.4634399414062,
+        "active_ops": 25.0,
+        "total_ops": 9271.0,
+        "cpu_mem_used": 3621.158935546875
+      },
+      "maxima": {
+        "fixture_midi_pending_bytes": 0,
+        "definition_contexts": 2,
+        "cache_contexts": 2,
+        "source_contexts": 2,
+        "pending_contexts": 1,
+        "pending_slots": 14,
+        "subscribers": 2,
+        "targets_pages": 2,
+        "targets_entries": 34,
+        "targets_jobs": 0,
+        "targets_pending": 0
+      }
+    }
+  ],
+  "maxima": {
+    "fixture_midi_pending_bytes": 0,
+    "definition_contexts": 2,
+    "cache_contexts": 2,
+    "source_contexts": 2,
+    "pending_contexts": 1,
+    "pending_slots": 14,
+    "subscribers": 2,
+    "targets_pages": 2,
+    "targets_entries": 34,
+    "targets_jobs": 0,
+    "targets_pending": 0
+  },
+  "errors": [],
+  "production_preserved": true,
+  "subscribers": 2,
+  "physical_relearn_verified": false,
+  "native_resize_issue_6_deferred": true,
+  "duration_s": 1800.0
+}

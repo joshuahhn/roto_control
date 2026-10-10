@@ -9,3 +9,10 @@ Python with mido and python-rtmidi is still required. The Python parameter prese
 A generic export starts disconnected, with Follow off and no Focus links, user targets, callbacks or mappings. It does not clear mappings on the physical hardware. Inspector shows all eight knobs and eight buttons, including empty slots. Advanced binding APIs remain available. Diagnostics are internal and accessible through controller.State. The portable version has no outer CHOP outputs; parameter targets and callbacks receive the actual values/events.
 
 Run export_component.py in TD and call export(controller, a_new_tox_path) after Disconnect. It exports an isolated copy and never overwrites an existing destination. Development source edits require a deliberate new export.
+
+The model and both compact Inspector presentations are nested inside the exported
+controller. Relative Controller/Model parameters resolve the loaded instance,
+including renamed/moved copies; no external model or view shortcut is required.
+Open Inspector is an explicit Pulse, never a startup side effect. Export strips
+nested UI drafts/caches/subscribers and target readouts along with user mappings.
+The old Palette Lister is not included in active owned builds/exports.

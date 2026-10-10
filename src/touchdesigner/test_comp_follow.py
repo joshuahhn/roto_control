@@ -15,6 +15,9 @@ from protocol import sysex, digest
 class FollowTests(unittest.TestCase):
     def fixture(self, pulse=False):
         e, m, a = test_layouts.LayoutTests().fixture()
+        # Existing unclassified configurations retain active-Layout Follow.
+        # Fresh CUSTOM and COMP-owned behavior is covered by test_owner_follow.
+        m.layout()['category'] = 'LEGACY'; m.save()
         b = test_assignment.AssignmentTests().parameter()
         a.owner.isCOMP = b.owner.isCOMP = True
         a.owner.id = 10; b.owner.id = 20; b.owner.path = '/other'

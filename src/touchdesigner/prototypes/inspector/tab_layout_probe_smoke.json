@@ -1,0 +1,359 @@
+{
+  "schema": 1,
+  "temporary_readonly_probe": true,
+  "screen_state_requires_human_markers": true,
+  "queued_tx_is_not_wire_delivery": true,
+  "capacity": 512,
+  "dropped": 0,
+  "logging_errors": 0,
+  "events": [
+    {
+      "sequence": 1,
+      "seconds": 5e-06,
+      "kind": "start",
+      "data": {
+        "controller": "/roto_control_python/roto_python",
+        "source": "physical messages only"
+      },
+      "context": {
+        "routing": {
+          "legacy": false,
+          "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+          "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "locked": false,
+          "selected_plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "first_plugin": 0,
+          "plugin_count": 2,
+          "key": [
+            "3e6fc58800854c43bac1742c9063a87a",
+            "track.3e6fc58800854c43bac1742c9063a87a",
+            "plugin.3e6fc58800854c43bac1742c9063a87a"
+          ],
+          "label": "T / T / pixelSortV3"
+        },
+        "tracks": [
+          {
+            "id": "track.3e6fc58800854c43bac1742c9063a87a",
+            "name": "T"
+          },
+          {
+            "id": "track.136ed89c5a2049928846407687c3d756",
+            "name": "TRACK"
+          }
+        ],
+        "track_count": 2,
+        "devices": [
+          {
+            "id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+            "name": "pixelSortV3"
+          },
+          {
+            "id": "plugin.0ecf82a6ac4342968389361aa5299556",
+            "name": "fractal_pop"
+          }
+        ],
+        "device_count": 2,
+        "connected": true,
+        "plugin": true,
+        "learning": false,
+        "views": [
+          {
+            "path": "/inspector_below",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          },
+          {
+            "path": "/inspector_popup",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+            "kind": "knob",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Sortcrit"
+          },
+          {
+            "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+            "kind": "button",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Masksource"
+          },
+          {
+            "id": "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+            "kind": "knob",
+            "slot": 2,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Lowthresh"
+          },
+          {
+            "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+            "kind": "knob",
+            "slot": 3,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Highthresh"
+          },
+          {
+            "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+            "kind": "knob",
+            "slot": 4,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Mix"
+          },
+          {
+            "id": "parameter.d140395409be447c8c13fb71c8862e70",
+            "kind": "knob",
+            "slot": 5,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Spanpercent"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "seconds": 0.000794,
+      "kind": "human_marker",
+      "data": {
+        "label": "Native start/stop smoke only; no physical input injected"
+      },
+      "context": {
+        "routing": {
+          "legacy": false,
+          "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+          "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "locked": false,
+          "selected_plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "first_plugin": 0,
+          "plugin_count": 2,
+          "key": [
+            "3e6fc58800854c43bac1742c9063a87a",
+            "track.3e6fc58800854c43bac1742c9063a87a",
+            "plugin.3e6fc58800854c43bac1742c9063a87a"
+          ],
+          "label": "T / T / pixelSortV3"
+        },
+        "tracks": [
+          {
+            "id": "track.3e6fc58800854c43bac1742c9063a87a",
+            "name": "T"
+          },
+          {
+            "id": "track.136ed89c5a2049928846407687c3d756",
+            "name": "TRACK"
+          }
+        ],
+        "track_count": 2,
+        "devices": [
+          {
+            "id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+            "name": "pixelSortV3"
+          },
+          {
+            "id": "plugin.0ecf82a6ac4342968389361aa5299556",
+            "name": "fractal_pop"
+          }
+        ],
+        "device_count": 2,
+        "connected": true,
+        "plugin": true,
+        "learning": false,
+        "views": [
+          {
+            "path": "/inspector_below",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          },
+          {
+            "path": "/inspector_popup",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+            "kind": "knob",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Sortcrit"
+          },
+          {
+            "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+            "kind": "button",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Masksource"
+          },
+          {
+            "id": "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+            "kind": "knob",
+            "slot": 2,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Lowthresh"
+          },
+          {
+            "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+            "kind": "knob",
+            "slot": 3,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Highthresh"
+          },
+          {
+            "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+            "kind": "knob",
+            "slot": 4,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Mix"
+          },
+          {
+            "id": "parameter.d140395409be447c8c13fb71c8862e70",
+            "kind": "knob",
+            "slot": 5,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Spanpercent"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "seconds": 0.0012,
+      "kind": "stop",
+      "data": {},
+      "context": {
+        "routing": {
+          "legacy": false,
+          "layout_id": "3e6fc58800854c43bac1742c9063a87a",
+          "track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "selected_track_id": "track.3e6fc58800854c43bac1742c9063a87a",
+          "locked": false,
+          "selected_plugin_id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+          "first_plugin": 0,
+          "plugin_count": 2,
+          "key": [
+            "3e6fc58800854c43bac1742c9063a87a",
+            "track.3e6fc58800854c43bac1742c9063a87a",
+            "plugin.3e6fc58800854c43bac1742c9063a87a"
+          ],
+          "label": "T / T / pixelSortV3"
+        },
+        "tracks": [
+          {
+            "id": "track.3e6fc58800854c43bac1742c9063a87a",
+            "name": "T"
+          },
+          {
+            "id": "track.136ed89c5a2049928846407687c3d756",
+            "name": "TRACK"
+          }
+        ],
+        "track_count": 2,
+        "devices": [
+          {
+            "id": "plugin.3e6fc58800854c43bac1742c9063a87a",
+            "name": "pixelSortV3"
+          },
+          {
+            "id": "plugin.0ecf82a6ac4342968389361aa5299556",
+            "name": "fractal_pop"
+          }
+        ],
+        "device_count": 2,
+        "connected": true,
+        "plugin": true,
+        "learning": false,
+        "views": [
+          {
+            "path": "/inspector_below",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          },
+          {
+            "path": "/inspector_popup",
+            "key": [
+              "3e6fc58800854c43bac1742c9063a87a",
+              "track.3e6fc58800854c43bac1742c9063a87a",
+              "plugin.3e6fc58800854c43bac1742c9063a87a"
+            ],
+            "follows_routing": true
+          }
+        ],
+        "controls": [
+          {
+            "id": "parameter.292f87cf1c224693a56c515c5e9e539b",
+            "kind": "knob",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Sortcrit"
+          },
+          {
+            "id": "parameter.6e5e2abdc3ba4e538a35a221cdf50c28",
+            "kind": "button",
+            "slot": 1,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Masksource"
+          },
+          {
+            "id": "parameter.9de40f49815a4072b2ffcdedbf0f3d08",
+            "kind": "knob",
+            "slot": 2,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Lowthresh"
+          },
+          {
+            "id": "parameter.4f3475e31cd94822aec26eeb6c9f16bb",
+            "kind": "knob",
+            "slot": 3,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Highthresh"
+          },
+          {
+            "id": "parameter.2b5fa1105e1446be9f89c813f5484b1a",
+            "kind": "knob",
+            "slot": 4,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Mix"
+          },
+          {
+            "id": "parameter.d140395409be447c8c13fb71c8862e70",
+            "kind": "knob",
+            "slot": 5,
+            "comp": "/roto_control_python/pixelSortV3",
+            "parameter": "Spanpercent"
+          }
+        ]
+      }
+    }
+  ],
+  "restore_conflicts": []
+}

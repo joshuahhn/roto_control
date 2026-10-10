@@ -1,0 +1,41 @@
+{
+  "pid": 5341,
+  "phase": "done",
+  "case": "closed_idle",
+  "elapsed_s": 80.35681941604707,
+  "soak_elapsed_s": 80.23831487505231,
+  "duration_s": 0.0,
+  "feeds": 568,
+  "stats": {
+    "received": 0,
+    "changed": 0,
+    "flushes": 1569,
+    "notifications": 3138,
+    "hits": 17794,
+    "misses": 4,
+    "rejected": 0,
+    "cache_contexts": 1,
+    "cache_capacity": 4,
+    "source_contexts": 1,
+    "subscribers": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "scheduled": false,
+    "subscriber_errors": [],
+    "generation": 6,
+    "data_mode": "controller",
+    "sync_calls": 4719
+  },
+  "targets": {
+    "pages": 0,
+    "entries": 0,
+    "jobs": 0,
+    "pending": 0,
+    "errors": []
+  },
+  "maxima": {},
+  "errors": [],
+  "done": true,
+  "production_preserved": true,
+  "reason": "complete"
+}

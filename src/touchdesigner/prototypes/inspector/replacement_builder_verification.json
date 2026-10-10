@@ -1,0 +1,9 @@
+{
+  "fresh_builder": true,
+  "shared_model": true,
+  "embedded_source_current": true,
+  "three_bounded_menu_pools": true,
+  "no_windows_opened": true,
+  "empty_geometry": true,
+  "production_preserved": true
+}

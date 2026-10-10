@@ -1,0 +1,32 @@
+[
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_below",
+      "u": "<module '/inspector_below/ui' from '/inspector_below/ui'>"
+    },
+    "output": "cross-context write OLD-CONTEXT-DRAFT\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_below"
+    },
+    "output": "selected after deferred context callback 1\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_popup",
+      "u": "<module '/inspector_popup/ui' from '/inspector_popup/ui'>"
+    },
+    "output": "cross-context write OLD-CONTEXT-DRAFT\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_popup"
+    },
+    "output": "selected after deferred context callback 1\n"
+  }
+]

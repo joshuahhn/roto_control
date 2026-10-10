@@ -1,0 +1,20 @@
+{
+  "same_panel_root": true,
+  "no_resource_menu_window": true,
+  "outside_click_closes": true,
+  "escape_listener_scoped": true,
+  "escape_closes": true,
+  "eight_rows": true,
+  "first_after_wheel": 1,
+  "native_wheel_callback": true,
+  "first_after_page": 9,
+  "native_page": true,
+  "first_after_previous": 1,
+  "previous_page": true,
+  "stale_callback_rejected": true,
+  "disconnect_closes": true,
+  "window_size_preserved": true,
+  "routing_session_catalog_preserved": true,
+  "operator_count_preserved": true,
+  "all_pass": true
+}

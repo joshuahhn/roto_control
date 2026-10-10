@@ -9,9 +9,9 @@ A reusable TouchDesigner tool for freely mapping ROTO-CONTROL knobs and buttons 
 3. Put hardware in PLUGIN mode, open LEARN, select a knob/button, then change a compatible custom parameter in any sibling or nested tool.
 4. After LEARNED, exit LEARN. Hardware changes update the target; target changes update hardware feedback.
 
-Float/Int parameters use knobs. Toggle/Pulse parameters use buttons; hardware PUSH/TOGGLE is a separate setting and must match the Inspector Hardware column. Use PUSH for press/release Pulse feedback.
+Float/Int parameters use knobs. Toggle/Pulse parameters use buttons; hardware PUSH/TOGGLE is a separate setting and must match the Inspector Mapping section HW Type. Use PUSH for press/release Pulse feedback.
 
-Inspector displays all 16 slots, mapped COMP/parameter, values, ranges and button modes. It supports optional explicit assignment, Re-learn, edits and confirmed Clear/Clear All. Disconnect retains records. Save the containing TD project to retain mappings after reopen. Mapped target COMPs receive a tag and color.
+Connection **Open Inspector** opens the controller-owned Fold view (with its popup editor). The alternate new presentation shares the internal model; no root sibling UI or Palette Lister is required. Inspector displays all 16 slots, mapped COMP/parameter, values, ranges and button modes. It supports optional explicit assignment, Re-learn, edits and confirmed Clear/Clear Device. Disconnect retains records. Save the containing TD project to retain mappings after reopen. Mapped target COMPs receive a tag and color.
 
 ## Controls
 

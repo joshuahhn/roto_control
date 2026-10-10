@@ -1,0 +1,12 @@
+{
+  "samples": 1200,
+  "resize_frames": 0,
+  "gap_p95_ms": 18.868083017878234,
+  "max_gap_ms": 40.01574998255819,
+  "latest_metrics": {
+    "fps": 60.0,
+    "cook": 1.0
+  },
+  "resize_max_gap_ms": null,
+  "native_drag_visual_verified": false
+}

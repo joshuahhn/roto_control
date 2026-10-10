@@ -1,0 +1,38 @@
+[
+  {
+    "style": "popup",
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "follow": true,
+    "selected": 0,
+    "main": true,
+    "popup": true,
+    "popup_rect": [
+      328,
+      178,
+      272,
+      312
+    ]
+  },
+  {
+    "style": "popup",
+    "key": [
+      "3e6fc58800854c43bac1742c9063a87a",
+      "track.3e6fc58800854c43bac1742c9063a87a",
+      "plugin.3e6fc58800854c43bac1742c9063a87a"
+    ],
+    "follow": true,
+    "selected": null,
+    "main": false,
+    "popup": false,
+    "popup_rect": [
+      240.0,
+      178.0,
+      520,
+      312
+    ]
+  }
+]

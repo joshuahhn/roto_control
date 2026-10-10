@@ -1,0 +1,1166 @@
+{
+  "/inspector_below": {
+    "get_errors": {
+      "items": [],
+      "count": 0
+    },
+    "get_connections": {
+      "path": "/inspector_below",
+      "nodeCount": 27,
+      "connectionCount": 0,
+      "hasCycles": false,
+      "order": [
+        {
+          "name": "annotate1",
+          "type": "annotateCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "base_draft",
+          "type": "baseCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Device",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Layout",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Track",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_learn",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "container_scroll",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Device",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Layout",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Track",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_changed",
+          "type": "parameterexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "editor_popup",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "learn",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "scroll_wheel",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_brand",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_brand_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_footer",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_footer_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_status",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_status_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_style",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_style_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_title",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_title_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "ui",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "window_editor",
+          "type": "windowCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "window_main",
+          "type": "windowCOMP",
+          "outputs": [],
+          "inputs": []
+        }
+      ]
+    },
+    "get_operator_info": {
+      "name": "inspector_below",
+      "path": "/inspector_below",
+      "type": "containerCOMP",
+      "family": "COMP",
+      "nodeX": 400,
+      "nodeY": 0,
+      "nodeWidth": 160,
+      "nodeHeight": 130,
+      "parameters": {
+        "w": {
+          "value": 240,
+          "page": "Layout"
+        },
+        "h": {
+          "value": 390,
+          "page": "Layout"
+        },
+        "sizefromwindow": {
+          "value": true,
+          "page": "Layout"
+        },
+        "resizecomp": {
+          "value": "/inspector_below",
+          "page": "Panel",
+          "expr": "me",
+          "mode": "ParMode.EXPRESSION"
+        },
+        "repocomp": {
+          "value": "/inspector_below",
+          "page": "Panel",
+          "expr": "me",
+          "mode": "ParMode.EXPRESSION"
+        },
+        "bgcolorr": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgcolorg": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgcolorb": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgalpha": {
+          "value": 1.0,
+          "page": "Look"
+        },
+        "parentshortcut": {
+          "value": "InspectorDemo",
+          "page": "Common"
+        },
+        "Layout": {
+          "value": "main",
+          "page": "Browse"
+        },
+        "Track": {
+          "value": "track1",
+          "page": "Browse"
+        },
+        "Device": {
+          "value": "pixelsort",
+          "page": "Browse"
+        }
+      },
+      "flags": {
+        "display": false,
+        "render": false,
+        "viewer": true,
+        "bypass": false,
+        "lock": false,
+        "cloneImmune": false,
+        "allowCooking": true
+      },
+      "childCount": 27
+    },
+    "get_cook_performance": {
+      "path": "/inspector_below",
+      "operators": [
+        {
+          "path": "/inspector_below/ui",
+          "type": "textDAT",
+          "family": "DAT",
+          "cookTime": 2.361,
+          "cpuCookTime": 2.361,
+          "budgetPct": 14.2,
+          "cpuMemory": 7774,
+          "gpuMemory": 0,
+          "totalCooks": 4,
+          "cookedThisFrame": false
+        },
+        {
+          "path": "/inspector_below/learn",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0124,
+          "cpuCookTime": 0.0124,
+          "budgetPct": 0.1,
+          "childrenCPUCookTime": 0.023,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 164,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 5950,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/learn/text_label",
+          "type": "textCOMP",
+          "family": "COMP",
+          "cookTime": 0.023,
+          "cpuCookTime": 0.023,
+          "budgetPct": 0.1,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 167,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/learn/text_label_callbacks",
+          "type": "textDAT",
+          "family": "DAT",
+          "cookTime": 0.0018,
+          "cpuCookTime": 0.0018,
+          "budgetPct": 0.0,
+          "cpuMemory": 4094,
+          "gpuMemory": 0,
+          "totalCooks": 2,
+          "cookedThisFrame": false
+        },
+        {
+          "path": "/inspector_below/annotate1",
+          "type": "annotateCOMP",
+          "family": "COMP",
+          "cookTime": 0.0497,
+          "cpuCookTime": 0.0497,
+          "budgetPct": 0.3,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 8,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 45235,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0605,
+          "cpuCookTime": 0.0605,
+          "budgetPct": 0.4,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 12,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 43379,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/back",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.1056,
+          "cpuCookTime": 0.1056,
+          "budgetPct": 0.6,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 3712,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/back/bodyBack",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0456,
+          "cpuCookTime": 0.0456,
+          "budgetPct": 0.3,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 94,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/back/titleBack",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.1003,
+          "cpuCookTime": 0.1003,
+          "budgetPct": 0.6,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/body",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.063,
+          "cpuCookTime": 0.063,
+          "budgetPct": 0.4,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 3712,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/body/bodyText",
+          "type": "textCOMP",
+          "family": "COMP",
+          "cookTime": 0.3714,
+          "cpuCookTime": 0.3714,
+          "budgetPct": 2.2,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 104,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_below/annotate1/annotation/body/bodyDragger",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0631,
+          "cpuCookTime": 0.0631,
+          "budgetPct": 0.4,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 5,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        }
+      ],
+      "count": 12,
+      "sort": "gpu"
+    },
+    "get_parameters": {
+      "parent_path": "/inspector_below",
+      "results": {
+        "base_draft": {
+          "path": "/inspector_below/base_draft",
+          "parameters": {
+            "Label": {
+              "value": "Low threshold",
+              "default": "",
+              "page": "Mapping"
+            },
+            "Destination": {
+              "value": "Demo",
+              "default": "",
+              "page": "Mapping"
+            },
+            "Minimum": {
+              "value": 0.0,
+              "default": 0.0,
+              "page": "Mapping"
+            },
+            "Maximum": {
+              "value": 1.0,
+              "default": 0.0,
+              "page": "Mapping"
+            },
+            "Value": {
+              "value": 0.0625,
+              "default": 0.0,
+              "page": "Mapping"
+            }
+          },
+          "count": 5,
+          "sequences": {
+            "ext": 1,
+            "iop": 1
+          }
+        },
+        "context_changed": {
+          "path": "/inspector_below/context_changed",
+          "parameters": {
+            "active": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "op": {
+              "value": "/inspector_below",
+              "default": "",
+              "page": "Parameter Execute",
+              "expr": "parent.InspectorDemo",
+              "mode": "ParMode.EXPRESSION"
+            },
+            "pars": {
+              "value": "Layout Track Device",
+              "default": "",
+              "page": "Parameter Execute"
+            },
+            "valuechange": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "custom": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "builtin": {
+              "value": false,
+              "default": true,
+              "page": "Parameter Execute"
+            }
+          },
+          "count": 6
+        },
+        "scroll_wheel": {
+          "path": "/inspector_below/scroll_wheel",
+          "parameters": {
+            "active": {
+              "value": true,
+              "default": true,
+              "page": "Panel Execute"
+            },
+            "panels": {
+              "value": "/inspector_below/container_scroll",
+              "default": "..",
+              "page": "Panel Execute",
+              "expr": "parent()"
+            },
+            "panelvalue": {
+              "value": "wheel",
+              "default": "select",
+              "page": "Panel Execute"
+            },
+            "valuechange": {
+              "value": true,
+              "default": false,
+              "page": "Panel Execute"
+            }
+          },
+          "count": 4
+        },
+        "editor_popup": {
+          "path": "/inspector_below/editor_popup",
+          "parameters": {
+            "w": {
+              "value": 240,
+              "default": 400,
+              "page": "Layout",
+              "expr": "parent.InspectorDemo.op('window_editor').contentWidth if parent.InspectorDemo.op('window_editor').isOpen else parent.InspectorDemo.width",
+              "mode": "ParMode.EXPRESSION"
+            },
+            "display": {
+              "value": false,
+              "default": true,
+              "page": "Panel"
+            },
+            "fit": {
+              "value": "off",
+              "default": "off",
+              "page": "Children"
+            }
+          },
+          "count": 3,
+          "sequences": {
+            "ext": 1,
+            "iop": 1
+          }
+        }
+      },
+      "count": 4
+    },
+    "inspect_values": {
+      "path": "/inspector_below/base_draft",
+      "family": "COMP"
+    }
+  },
+  "/inspector_popup": {
+    "get_errors": {
+      "items": [],
+      "count": 0
+    },
+    "get_connections": {
+      "path": "/inspector_popup",
+      "nodeCount": 27,
+      "connectionCount": 0,
+      "hasCycles": false,
+      "order": [
+        {
+          "name": "annotate1",
+          "type": "annotateCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "base_draft",
+          "type": "baseCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Device",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Layout",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_context_Track",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "click_learn",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "container_scroll",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Device",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Layout",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_Track",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "context_changed",
+          "type": "parameterexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "editor_popup",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "learn",
+          "type": "containerCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "scroll_wheel",
+          "type": "panelexecuteDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_brand",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_brand_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_footer",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_footer_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_status",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_status_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_style",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_style_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_title",
+          "type": "textCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "text_title_callbacks",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "ui",
+          "type": "textDAT",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "window_editor",
+          "type": "windowCOMP",
+          "outputs": [],
+          "inputs": []
+        },
+        {
+          "name": "window_main",
+          "type": "windowCOMP",
+          "outputs": [],
+          "inputs": []
+        }
+      ]
+    },
+    "get_operator_info": {
+      "name": "inspector_popup",
+      "path": "/inspector_popup",
+      "type": "containerCOMP",
+      "family": "COMP",
+      "nodeX": 650,
+      "nodeY": 0,
+      "nodeWidth": 160,
+      "nodeHeight": 130,
+      "parameters": {
+        "w": {
+          "value": 240,
+          "page": "Layout"
+        },
+        "h": {
+          "value": 390,
+          "page": "Layout"
+        },
+        "sizefromwindow": {
+          "value": true,
+          "page": "Layout"
+        },
+        "resizecomp": {
+          "value": "/inspector_popup",
+          "page": "Panel",
+          "expr": "me",
+          "mode": "ParMode.EXPRESSION"
+        },
+        "repocomp": {
+          "value": "/inspector_popup",
+          "page": "Panel",
+          "expr": "me",
+          "mode": "ParMode.EXPRESSION"
+        },
+        "bgcolorr": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgcolorg": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgcolorb": {
+          "value": 0.085,
+          "page": "Look"
+        },
+        "bgalpha": {
+          "value": 1.0,
+          "page": "Look"
+        },
+        "parentshortcut": {
+          "value": "InspectorDemo",
+          "page": "Common"
+        },
+        "Layout": {
+          "value": "main",
+          "page": "Browse"
+        },
+        "Track": {
+          "value": "track1",
+          "page": "Browse"
+        },
+        "Device": {
+          "value": "pixelsort",
+          "page": "Browse"
+        }
+      },
+      "flags": {
+        "display": false,
+        "render": false,
+        "viewer": true,
+        "bypass": false,
+        "lock": false,
+        "cloneImmune": false,
+        "allowCooking": true
+      },
+      "childCount": 27
+    },
+    "get_cook_performance": {
+      "path": "/inspector_popup",
+      "operators": [
+        {
+          "path": "/inspector_popup/ui",
+          "type": "textDAT",
+          "family": "DAT",
+          "cookTime": 1.293,
+          "cpuCookTime": 1.293,
+          "budgetPct": 7.8,
+          "cpuMemory": 7774,
+          "gpuMemory": 0,
+          "totalCooks": 4,
+          "cookedThisFrame": false
+        },
+        {
+          "path": "/inspector_popup/learn",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0081,
+          "cpuCookTime": 0.0081,
+          "budgetPct": 0.0,
+          "childrenCPUCookTime": 0.0122,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 193,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 5950,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/learn/text_label",
+          "type": "textCOMP",
+          "family": "COMP",
+          "cookTime": 0.0122,
+          "cpuCookTime": 0.0122,
+          "budgetPct": 0.1,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 194,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/learn/text_label_callbacks",
+          "type": "textDAT",
+          "family": "DAT",
+          "cookTime": 0.0015,
+          "cpuCookTime": 0.0015,
+          "budgetPct": 0.0,
+          "cpuMemory": 4094,
+          "gpuMemory": 0,
+          "totalCooks": 2,
+          "cookedThisFrame": false
+        },
+        {
+          "path": "/inspector_popup/annotate1",
+          "type": "annotateCOMP",
+          "family": "COMP",
+          "cookTime": 0.0357,
+          "cpuCookTime": 0.0357,
+          "budgetPct": 0.2,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 100,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 45235,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0408,
+          "cpuCookTime": 0.0408,
+          "budgetPct": 0.2,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 12,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 43379,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/back",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0721,
+          "cpuCookTime": 0.0721,
+          "budgetPct": 0.4,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 3712,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/back/bodyBack",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0338,
+          "cpuCookTime": 0.0338,
+          "budgetPct": 0.2,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 94,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/back/titleBack",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0693,
+          "cpuCookTime": 0.0693,
+          "budgetPct": 0.4,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/body",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.044,
+          "cpuCookTime": 0.044,
+          "budgetPct": 0.3,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 95,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 3712,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/body/bodyText",
+          "type": "textCOMP",
+          "family": "COMP",
+          "cookTime": 0.2529,
+          "cpuCookTime": 0.2529,
+          "budgetPct": 1.5,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 104,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        },
+        {
+          "path": "/inspector_popup/annotate1/annotation/body/bodyDragger",
+          "type": "containerCOMP",
+          "family": "COMP",
+          "cookTime": 0.0396,
+          "cpuCookTime": 0.0396,
+          "budgetPct": 0.2,
+          "childrenCPUCookTime": 0.0,
+          "childrenGPUCookTime": 0.0,
+          "cpuMemory": 1856,
+          "gpuMemory": 0,
+          "totalCooks": 5,
+          "cookedThisFrame": false,
+          "childrenCPUMemory": 0,
+          "childrenGPUMemory": 0
+        }
+      ],
+      "count": 12,
+      "sort": "gpu"
+    },
+    "get_parameters": {
+      "parent_path": "/inspector_popup",
+      "results": {
+        "base_draft": {
+          "path": "/inspector_popup/base_draft",
+          "parameters": {
+            "Label": {
+              "value": "Low threshold",
+              "default": "",
+              "page": "Mapping"
+            },
+            "Destination": {
+              "value": "Demo",
+              "default": "",
+              "page": "Mapping"
+            },
+            "Minimum": {
+              "value": 0.0,
+              "default": 0.0,
+              "page": "Mapping"
+            },
+            "Maximum": {
+              "value": 1.0,
+              "default": 0.0,
+              "page": "Mapping"
+            },
+            "Value": {
+              "value": 0.0625,
+              "default": 0.0,
+              "page": "Mapping"
+            }
+          },
+          "count": 5,
+          "sequences": {
+            "ext": 1,
+            "iop": 1
+          }
+        },
+        "context_changed": {
+          "path": "/inspector_popup/context_changed",
+          "parameters": {
+            "active": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "op": {
+              "value": "/inspector_popup",
+              "default": "",
+              "page": "Parameter Execute",
+              "expr": "parent.InspectorDemo",
+              "mode": "ParMode.EXPRESSION"
+            },
+            "pars": {
+              "value": "Layout Track Device",
+              "default": "",
+              "page": "Parameter Execute"
+            },
+            "valuechange": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "custom": {
+              "value": true,
+              "default": true,
+              "page": "Parameter Execute"
+            },
+            "builtin": {
+              "value": false,
+              "default": true,
+              "page": "Parameter Execute"
+            }
+          },
+          "count": 6
+        },
+        "scroll_wheel": {
+          "path": "/inspector_popup/scroll_wheel",
+          "parameters": {
+            "active": {
+              "value": true,
+              "default": true,
+              "page": "Panel Execute"
+            },
+            "panels": {
+              "value": "/inspector_popup/container_scroll",
+              "default": "..",
+              "page": "Panel Execute",
+              "expr": "parent()"
+            },
+            "panelvalue": {
+              "value": "wheel",
+              "default": "select",
+              "page": "Panel Execute"
+            },
+            "valuechange": {
+              "value": true,
+              "default": false,
+              "page": "Panel Execute"
+            }
+          },
+          "count": 4
+        },
+        "editor_popup": {
+          "path": "/inspector_popup/editor_popup",
+          "parameters": {
+            "w": {
+              "value": 240,
+              "default": 400,
+              "page": "Layout",
+              "expr": "parent.InspectorDemo.op('window_editor').contentWidth if parent.InspectorDemo.op('window_editor').isOpen else parent.InspectorDemo.width",
+              "mode": "ParMode.EXPRESSION"
+            },
+            "display": {
+              "value": false,
+              "default": true,
+              "page": "Panel"
+            },
+            "fit": {
+              "value": "off",
+              "default": "off",
+              "page": "Children"
+            }
+          },
+          "count": 3,
+          "sequences": {
+            "ext": 1,
+            "iop": 1
+          }
+        }
+      },
+      "count": 4
+    },
+    "inspect_values": {
+      "path": "/inspector_popup/base_draft",
+      "family": "COMP"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "pid": 67592,
+  "phase": "done",
+  "case": "fold",
+  "elapsed_s": 26.48430712497793,
+  "soak_elapsed_s": 10.034301958978176,
+  "duration_s": 10.0,
+  "feeds": 90,
+  "stats": {
+    "received": 0,
+    "changed": 0,
+    "flushes": 3480,
+    "notifications": 6960,
+    "hits": 59483,
+    "misses": 16,
+    "rejected": 0,
+    "cache_contexts": 1,
+    "cache_capacity": 4,
+    "source_contexts": 1,
+    "subscribers": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "scheduled": false,
+    "subscriber_errors": [],
+    "generation": 20,
+    "data_mode": "controller",
+    "sync_calls": 7576
+  },
+  "targets": {
+    "pages": 0,
+    "entries": 0,
+    "jobs": 0,
+    "pending": 0,
+    "errors": []
+  },
+  "maxima": {
+    "fixture_midi_pending_bytes": 0,
+    "definition_contexts": 2,
+    "cache_contexts": 2,
+    "source_contexts": 2,
+    "pending_contexts": 0,
+    "pending_slots": 0,
+    "subscribers": 2,
+    "targets_pages": 0,
+    "targets_entries": 0,
+    "targets_jobs": 0,
+    "targets_pending": 0
+  },
+  "errors": [],
+  "done": true,
+  "production_preserved": true,
+  "reason": "complete"
+}

@@ -1,0 +1,23 @@
+{
+  "source_capture": "inline_selector_capture.json",
+  "physical_first_click_accepted": true,
+  "selectors": [
+    "Device",
+    "Layout",
+    "Track"
+  ],
+  "user_report": "All three select an item with one click",
+  "delivered_item_callbacks": 5,
+  "all_callbacks_accepted": true,
+  "selector_names_observed": [
+    "Device",
+    "Layout",
+    "Track"
+  ],
+  "routing_contexts": 1,
+  "recorder_stopped": true,
+  "hooks_restored": true,
+  "dropped": 0,
+  "logging_errors": 0,
+  "physical_wheel_escape_accepted": false
+}

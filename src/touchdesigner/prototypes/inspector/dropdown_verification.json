@@ -1,0 +1,9 @@
+{
+  "device_first": true,
+  "layout_track_second_row": true,
+  "native_mouse_device_dropdown": true,
+  "direct_fractal_selection": true,
+  "inactive_readonly": true,
+  "hardware_route_preserved": true,
+  "popup_mouse_wheel": true
+}

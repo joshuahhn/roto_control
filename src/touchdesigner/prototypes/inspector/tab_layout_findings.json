@@ -1,0 +1,27 @@
+{
+  "source_capture": "tab_layout_capture.json",
+  "observed_screens": {
+    "func": [
+      "T",
+      "TRACK"
+    ],
+    "sel": [
+      "pixelSortV3",
+      "fractal_pop"
+    ],
+    "released_device": "pixelSortV3",
+    "released_track": "T"
+  },
+  "user_raw": "FUNC - T Track; SEL - pixelSortV3 fractal_pop; released LCD pixelSortV3, T",
+  "screen_names_match_initial_registry": true,
+  "routing_keys_stable": true,
+  "selector_symptom": "All three menus open; clicking an item inside sometimes needs two clicks",
+  "selector_callbacks": 5,
+  "menu_open_calls": 5,
+  "menu_lost_focus_calls": 0,
+  "selector_first_physical_click_delivery_verified": false,
+  "recorder_stopped": true,
+  "hooks_restored": true,
+  "logging_errors": 0,
+  "dropped": 0
+}

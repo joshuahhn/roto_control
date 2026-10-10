@@ -1,0 +1,88 @@
+{
+  "scope": "Controller-owned compact Inspector packaging; accepted Actions, Follow v5 and COMP migration composition. Snapshot #13 excluded.",
+  "source_base_commit": "61d0e03fc454dba496618fdf33ab4a5169437b19",
+  "source_existing_files": 475,
+  "source_archive_sha256": "4242802f8a2598d6470f310432b9739de4f433d615fa90f69dee3b82bfe48ab5",
+  "tests": {
+    "runtime": 416,
+    "inspector": 231,
+    "owned_packaging": 23
+  },
+  "native": {
+    "generic_current.json": {
+      "checks": 16,
+      "pass": true,
+      "sha256": "b3338c9080df0b21a75ddabf4eac90fb2ee2fbde6a7c1144563d03c6c1345b0f"
+    },
+    "generic_open_completed.json": {
+      "checks": 7,
+      "pass": true,
+      "sha256": "186b19f93ddbd784d95bda2a0a6dacebb691beabc5eab43b37f1347564a715a7"
+    },
+    "active_upgrade_current.json": {
+      "checks": 16,
+      "pass": true,
+      "sha256": "561fc598236f88c850dcad42fb2fa6d23d6966e44163ae764f555345183ce85a"
+    },
+    "active_open_completed.json": {
+      "checks": 7,
+      "pass": true,
+      "sha256": "a1b75b05725f1fedaa39c380b5abc909c98c6604e874979b5e88b4cfbda54afb"
+    },
+    "final_handoff_comparison.json": {
+      "checks": 24,
+      "pass": true,
+      "sha256": "257cb0d8499bd849343386f42651d78cdd680857e6a50d8e4d5fae021c4abc76"
+    }
+  },
+  "reused_native_gates": {
+    "factory_A": 13,
+    "factory_B": 13,
+    "open_A": 7,
+    "open_B": 7,
+    "move_rename": 14,
+    "managed_save_destroy_load": 16
+  },
+  "cleanup": {
+    "sibling_archive_delete_checks": 4,
+    "networks": 4,
+    "groups": 21,
+    "operators": 67,
+    "containment": true,
+    "overlaps": false,
+    "backward_wires": false
+  },
+  "final_state": {
+    "checks": 24,
+    "differences": {},
+    "disconnected": true,
+    "no_midi_process": true,
+    "preserved": "Fresh mappings, libraries, values, tokens, Python/Follow preferences, panes and timeline; archived original source unchanged."
+  },
+  "retained_artifacts": [
+    {
+      "name": "cleaned_owned_inspector_review.1.toe",
+      "sha256": "4f9bbe4b23a56fc4538c706a94697d8ae45cb221c699bb418658e2af0726d512",
+      "bytes": 970092
+    },
+    {
+      "name": "cleaned_owned_inspector_user_demo.tox",
+      "sha256": "0db6eaf3603ab6794bf4d979e2dd3bb4c4646ddf98e2fd6c5b5e4ba78c80c9c8",
+      "bytes": 389458
+    },
+    {
+      "name": "standalone_owned_generic.tox",
+      "sha256": "9bc6641e466fe71b9a58f3b8bfadd2344cab8dc25c56fa4a4afba8e29989314a",
+      "bytes": 382386
+    }
+  ],
+  "native_evidence_records": 21,
+  "native_artifact_records": 11,
+  "review": "Packaging r1 Standards FAIL1/smell0 and Spec FAIL4 retained. Exact corrections Root-adjudicated; no second independent pair or retrospective PASS. Accepted dependency reviews remain separate.",
+  "limits": [
+    "No final whole-project reload; actual managed component reload, standalone generic load and post-save current state were checked.",
+    "Generic hidden textCOMP strings and every private adapter cache were not exhaustively inventoried; reviewed sanitation source and captured catalog/draft/storage evidence support the bounded claim.",
+    "No full transient-write instrumentation, packaging hardware/MIDI replay or runtime Action-result serialization claim."
+  ],
+  "artifact_policy": "Native binaries, full captures, recoveries and all failed attempts remain outside this commit. Canonical binaries were not replaced."
+}

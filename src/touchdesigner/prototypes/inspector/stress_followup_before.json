@@ -1,0 +1,331 @@
+{
+  "environment": {
+    "project": "roto_control_python.75.toe",
+    "build": "2025.33230",
+    "rate": 60.0
+  },
+  "phases": [
+    {
+      "name": "below_interactions",
+      "frames": 180,
+      "warmup": 60,
+      "update_ms": {
+        "mean": 1.5950534793470676,
+        "p50": 1.523209037259221,
+        "p95": 2.2272909991443157,
+        "p99": 2.7742080856114626,
+        "maximum": 3.483333974145353
+      },
+      "frame_interval_ms": {
+        "mean": 16.66468541661743,
+        "p50": 16.664374968968332,
+        "p95": 16.802416066639125,
+        "p99": 17.070833942852914,
+        "maximum": 17.652458045631647
+      },
+      "frames_over_20ms": 0,
+      "frames_over_33ms": 0,
+      "perform_cook_flag": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "maximum": 1.0
+      },
+      "td_frame_ms": {
+        "mean": 6.93758844534556,
+        "p50": 6.809584140777588,
+        "p95": 8.190333366394043,
+        "p99": 10.099124908447266,
+        "maximum": 11.145625114440918
+      },
+      "process_cpu_mb": {
+        "mean": 2537.324462890625,
+        "p50": 2537.324462890625,
+        "p95": 2537.324462890625,
+        "p99": 2537.324462890625,
+        "maximum": 2537.324462890625
+      },
+      "below_children_cpu_ms": {
+        "mean": 0.25304266611735027,
+        "p50": 0.20745861530303955,
+        "p95": 0.4978339672088623,
+        "p99": 1.1587072610855103,
+        "maximum": 1.2311707735061646
+      },
+      "popup_children_cpu_ms": {
+        "mean": 0.06687498092651367,
+        "p50": 0.06687498092651367,
+        "p95": 0.06687498092651367,
+        "p99": 0.06687498092651367,
+        "maximum": 0.06687498092651367
+      },
+      "input_value_updates": 0,
+      "value_label_writes": 0,
+      "memory": {
+        "/inspector_below": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 3068,
+          "changed_ops": 98
+        },
+        "/inspector_popup": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 14,
+          "changed_ops": 7
+        }
+      }
+    },
+    {
+      "name": "popup_interactions",
+      "frames": 180,
+      "warmup": 60,
+      "update_ms": {
+        "mean": 2.5040920396956303,
+        "p50": 2.6885829865932465,
+        "p95": 3.019999945536256,
+        "p99": 3.313041990622878,
+        "maximum": 3.781125065870583
+      },
+      "frame_interval_ms": {
+        "mean": 94.71600416679091,
+        "p50": 99.81829195749015,
+        "p95": 114.23304199706763,
+        "p99": 117.06304096151143,
+        "maximum": 121.36641691904515
+      },
+      "frames_over_20ms": 116,
+      "frames_over_33ms": 111,
+      "perform_cook_flag": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "maximum": 1.0
+      },
+      "td_frame_ms": {
+        "mean": 94.69667140642802,
+        "p50": 99.85820770263672,
+        "p95": 114.2196273803711,
+        "p99": 117.31716918945312,
+        "maximum": 121.68204498291016
+      },
+      "process_cpu_mb": {
+        "mean": 2626.8531412760417,
+        "p50": 2626.977783203125,
+        "p95": 2669.31396484375,
+        "p99": 2673.705078125,
+        "maximum": 2674.720703125
+      },
+      "below_children_cpu_ms": {
+        "mean": 0.01862502098083496,
+        "p50": 0.01862502098083496,
+        "p95": 0.01862502098083496,
+        "p99": 0.01862502098083496,
+        "maximum": 0.01862502098083496
+      },
+      "popup_children_cpu_ms": {
+        "mean": 0.4702349801858266,
+        "p50": 0.43537402153015137,
+        "p95": 0.7509980201721191,
+        "p99": 0.858417272567749,
+        "maximum": 0.9277099370956421
+      },
+      "input_value_updates": 0,
+      "value_label_writes": 0,
+      "memory": {
+        "/inspector_below": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 19,
+          "changed_ops": 18
+        },
+        "/inspector_popup": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 7122,
+          "changed_ops": 99
+        }
+      }
+    },
+    {
+      "name": "popup_row_switch",
+      "frames": 240,
+      "warmup": 60,
+      "update_ms": {
+        "mean": 2.3008750072525195,
+        "p50": 2.3321659537032247,
+        "p95": 2.6775409933179617,
+        "p99": 2.8254579519852996,
+        "maximum": 2.9465830884873867
+      },
+      "frame_interval_ms": {
+        "mean": 118.77589375039355,
+        "p50": 126.5557500300929,
+        "p95": 148.22341699618846,
+        "p99": 152.59820804931223,
+        "maximum": 156.45350003615022
+      },
+      "frames_over_20ms": 175,
+      "frames_over_33ms": 165,
+      "perform_cook_flag": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "maximum": 1.0
+      },
+      "td_frame_ms": {
+        "mean": 118.75414503945245,
+        "p50": 126.2212905883789,
+        "p95": 148.61595153808594,
+        "p99": 152.47315979003906,
+        "maximum": 156.39529418945312
+      },
+      "process_cpu_mb": {
+        "mean": 2798.2606811523438,
+        "p50": 2798.845947265625,
+        "p95": 2863.628173828125,
+        "p99": 2867.69140625,
+        "maximum": 2868.54345703125
+      },
+      "below_children_cpu_ms": {
+        "mean": 0.016957998275756836,
+        "p50": 0.016957998275756836,
+        "p95": 0.016957998275756836,
+        "p99": 0.016957998275756836,
+        "maximum": 0.016957998275756836
+      },
+      "popup_children_cpu_ms": {
+        "mean": 0.45148254235585533,
+        "p50": 0.42191600799560547,
+        "p95": 0.5209157466888428,
+        "p99": 0.6035830974578857,
+        "maximum": 3.194997787475586
+      },
+      "input_value_updates": 0,
+      "value_label_writes": 0,
+      "memory": {
+        "/inspector_below": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 2,
+          "changed_ops": 1
+        },
+        "/inspector_popup": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 7928,
+          "changed_ops": 58
+        }
+      }
+    },
+    {
+      "name": "popup_interactions_10hz",
+      "frames": 360,
+      "warmup": 60,
+      "update_ms": {
+        "mean": 0.2607700154961397,
+        "p50": 0.000625033862888813,
+        "p95": 1.579292002134025,
+        "p99": 2.2343749878928065,
+        "maximum": 2.286875038407743
+      },
+      "frame_interval_ms": {
+        "mean": 23.38077277992852,
+        "p50": 16.17433305364102,
+        "p95": 78.12091696541756,
+        "p99": 91.8705000076443,
+        "maximum": 149.61162500549108
+      },
+      "frames_over_20ms": 40,
+      "frames_over_33ms": 39,
+      "perform_cook_flag": {
+        "mean": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "p99": 1.0,
+        "maximum": 1.0
+      },
+      "td_frame_ms": {
+        "mean": 13.484192045529683,
+        "p50": 3.112416982650757,
+        "p95": 78.02803802490234,
+        "p99": 91.52583312988281,
+        "maximum": 149.5384521484375
+      },
+      "process_cpu_mb": {
+        "mean": 2884.224942220052,
+        "p50": 2884.3212890625,
+        "p95": 2892.971923828125,
+        "p99": 2894.9052734375,
+        "maximum": 2894.9052734375
+      },
+      "below_children_cpu_ms": {
+        "mean": 0.018000006675720215,
+        "p50": 0.018000006675720215,
+        "p95": 0.018000006675720215,
+        "p99": 0.018000006675720215,
+        "maximum": 0.018000006675720215
+      },
+      "popup_children_cpu_ms": {
+        "mean": 0.1828425133228302,
+        "p50": 0.03258395195007324,
+        "p95": 0.8520848751068115,
+        "p99": 1.003546953201294,
+        "maximum": 1.1110427379608154
+      },
+      "input_value_updates": 0,
+      "value_label_writes": 0,
+      "memory": {
+        "/inspector_below": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 2,
+          "changed_ops": 1
+        },
+        "/inspector_popup": {
+          "ops_before": 395,
+          "ops_after": 395,
+          "cpu_bytes_before": 995045,
+          "cpu_bytes_after": 995045,
+          "gpu_bytes_before": 0,
+          "gpu_bytes_after": 0,
+          "total_cook_delta": 3092,
+          "changed_ops": 85
+        }
+      }
+    }
+  ],
+  "checks": [],
+  "failures": []
+}

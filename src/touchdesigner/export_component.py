@@ -7,6 +7,26 @@ from pathlib import Path
 import uuid
 
 
+def reset_mapping_storage(clone):
+    """Sanitize only a detached export clone, never its external owner COMPs."""
+    defaults={'layout_registry':None,'layout_registry_suspended':False,
+              'roto_control_owner_id':None,'pending_unmap_identities':[],
+              'assignment_device_id':None,'parameter_assignments':[],
+              'page_targets':[],'control_catalog':[],'removed_controls':[],
+              'pending_unmaps':[],'control_overrides':{},'needs_relearn':()}
+    for key,value in defaults.items():clone.store(key,value)
+
+
+def reset_registration(clone):
+    """Sanitize both consumer hooks and runtime entries on an export clone."""
+    clone.ext.RotoPythonExt._actions = None
+    clone.op('registration').text = (
+        'def onRegister(controller):\n'
+        '    # Register your parameters/callbacks here, then select Python registration.\n'
+        '    raise ValueError("Configure registration.onRegister first")\n'
+        '\ndef onRegisterActions(controller):\n    pass\n')
+
+
 def export(controller, destination):
     if controller.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before exporting')
@@ -60,17 +80,7 @@ def export(controller, destination):
         clone.par.Focuscomp.val = ''
         clone.ext.RotoPythonExt._follow.handles.clear()
         clone.ext.RotoPythonExt._follow.invalidate()
-        clone.store('layout_registry',None)
-        clone.store('layout_registry_suspended',False)
-        clone.store('pending_unmap_identities',[])
-        clone.store('assignment_device_id',None)
-        clone.store('parameter_assignments', [])
-        clone.store('page_targets', [])
-        clone.store('control_catalog', [])
-        clone.store('removed_controls', [])
-        clone.store('pending_unmaps', [])
-        clone.store('control_overrides', {})
-        clone.store('needs_relearn', ())
+        reset_mapping_storage(clone)
         clone.op('inspector').store('pending_clear', None)
         clone.op('inspector').store('clear_press', None)
         for name, value in (('Trackname', 'EFFECT'), ('Pluginname', 'CUSTOM')):
@@ -88,10 +98,7 @@ def export(controller, destination):
         columns = [cell.val for cell in table.row(0)]
         table.clear()
         table.appendRow(columns)
-        clone.op('registration').text = (
-            'def onRegister(controller):\n'
-            '    # Register your parameters/callbacks here, then select Python registration.\n'
-            '    raise ValueError("Configure registration.onRegister first")\n')
+        reset_registration(clone)
         clone.ext.RotoPythonExt.BindControls([], group_id=clone.par.Groupid.eval(), _allow_empty=True)
         # A newly copied extension may not have completed its first Tick.
         # Rebuild after clearing: capture preserves unavailable old targets by
@@ -103,6 +110,10 @@ def export(controller, destination):
         clone.ext.RotoPythonExt._layout_manager()
         clone.op('setup').module.configure_ui(clone)
         clone.ext.RotoPythonExt.Disconnect()
+        runtime = clone.op('inspector/owned_runtime')
+        if runtime is None:
+            raise ValueError('Install the owned Inspector before exporting')
+        runtime.module.sanitize(clone)
         clone.save(str(destination), createFolders=True)
     finally:
         holder.destroy()

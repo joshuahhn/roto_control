@@ -1,0 +1,1059 @@
+{
+  "environment": {
+    "project": "roto_control_python.75.toe",
+    "build": "2025.33230",
+    "rate": 60.0
+  },
+  "phases": [
+    {
+      "name": "both_idle",
+      "frames": 240,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.0008631905075162649,
+        "p95": 0.0014579854905605316,
+        "p99": 0.0015420373529195786,
+        "maximum": 0.0022079329937696457
+      },
+      "dispatch_ms": {},
+      "frame_interval_ms": {
+        "mean": 16.853126388741657,
+        "p95": 17.263207933865488,
+        "p99": 17.98412506468594,
+        "maximum": 65.27795898728073
+      },
+      "process_cpu_mb_first": 2808.7255859375,
+      "process_cpu_mb_last": 2808.7255859375,
+      "process_cpu_mb_range": [
+        2808.7255859375,
+        2808.7255859375
+      ],
+      "model_received": 0,
+      "model_flushes": 0,
+      "notifications": 0,
+      "text_writes": [
+        0,
+        0
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 5,
+          "changed": 5,
+          "flushes": 271,
+          "notifications": 542,
+          "hits": 2142,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 5,
+          "changed": 5,
+          "flushes": 271,
+          "notifications": 542,
+          "hits": 2142,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "both_16_values_60hz",
+      "frames": 360,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.047737371642142534,
+        "p95": 0.05691696424037218,
+        "p99": 0.06962497718632221,
+        "maximum": 0.09208300616592169
+      },
+      "dispatch_ms": {
+        "mean": 0.11222081530528764,
+        "p95": 0.17916702199727297,
+        "p99": 0.220458023250103,
+        "maximum": 0.2620000159367919
+      },
+      "frame_interval_ms": {
+        "mean": 16.66294361348264,
+        "p95": 20.505207940004766,
+        "p99": 20.83783398848027,
+        "maximum": 22.052958025597036
+      },
+      "process_cpu_mb_first": 2808.512451171875,
+      "process_cpu_mb_last": 2808.447021484375,
+      "process_cpu_mb_range": [
+        2808.414306640625,
+        2808.512451171875
+      ],
+      "model_received": 5760,
+      "model_flushes": 359,
+      "notifications": 718,
+      "text_writes": [
+        5743,
+        5743
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 5,
+          "changed": 5,
+          "flushes": 271,
+          "notifications": 542,
+          "hits": 2142,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 271,
+            "text_writes": 1497,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 5765,
+          "changed": 5764,
+          "flushes": 630,
+          "notifications": 1260,
+          "hits": 2860,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 1,
+          "pending_slots": 16,
+          "scheduled": true,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 630,
+            "text_writes": 7240,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 630,
+            "text_writes": 7240,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "both_burst32",
+      "frames": 360,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.36911999612736207,
+        "p95": 0.45962503645569086,
+        "p99": 0.5040830001235008,
+        "maximum": 0.5187089554965496
+      },
+      "dispatch_ms": {
+        "mean": 0.10568391298875213,
+        "p95": 0.15941704623401165,
+        "p99": 0.20058301743119955,
+        "maximum": 0.2700840122997761
+      },
+      "frame_interval_ms": {
+        "mean": 16.662752359795075,
+        "p95": 20.10883390903473,
+        "p99": 21.001000073738396,
+        "maximum": 23.03979208227247
+      },
+      "process_cpu_mb_first": 2808.447021484375,
+      "process_cpu_mb_last": 2808.447021484375,
+      "process_cpu_mb_range": [
+        2808.447021484375,
+        2808.447021484375
+      ],
+      "model_received": 184320,
+      "model_flushes": 359,
+      "notifications": 718,
+      "text_writes": [
+        5744,
+        5744
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 5765,
+          "changed": 5764,
+          "flushes": 631,
+          "notifications": 1262,
+          "hits": 2862,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 631,
+            "text_writes": 7256,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 631,
+            "text_writes": 7256,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 190085,
+          "changed": 190084,
+          "flushes": 990,
+          "notifications": 1980,
+          "hits": 3580,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 1,
+          "pending_slots": 16,
+          "scheduled": true,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 990,
+            "text_writes": 13000,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 990,
+            "text_writes": 13000,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "both_identical",
+      "frames": 240,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.04450273764733639,
+        "p95": 0.05737505853176117,
+        "p99": 0.06429199129343033,
+        "maximum": 0.06858306005597115
+      },
+      "dispatch_ms": {},
+      "frame_interval_ms": {
+        "mean": 16.944492594080252,
+        "p95": 17.092958092689514,
+        "p99": 17.798917018808424,
+        "maximum": 72.55316595546901
+      },
+      "process_cpu_mb_first": 2808.447021484375,
+      "process_cpu_mb_last": 2808.447021484375,
+      "process_cpu_mb_range": [
+        2808.447021484375,
+        2808.447021484375
+      ],
+      "model_received": 3840,
+      "model_flushes": 1,
+      "notifications": 2,
+      "text_writes": [
+        16,
+        16
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 190085,
+          "changed": 190084,
+          "flushes": 991,
+          "notifications": 1982,
+          "hits": 3582,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 991,
+            "text_writes": 13016,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 991,
+            "text_writes": 13016,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 193925,
+          "changed": 190100,
+          "flushes": 992,
+          "notifications": 1984,
+          "hits": 3584,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 992,
+            "text_writes": 13032,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 992,
+            "text_writes": 13032,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "both_8_contexts_60hz",
+      "frames": 360,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.1377431613703569,
+        "p95": 0.16962492372840643,
+        "p99": 0.17625000327825546,
+        "maximum": 0.22362498566508293
+      },
+      "dispatch_ms": {
+        "mean": 0.11030093883164227,
+        "p95": 0.16637507360428572,
+        "p99": 0.20479108206927776,
+        "maximum": 0.2626669593155384
+      },
+      "frame_interval_ms": {
+        "mean": 16.66336652667572,
+        "p95": 20.39237506687641,
+        "p99": 21.552041987888515,
+        "maximum": 22.90162502322346
+      },
+      "process_cpu_mb_first": 2808.447021484375,
+      "process_cpu_mb_last": 2808.414306640625,
+      "process_cpu_mb_range": [
+        2808.414306640625,
+        2808.447021484375
+      ],
+      "model_received": 46080,
+      "model_flushes": 359,
+      "notifications": 718,
+      "text_writes": [
+        5744,
+        5744
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 193925,
+          "changed": 190100,
+          "flushes": 992,
+          "notifications": 1984,
+          "hits": 3584,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 992,
+            "text_writes": 13032,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 992,
+            "text_writes": 13032,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 240005,
+          "changed": 236173,
+          "flushes": 1351,
+          "notifications": 2702,
+          "hits": 4302,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 8,
+          "pending_slots": 128,
+          "scheduled": true,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1351,
+            "text_writes": 18776,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1351,
+            "text_writes": 18776,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "edit_apply_cancel_reuse",
+      "frames": 360,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 1.1235458361140143,
+        "p95": 1.7488750163465738,
+        "p99": 2.0855830516666174,
+        "maximum": 2.8964170487597585
+      },
+      "dispatch_ms": {
+        "mean": 0.09770278120413423,
+        "p95": 0.12250000145286322,
+        "p99": 0.3010000800713897,
+        "maximum": 0.34166709519922733
+      },
+      "frame_interval_ms": {
+        "mean": 16.66535722014184,
+        "p95": 18.88450002297759,
+        "p99": 21.057500038295984,
+        "maximum": 21.422000019811094
+      },
+      "process_cpu_mb_first": 2808.414306640625,
+      "process_cpu_mb_last": 2808.414306640625,
+      "process_cpu_mb_range": [
+        2808.414306640625,
+        2808.414306640625
+      ],
+      "model_received": 5760,
+      "model_flushes": 359,
+      "notifications": 718,
+      "text_writes": [
+        5760,
+        5760
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 240005,
+          "changed": 236173,
+          "flushes": 1352,
+          "notifications": 2704,
+          "hits": 4304,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1352,
+            "text_writes": 18792,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1352,
+            "text_writes": 18792,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 245765,
+          "changed": 241933,
+          "flushes": 1711,
+          "notifications": 3422,
+          "hits": 5982,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 1,
+          "pending_slots": 16,
+          "scheduled": true,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1711,
+            "text_writes": 24552,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1711,
+            "text_writes": 24552,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    },
+    {
+      "name": "both_idle_after",
+      "frames": 600,
+      "warmup": 60,
+      "producer_ms": {
+        "mean": 0.0008840284189554277,
+        "p95": 0.001500011421740055,
+        "p99": 0.0017499551177024841,
+        "maximum": 0.0019579892978072166
+      },
+      "dispatch_ms": {},
+      "frame_interval_ms": {
+        "mean": 16.667164890828577,
+        "p95": 17.202917020767927,
+        "p99": 17.694334033876657,
+        "maximum": 18.505915999412537
+      },
+      "process_cpu_mb_first": 2808.414306640625,
+      "process_cpu_mb_last": 2808.38134765625,
+      "process_cpu_mb_range": [
+        2808.38134765625,
+        2808.414306640625
+      ],
+      "model_received": 0,
+      "model_flushes": 0,
+      "notifications": 0,
+      "text_writes": [
+        0,
+        0
+      ],
+      "window_opens": [
+        0,
+        0
+      ],
+      "before": {
+        "model": {
+          "received": 245765,
+          "changed": 241933,
+          "flushes": 1712,
+          "notifications": 3424,
+          "hits": 5984,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1712,
+            "text_writes": 24568,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1712,
+            "text_writes": 24568,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      },
+      "after": {
+        "model": {
+          "received": 245765,
+          "changed": 241933,
+          "flushes": 1712,
+          "notifications": 3424,
+          "hits": 5984,
+          "misses": 28,
+          "rejected": 3,
+          "cache_contexts": 4,
+          "cache_capacity": 4,
+          "source_contexts": 8,
+          "subscribers": 2,
+          "pending_contexts": 0,
+          "pending_slots": 0,
+          "scheduled": false,
+          "subscriber_errors": [],
+          "generation": 4
+        },
+        "views": [
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1712,
+            "text_writes": 24568,
+            "window_opens": 0,
+            "model_connected": true
+          },
+          {
+            "context": [
+              "main",
+              "track1",
+              "pixelsort"
+            ],
+            "selected": null,
+            "dirty_slots": 0,
+            "notifications": 1712,
+            "text_writes": 24568,
+            "window_opens": 1,
+            "model_connected": true
+          }
+        ],
+        "ops": [
+          280,
+          280
+        ],
+        "cpu_bytes": [
+          778858,
+          778858
+        ]
+      }
+    }
+  ],
+  "failures": []
+}

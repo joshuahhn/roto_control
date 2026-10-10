@@ -1,0 +1,16 @@
+{
+  "native_build": "2025.33230",
+  "invalid_range_preserves_mapping": true,
+  "one_configure_one_unmap_no_value_write": true,
+  "input_only_keeps_ack": true,
+  "native_menu_toggle_pulse_fixed_schema": true,
+  "integer_guard": true,
+  "stale_touch_learn_guards": true,
+  "callback_factory_mode_change_no_dispatch": true,
+  "mapping_cancel_local_only": true,
+  "fixture_native_values_preserved": true,
+  "ack_refreshes_both_editor_statuses_without_staling_value": true,
+  "production_catalog_registry_session_preserved": true,
+  "subscribers": 2,
+  "errors": ""
+}

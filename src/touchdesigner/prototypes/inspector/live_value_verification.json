@@ -1,0 +1,10 @@
+{
+  "numeric_type_cycle_no_deferred_write": true,
+  "continuous_user_callback_live_write": true,
+  "no_value_apply_cancel": true,
+  "same_value_deduplicated": true,
+  "invalid_range_no_write": true,
+  "software_value_follows_field": true,
+  "deferred_model_updates_no_echo": true,
+  "production_catalog_registry_session_preserved": true
+}

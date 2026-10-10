@@ -1,6 +1,7 @@
 """TD adapter. All hardware MIDI runs in the owned external Python process."""
 
 import copy
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,7 @@ class RotoPythonExt:
         self._dispatching = False
         self._binding = None
         self._collection = None
+        self._actions = None
         self._identities = {}
         self._last_error = ""
         self._restoring = False
@@ -32,6 +34,7 @@ class RotoPythonExt:
         self._delete_request = None
         self._follow = None
         self._receive_epoch = None
+        self._inspector_refresh_run = None
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
@@ -40,6 +43,87 @@ class RotoPythonExt:
         if helper is not None:
             self._follow = helper.module.CompFollower(self)
         self._publish()
+
+    def _action_registry(self):
+        if getattr(self, '_actions', None) is None:
+            self._actions = self.ownerComp.op('controls').module.Actions()
+        return self._actions
+
+    def RegisterAction(self, id, label, recall, *, replace=False):
+        """Register an explicit consumer recall(event); never execute it here."""
+        if self._dispatching:
+            raise ValueError('Do not register actions during dispatch')
+        return self._action_registry().register(id, label, recall, replace=replace)
+
+    def UnregisterAction(self, id):
+        """Remove a runtime entry point; retain saved Button references."""
+        if self._dispatching:
+            raise ValueError('Do not unregister actions during dispatch')
+        registry = self._action_registry()
+        removed = registry.entries.pop(id, None) is not None
+        self._publish()
+        return removed
+
+    def GetActions(self):
+        registry = self._action_registry()
+        return [registry.state(id) for id in registry.entries]
+
+    def GetActionState(self, id):
+        return self._action_registry().state(id)
+
+    def _restore_actions(self):
+        registry = self.ownerComp.op('controls').module.Actions()
+        self._actions = registry
+        hook = self.ownerComp.op('registration')
+        try:
+            register = getattr(hook.module, 'onRegisterActions', None) if hook is not None else None
+            if register is not None:
+                register(self.ownerComp)
+        except Exception as exc:
+            registry.entries.clear()
+            registry.error = 'Action registration failed: ' + str(exc)
+
+    def _action_callback(self, action_id):
+        def dispatch(event):
+            result = self._recall_action(action_id, event)
+            if result['status'] != 'succeeded':
+                raise ValueError(result['status'] + ': ' + result['error'])
+        return dispatch
+
+    def _recall_action(self, id, event):
+        result = self._action_registry().recall(id, event)
+        # Publish true live parameter values even after partial consumer failure.
+        # Deferred TD callbacks then observe the same value and do not repeat it.
+        if self._collection is not None:
+            for key, binding in list(self._collection.bindings.items()):
+                if binding.parameter is not None and self._collection.modes[key] != 'pulse':
+                    self.onControlChange(key, binding.parameter)
+        return result
+
+    def RecallAction(self, id):
+        """Explicit software recall; independent of Button assignment/LEARN."""
+        if self._dispatching or self._host.learning or self._restoring or self._restore_pending:
+            raise ValueError('Exit LEARN/restore; do not recall recursively')
+        follower = getattr(self, '_follow', None)
+        manager = getattr(self, '_layouts', None)
+        if manager is not None:
+            manager.owner_ready(required=True)
+            if manager.quarantined and not manager.legacy:
+                raise ValueError('Activate the repaired Layout before recall')
+        if (follower is not None and (follower.gated or follower.paused or follower.pending or getattr(follower,'backlog',False))) or (manager is not None and manager.mutating):
+            raise ValueError('Action recall is fenced during context transition')
+        self._dispatching = True
+        try:
+            result = self._recall_action(id, dict(origin='software', kind='pulse'))
+        finally:
+            self._dispatching = False
+        self._publish()
+        return result
+
+    def AssignAction(self, slot, action_id, *, button_type='push', id=None):
+        """Assign a stable action reference to one Button; preserve other slots."""
+        return self._assign_target('button', slot, None, button_type=button_type,
+                                   _id=id, action_id=action_id)
 
     def SetTrackComp(self, layout_id, track_id, comp):
         """Compatibility: link that Track's active Device."""
@@ -73,8 +157,9 @@ class RotoPythonExt:
         if follower is not None and token is not None and token[0] != follower.connection_generation:
             return
         stale = follower is not None and token is not None and token != follower.token
-        consumed = manager.receive(message, control_only=stale) if manager is not None else False
-        fenced = follower is not None and (follower.gated or stale)
+        unavailable = manager is not None and (not manager.owner_ready() or manager.quarantined and not manager.legacy)
+        fenced = unavailable or (follower is not None and (follower.gated or stale)) or self._dispatching or bool(manager and manager.mutating)
+        consumed = manager.receive(message, control_only=fenced) if manager is not None else False
         if not consumed and not fenced and learner is not None:
             consumed = learner.receive(message)
         if not consumed:
@@ -83,6 +168,7 @@ class RotoPythonExt:
             manager.acknowledge()
         if learner is not None:
             learner.sync()
+
 
     @property
     def State(self):
@@ -139,9 +225,12 @@ class RotoPythonExt:
 
     def GetLayouts(self):
         manager = self._layout_manager()
-        return [dict(id=r['id'], name=r['name'], track_name=manager.track(r['id'])['name'],
+        manager.refresh_owners()
+        return [dict(id=r['id'], name=r['name'],category=r.get('category','LEGACY'),owner=copy.deepcopy(r.get('owner')),
+                     track_name=manager.track(r['id'])['name'],
                      plugin_name=manager.plugin(r['id'])['plugin_name'],track_count=len(r['tracks']),
                      active=r['id']==manager.data['active']) for r in manager.data['records']]
+
 
     def SelectLayout(self, id):
         return self._layout_manager().select(id)
@@ -185,7 +274,9 @@ class RotoPythonExt:
 
     def GetLayoutContext(self):
         manager=getattr(self,'_layouts',None)
+        if manager is not None:manager.refresh_owners()
         return manager.context() if manager is not None else dict(key=None,label='Initializing',legacy=True)
+
 
     def CreateTrack(self, layout_id, name):
         return self._layout_manager().create_track(layout_id,name)
@@ -219,51 +310,95 @@ class RotoPythonExt:
             key, binding, target, mode = ("knob", 1), self._binding, self._host, "value"
             error = self._last_error
         parameter = binding.parameter if binding is not None else None
-        comp_path, parameter_name = "", ""
-        if parameter is not None and parameter.owner.valid:
-            comp_path, parameter_name = parameter.owner.path, parameter.name
-        elif binding is None:
-            comp_path, parameter_name = self.ownerComp.path, "Value"
-            if hasattr(self.ownerComp, 'par') and getattr(self.ownerComp.par, 'Value', None) is None:
-                backing = self._value_parameter()
-                comp_path, parameter_name = backing.owner.path, backing.name
+        comp_path, parameter_name, parameter_style = "", "", ""
+        parameter_ready=True
         value = binding.value if binding is not None else target.value
-        return dict(id=active_id, kind=key[0], slot=key[1], mode=mode,
+        value_source='cached'
+        manager=getattr(self,'_layouts',None)
+        owner_ready=manager is None or manager.owner_ready() and (not manager.quarantined or manager.legacy)
+        if parameter is not None:
+            value=None;value_source='unavailable';parameter_ready=False
+            try:
+                if parameter.owner.valid:
+                    comp_path,parameter_name=parameter.owner.path,parameter.name
+                    parameter_style=getattr(parameter,'style','')
+                    if binding.valid and owner_ready:
+                        binding.check_parameter()
+                        value=0 if mode=='pulse' else parameter_value(parameter)
+                        binding.normalized(value)  # reject unreadable/nonfinite observations
+                        value_source='pulse' if mode=='pulse' else 'live';parameter_ready=True
+            except (ValueError,AttributeError,RuntimeError,TypeError) as exc:
+                error=error or str(exc)
+            if not parameter_ready:
+                value=None;value_source='unavailable';error=error or 'Target unavailable'
+        elif binding is None:
+            comp_path,parameter_name=self.ownerComp.path,'Value'
+            if hasattr(self.ownerComp,'par') and getattr(self.ownerComp.par,'Value',None) is None:
+                backing=self._value_parameter()
+                comp_path,parameter_name=backing.owner.path,backing.name
+        if not owner_ready:value=None;value_source='unavailable'
+        normalized=(binding.normalized(value) if binding is not None else value) if value is not None else 0
+        action_id = getattr(binding, 'action_id', None)
+        action_state = self.GetActionState(action_id) if action_id else None
+        if action_id:
+            value_source = 'action' if owner_ready else 'unavailable'
+            if not owner_ready:error = error or 'Layout owner unavailable or quarantined; explicitly repair and Activate'
+            if not action_state['available']:error = error or action_state['error']
+        return dict(action_id=action_id, action_result=action_state['result'] if action_state else None,
+                    action_available=action_state['available'] if action_state else None,
+                    mapping_error=error,
+                    id=active_id, kind=key[0], slot=key[1], mode=mode,
                     label=binding.label if binding is not None else target.target_label,
-                    value=value, normalized=binding.normalized(value) if binding is not None else value,
+                    value=value,value_source=value_source,normalized=normalized,
                     minimum=binding.minimum if binding is not None else 0,
                     maximum=binding.maximum if binding is not None else 1,
-                    mapped=self._host.enabled and target.mapped, touched=target.touched,
-                    valid=self._host.enabled and target.enabled and (binding is None or binding.valid),
-                    connected=target.connected, plugin=target.plugin, error=error,
+                    mapped=owner_ready and parameter_ready and self._host.enabled and target.mapped, touched=target.touched,
+                    valid=owner_ready and parameter_ready and self._host.enabled and target.enabled and (binding is None or binding.valid) and (action_state is None or action_state['available']),
+                    connected=target.connected, plugin=target.plugin, error=error or (action_state['error'] if action_state else ''),
                     button_type=getattr(target, "button_type", None),
-                    binding_type="parameter" if parameter is not None else "callback" if binding is not None else "value",
+                    binding_type="action" if action_id else "parameter" if parameter is not None else "callback" if binding is not None else "value",
                     comp=comp_path, parameter=parameter_name,
                     menu_names=list(binding.menu_names) if binding is not None else [],
                     menu_labels=list(binding.menu_labels) if binding is not None else [],
-                    value_label=binding.format_value(binding.normalized(value)) if binding is not None and binding.menu_names else "",
-                    parameter_style=getattr(parameter,"style","") if parameter is not None else "",
+                    value_label=binding.format_value(normalized) if binding is not None and binding.menu_names and value is not None else "",
+                    parameter_style=parameter_style,
                     requires_relearn=active_id in self.ownerComp.fetch('needs_relearn', ()) and not target.mapped)
+
 
     def GetControlStates(self):
         """Detached snapshots for every registered control, in registration order."""
         ids = list(self._collection.ids) if self._collection is not None else [None]
-        return [self.GetControlState(id) for id in ids]
+        manager=getattr(self,'_layouts',None)
+        with manager.owner_observation() if manager is not None else nullcontext():
+            return [self.GetControlState(id) for id in ids]
+
 
     def GetControlCatalog(self):
-        """Persisted registered target data, independent of live mapping/session."""
-        return copy.deepcopy(self.ownerComp.fetch('control_catalog', self.GetControlStates()))
+        """Saved definitions with current registered values; missing slots have no live value."""
+        return self._catalog_from_states(self.GetControlStates())
 
-    def _update_catalog(self):
+    def _catalog_from_states(self, states):
+        live={r['id']:r for r in states}
+        records=copy.deepcopy(self.ownerComp.fetch('control_catalog',list(live.values())))
+        for record in records:
+            state=live.get(record['id'])
+            if state is not None:
+                for key in ('value','value_source','normalized','value_label','valid','mapped','touched','connected','plugin','error','mapping_error','action_id','action_available','action_result'):
+                    record[key]=state.get(key)
+            else:record.update(value=None,value_source='unavailable',valid=False,mapped=False)
+        return records
+
+
+    def _update_catalog(self, states=None):
         if self._restore_pending:
             return
         previous={state['id']:state for state in self.ownerComp.fetch('control_catalog', [])}
         records=[]
-        for state in self.GetControlStates():
+        for state in self.GetControlStates() if states is None else states:
             old=previous.get(state['id'], {})
             record=dict(state)
             for field in ('comp','parameter'):
-                if not record[field] and old.get(field):
+                if record['binding_type'] != 'action' and not record[field] and old.get(field):
                     record[field]=old[field]
             record['last_mapped']=state['mapped'] or old.get('last_mapped', False)
             records.append(record)
@@ -274,7 +409,7 @@ class RotoPythonExt:
             removed=set(self.ownerComp.fetch('removed_controls',[]))
             for id, old in previous.items():
                 if id in target_ids and id not in present and id not in removed:
-                    old=dict(old,valid=False,mapped=False,error='Target unavailable')
+                    old=dict(old,valid=False,mapped=False,error='Target unavailable',mapping_error='Target unavailable')
                     records.append(old)
         if records != self.ownerComp.fetch('control_catalog', []):
             self.ownerComp.store('control_catalog', records)
@@ -290,6 +425,7 @@ class RotoPythonExt:
         self._restore_pending = False
         self._restoring = True
         try:
+            self._restore_actions()
             has_registry=self.ownerComp.op('layouts') is not None and self.ownerComp.fetch('layout_registry',None) is not None
             if has_registry and self.ownerComp.par.Setupmode.eval()=='callback':
                 previous_manager=getattr(self,'_layouts',None)
@@ -456,7 +592,7 @@ class RotoPythonExt:
                     maximum=old.maximum if maximum is None else maximum,
                     mode=self._collection.modes[key] if mode is None else mode,
                     button_type=self._collection.button_types[key] if button_type is None else button_type,
-                    value=old.value, parameter=old.parameter, on_change=old.on_change)
+                    value=old.value, parameter=old.parameter, on_change=old.on_change, action_id=getattr(old, 'action_id', None))
         candidate = self.ownerComp.op('controls').module.Controls([spec])
         binding = candidate.bindings[key]
         if binding.value != old.value and candidate.modes[key] != 'pulse':
@@ -499,6 +635,10 @@ class RotoPythonExt:
         """Resolve persisted Inspector assignments independently of demo setup."""
         result = []
         for record in self.ownerComp.fetch('parameter_assignments', []):
+            if record.get('action_id'):
+                result.append(dict({k:v for k,v in record.items() if k not in ('identity','comp','parameter','menu_names','menu_labels')},
+                                   on_change=self._action_callback(record['action_id'])))
+                continue
             target = self.ownerComp.op(record['comp'])
             parameter = getattr(target.par, record['parameter'], None) if target is not None else None
             if parameter is None:
@@ -510,30 +650,47 @@ class RotoPythonExt:
         return result
 
     def AssignParameter(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None, _hardware_mapped=False, _saved_spec=None):
-        """Assign one slot, infer metadata and persist it; preserve other controls."""
+        """Assign one parameter slot, preserving other controls."""
+        return self._assign_target(kind, slot, parameter, button_type=button_type, _id=_id,
+                                   _wire_index=_wire_index, _hardware_mapped=_hardware_mapped, _saved_spec=_saved_spec)
+
+    def _assign_target(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None,
+                       _hardware_mapped=False, _saved_spec=None, action_id=None):
+        """Shared one-slot installation for parameter and named action adapters."""
         self._layout_dirty = True
         if kind not in ('knob', 'button') or type(slot) is not int or not 1 <= slot <= 8:
             raise ValueError('Control must be knob/button, slot 1..8')
         key = kind, slot
+        if action_id is not None:
+            state = self.GetActionState(action_id)
+            if not state['available'] and not _hardware_mapped:
+                raise ValueError(state['error'])
+        follower = getattr(self, '_follow', None)
+        if follower is not None and (follower.gated or follower.paused or follower.pending):
+            raise ValueError('Assignment is fenced during context transition')
         if self._dispatching:
             raise ValueError('Do not assign inside a hardware callback')
         target = self._host.controls.get(key) if self._collection is not None else self._host if key == ('knob', 1) else None
         if target is not None and target.touched and not self._host.learning:
             raise ValueError('Release the control before assigning')
         manager=getattr(self,'_layouts',None)
+        if manager is not None:manager.owner_ready(required=True)
+        if manager is not None and manager.quarantined and not manager.legacy:raise ValueError('Activate the repaired Layout before assigning')
         if _hardware_mapped and manager is not None and not manager.legacy:
             manager.capture(force=True)
             self._layout_dirty=True
         old = self._collection.bindings.get(key) if self._collection is not None else self._binding if key == ('knob', 1) else None
-        if old is not None and (_id is None or old.id==_id) and old.parameter == parameter and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
+        if old is not None and (_id is None or old.id==_id) and old.parameter == parameter and getattr(old, 'action_id', None) == action_id and old.valid and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
             return self.GetControlState(old.id)
         style = getattr(parameter, 'style', '')
-        mode = 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'
+        mode = 'pulse' if action_id else 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'
         adapter = None if kind == 'knob' else button_type or (
             getattr(target, 'button_type', None) or ('push' if mode == 'pulse' else 'toggle'))
         import uuid
-        id = _id or 'parameter.'+uuid.uuid4().hex
+        id = _id or ('action.' if action_id else 'parameter.')+uuid.uuid4().hex
         spec = dict(kind=kind, slot=slot, id=id, parameter=parameter, mode=mode, button_type=adapter)
+        if action_id:
+            spec.update(action_id=action_id, label=state['label'], on_change=self._action_callback(action_id))
         if _saved_spec is not None:
             spec.update({k:v for k,v in _saved_spec.items() if k not in ('kind','slot','id','parameter','identity')})
             mode=spec['mode'];adapter=spec['button_type']
@@ -545,7 +702,7 @@ class RotoPythonExt:
             for other_key, binding in self._collection.bindings.items():
                 if other_key != key:
                     specs.append(dict(kind=other_key[0], slot=other_key[1], id=binding.id,
-                                      parameter=binding.parameter, on_change=binding.on_change,
+                                      parameter=binding.parameter, on_change=binding.on_change, action_id=getattr(binding, 'action_id', None),
                                       minimum=binding.minimum, maximum=binding.maximum,
                                       label=binding.label, value=binding.value,
                                       mode=self._collection.modes[other_key],
@@ -584,28 +741,35 @@ class RotoPythonExt:
             self._collection.modes[key] = mode
             self._collection.button_types[key] = adapter
             self._collection.indices[key] = candidate.indices[key]
-            self._collection.paths[key] = parameter.owner.path
+            self._collection.paths[key] = parameter.owner.path if parameter is not None else ''
             self._collection.errors.pop(key, None)
             self._host.controls[key] = replacement
             self._host._sync()
         watcher.par.op.expr = ''
         watcher.par.op.expr = "str(parent.RotoPython.ext.RotoPythonExt.Controlowner("+repr(kind)+","+str(slot)+"))"
-        watcher.par.pars = parameter.name
-        watcher.par.active = True
+        watcher.par.pars = parameter.name if parameter is not None else ''
+        watcher.par.active = parameter is not None
         records = [record for record in self.ownerComp.fetch('parameter_assignments', [])
                    if (record['kind'],record['slot']) != key]
-        records.append(dict(kind=kind, slot=slot, id=id, comp=os.path.relpath(parameter.owner.path,self.ownerComp.path),
-                            parameter=parameter.name, mode=mode, label=binding.label,
+        records.append(dict(kind=kind, slot=slot, id=id, comp=os.path.relpath(parameter.owner.path,self.ownerComp.path) if parameter is not None else '',
+                            parameter=parameter.name if parameter is not None else '', mode=mode, label=binding.label,
                             minimum=binding.minimum, maximum=binding.maximum, button_type=adapter, index=self._host.controls[key].index))
+        if action_id:
+            records[-1]['action_id'] = action_id
         self.ownerComp.store('parameter_assignments', records)
         # The overlay is the registration source; remove the superseded table row.
         table = self.ownerComp.op('base_targets/targets')
         for row in range(table.numRows-1,0,-1):
             if table[row,'kind'].val == kind and int(table[row,'slot'].val) == slot:
                 table.deleteRow(row)
-        if old is not None and not _hardware_mapped:
-            removed = set(self.ownerComp.fetch('removed_controls', []));removed.add(old.id)
-            self.ownerComp.store('removed_controls', sorted(removed))
+        removed = set(self.ownerComp.fetch('removed_controls', []))
+        if old is not None and not _hardware_mapped and old.id != id:
+            removed.add(old.id)
+        removed.discard(id)
+        self.ownerComp.store('removed_controls', sorted(removed))
+        overrides = dict(self.ownerComp.fetch('control_overrides', {}))
+        overrides.pop(id, None)  # this installation's validated spec is authoritative
+        self.ownerComp.store('control_overrides', overrides)
         pending = {tuple(value) for value in self.ownerComp.fetch('pending_unmaps', [])};pending.discard(key)
         self.ownerComp.store('pending_unmaps', sorted(pending));self._host.pending_unmaps = pending
         self.ownerComp.store('pending_unmap_identities',[r for r in self.ownerComp.fetch('pending_unmap_identities',[]) if (r['kind'],r['slot'])!=key])
@@ -614,6 +778,7 @@ class RotoPythonExt:
         self._output_values = None
         self._publish()
         return self.GetControlState(id)
+
 
     def Hello(self):
         return "RotoPythonExt: single target / 8 knobs / 8 buttons"
@@ -724,6 +889,9 @@ class RotoPythonExt:
         return self._install_binding(candidate)
 
     def SetValue(self, value, id=None):
+        manager=getattr(self,'_layouts',None)
+        if manager is not None:manager.owner_ready(required=True)
+        if manager is not None and manager.quarantined and not manager.legacy:raise ValueError('Activate the repaired Layout before writing')
         if self._collection is not None:
             if self._dispatching:
                 raise ValueError("Do not call SetValue inside on_change")
@@ -770,6 +938,7 @@ class RotoPythonExt:
         except Exception as exc:
             self._fault(exc)
             raise
+
 
     def Unbind(self):
         self._layout_dirty = True
@@ -818,63 +987,65 @@ class RotoPythonExt:
 
     def _publish(self):
         manager=getattr(self,'_layouts',None)
-        if manager is not None and manager.mutating:
-            return
-        self._update_catalog()
-        pending = self.ownerComp.fetch('needs_relearn', ())
-        if pending:
-            mapped = {state['id']:state['mapped'] for state in self.GetControlStates()}
-            remaining = tuple(id for id in pending if not mapped.get(id, False))
-            if remaining != pending:
-                self.ownerComp.store('needs_relearn', remaining)
-        if manager is not None:
-            try:
-                manager.attach()
-                manager.capture()
-                if not manager.legacy:self.ownerComp.store('layout_registry_suspended',False)
-            except ValueError as exc:
-                self.ownerComp.store('layout_registry_suspended',True)
-                self._last_error = str(exc)
-        par = self.ownerComp.op("base_state").par
-        par.Value.val = self._value_parameter().eval()
-        par.Connected.val = self._host.connected
-        par.Plugin.val = self._host.plugin
-        par.Mapped.val = self._host.mapped
-        par.Touched.val = self._host.touched
-        par.Rx.val = self._host.rx
-        par.Tx.val = self._host.tx
-        par.Rejected.val = self._host.rejected
-        par.Echoblocked.val = self._host.echo_blocked
-        par.Status.val = self._host.last_event
-        par.Learning.val = self._host.learning
-        par.Bindingvalid.val = self._host.enabled and (self._binding is None or self._binding.valid)
-        par.Lasterror.val = self._last_error
-        par.Targetid.val = self._binding.id if self._binding is not None else "Value"
-        par.Targetvalue.val = self._binding.value if self._binding is not None else self._host.value
-        if self._collection is not None:
-            self._publish_controls()
-        marker = self.ownerComp.op("base_targets/mapping_marks")
-        if marker is not None:
-            try:
-                marker.module.update(self.ownerComp, self.GetControlStates())
-                self.ownerComp.store("mapping_mark_error", "")
-            except Exception as exc:
-                self.ownerComp.store("mapping_mark_error", str(exc))
-        self._publish_inspector()
+        with manager.owner_observation() if manager is not None else nullcontext():
+            return self._publish_state()
 
-    def _publish_inspector(self):
+
+    def _publish_inspector(self, force=False, states=None):
+        manager=getattr(self,'_layouts',None)
+        with manager.owner_observation() if manager is not None else nullcontext():
+            return self._publish_inspector_state(force,states)
+
+    def _publish_inspector_state(self, force=False, states=None):
+        if not force and getattr(self,'_inspector_refresh_run',None) is not None:return
         inspector = self.ownerComp.op("inspector")
         if inspector is None:
             return
         try:
-            inspector.op("inspector_data").module.refresh(inspector, self.GetControlCatalog())
+            data=inspector.op("inspector_data").module
+            states=self.GetControlCatalog() if states is None else self._catalog_from_states(states)
+            signature=getattr(data,'projection_signature',None)
+            key=(getattr(inspector,'id',id(inspector)),data.refresh,signature(inspector,states)) if signature else None
+            if not force and key is not None and key==getattr(self,'_inspector_projection',None) and not inspector.fetch('refresh_error',''):
+                return
+            if not force and key is not None:
+                try:
+                    self._inspector_refresh_run=run('args[0]._flush_inspector()',self,endFrame=True)
+                    return
+                except NameError:
+                    pass  # Pure Python callers have no TD event scheduler.
+            if force:self._cancel_inspector_refresh()
+            data.refresh(inspector,states)
+            self._inspector_projection=key
             inspector.store("refresh_error", "")
         except Exception as exc:
             # An optional UI observer must not break transport or target dispatch.
             inspector.store("refresh_error", str(exc))
+            if inspector.op('owned_runtime') is not None:
+                try:
+                    import json
+                    metadata=inspector.op('context_state')
+                    snapshot=json.loads(metadata.text) if metadata.text.strip() else {}
+                    snapshot['projection_error']=str(exc)
+                    metadata.text=json.dumps(snapshot,sort_keys=True)+'\n'
+                except Exception:
+                    pass  # The original optional observer error remains in storage.
             title = inspector.op("title")
             if title is not None:
                 title.par.text = "Inspector unavailable: " + str(exc)
+
+    def _cancel_inspector_refresh(self):
+        pending=getattr(self,'_inspector_refresh_run',None)
+        if pending is not None:pending.kill()
+        self._inspector_refresh_run=None
+
+    def _flush_inspector(self):
+        self._inspector_refresh_run=None
+        if not getattr(self.ownerComp,'valid',True):return
+        current=getattr(getattr(self.ownerComp,'ext',None),'RotoPythonExt',self)
+        if current is not self:return
+        # Read the latest catalog and UI scope after the full callback burst.
+        self._publish_inspector(force=True)
 
     def _leave_collection(self):
         if self._collection is None:
@@ -890,13 +1061,18 @@ class RotoPythonExt:
         self.ownerComp.op("base_targets/controls_values").clear()
         self._output_values = None
 
-    def BindControls(self, specs, *, group_id, _allow_empty=False, _allow_learning=False):
+    def BindControls(self, specs, *, group_id, _allow_empty=False, _allow_learning=False, _automatic_follow=False):
         self._layout_dirty = True
-        if self._dispatching or (self._host.learning or self._host.touched) and not (_allow_learning and self._host.learning):
+        manager=getattr(self,'_layouts',None);follower=getattr(self,'_follow',None)
+        routing_install=bool(_automatic_follow and manager is not None and manager.mutating
+                             and follower is not None and follower.committing)
+        if self._dispatching or ((self._host.learning or self._host.touched and not routing_install)
+                                 and not (_allow_learning and self._host.learning)):
             raise ValueError("Cannot replace controls inside a callback, during LEARN or touch")
         specs=list(specs)
-        if getattr(self,'_layouts',None) is not None and not self._layouts.legacy and any(spec.get('parameter') is None for spec in specs):
+        if getattr(self,'_layouts',None) is not None and not self._layouts.legacy and any(spec.get('parameter') is None and not spec.get('action_id') for spec in specs):
             raise ValueError('Callback Layouts require a reconstruction factory; collection was not changed')
+        specs=[dict(spec, on_change=self._action_callback(spec['action_id'])) if spec.get('action_id') else spec for spec in specs]
         original=bool(specs)
         removed=set(self.ownerComp.fetch('removed_controls', []))
         if getattr(self,'_restoring',False):
@@ -972,15 +1148,21 @@ class RotoPythonExt:
         self._publish()
 
     def _assign_control(self, key, value):
+        if self._dispatching:
+            return
         binding = self._collection.bindings[key]
         target = self._host.controls[key]
         try:
+            manager=getattr(self,'_layouts',None)
+            if manager is not None:manager.owner_ready(required=True)
+            if manager is not None and manager.quarantined and not manager.legacy:raise ValueError('Activate the repaired Layout before dispatch')
             self._dispatching = True
             if self._collection.modes[key] == "pulse":
                 self._collection.pulse(key)
             else:
                 if self._collection.modes[key] == 'cycle':
-                    value = binding.normalized((int(binding.value)+1) % len(binding.menu_names))
+                    current=parameter_value(binding.parameter) if binding.parameter is not None else binding.value
+                    value = binding.normalized((int(current)+1) % len(binding.menu_names))
                 target.parameter_changed(value)
                 actual = binding.write(binding.from_normalized(value), "hardware")
                 target.value = binding.normalized(actual)
@@ -990,6 +1172,7 @@ class RotoPythonExt:
             self._control_fault(key, exc)
         finally:
             self._dispatching = False
+
 
     def onControlChange(self, key, par, pulse=False):
         if self._collection is None:
@@ -1049,28 +1232,40 @@ class RotoPythonExt:
             except Exception as exc:
                 self._control_fault(key, exc)
 
-    def _publish_controls(self):
+    def _publish_controls(self, states=None):
+        states = [self.GetControlState(b.id) for b in self._collection.bindings.values()] if states is None else states
+        observed = {state['id']:state for state in states}
         table = self.ownerComp.op("base_targets/state")
         rows = [["kind", "slot", "id", "mode", "value", "mapped", "valid", "error"]]
         for key, binding in self._collection.bindings.items():
             target = self._host.controls[key]
+            state = observed[binding.id]
             rows.append([key[0], str(key[1]), binding.id, self._collection.modes[key], str(binding.value),
-                         str(int(target.mapped)), str(int(binding.valid)), self._collection.errors.get(key, "")])
+                         str(int(target.mapped)), str(int(state['valid'])), state['error']])
         content = "\n".join("\t".join(row) for row in rows) + "\n"
         if table.text.replace("\r\n", "\n") != content:
             table.text = content
         output = self.ownerComp.op("base_targets/controls_values")
         values = {key[0] + str(key[1]): binding.value for key, binding in self._collection.bindings.items()}
-        if getattr(self, "_output_values", None) != values:
+        previous=getattr(self, "_output_values", None)
+        rebuild=(previous is None or previous.keys()!=values.keys()
+                 or getattr(self,"_output_op_id",None)!=output.id
+                 or output.numSamples!=1 or output.numChans!=len(values))
+        changed=[(name,value) for name,value in values.items()
+                 if previous is None or previous.get(name)!=value]
+        channels=[] if rebuild else [(output[name],value) for name,value in changed]
+        if rebuild or any(channel is None for channel,value in channels):
             output.clear()
             output.numSamples = 1
             for name, value in values.items():
                 output.appendChan(name)[0] = value
-            self._output_values = values
+        else:
+            for channel,value in channels:channel[0]=value
+        self._output_values=values;self._output_op_id=output.id
         first = self._collection.bindings.get(("knob", 1))
         self.ownerComp.op("base_state").par.Targetvalue = first.value if first is not None else 0
         self.ownerComp.op("base_state").par.Targetid = self._host.device_id
-        self.ownerComp.op("base_state").par.Bindingvalid = self._host.enabled and all(b.valid for b in self._collection.bindings.values())
+        self.ownerComp.op("base_state").par.Bindingvalid = self._host.enabled and all(observed[b.id]['valid'] for b in self._collection.bindings.values())
 
     def Connect(self):
         if self._restore_pending:
@@ -1103,6 +1298,7 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        self._cancel_inspector_refresh()
         follower = getattr(self, '_follow', None)
         if follower is not None:
             follower.session_boundary()
@@ -1132,11 +1328,20 @@ class RotoPythonExt:
             learner.pending = None
             learner.sync()
         self._publish()
+        if getattr(self,'_inspector_refresh_run',None) is not None:
+            self._publish_inspector(force=True)
 
     def Offerparameter(self, id=None):
         if self._collection is None:
             self._check_single_id(id)
         key = self._collection.key(id) if self._collection is not None else None
+        if key is not None and getattr(self._collection.bindings[key], 'action_id', None):
+            follower = getattr(self, '_follow', None)
+            manager = getattr(self, '_layouts', None)
+            if (not self.GetControlState(id)['valid'] or self._dispatching or
+                    (follower is not None and (follower.gated or follower.paused or follower.pending)) or
+                    (manager is not None and manager.mutating)):
+                return False
         result = self._host.offer_parameter(key) if key is not None else self._host.offer_parameter()
         self._publish()
         return result
@@ -1249,6 +1454,10 @@ class RotoPythonExt:
             self._last_error = str(exc)
         self._publish()
 
+    def Openinspector(self):
+        """Open only this controller's owned Inspector; no routing/business call."""
+        return self.ownerComp.op('inspector/owned_runtime').module.open_inspector(self.ownerComp)
+
     def onParPulse(self, par):
         if par.name in ('Newplugin','Deleteplugin'):
             manager=self._layout_manager();layout_id=manager.data['active'];track_id=manager.track()['id']
@@ -1277,12 +1486,124 @@ class RotoPythonExt:
             except ValueError as exc:
                 self._last_error=str(exc)
             self._publish();return
-        {"Connect": self.Connect, "Disconnect": self.Disconnect,
+        {"Connect": self.Connect, "Disconnect": self.Disconnect, "Openinspector": self.Openinspector,
          "Offerparameter": self.Offerparameter, "Applybinding": self.Applybinding}[par.name]()
 
     def Tick(self):
         if self._restore_pending:
             self.Applybinding()
+        manager=getattr(self,'_layouts',None)
+        with manager.owner_observation() if manager is not None else nullcontext():
+            return self._tick()
+
+
+    def onDestroyTD(self):
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            follower.refresh_links()
+        self.Disconnect()
+
+
+    def RegisterComp(self, comp, *, new_identity=False):
+        return self._layout_manager().register_comp(comp,new_identity)
+
+
+    def LookupCompLayout(self, comp):
+        manager=self._layout_manager();manager.refresh_owners((comp,))
+        return next((r['id'] for r in manager.data['records'] if r.get('owner')
+                     and manager.owner_handles.get(r['owner']['id']) is comp and r['owner']['state']=='bound'),None)
+
+
+    def GetLayoutRegistry(self):
+        return self._layout_manager().registry_snapshot()
+
+
+    def CheckLayoutRevision(self, revision):
+        return self._layout_manager().check_revision(revision)
+
+
+    def ValidateLayoutRegistry(self, snapshot):
+        self._layout_manager().validate(snapshot)
+        return True
+
+
+    def PlanCompLayoutMigration(self, migration_id, classifications, *, entries=None, active_variants=None):
+        """Explicit offline dry-run; unclassified/CUSTOM records remain in place."""
+        dat = self.ownerComp.op('layout_migration')
+        if dat is None:
+            raise ValueError('Install migration source support first')
+        return dat.module.plan(self._layout_manager(), migration_id, classifications, entries, active_variants)
+
+
+    def ApplyCompLayoutMigration(self, plan, *, recovery_path):
+        """Review a plan before this offline commit; never writes target Pars."""
+        dat = self.ownerComp.op('layout_migration')
+        if dat is None:
+            raise ValueError('Install migration source support first')
+        return dat.module.apply(self._layout_manager(), plan, recovery_path)
+
+
+    def RelinkLayoutOwner(self, layout_id, comp):
+        return self._layout_manager().relink_owner(layout_id,comp)
+
+
+    def UnregisterLayoutOwner(self, layout_id):
+        return self._layout_manager().unregister_owner(layout_id)
+
+
+    def GetPluginTargets(self, layout_id=None, track_id=None, plugin_id=None):
+        return self._layout_manager().plugin_targets(layout_id,track_id,plugin_id)
+
+
+    def _publish_state(self):
+        manager=getattr(self,'_layouts',None)
+        if manager is not None and manager.mutating:
+            return
+        states=self.GetControlStates()
+        self._update_catalog(states)
+        pending = self.ownerComp.fetch('needs_relearn', ())
+        if pending:
+            mapped = {state['id']:state['mapped'] for state in states}
+            remaining = tuple(id for id in pending if not mapped.get(id, False))
+            if remaining != pending:
+                self.ownerComp.store('needs_relearn', remaining)
+        if manager is not None:
+            try:
+                manager.attach()
+                manager.capture()
+                if not manager.legacy:self.ownerComp.store('layout_registry_suspended',False)
+            except ValueError as exc:
+                self.ownerComp.store('layout_registry_suspended',True)
+                self._last_error = str(exc)
+        par = self.ownerComp.op("base_state").par
+        par.Value.val = self._value_parameter().eval()
+        par.Connected.val = self._host.connected
+        par.Plugin.val = self._host.plugin
+        par.Mapped.val = self._host.mapped
+        par.Touched.val = self._host.touched
+        par.Rx.val = self._host.rx
+        par.Tx.val = self._host.tx
+        par.Rejected.val = self._host.rejected
+        par.Echoblocked.val = self._host.echo_blocked
+        par.Status.val = self._host.last_event
+        par.Learning.val = self._host.learning
+        par.Bindingvalid.val = self._host.enabled and (self._binding is None or self._binding.valid)
+        par.Lasterror.val = self._last_error
+        par.Targetid.val = self._binding.id if self._binding is not None else "Value"
+        par.Targetvalue.val = self._binding.value if self._binding is not None else self._host.value
+        if self._collection is not None:
+            self._publish_controls(states)
+        marker = self.ownerComp.op("base_targets/mapping_marks")
+        if marker is not None:
+            try:
+                marker.module.update(self.ownerComp, states)
+                self.ownerComp.store("mapping_mark_error", "")
+            except Exception as exc:
+                self.ownerComp.store("mapping_mark_error", str(exc))
+        self._publish_inspector(states=states)
+
+
+    def _tick(self):
         if self._collection is not None:
             self._check_controls()
         if self._binding is not None and self._binding.valid:
@@ -1370,9 +1691,3 @@ class RotoPythonExt:
             self._host.last_event = str(exc)
             self._publish()
             raise
-
-    def onDestroyTD(self):
-        follower = getattr(self, '_follow', None)
-        if follower is not None:
-            follower.refresh_links()
-        self.Disconnect()

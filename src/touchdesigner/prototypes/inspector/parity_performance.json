@@ -1,0 +1,29 @@
+{
+  "idle_sync": {
+    "p95_ms": 0.28033298440277576,
+    "max_ms": 0.8444159757345915,
+    "samples": 100
+  },
+  "details_open_sync": {
+    "p95_ms": 0.28366607148200274,
+    "max_ms": 0.6994169671088457,
+    "samples": 100
+  },
+  "details_refresh": {
+    "p95_ms": 0.36466598976403475,
+    "max_ms": 0.5143749294802547,
+    "samples": 100
+  },
+  "details_toggle_pair": {
+    "p95_ms": 1.0447499807924032,
+    "max_ms": 1.196791068650782,
+    "samples": 100
+  },
+  "idle_row_text_write_delta": 0,
+  "operator_count_stable": true,
+  "subscribers": 2,
+  "discovery_jobs": 0,
+  "native_render_and_midi_measured": false,
+  "long_duration_memory_measured": false,
+  "production_catalog_session_preserved": true
+}

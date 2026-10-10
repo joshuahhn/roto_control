@@ -1,0 +1,25 @@
+{
+  "discovery_scans": 2,
+  "cold_result_counts": [
+    33,
+    123
+  ],
+  "discovery_step_p95_ms": 2.064291969873011,
+  "discovery_step_max_ms": 2.1203330252319574,
+  "cached_open_p95_ms": 0.010665971785783768,
+  "query_ui_p95_ms": 0.24891598150134087,
+  "sync_p95_ms": 0.14108303003013134,
+  "cache": {
+    "pages": 2,
+    "entries": 156,
+    "jobs": 0,
+    "pending": 0,
+    "errors": []
+  },
+  "queries_no_rescan": true,
+  "reopen_node_count_stable": true,
+  "idle_text_write_delta": 0,
+  "native_render_and_midi_measured": false,
+  "long_duration_memory_measured": false,
+  "production_catalog_session_preserved": true
+}

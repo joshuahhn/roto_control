@@ -1,0 +1,11 @@
+{
+  "phase": "done",
+  "done": true,
+  "reason": "complete",
+  "duration_s": 1800.0,
+  "soak_elapsed_s": 1800.0114085830282,
+  "feeds": 16437,
+  "errors": [],
+  "production_preserved": true,
+  "reconstructed_from": "replacement_acceptance.json"
+}

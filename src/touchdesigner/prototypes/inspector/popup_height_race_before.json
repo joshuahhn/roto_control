@@ -1,0 +1,66 @@
+{
+  "label": "before",
+  "cycles": 5,
+  "baseline": [
+    328,
+    178
+  ],
+  "samples": [
+    {
+      "actual_height": 178,
+      "opening_height": 178,
+      "editor_height": 178.0,
+      "width": 328,
+      "corner": [
+        272,
+        522
+      ]
+    },
+    {
+      "actual_height": 178,
+      "opening_height": 178,
+      "editor_height": 178.0,
+      "width": 328,
+      "corner": [
+        272,
+        522
+      ]
+    },
+    {
+      "actual_height": 178,
+      "opening_height": 178,
+      "editor_height": 178.0,
+      "width": 328,
+      "corner": [
+        272,
+        522
+      ]
+    },
+    {
+      "actual_height": 178,
+      "opening_height": 178,
+      "editor_height": 178.0,
+      "width": 328,
+      "corner": [
+        272,
+        522
+      ]
+    },
+    {
+      "actual_height": 178,
+      "opening_height": 178,
+      "editor_height": 178.0,
+      "width": 328,
+      "corner": [
+        272,
+        522
+      ]
+    }
+  ],
+  "all_heights_restored": true,
+  "width_corner_preserved": true,
+  "no_reopen": true,
+  "production_catalog_session_preserved": true,
+  "error": null,
+  "all_pass": true
+}

@@ -1,0 +1,16 @@
+{
+  "project": "inspector_editor_actions.3.toe",
+  "controller_connected": true,
+  "subscribers": 2,
+  "one_main": true,
+  "editors_closed": true,
+  "presentation": "popup",
+  "errors": [
+    "",
+    "",
+    ""
+  ],
+  "baseline_registry_unchanged": true,
+  "baseline_session_unchanged": true,
+  "baseline_control_identities_unchanged": true
+}

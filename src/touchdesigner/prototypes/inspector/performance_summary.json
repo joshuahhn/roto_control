@@ -1,0 +1,162 @@
+{
+  "workload": "14 non-Pulse values at ~10 Hz; forward/reverse 6-second cases with 1-second warmup",
+  "aggregation": "median of the two per-case p95 measurements; not pooled p95",
+  "cases": [
+    {
+      "case": "closed_idle",
+      "before": {
+        "frame_p95_ms": 7.350978851318359,
+        "wall_gap_p95_ms": 18.095375038683414,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0,
+        "projection_calls": 300.5,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 8.191020965576172,
+        "wall_gap_p95_ms": 18.552875495515764,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0,
+        "projection_calls": 301,
+        "actual_render_calls": 0
+      }
+    },
+    {
+      "case": "closed_1",
+      "before": {
+        "frame_p95_ms": 7.469208478927612,
+        "wall_gap_p95_ms": 20.239666511770338,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 1.5140484180807583,
+        "projection_calls": 347,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 8.061437606811523,
+        "wall_gap_p95_ms": 18.499520956538618,
+        "dropped_frames": 1.0,
+        "callback_mean_ms": 0.7896563671729601,
+        "projection_calls": 393.5,
+        "actual_render_calls": 46.5
+      }
+    },
+    {
+      "case": "popup_1",
+      "before": {
+        "frame_p95_ms": 7.509416580200195,
+        "wall_gap_p95_ms": 19.915104494430125,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 1.3475558519898418,
+        "projection_calls": 348,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 7.966958045959473,
+        "wall_gap_p95_ms": 19.151479529682547,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.7111728998259912,
+        "projection_calls": 394,
+        "actual_render_calls": 46.5
+      }
+    },
+    {
+      "case": "closed_14",
+      "before": {
+        "frame_p95_ms": 8.094749689102173,
+        "wall_gap_p95_ms": 30.053353984840214,
+        "dropped_frames": 3.0,
+        "callback_mean_ms": 0.9093438606823154,
+        "projection_calls": 928,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 9.150478839874268,
+        "wall_gap_p95_ms": 23.754124995321035,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.3981607434734826,
+        "projection_calls": 989,
+        "actual_render_calls": 46
+      }
+    },
+    {
+      "case": "fold_14",
+      "before": {
+        "frame_p95_ms": 17.555334091186523,
+        "wall_gap_p95_ms": 30.14129149960354,
+        "dropped_frames": 1.0,
+        "callback_mean_ms": 0.8950802828915567,
+        "projection_calls": 944.5,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 7.990750074386597,
+        "wall_gap_p95_ms": 23.21270847460255,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.3785115250387713,
+        "projection_calls": 1006,
+        "actual_render_calls": 47
+      }
+    },
+    {
+      "case": "popup_14",
+      "before": {
+        "frame_p95_ms": 15.86299991607666,
+        "wall_gap_p95_ms": 28.776500024832785,
+        "dropped_frames": 2.0,
+        "callback_mean_ms": 0.8296049762190383,
+        "projection_calls": 943.5,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 9.5744788646698,
+        "wall_gap_p95_ms": 23.407770495396107,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.3732838858390608,
+        "projection_calls": 998.5,
+        "actual_render_calls": 46.5
+      }
+    },
+    {
+      "case": "details_14",
+      "before": {
+        "frame_p95_ms": 17.2662296295166,
+        "wall_gap_p95_ms": 29.91481253411621,
+        "dropped_frames": 2.0,
+        "callback_mean_ms": 0.9174506866469211,
+        "projection_calls": 930,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 8.384791374206543,
+        "wall_gap_p95_ms": 23.232187959365547,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.3729750324248713,
+        "projection_calls": 1005.5,
+        "actual_render_calls": 47
+      }
+    },
+    {
+      "case": "popup_frozen_14",
+      "before": {
+        "frame_p95_ms": 11.906729459762573,
+        "wall_gap_p95_ms": 30.20252101123333,
+        "dropped_frames": 2.0,
+        "callback_mean_ms": 0.935805176517793,
+        "projection_calls": 930,
+        "actual_render_calls": 0
+      },
+      "after": {
+        "frame_p95_ms": 10.687083721160889,
+        "wall_gap_p95_ms": 22.426478972192854,
+        "dropped_frames": 0.0,
+        "callback_mean_ms": 0.38410145215824343,
+        "projection_calls": 1004,
+        "actual_render_calls": 47
+      }
+    }
+  ],
+  "production_preserved": true,
+  "cadence_gate": "open: wall-gap spikes remain",
+  "native_render": "visibility/frozen-projection ablation; not isolated GPU drawing timing",
+  "baseline_actual_render_note": "baseline predates render spy; old implementation renders on each projection call, so its projection call count is the baseline render proxy"
+}

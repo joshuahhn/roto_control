@@ -1,0 +1,7 @@
+# Explicit context activation
+
+Use one compact Activate button in the existing bottom-right footer when the browsed context differs from hardware routing. Hide Clear Device in that state; restore it after activation. LIVE still returns the view to current routing. DEVICE/LAYOUT/TRACK menus remain read-only browsing.
+
+Command boundary: a view token contains model session generation, full destination key and observed active key. Sync/revalidate at dispatch. Block legacy, LEARN, any touch, LOCK, dispatch/activation, paused or pending/backlogged/gated Follow, and an existing transport outside connected PLUGIN. A disconnected controller without a running transport may select its saved bank. One SelectPlugin(layout, track, device) owns atomic install/rollback, fences and manual Follow semantics; no preference or network selection writes.
+
+Add activate_device containerCOMP and click_activate_device panelExecuteDAT to each existing view; no new windows, wires or frame polling. UI footprint80x16 at existing footer right anchors; network positions400,-800 and1835,-420, with Events annotation extended downward. Builders create the same nodes. Source changes stay in shared commands/model/view plus a small external installer. Verify pure stale/guard/failure cases and isolated native multi-context activation/Follow/rollback without real MIDI. Export disconnected generic UI, check source/state, embed docs and save through live TD. Physical behavior joins the single pending acceptance batch.

@@ -1,0 +1,36 @@
+[
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_below",
+      "u": "<module '/inspector_below/ui' from '/inspector_below/ui'>",
+      "bad": "slotbad",
+      "before": null
+    },
+    "output": "invalid slot and cross-context Apply guards pass\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "u": "<module '/inspector_below/ui' from '/inspector_below/ui'>"
+    },
+    "output": "new-context editor survives delayed callback\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "c": "type:containerCOMP path:/inspector_popup",
+      "u": "<module '/inspector_popup/ui' from '/inspector_popup/ui'>",
+      "bad": "slotbad",
+      "before": null
+    },
+    "output": "invalid slot and cross-context Apply guards pass\n"
+  },
+  {
+    "success": true,
+    "variables": {
+      "u": "<module '/inspector_popup/ui' from '/inspector_popup/ui'>"
+    },
+    "output": "new-context editor survives delayed callback\n"
+  }
+]

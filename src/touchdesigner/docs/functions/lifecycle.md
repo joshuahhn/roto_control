@@ -40,3 +40,13 @@ Collection restore refreshes watcher OP expressions even when their source text 
 The existing Tick samples the current Network Editor at 10 Hz, fences uncertain routing, drains bounded MIDI batches and makes one guarded activation decision. Pending intents carry a connection generation; Connect/Disconnect/open failure/child failure clear both TD and hardware requests while retaining saved links and Follow preference. A fresh offline selection can change local context; reconnect recalls that committed context.
 
 The lifecycle Execute DAT has Project Pre Save enabled. `onProjectPreSave` synchronously refreshes Focus links independently of the timeline; a callback name alone is insufficient on TD 2025.33230. Managed component saves and export prepare links explicitly. Startup never opens MIDI or activates from the initial selected COMP. See layouts.md for guards, missing-link and reload policies.
+
+## Owned Inspector lifecycle
+
+The event-driven nested model observes the controller's stable catalog/context
+DATs. A view subscribes only to its current local model. Disconnected packaging
+releases old subscriptions/runs before initialization, and repeated identical
+packaging returns without a reinit. Openinspector validates local ownership and
+shows the Fold window without Connect, Activate or target/Action calls. Before
+replacing old Lister, save a fresh project recovery and pass a new tox archive
+path to the owned build/upgrade entry point. UI source/dock callbacks are embedded.

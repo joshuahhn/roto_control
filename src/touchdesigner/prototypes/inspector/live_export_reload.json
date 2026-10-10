@@ -1,0 +1,21 @@
+{
+  "generic_reload": true,
+  "unconfigured_controller": true,
+  "no_saved_destinations": true,
+  "embedded_sources": true,
+  "targets_embedded_empty": true,
+  "picker_draft_empty": true,
+  "parity_embedded_empty": true,
+  "header_inline_embedded_empty": true,
+  "editor_inline_embedded_empty": true,
+  "commands_embedded_and_promoted": true,
+  "definition_cache_empty": true,
+  "mapping_draft_empty": true,
+  "editor_state_embedded": true,
+  "live_value_callbacks_embedded": true,
+  "independent_native_resize": true,
+  "subscribers": 2,
+  "production_session_preserved": true,
+  "activation_embedded_unconfigured_hidden": true,
+  "native_definition_embedded_and_snapshot_fields_empty": true
+}

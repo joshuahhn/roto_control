@@ -1,0 +1,27 @@
+{
+  "checks": [
+    "single model / shared read-only catalog",
+    "live rows update without clobbering either draft",
+    "Apply accepted",
+    "Apply keeps newer live value",
+    "Apply propagates across views",
+    "stale mapping draft rejected without overwrite",
+    "Cancel retains Popup native window",
+    "96 Apply/Cancel sessions reuse one popup",
+    "shared Learn alert on both surfaces",
+    "invalid batch is atomic",
+    "invalid range preserves draft and model",
+    "native wheel callback scrolls Below",
+    "128 cross-view commits and 128 cancels / isolated contexts",
+    "LRU cache bounded at four contexts",
+    "reconnect has exactly two subscribers",
+    "stale producer generation rejected",
+    "invalid slot rejected",
+    "no subscriber errors",
+    "hidden inspector defers text writes",
+    "native reopen callback catches up"
+  ],
+  "passed": 20,
+  "cross_view_commits": 128,
+  "cancels": 128
+}
