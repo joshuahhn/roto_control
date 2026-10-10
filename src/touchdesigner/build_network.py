@@ -13,7 +13,7 @@ def build(parent_comp, source_dir):
     # Validate source before constructing anything.
     code_dir = source / "code/py/roto_python"
     files = {name: (code_dir / f"{name}.py").read_text() for name in
-             ("protocol", "RotoPythonExt", "parameter_callbacks", "lifecycle_callbacks")}
+             ("protocol", "snapshots", "RotoPythonExt", "parameter_callbacks", "lifecycle_callbacks")}
     docs_path = source / "scripts/td_project_docs.py"
     docs = dict(globals())
     exec(compile(docs_path.read_text(), str(docs_path), "exec"), docs)
@@ -46,9 +46,9 @@ def build(parent_comp, source_dir):
     value.max = value.normMax = 1
     value.clampMin = value.clampMax = True
     page.appendPulse("Offerparameter", label="Offer Value to hardware LEARN")
-    kinds = {"protocol": textDAT, "RotoPythonExt": textDAT,
+    kinds = {"protocol": textDAT, "snapshots": textDAT, "RotoPythonExt": textDAT,
              "parameter_callbacks": parameterexecuteDAT, "lifecycle_callbacks": executeDAT}
-    positions = {"RotoPythonExt": (-250, 0), "protocol": (-250, -170),
+    positions = {"RotoPythonExt": (-250, 0), "protocol": (-250, -170), "snapshots": (-425,-340),
                  "parameter_callbacks": (-250, -340), "lifecycle_callbacks": (-250, -510)}
     for name, kind in kinds.items():
         dat = comp.create(kind, name)

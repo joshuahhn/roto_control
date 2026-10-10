@@ -15,3 +15,5 @@ See functions/controls.md for collection registration, functions/binding.md for 
 The public interface adds GetValue(id) and GetControlState(id). Saved registration.onRegister supports mixed parameter/callback controls. See functions/portability.md for exporting an embedded-code component independent of demo layout.
 
 Compact Inspector now separates browsing from explicit Activate: one guarded full-context selection reuses controller routing/rollback and preserves Follow preference. Isolated native/export checks pass; physical LCD/recall joins the pending acceptance batch.
+
+[Snapshot presets](functions/snapshots.md) save current control positions independently of mappings. Explicit recall outputs through each saved slot's current mapping in its Device/current page; remapping intentionally changes the destination. Saved JSON values restore automatically without a Snapshot target hook, and selection/reload never execute presets.

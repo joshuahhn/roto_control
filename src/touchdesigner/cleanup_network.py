@@ -3,7 +3,7 @@
 GROUPS = {
     '': [
         ('Host', ['RotoPythonExt', 'protocol', 'parameter_callbacks', 'lifecycle_callbacks', 'midi_process'], 2),
-        ('Binding', ['binding', 'target_callbacks', 'registration', 'setup', 'layouts', 'layout_migration'], 2),
+        ('Binding', ['binding', 'snapshots', 'target_callbacks', 'registration', 'setup', 'layouts', 'layout_migration'], 2),
         ('Collection', ['base_targets', 'collection_protocol', 'controls'], 2),
         ('Free Learn', ['free_learn', 'learn_parameters'], 2),
         ('State', ['base_state'], 1),
@@ -28,7 +28,7 @@ GROUPS = {
     ],
     'docs': [
         ('Overview', ['overview_md', 'functions_md'], 2),
-        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md'], 3),
+        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md', 'fn_snapshots_md'], 3),
     ],
 }
 

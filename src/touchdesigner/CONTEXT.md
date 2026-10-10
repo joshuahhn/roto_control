@@ -87,3 +87,19 @@ controller's `inspector` wrapper and exposes Connection `Openinspector`. Stable
 headless catalog/context publication stays; old Palette presentation is archived
 before disconnected upgrade. See `docs/plans/owned-inspector-packaging.md`. Source
 checks do not constitute native packaging acceptance or canonical promotion.
+
+## Slot-value Snapshot presets — #13 source (2026-10-09)
+
+Snapshots save normalized current-page control positions and recall through the saved Device's **current** mappings. This follows the user's explicit Brightness→Blur remap clarification, superseding original target-identity preparation. No target registry/Relink or Snapshot-specific registration hook; JSON slot values rebuild providers in both existing setup modes before mapping restore. Existing Action dispatch/guards/results/feedback, owner scopes and Inspector freshness remain authoritative. See [Snapshot contract](docs/functions/snapshots.md). Native/save-load/export/physical acceptance is separately pending; no shared live promotion.
+
+### Snapshot + Follow COMP source composition
+
+Root accepted Snapshot response51a83 by separate parent adjudication (r1 Spec findings retained), then authorized composition with source-reviewed Follow COMP v4 TREE7e12cb6. Shared command/model/UI now preserve both Snapshot capture-token guards and native Follow preference/button; LIVE/BROWSE remains independent. Five bounded interop regressions use the actual command/observer/UI seams on fake TD boundaries. Snapshot delta now compares accepted Follow7e12; backend Follow bytes stay exact. Root coordinated native/physical acceptance remains separately pending; no #11 migration is added.
+
+### Accepted Follow v5 policy with Snapshot guards preserved
+
+Root source-approved Follow v5 TREE81ea0aca changes only automatic TD-origin routing: it skips TOUCH wait, retaining LOCK/LEARN/ownership/session/fresh ACK and manual/hardware/default guards. Composed as exact policy hunks over accepted r3 TREE5da574. Only RotoPythonExt.BindControls overlaps Snapshot's runtime file; its method is exactv5 and all Snapshot methods/core/shared UI remain exactr3. Snapshot capture/edit/recall preflight still requires touch release. One bounded interop regression covers this distinction; no new setting, target registry, dispatcher or #11 implementation. Native acceptance is separately queued by Root.
+
+### Snapshot composed onto merged owned Inspector
+
+#13 now composes accepted Snapshot r4 TREE27ebd30 onto merged fork main d7888fe (owned Inspector + closed #11). Owned Openinspector/headless publication/local lifecycle, current controls/layouts/Follow/migration are preserved; no old Lister revival. Strict packaging verifies snapshots DAT source/required flags and classifies embedded Snapshot docs. Public Knobs remain Float/Int/Menu; BUTTON PUSH/TOGGLE/Pulse/Action capture excluded, no public Toggle-Knob policy expansion. Source-only candidate and three small fake-TD seam checks precede Root-coordinated direct native acceptance. Earlier composition/history/pins remain unchanged.

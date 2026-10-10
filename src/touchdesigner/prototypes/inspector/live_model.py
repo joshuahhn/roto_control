@@ -151,6 +151,9 @@ class ControllerCatalog(CatalogModel):
     def MappingSchema(self,*args):return self._commands.MappingSchema(*args)
     def ValueSchema(self,*args):return self._commands.ValueSchema(*args)
     def Assign(self,*args):return self._commands.Assign(*args)
+    def SnapshotIntent(self,*args,**kwargs):return self._commands.SnapshotIntent(*args,**kwargs)
+    def SnapshotCommand(self,*args,**kwargs):return self._commands.SnapshotCommand(*args,**kwargs)
+    def Snapshots(self,*args):return self._commands.Snapshots(*args)
     def TargetScope(self):return self.adapter.TargetScope()
     def TargetStart(self,*args):return self.adapter.Targets.Start(*args)
     def TargetCancel(self,identity):
@@ -598,6 +601,7 @@ class TDControllerAdapter:
         target=op(info.get('comp',''))
         if not target or not target.valid:return None
         return getattr(target.par,info.get('parameter',''),None)
+
     def ParameterDefinition(self,info,learning=False,touched=False):
         return self.DefinitionModule().read(info,self._native_parameter,learning,touched)
     def OpenNativeEditor(self,info,kind,learning=False,touched=False):

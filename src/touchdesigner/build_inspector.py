@@ -96,7 +96,7 @@ def _isolate_sources(component):
 
 
 def _verify_runtime_sources(controller,source):
-    names=('RotoPythonExt','protocol','collection_protocol','controls','binding',
+    names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
            'free_learn','layouts','layout_migration','text_comp_follow','setup',
            'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
     for name in names:
