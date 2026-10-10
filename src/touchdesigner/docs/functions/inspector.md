@@ -1,13 +1,24 @@
 # Mapping Inspector
 
-Open `roto_python/inspector` in a floating viewer (right-click View) to see all 8 knobs and 8 buttons, including Unassigned slots. Use Page to choose All COMPs, a parameter owner COMP, or Python callbacks. Double-click editable cells to change target configuration or Value. Clear deletes the target registration after Yes/No confirmation; the target parameter itself and its value remain intact.
+Use **Connection → Open Inspector** (`Openinspector`) on the controller. It opens
+the controller-owned Fold view; selecting a row reveals its editor, and the new
+Popup presentation remains available. Both presentations share the internal
+model and keep browse context independent of active hardware routing.
 
-- Mapped: Yes means the current hardware session acknowledged this target; No means waiting/disconnected. Invalid means the binding is suspended; read Error.
-- COMP / Parameter: actual destination of a parameter binding, independent of its display label or saved path. Registered rows retain COMP, Parameter, Value and bounds while disconnected or unmapped. The catalog is persisted in controller storage, mirrored in inspector/database, and read through GetControlCatalog(). Deleted/unavailable parameter owners retain their last known destination. Callback bindings show Python callback because callbacks have no implied COMP destination.
-- Mode / Hardware: TD action mode and declared PUSH/TOGGLE input type are separate. Hardware type is configuration, not detected or changed by the Inspector.
-- Value: registered target units, displayed to three decimal places. Pulse stays zero; consume its events. ID is the stable mapping identity.
+The compact Inspector replaces the old Palette Lister. Click a slot to inspect
+its target, use the Target picker to assign, Ping during hardware LEARN, and the
+Mapping section to edit supported configuration. Clear requires confirmation;
+parameter values are retained. Follow COMP ON/OFF changes the backend preference;
+LIVE/BROWSE changes only this view's routing-follow preference.
 
-The top line reports acknowledged/registered controls. Rows update from the controller's existing state publication; the input table is rewritten only when its projection changes. No separate polling DAT or outer diagnostic custom parameters are added. Lister config is external to the cloned component.
+Each controller owns `inspector/inspector_model`, `inspector/inspector_below` and
+`inspector/inspector_popup`. Opening is local and has no MIDI, assignment, target
+write or Action side effect. Build/load/save never auto-open or auto-connect.
+The `targets`, `database` and `context_state` DATs retain the event-driven catalog
+and metadata publication seam; old Lister widgets/callbacks are not active.
+Details and status retain native errors, mapping readiness and Action results.
+See [owned packaging](../plans/owned-inspector-packaging.md) for upgrade/archive
+and standalone export contracts.
 
 `controller.GetControlCatalog()` returns a detached persisted catalog, independent of MIDI connection. `controller.GetControlStates()` returns detached snapshots for all active targets, in registration order. Each snapshot also includes binding_type (`parameter`, `callback`, `value`), comp (current path or empty) and parameter (current name or empty). It does not expose Par handles or serialize callback destinations. GetControlState(id) returns the same fields for one target. Querying has no registration/write side effects.
 
@@ -25,11 +36,11 @@ API SetValue writes are excluded from this automatic offer path. Direct external
 
 ## Assign any COMP parameter
 
-Click a slot's **COMP** cell, choose a COMP, then choose its custom parameter. The picker scans the controller's parent branch on demand, including newly added and nested COMPs. Click an assigned row's **Parameter** cell to choose another parameter on the same COMP.
+Select a slot, open its **Target** picker and choose a writable COMP parameter. The picker scans the controller's parent branch on demand, including newly added and nested COMPs. Assigned targets can be repaired through the same picker.
 
 The Inspector calls `AssignParameter(kind, slot, parameter)`: infer label, Float/Int range or Toggle/Pulse mode, generate a stable ID and store the assignment in controller storage. No table editing, registration script or Apply binding is needed. Only the selected slot is replaced; other collection targets keep their mapping and runtime state. Duplicate parameters/shared bind masters and incompatible styles are rejected before changes.
 
-For the shortest flow, open hardware LEARN and select the control first, then choose COMP/parameter in its row. The new metadata is offered automatically. If LEARN is closed, the assignment is still saved; select the control in hardware LEARN and click Learn afterwards. Registration waits for a matching acknowledgement before reporting Mapped. Software assignment cannot select hardware controls or enable hardware LEARN.
+For the shortest flow, open hardware LEARN and select the control first, then choose COMP/parameter in its row. The new metadata is offered automatically. If LEARN is closed, the assignment is still saved; select the control in hardware LEARN and click Ping afterwards. Registration waits for a matching acknowledgement before reporting Mapped. Software assignment cannot select hardware controls or enable hardware LEARN.
 
 Numeric parameters use knobs; Toggle/Pulse parameters use buttons. Button assignments retain that slot's declared hardware type when present; empty Pulse slots default to PUSH and empty Toggle slots to TOGGLE. The Hardware column must match Roto-Setup TYPE; choosing a TD parameter does not reconfigure hardware.
 
@@ -37,13 +48,13 @@ Assignments survive Disconnect, extension reload and normal project saves. Inspe
 
 ## Learn / Re-learn
 
-Each assigned row has a Learn button (Re-learn when mapped, previously mapped or requiring new metadata). Open hardware LEARN, touch the matching knob or press the matching button to select that slot, then click the row's Learn button. It calls `Offerparameter(id)` to send exactly that registered target's identity, label, value/range semantics and button state labels. The title reports the offer or the reason it could not be sent. Pulse offers never execute the target action.
+Each assigned row editor has a Ping action. Open hardware LEARN, touch the matching knob or press the matching button to select that slot, then click the editor's Ping action. It calls `Offerparameter(id)` to send exactly that registered target's identity, label, value/range semantics and button state labels. The status reports the offer or the reason it could not be sent. Pulse offers never execute the target action.
 
-Registration and Inspector layout changes alone do not transmit assignments. An offer requires connected PLUGIN, hardware LEARN and a valid target. The button does not enable hardware LEARN or choose a physical control remotely. A matching hardware acknowledgement is required before Mapped becomes Yes and Needs re-LEARN clears; sending metadata alone is not success. Empty slots have no Learn action. No Clear/unmap or value write occurs when clicking Learn.
+Registration and Inspector layout changes alone do not transmit assignments. An offer requires connected PLUGIN, hardware LEARN and a valid target. The button does not enable hardware LEARN or choose a physical control remotely. A matching hardware acknowledgement is required before Mapped becomes Yes and Needs re-LEARN clears; sending metadata alone is not success. Empty slots have no Learn action. No Clear/unmap or value write occurs when clicking Ping.
 
 ## Clear
 
-Click Clear, then Yes or No in the same cell. Clear All uses the toolbar confirmation. Exactly two clicks are required. Confirmation expires when registration, configuration or connection changes.
+Use the editor's Clear action and confirm Yes or No. Clear Device uses a separate context-scoped confirmation. Confirmation expires when registration, configuration or connection changes.
 
 The UI calls `RemoveControl(id)` or `RemoveAllControls()`: delete the saved target record, disable its watcher, remove callback routing/config overrides, and suppress its saved registration hook. The slot stays visible as Unassigned. These actions work offline; hardware unmap requests are replayed when PLUGIN becomes ready. Exit LEARN and release the affected control first. Other controls retain their registrations. Explicit public registration can opt a removed ID back in; ordinary Applybinding/reinit/reconnect cannot.
 
@@ -59,11 +70,11 @@ Clear removes the registration and leaves an Unassigned slot. Disconnect release
 
 ## Editable target configuration
 
-Min / Max show registered target-unit bounds even while unmapped. Double-click a knob's Min or Max to edit. Limits must be finite, min < max, include the current value, and respect native parameter clamp/integer constraints. Button bounds are fixed at 0 / 1.
+The Mapping section shows registered target-unit bounds even while unmapped. Edit a knob's Min / Max there. Limits must be finite, min < max, include the current value, and respect native parameter clamp/integer constraints. Button bounds are fixed at 0 / 1.
 
-Click a button's Mode ▾ to open the Toggle / Pulse drop-down menu. Native parameter style must match (Toggle / Pulse); the incompatible menu option is disabled. Callback targets may switch either way. A native release opens the menu directly, and selection refreshes the row. Double-click Hardware to enter `toggle` or `push`; this declares the input adapter and does not configure the hardware TYPE. Use Roto-Setup to match it. Knob Mode/Hardware and Pulse Value are not editable. Value edits call SetValue, with no re-LEARN or hardware callback echo.
+Use the Mapping section's Mode menu for supported Toggle / Pulse adapters. Native parameter style must match (Toggle / Pulse); the incompatible menu option is disabled. Callback targets may switch either way. A native release opens the menu directly, and selection refreshes the row. Select HW Type `toggle` or `push` in the Mapping section; this declares the input adapter and does not configure the hardware TYPE. Use Roto-Setup to match it. Knob Mode/Hardware and Pulse Value are not editable. Value edits call SetValue, with no re-LEARN or hardware callback echo.
 
-Configuration edits use public `ConfigureControl(id, minimum=..., maximum=..., mode=..., button_type=...)`. All validation happens before replacing a target. An input Hardware adapter change preserves mapping and needs no re-LEARN. A range/Mode change to a mapped target is unmapped using the existing hardware command; other targets keep their mappings and values. That row becomes amber and Error shows `Needs re-LEARN`. A matching new mapping acknowledgement clears the prompt/highlight. Invalid edits preserve existing configuration and the title reports why.
+Configuration edits use public `ConfigureControl(id, minimum=..., maximum=..., mode=..., button_type=...)`. All validation happens before replacing a target. An input Hardware adapter change preserves mapping and needs no re-LEARN. A range/Mode change to a mapped target is unmapped using the existing hardware command; other targets keep their mappings and values. That row becomes amber and Error shows `Needs re-LEARN`. A matching new mapping acknowledgement clears the prompt/highlight. Invalid edits preserve existing configuration and the status reports why.
 
 Configuration overrides persist in controller storage by stable target ID and apply after table/hook registration on restore; fresh reusable exports clear these overrides. The saved targets table and registration hook remain the original registration source. Editable configuration currently requires a collection; built-in single Value remains fixed at 0 / 1.
 

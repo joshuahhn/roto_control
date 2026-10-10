@@ -248,17 +248,38 @@ class CompFollower:
         return copy.deepcopy(plugin['focus_comp'])
 
     def resolve(self, comp):
-        if self.manager.legacy:
+        m = self.manager
+        if m.legacy:
             raise ValueError('COMP Follow is unavailable in Python registration')
         self.refresh_links()
         if not self.eligible(comp):
             raise ValueError('Choose a valid external COMP')
-        matches = [(t['id'], p['id']) for t in self.manager.layout()['tracks'] for p in t['plugins']
+        layout_id = self.e.LookupCompLayout(comp)
+        if layout_id is not None:
+            layout = m.layout(layout_id); owner = layout['owner']
+            track = m.track(layout_id); plugin = m.plugin(layout_id)
+            link = plugin.get('focus_comp') or {}
+            # The saved choice is authoritative among qualified variants. The
+            # registration entry is not a fallback or a wire Device identity.
+            if (link.get('owner_id') != owner['id'] or link.get('state') != 'bound'
+                    or link.get('path') != owner['path'] or self.handles.get(plugin['id']) is not comp):
+                raise ValueError('Owner saved Device has no bound qualified Follow link; explicitly choose a variant')
+            if layout_id == m.data['active'] and m.quarantined:
+                raise ValueError('Explicitly Activate the quarantined owner before Follow')
+            return layout_id, track['id'], plugin['id']
+        # Preserve unmigrated, active-Layout Focus behavior only for LEGACY.
+        # A token or unavailable registered locator must never fall back to an
+        # unrelated mapping of that COMP, including a same-path replacement.
+        path = os.path.relpath(comp.path, self.owner.path)
+        if (m.layout().get('category') != 'LEGACY' or m.owner_token(comp) is not None
+                or any(r.get('owner', {}).get('path') == path for r in m.data['records'])):
+            raise ValueError('COMP has no unique bound owner Layout')
+        matches = [(t['id'], p['id']) for t in m.layout()['tracks'] for p in t['plugins']
                    if p.get('focus_comp') and p['focus_comp']['state'] == 'bound'
                    and self.handles.get(p['id']) == comp]
         if len(matches) != 1:
-            raise ValueError('COMP has no unique Follow link in Active Layout')
-        return self.manager.data['active'], *matches[0]
+            raise ValueError('COMP has no unique Follow link in Active LEGACY Layout')
+        return m.data['active'], *matches[0]
 
     def invalidate(self):
         self.pending = None
@@ -325,13 +346,14 @@ class CompFollower:
     def request(self, layout_id, track_id, source, comp=None, plugin_id=None):
         m = self.manager
         if self.scope is None:
-            self.scope = m.data['active'], m.legacy
+            self.scope = m.legacy
         plugin_id = m.plugin(layout_id, track_id, plugin_id)['id']
         if source.startswith('hardware') and not (self.e._host.connected and self.e._host.plugin):
             return
         self.sequence += 1
         self.pending = dict(layout_id=layout_id, track_id=track_id, plugin_id=plugin_id, source=source,
-                            sequence=self.sequence, generation=self.connection_generation, comp=comp)
+                            sequence=self.sequence, generation=self.connection_generation, comp=comp,
+                            origin_key=m.context()['key'], owner_id=m.layout(layout_id).get('owner', {}).get('id'))
         self.error = ''
         if (not m.locked or source == 'hardware_plugin') and (layout_id, track_id, plugin_id) != m.context()['key']:
             self.fence()
@@ -379,7 +401,9 @@ class CompFollower:
 
     def _observe(self, force=False, explicit=False):
         m = self.manager
-        scope = m.data['active'], m.legacy
+        # Layout commits do not constitute a new pane selection. Retain the
+        # baseline across Follow/manual activation and fresh commit-time intents.
+        scope = m.legacy
         if self.scope != scope:
             self.invalidate(); self.scope = scope
         now = time.monotonic()
@@ -442,7 +466,10 @@ class CompFollower:
             return
         m = self.manager; h = self.e._host
         explicit_device = bool(self.pending and self.pending['source'] == 'hardware_plugin')
-        if m.legacy or (m.locked and not explicit_device) or m.touched or h.touched or h.learning or m.mutating or self.e._dispatching:
+        automatic_follow = bool(self.pending and self.pending['source'] == 'td')
+        if (m.legacy or (m.locked and not explicit_device) or
+                (not automatic_follow and (m.touched or h.touched)) or
+                h.learning or m.mutating or self.e._dispatching):
             return
         if getattr(self.e, '_process', None) is not None and not (h.connected and h.plugin):
             self.status = 'waiting_for_transport'; return
@@ -455,16 +482,25 @@ class CompFollower:
         if request['generation'] != self.connection_generation:
             return
         try:
-            if request['layout_id'] != m.data['active']:
+            if request['origin_key'] != m.context()['key']:
                 raise ValueError('Follow context expired')
-            if request['source'] == 'td' and self.resolve(request['comp']) != (request['layout_id'], request['track_id'], request['plugin_id']):
-                raise ValueError('Follow link expired')
+            if request['source'] == 'td':
+                if (self.resolve(request['comp']) != (request['layout_id'], request['track_id'], request['plugin_id'])
+                        or m.layout(request['layout_id']).get('owner', {}).get('id') != request['owner_id']):
+                    raise ValueError('Follow destination expired')
+            elif request['layout_id'] != m.data['active'] or (explicit_device and request['track_id'] != m.track()['id']):
+                raise ValueError('Hardware selection context expired')
             m.resolve(m.record(request['layout_id'], request['track_id'], request['plugin_id']))
             self.committing = True
-            m.select_plugin(request['layout_id'], request['track_id'], request['plugin_id'], hardware=explicit_device)
-            if self.gated:
+            m.select_plugin(request['layout_id'], request['track_id'], request['plugin_id'],
+                            hardware=explicit_device, automatic_follow=automatic_follow)
+            if self.pending is not None:
+                # A newer request made during install belongs to the next pass;
+                # do not reopen input/ACK/feedback in between the transitions.
+                self.fence(); self.clear_controls()
+            elif self.gated:
                 self.recover()
-            self.status = 'ready'; self.error = ''
+            self.status = 'pending' if self.pending else 'ready'; self.error = ''
         except (OSError, TimeoutError):
             raise
         except Exception as exc:
@@ -472,7 +508,10 @@ class CompFollower:
             if getattr(exc, 'rollback_failed', False):
                 self.paused = True; self.fence(); self.status = 'paused'
             elif self.gated:
-                self.recover()
+                if self.pending is not None:
+                    self.clear_controls()  # rollback may have installed bindings
+                else:
+                    self.recover()
         finally:
             self.committing = False
 
@@ -487,7 +526,8 @@ class CompFollower:
         pending = self.pending
         m = self.manager; h = self.e._host
         reasons = [name for name, active in (('paused',self.paused), ('backlog',self.backlog),
-                    ('LOCK',m.locked), ('LEARN',h.learning), ('touch',bool(m.touched or h.touched)),
+                    ('LOCK',m.locked), ('LEARN',h.learning),
+                    ('touch',bool(m.touched or h.touched) and not (pending and pending['source']=='td')),
                     ('activation',m.mutating or self.e._dispatching),
                     ('transport',getattr(self.e,'_process',None) is not None and not (h.connected and h.plugin))) if active]
         routing = self.handles.get(m.plugin()['id'])
@@ -499,7 +539,10 @@ class CompFollower:
                     gated=self.gated, source=pending['source'] if pending else None,
                     sequence=pending['sequence'] if pending else None,
                     requested_comp=pending['comp'].path if pending and self.eligible(pending['comp']) else '',
+                    pending_layout_id=pending['layout_id'] if pending else None,
+                    pending_owner_id=pending['owner_id'] if pending else None,
                     pending_track_id=pending['track_id'] if pending else None,
                     pending_plugin_id=pending['plugin_id'] if pending else None,
+                    follow_destination_policy='saved_active_owner_qualified_device',
                     focus_comp=copy.deepcopy(self.manager.plugin().get('focus_comp')),
                     **self.manager.context())

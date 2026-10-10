@@ -1,7 +1,8 @@
 """Versioned parameter-layout database and serialized host activation.
 
-Callbacks remain supported by the legacy API, but cannot be converted without a
-reconstruction factory. No target value or callable is persisted as a preset.
+Named actions use explicit consumer registration for reconstruction. Anonymous
+callbacks remain supported only by the legacy API. No target value or callable
+is persisted as a preset.
 """
 import copy
 import math
@@ -363,6 +364,15 @@ class Layouts:
         result=[]
         for target in library.values():
             target.update(value=None,valid=False,value_source='unavailable')
+            if target.get('action_id'):
+                action=self.ext.GetActionState(target['action_id'])
+                target.update(binding_type='action',valid=ready and action['available'],
+                              value_source='action' if ready else 'unavailable',
+                              action_available=action['available'],action_result=action['result'],
+                              mapping_error=('' if action['available'] else action['error']) if ready else 'Layout owner unavailable',
+                              error=action['error'] if ready else 'Layout owner unavailable')
+                result.append(target)
+                continue
             try:
                 comp=self.owner.op(target['comp']) if ready else None
                 par=getattr(comp.par,target['parameter'],None) if comp is not None and getattr(comp,'valid',False) else None
@@ -422,7 +432,7 @@ class Layouts:
                 target=dict(kind='knob',slot=1,id='Value',label='Value',minimum=0,maximum=1,mode='value',button_type=None,index=0)
             else:
                 parameter=binding.parameter
-                if parameter is None: raise ValueError('Callback Layouts need a reconstruction factory; existing callback API is unchanged')
+                if parameter is None and not getattr(binding, 'action_id', None): raise ValueError('Callback Layouts need a reconstruction factory; existing callback API is unchanged')
                 target=dict(kind=key[0],slot=key[1],id=binding.id,label=binding.label,minimum=binding.minimum,maximum=binding.maximum,
                             mode=ext._collection.modes[key] if ext._collection is not None else 'value',
                             button_type=ext._collection.button_types[key] if ext._collection is not None else None,
@@ -430,6 +440,10 @@ class Layouts:
             target['identity']=ext._host.controls[key].target_id if ext._collection is not None else ext._host.target_id
             target['menu_names']=list(binding.menu_names) if binding is not None else []
             target['menu_labels']=list(binding.menu_labels) if binding is not None else []
+            if binding is not None and getattr(binding, 'action_id', None):
+                target.update(action_id=binding.action_id, comp='', parameter='')
+                targets.append(target)
+                continue
             if not getattr(parameter.owner,'valid',True):
                 previous=next((t for t in old['targets'] if t['id']==target['id']),None) if old else None
                 if previous is None:
@@ -519,9 +533,9 @@ class Layouts:
         host._command(11,6)
         if select:host._command(11,8,(plugins.index(self.plugin()),0,0))
 
-    def guard(self,hardware=False):
+    def guard(self,hardware=False,*,automatic_follow=False):
         host=self.ext._host
-        if self.mutating or self.ext._dispatching or host.learning or host.touched or self.touched:
+        if self.mutating or self.ext._dispatching or host.learning or (not automatic_follow and (host.touched or self.touched)):
             raise ValueError('Exit LEARN and release controls before switching Layout')
         if self.locked and not hardware:raise ValueError('Unlock hardware before switching Layout')
         if not self.legacy:self.snapshot(self.record()['id'],self.record()['name'])  # callback preflight
@@ -541,6 +555,11 @@ class Layouts:
             self.owner_ready(record.get('id'),required=True)
         specs=[];unavailable=[]
         for target in record['targets']:
+            if target.get('action_id'):
+                spec=dict({k:v for k,v in target.items() if k not in ('comp','parameter','identity','menu_names','menu_labels')},
+                          value=0, on_change=self.ext._action_callback(target['action_id']))
+                specs.append(spec)
+                continue
             comp=self.owner.op(target['comp']);par=getattr(comp.par,target['parameter'],None) if comp is not None else None
             if par is None or not getattr(comp,'valid',True):
                 unavailable.append(target);continue
@@ -555,7 +574,7 @@ class Layouts:
         self.owner.op('controls').module.Controls(specs,allow_empty=True)
         return specs,unavailable
 
-    def install(self,record,hardware=False,quarantine=False):
+    def install(self,record,hardware=False,quarantine=False,*,automatic_follow=False):
         specs,unavailable=self.resolve(record,quarantine)  # preflight before mutation
         ext=self.ext;host=ext._host;session=(host.connected,host.plugin,host.learning)
         self.mutating=True
@@ -583,7 +602,8 @@ class Layouts:
             self.owner.par.Setupmode='collection';self.owner.par.Groupid=record['group_id']
             self.owner.store('assignment_device_id',dict(group_id=record['group_id'],device_id=record['device_id']))
             ext._restoring=False
-            ext.BindControls(specs,group_id=record['group_id'],_allow_empty=True)
+            ext.BindControls(specs,group_id=record['group_id'],_allow_empty=True,
+                             _automatic_follow=automatic_follow)
             for key,binding in ext._collection.bindings.items():
                 saved=next(t for t in record['targets'] if t['id']==binding.id)
                 semantics_match=(list(binding.menu_names)==saved.get('menu_names',[]) and list(binding.menu_labels)==saved.get('menu_labels',[]))
@@ -623,14 +643,14 @@ class Layouts:
         self._select(layout_id,track_id,hardware)
         return track_id
 
-    def select_plugin(self,layout_id,track_id,plugin_id,hardware=False):
+    def select_plugin(self,layout_id,track_id,plugin_id,hardware=False,*,automatic_follow=False):
         self.plugin(layout_id,track_id,plugin_id)
         if self.locked and hardware and (layout_id!=self.data['active'] or track_id!=self.track()['id']):
             raise ValueError('Locked Device selection stays within the routing Track')
-        self._select(layout_id,track_id,hardware,plugin_id)
+        self._select(layout_id,track_id,hardware,plugin_id,automatic_follow=automatic_follow)
         return plugin_id
 
-    def _select(self,layout_id,track_id,hardware=False,plugin_id=None):
+    def _select(self,layout_id,track_id,hardware=False,plugin_id=None,*,automatic_follow=False):
         follower = getattr(self.ext, '_follow', None)
         self.owner_ready(layout_id,required=True)
         plugin_id=self.plugin(layout_id,track_id,plugin_id)['id']
@@ -639,7 +659,9 @@ class Layouts:
                 follower.before_manual(layout_id,track_id,plugin_id);follower.after_manual()
             if not self.locked:self.selected_track=track_id
             return layout_id
-        self.guard(hardware)
+        # Only the TD-selection arbiter opts into the user's Follow policy.
+        # Manual activation and all other shared guard callers retain touch.
+        self.guard(hardware,automatic_follow=automatic_follow)
         destination=self.record(layout_id,track_id,plugin_id);self.resolve(destination);self.capture(force=True)
         if follower is not None:follower.before_manual(layout_id,track_id,plugin_id)
         previous=copy.deepcopy(self.data);old_selected=self.selected_track;old_page=self.first_track
@@ -653,12 +675,12 @@ class Layouts:
         self.selected_plugin=plugin_id
         self.first_track=(self.layout()['tracks'].index(self.track())//8)*8
         self.first_plugin=(self.track()['plugins'].index(self.plugin())//8)*8
-        try:self.install(destination,hardware)
+        try:self.install(destination,hardware,automatic_follow=automatic_follow)
         except Exception as original:
             self.data=previous;self.selected_track=old_selected;self.first_track=old_page
             self.selected_plugin=old_plugin;self.first_plugin=old_plugin_page
             self.ext._host.connected,self.ext._host.plugin,self.ext._host.learning=session
-            try:self.install(self.record(),quarantine=old_quarantine)
+            try:self.install(self.record(),quarantine=old_quarantine,automatic_follow=automatic_follow)
             except Exception as rollback:
                 if isinstance(rollback,OSError):raise
                 if follower is not None:
@@ -832,7 +854,16 @@ class Layouts:
         specs,missing=self.resolve({'targets':[record]})
         if missing:
             ext._last_error='Control page target unavailable: '+record['parameter'];return
-        spec=specs[0];parameter=spec['parameter']
+        spec=specs[0]
+        if record.get('action_id'):
+            # Reconstruct the saved reference even if registration is missing;
+            # dispatch then reports unavailable, never redirects by label.
+            ext._assign_target(kind,slot,None,action_id=record['action_id'],_id=record['id'],
+                               _wire_index=index,_hardware_mapped=True,_saved_spec=spec)
+            ext._host.controls[kind,slot].target_id=record['identity']
+            ext._layout_dirty=True;self.capture(force=True)
+            return
+        parameter=spec['parameter']
         if (list(getattr(parameter,'menuNames',None) or [])!=record.get('menu_names',[]) or
                 list(getattr(parameter,'menuLabels',None) or [])!=record.get('menu_labels',[])):
             ext._last_error='Control page Menu choices changed; re-LEARN required';return

@@ -1,7 +1,7 @@
 """Compact filter footer and reusable Details section; no new windows."""
 from pathlib import Path
-directory=Path(project.folder)/'prototypes/inspector'
-m=op('/inspector_model');commands=m.op('base_commands')
+directory=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
+m=globals().get('model_comp') or op('/inspector_model');commands=m.op('base_commands')
 module=commands.op('parity') or commands.create(textDAT,'parity')
 module.viewer=True;module.par.language='python'
 source=(directory/'parity.py').read_text()
@@ -11,7 +11,7 @@ helpers=dict(globals());exec((directory/'build_mapping.py').read_text().split('f
 panel,text,button=[helpers[n] for n in ('panel','text','button')]
 def anchors(o,left,right,l=0,r=1):
     o.par.x.expr='';o.par.w.expr='';o.par.hmode='anchors';o.par.leftanchor=l;o.par.rightanchor=r;o.par.leftoffset=left;o.par.rightoffset=right
-for view in globals().get('parity_views',[op('/inspector_below'),op('/inspector_popup')]):
+for view in (globals()['parity_views'] if 'parity_views' in globals() else [op('/inspector_below'),op('/inspector_popup')]):
     module=view.op('parity') or view.create(textDAT,'parity')
     module.viewer=True;module.par.language='python'
     if module.text!=source:module.text=source

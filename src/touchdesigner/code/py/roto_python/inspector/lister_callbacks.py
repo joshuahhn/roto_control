@@ -19,7 +19,7 @@ def onClick(info):
             items=['Cycle'] if state.get('parameter_style')=='Menu' else ['Toggle','Pulse'], callback=onModeSelect,
             callbackDetails=dict(inspector=inspector,id=id,mode=state['mode']),
             checkedItems=[state['mode'].capitalize()],
-            disabledItems=['Pulse'] if state.get('parameter_style')=='Toggle' else ['Toggle'] if state.get('parameter_style')=='Pulse' else [], autoClose=1)
+            disabledItems=['Pulse'] if state.get('parameter_style')=='Toggle' else ['Toggle'] if state.get('parameter_style')=='Pulse' or state.get('binding_type')=='action' else [], autoClose=1)
         return
     if info.get('colName') != 'ClearLearn':
         return

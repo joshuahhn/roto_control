@@ -12,7 +12,7 @@ def semantic_fingerprint(snapshot,context):
     if layout is None:raise ValueError('Context was removed')
     track=next((t for t in layout['tracks'] if t['id']==context[1]),None)
     if track is None or not any(p['id']==context[2] for p in track['plugins']):raise ValueError('Context was removed')
-    observations={'revision','value','normalized','last_mapped','mapped','connected','plugin','touched','valid','error','value_source','value_label','active_track','active_plugin','active'}
+    observations={'action_result','action_available','revision','value','normalized','last_mapped','mapped','connected','plugin','touched','valid','error','value_source','value_label','active_track','active_plugin','active'}
     state_definitions={'page_targets','parameter_assignments','assignment_device_id','control_overrides','removed_controls'}
     count=0
     def freeze(value):
@@ -43,6 +43,28 @@ def ownership_stamp(status,context):
 
 class CommandService:
     def __init__(self,model):self.model=model
+
+    def FollowCompToken(self):
+        m=self.model;status=m.Status;active=tuple(status.get('Active') or m.ActiveContext())
+        return (m.Generation,m.adapter.Session(),active,ownership_stamp(status,active),
+                status.get('FollowCompBinding'),status.get('Follow'))
+
+    def FollowCompCapability(self):
+        m=self.model
+        reason=('Choose a controller with Follow COMP support' if not hasattr(m.adapter,'SetFollowComp') else
+                m.Status.get('FollowCompReason') or
+                ('Follow COMP unavailable' if not m.Status.get('FollowCompAvailable') else ''))
+        return MappingProxyType(dict(enabled=not reason,reason=reason,state=m.Status.get('Follow')))
+
+    def SetFollowComp(self,enabled,token):
+        if type(enabled) is not bool:raise ValueError('Follow COMP requires ON or OFF')
+        m=self.model;m.Sync()
+        if token!=self.FollowCompToken():raise ValueError('Controller session or Follow COMP changed; click again')
+        capability=self.FollowCompCapability()
+        if not capability['enabled']:raise ValueError(capability['reason'])
+        try:
+            return m.adapter.SetFollowComp(enabled,token[1],token[4],token[5])
+        finally:m.Sync()
 
     def ActivationToken(self,context):
         return (self.model.Generation,tuple(context),tuple(self.model.Status.get('Active') or self.model.ActiveContext()),ownership_stamp(self.model.Status,context))
@@ -98,6 +120,8 @@ class CommandService:
         error=info.get('definition_error') or info.get('error')
         if not info.get('valid') or info.get('definition_error'):
             code,label,marker,detail='invalid','Invalid','!',error or 'Target unavailable'
+        elif info.get('binding_type')=='action' and (info.get('action_result') or {}).get('status') not in (None,'succeeded'):
+            code,label,marker,detail='action_failed','Action failed','!',error or info['action_result']['status']
         elif not self._active(context):
             code,label,marker,detail='saved','Saved','◇','Saved mapping · inactive Device'
             if info.get('requires_relearn'):detail+=' · needs re-LEARN'
@@ -172,9 +196,9 @@ class CommandService:
     def MappingSchema(self,context,slot):
         info=self.model.Info(context,slot);style=info.get('parameter_style','')
         button=info.get('kind')=='button'
-        modes=('value',) if not button else ('cycle',) if style=='Menu' else ('toggle',) if style=='Toggle' else ('pulse',) if style=='Pulse' else ('toggle','pulse')
+        modes=('value',) if not button else ('cycle',) if style=='Menu' else ('toggle',) if style=='Toggle' else ('pulse',) if style=='Pulse' or info.get('binding_type')=='action' else ('toggle','pulse')
         values=dict(minimum=info.get('minimum',0.),maximum=info.get('maximum',1.),mode=info.get('mode',modes[0]),button_type=info.get('button_type') if button else None)
-        return MappingProxyType(dict(values=MappingProxyType(values),modes=modes,inputs=('toggle','push') if button else (),range_editable=bool(info and not button and style!='Menu'),integer=style=='Int',style=style or 'Callback',reason=self.Capabilities(context,slot)['mapping']['reason']))
+        return MappingProxyType(dict(values=MappingProxyType(values),modes=modes,inputs=('toggle','push') if button else (),range_editable=bool(info and not button and style!='Menu'),integer=style=='Int',style=style or ('Action' if info.get('binding_type')=='action' else 'Callback'),reason=self.Capabilities(context,slot)['mapping']['reason']))
 
     def Configure(self,context,slot,patch,token):
         context,slot,info=self._target(context,slot,token)
@@ -271,6 +295,9 @@ class InspectorCommands:
         if not model:raise ValueError('Choose the shared Inspector model')
         return model.ext.InspectorModel._commands
     def ActivationToken(self,*args):return self._service().ActivationToken(*args)
+    def FollowCompToken(self):return self._service().FollowCompToken()
+    def FollowCompCapability(self):return self._service().FollowCompCapability()
+    def SetFollowComp(self,*args):return self._service().SetFollowComp(*args)
     def ActivationCapability(self,*args):return self._service().ActivationCapability(*args)
     def Activate(self,*args):return self._service().Activate(*args)
     def Library(self,*args):return self._service().Library(*args)

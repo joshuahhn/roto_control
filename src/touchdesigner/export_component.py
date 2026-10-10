@@ -17,6 +17,16 @@ def reset_mapping_storage(clone):
     for key,value in defaults.items():clone.store(key,value)
 
 
+def reset_registration(clone):
+    """Sanitize both consumer hooks and runtime entries on an export clone."""
+    clone.ext.RotoPythonExt._actions = None
+    clone.op('registration').text = (
+        'def onRegister(controller):\n'
+        '    # Register your parameters/callbacks here, then select Python registration.\n'
+        '    raise ValueError("Configure registration.onRegister first")\n'
+        '\ndef onRegisterActions(controller):\n    pass\n')
+
+
 def export(controller, destination):
     if controller.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before exporting')
@@ -88,10 +98,7 @@ def export(controller, destination):
         columns = [cell.val for cell in table.row(0)]
         table.clear()
         table.appendRow(columns)
-        clone.op('registration').text = (
-            'def onRegister(controller):\n'
-            '    # Register your parameters/callbacks here, then select Python registration.\n'
-            '    raise ValueError("Configure registration.onRegister first")\n')
+        reset_registration(clone)
         clone.ext.RotoPythonExt.BindControls([], group_id=clone.par.Groupid.eval(), _allow_empty=True)
         # A newly copied extension may not have completed its first Tick.
         # Rebuild after clearing: capture preserves unavailable old targets by
@@ -103,6 +110,10 @@ def export(controller, destination):
         clone.ext.RotoPythonExt._layout_manager()
         clone.op('setup').module.configure_ui(clone)
         clone.ext.RotoPythonExt.Disconnect()
+        runtime = clone.op('inspector/owned_runtime')
+        if runtime is None:
+            raise ValueError('Install the owned Inspector before exporting')
+        runtime.module.sanitize(clone)
         clone.save(str(destination), createFolders=True)
     finally:
         holder.destroy()

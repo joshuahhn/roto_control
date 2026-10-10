@@ -1,3 +1,13 @@
+# Owned compact Inspector
+
+Production builds package this model and both new views inside each controller.
+Use Connection **Open Inspector** to show the Fold view; the Popup editor and
+alternate presentation remain local. Root-level prototype scripts below are
+historical development tools, not the factory/upgrade/export entry points.
+Use `build_inspector.build(controller, source_dir)` after current runtime setup,
+with a new legacy archive path when replacing old Lister presentation.
+See [owned packaging](../../docs/plans/owned-inspector-packaging.md).
+
 # Compact real-data Inspector prototype
 
 The current Inspector checkpoint is saved through live TD 2025.33230; use the active project filename for its save version. The earlier `inspector_real_data.toe` checkpoint passed reload verification. Both retain the existing Roto controller and mappings. MIDI starts disconnected after reload; use the existing controller's Connect pulse. The compact UI is separate from the production table Inspector.
@@ -99,3 +109,15 @@ Full TD process restart is verified on checkpoint31: disconnected startup, six m
 DEVICE/LAYOUT/TRACK selectors browse saved mappings. When browsing an inactive bank, the existing bottom-right footer shows Activate. One click activates that complete context on the controller and follows its live routing; Clear Device returns in the same space. LIVE in the header returns to current routing without activating the browsed bank.
 
 Activation rejects stale session/routing, removed context, LEARN/touch/LOCK and pending/paused/backlogged selection. It preserves Follow preference and Network Editor selection. Offline saved-bank selection is supported when no transport is running. Existing controller install/rollback and per-control ACK semantics remain authoritative. See ACTIVATION_PLAN.md / ACTIVATION_REPORT.md. Physical activation belongs to ACCEPTANCE_BATCH.md.
+
+### Automatic COMP Follow preference
+
+The top-row **Follow COMP: ON/OFF** button controls the controller's automatic
+COMP selection routing. **LIVE/BROWSE** independently chooses whether this view
+tracks committed routing or retains its browsed context. Clicking LIVE does not
+enable automatic Follow. Both views show the actual preference; unavailable
+controls are disabled, with status/error/guard reason on hover. Disconnected TD
+routing is supported. The current Network Editor's selected children drive Follow.
+Normal `Followcomp` parameter callbacks and existing session/owner/LOCK/LEARN
+fences apply. Automatic TD COMP Follow does not wait for touch release under the
+explicit user policy; manual activation and editing still retain touch guards; turning ON can route to the selected owner's saved qualified Device.

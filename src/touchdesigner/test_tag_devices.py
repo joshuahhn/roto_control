@@ -21,6 +21,7 @@ def persistent(comp,parent=None):
 class TagDeviceTests(unittest.TestCase):
     def fixture(self):
         e,m,f,a,b,t,pa,pb,s,_=test_device_context.DeviceTests().fixture()
+        m.layout()['category']='CUSTOM';m.save()
         for p in (a,b):
             p.owner.name=p.owner.path.rsplit('/',1)[-1]
             p.owner.tags=set();persistent(p.owner)
@@ -75,17 +76,16 @@ class TagDeviceTests(unittest.TestCase):
         self.assertIsNone(learner.pending)
         self.assertEqual(m.plugin()['id'],pa)
 
-    def test_tag_added_to_already_selected_comp_rechecks_follow_without_changing_layout(self):
+    def test_tag_added_to_already_selected_comp_follows_its_owner_layout(self):
         e,m,f,a,b,t,pa,pb,s,tagged=self.fixture();p=self.target();p.owner.tags.clear()
         old=e.ownerComp.op;e.ownerComp.op=lambda n:p.owner if n=='../new' else old(n)
         s[0]=(s[0][0],(p.owner,));f.observe(force=True)
         self.assertEqual(f.status,'failed')
         p.owner.tags.add('roto_device');tagged.append(p.owner);f.next_tag_scan=0
-        f.observe(force=True);self.assertIsNone(f.pending);f.flush()
-        self.assertEqual(m.data['active'],'custom')
-        self.assertEqual(m.track()['id'],t)
-        self.assertIsNotNone(e.LookupCompLayout(p.owner))
-        self.assertEqual(m.plugin()['id'],pa)
+        f.observe(force=True);self.assertIsNotNone(f.pending);f.flush()
+        self.assertEqual(m.data['active'],e.LookupCompLayout(p.owner))
+        self.assertNotEqual(m.track()['id'],t)
+        self.assertNotEqual(m.plugin()['id'],pa)
         self.assertEqual((p.eval(),a.eval()),(5,5))
 
     def test_ineligible_never_register_and_full_custom_track_does_not_limit_owner_layout(self):
@@ -137,8 +137,10 @@ class TagDeviceTests(unittest.TestCase):
         b.owner.tags.add('roto_device');tagged.append(b.owner);f.next_tag_scan=0
         f.observe(force=True)
         self.assertIsNotNone(f.pending)
-        self.assertEqual(f.pending['plugin_id'],pb)
-        f.flush();self.assertEqual(m.plugin()['id'],pb)
+        owned=e.LookupCompLayout(b.owner)
+        self.assertEqual(f.pending['layout_id'],owned)
+        f.flush();self.assertEqual(m.data['active'],owned)
+        self.assertNotEqual(m.plugin()['id'],pb)
 
 
 if __name__=='__main__':unittest.main()

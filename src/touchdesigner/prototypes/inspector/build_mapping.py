@@ -1,6 +1,7 @@
 """Install one reusable Mapping section per editor; preserve manual base size."""
 from pathlib import Path
-views=globals().get('action_views',[op('/inspector_below'),op('/inspector_popup')])
+inspector_source_dir=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
+views=(globals()['action_views'] if 'action_views' in globals() else [op('/inspector_below'),op('/inspector_popup')])
 
 def panel(parent,typ,name,x,y,w,h):
     o=parent.op(name) or parent.create(typ,name);o.name=name;o.viewer=True
@@ -28,7 +29,7 @@ def button(parent,name,label,action,x,y,w,h):
 for view in views:
     if not view:continue
     module=view.op('editor_state') or view.create(textDAT,'editor_state')
-    module.viewer=True;module.par.language='python';module.text=Path(project.folder+'/prototypes/inspector/editor_state.py').read_text()
+    module.viewer=True;module.par.language='python';module.text=Path(inspector_source_dir/'editor_state.py').read_text()
     module.nodeX=1135;module.nodeY=0;module.nodeWidth=130;module.nodeHeight=90
     draft=view.op('base_draft');page=draft.customPages[0]
     for name in ('Mapminimum','Mapmaximum'):
@@ -69,7 +70,7 @@ for view in views:
     wheel.nodeX=200;wheel.nodeY=0
     for editor in (view.op('container_scroll/container_content/editor_below'),content):
         field=editor.op('field_Value');callback=field.par.callbacks.eval()
-        callback.par.language='python';callback.text=Path(project.folder+'/prototypes/inspector/value_callbacks.py').read_text()
+        callback.par.language='python';callback.text=Path(inspector_source_dir/'value_callbacks.py').read_text()
         for name in ('cancel','apply'):editor.op(name).par.display=False
         editor.op('text_status').par.w.expr='max(1,parent().width-24)'
         toggle=button(editor,'mapping_toggle','MAPPING  ▸','mapping_toggle',12,64,186,22)
@@ -98,12 +99,12 @@ for view in views:
     for name in ('Layout','Track','Device'):view.op('context_'+name+'/text_cycle').par.text='▾'
     view.op('context_Device').par.y.expr='parent().height-40-me.height'
     for name in ('Layout','Track'):view.op('context_'+name).par.y.expr='parent().height-74-me.height'
-exec(Path(project.folder+'/prototypes/inspector/native_editor_layout.py').read_text(),dict(globals(),layout_views=views))
+exec(Path(inspector_source_dir/'native_editor_layout.py').read_text(),dict(globals(),layout_views=views))
 print('Mapping sections installed; native window dimensions retained')
 
 # Header dropdown callbacks: release mouse capture before transferring focus.
 header_scope={}
-exec(Path(project.folder+'/prototypes/inspector/context_callbacks.py').read_text(),header_scope)
+exec(Path(inspector_source_dir/'context_callbacks.py').read_text(),header_scope)
 for view in views:
     if not view:continue
     for name in ('Device','Layout','Track'):

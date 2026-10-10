@@ -22,6 +22,17 @@ def context(inspector):
     return get_context() if get_context is not None else dict(key=None,label='')
 
 
+def action_diagnostics(inspector):
+    """Detached runtime observations, including actions outside current slots.
+
+    This is a notification payload, never a saved Layout registry mutation.
+    Older/initializing controllers without the action API emit an empty list.
+    """
+    parent = getattr(inspector, 'parent', None)
+    get_actions = getattr(parent() if parent is not None else None, 'GetActions', None)
+    return get_actions() if get_actions is not None else []
+
+
 def projection_signature(inspector, states):
     """Inputs read by refresh; states is the caller's detached catalog snapshot.
 
@@ -31,9 +42,13 @@ def projection_signature(inspector, states):
     parent=getattr(inspector,'parent',None)
     get_focus=getattr(parent() if parent is not None else None,'GetCompContext',None)
     focus=get_focus().get('status') if get_focus is not None else None
-    return (states,context(inspector),inspector.fetch('selected_page','All COMPs'),
+    return (states,context(inspector),action_diagnostics(inspector),inspector.fetch('selected_page','All COMPs'),
             copy.deepcopy(inspector.fetch('pending_clear',None)),
             inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value'),focus)
+
+
+def _page(state):
+    return state['comp'] or ('Action presets' if state['binding_type']=='action' else 'Python callbacks')
 
 
 def refresh(inspector, states):
@@ -42,7 +57,9 @@ def refresh(inspector, states):
     if metadata is not None:
         import json
         controller=inspector.parent()
-        snapshot=dict(routing={k:v for k,v in current.items() if k!='revision'},layouts=controller.GetLayouts() if current.get('key') is not None and not current.get('legacy') else [])
+        snapshot=dict(routing={k:v for k,v in current.items() if k!='revision'},
+                      layouts=controller.GetLayouts() if current.get('key') is not None and not current.get('legacy') else [],
+                      actions=action_diagnostics(inspector))
         content=json.dumps(snapshot,ensure_ascii=True,sort_keys=True)+'\n'
         if metadata.text.replace('\r\n','\n')!=content:metadata.text=content
     pending = inspector.fetch('pending_clear', None)
@@ -55,7 +72,7 @@ def refresh(inspector, states):
         content=json.dumps(states,ensure_ascii=True,indent=2)+'\n'
         if database.text.replace('\r\n','\n')!=content:
             database.text=content
-    pages=['All COMPs']+list(dict.fromkeys(state['comp'] or 'Python callbacks' for state in states))
+    pages=['All COMPs']+list(dict.fromkeys(_page(state) for state in states))
     inspector.store('pages',pages)
     page=inspector.fetch('selected_page','All COMPs')
     if page not in pages:
@@ -64,17 +81,22 @@ def refresh(inspector, states):
     if page_button is not None:
         page_button.par.label='Page: '+page+' v'
     rows = [list(COLUMNS)]
-    by_slot={(state['kind'],state['slot']):state for state in states if page=='All COMPs' or (state['comp'] or 'Python callbacks')==page}
+    by_slot={(state['kind'],state['slot']):state for state in states if page=='All COMPs' or _page(state)==page}
     for kind,slot in [(kind,slot) for kind in ('knob','button') for slot in range(1,9)]:
         state=by_slot.get((kind,slot))
         if state is None:
             rows.append([kind.capitalize()+' '+str(slot),'Unassigned','','','Choose COMP \u25be','Choose parameter \u25be','','','','','','',''])
             continue
-        if page!='All COMPs' and (state['comp'] or 'Python callbacks')!=page:
+        if page!='All COMPs' and _page(state)!=page:
             continue
-        destination = state['comp'] or ('Python callback' if state['binding_type']=='callback' else 'Unavailable')
+        destination = state['comp'] or ('Action preset' if state['binding_type']=='action' else 'Python callback' if state['binding_type']=='callback' else 'Unavailable')
         parameter = state['parameter'] or '\u2014'
         value = 'Pulse' if state.get('mode')=='pulse' or state.get('value_source')=='pulse' else (format(state['value'],'.3f').rstrip('0').rstrip('.') or '0') if state['value'] is not None else 'Unavailable'
+        if state['binding_type']=='action':
+            parameter = state['label'] + ' [' + state['action_id'] + ']'
+            value = (state.get('action_result') or {}).get('status', 'Ready')
+            if not state.get('action_available', True) or state.get('value_source')=='unavailable' or not state['valid'] and value in ('Ready','succeeded'):
+                value = 'Unavailable'
         confirm = pending and pending['id'] == state['id']
         rows.append([state['kind'].capitalize()+' '+str(state['slot']),
                      'Invalid' if not state['valid'] else 'Yes' if state['mapped'] else 'No',
@@ -86,6 +108,8 @@ def refresh(inspector, states):
     table = inspector.op('targets')
     if table.text.replace('\r\n','\n') != content:
         table.text = content
+    if inspector.op('owned_runtime') is not None:
+        return
     pending_id = pending['id'] if pending else False
     if pending_id != inspector.fetch('visual_pending',False):
         inspector.store('visual_pending',pending_id)

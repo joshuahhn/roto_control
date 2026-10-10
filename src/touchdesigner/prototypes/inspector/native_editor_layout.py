@@ -1,5 +1,5 @@
 """Use native anchors for editor geometry, with fixed font/icon/row sizes."""
-views=globals().get('layout_views',[op('/inspector_below'),op('/inspector_popup')])
+views=(globals()['layout_views'] if 'layout_views' in globals() else [op('/inspector_below'),op('/inspector_popup')])
 
 def anchors(o,left,right,lanchor=0,ranchor=1):
     o.par.x.expr='';o.par.w.expr='';o.par.hmode='anchors'

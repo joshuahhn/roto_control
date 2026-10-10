@@ -1,8 +1,8 @@
 """Install shared target discovery and reusable picker/typed widgets."""
 from pathlib import Path
 
-source_dir=Path(project.folder)/'prototypes/inspector'
-model=op('/inspector_model')
+source_dir=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
+model=globals().get('model_comp') or op('/inspector_model')
 targets=model.op('base_targets') or model.create(baseCOMP,'base_targets')
 targets.viewer=True;targets.par.parentshortcut='InspectorTargets'
 targets.nodeX=1105;targets.nodeY=-40;targets.nodeWidth=160;targets.nodeHeight=130
@@ -25,7 +25,7 @@ if not globals().get('targets_only',False):
         o.par.x.expr='';o.par.w.expr='';o.par.hmode='anchors'
         o.par.leftanchor=0;o.par.rightanchor=1;o.par.leftoffset=left;o.par.rightoffset=right
 
-    for view in globals().get('target_views',[op('/inspector_below'),op('/inspector_popup')]):
+    for view in (globals()['target_views'] if 'target_views' in globals() else [op('/inspector_below'),op('/inspector_popup')]):
         if not view:continue
         draft=view.op('base_draft');page=draft.customPages[0]
         for name in ('Pickscope','Pickquery'):

@@ -114,15 +114,19 @@ def upgrade(parent_comp, source_dir):
                 if getattr(demo.par,name2,None) is None:
                     p = getattr(page,'append'+style)(name2)[0]
                     p.readOnly = True
-        dat = demo.op('demo_callbacks') or demo.create(parameterexecuteDAT,'demo_callbacks')
+        dat = demo.op('demo_callbacks')
+        if dat is None:
+            dat = demo.create(parameterexecuteDAT,'demo_callbacks')
+            # Generated demo callbacks are embedded before source/binding writes.
+            # Existing user callback sources and their file settings stay intact.
+            dat.par.syncfile = False
+            dat.par.loadonstart = False
+            dat.par.file = ''
+            dat.par.language = 'python'
+            f = source/'code/py'/('parameter_demo.py' if shortcut=='ParameterDemo' else 'callback_demo.py')
+            dat.text = f.read_text()
         dat.viewer = True
         dat.nodeX, dat.nodeY = 0,0
-        dat.par.language = 'python'
-        f = source/'code/py'/('parameter_demo.py' if shortcut=='ParameterDemo' else 'callback_demo.py')
-        dat.text = f.read_text()
-        dat.par.file = os.path.relpath(f,project.folder)
-        dat.par.syncfile = True
-        dat.par.loadonstart = True
         dat.par.op.expr = 'parent.'+shortcut
         dat.par.pars = 'Usebinding Setvalue'
         dat.par.custom = True

@@ -12,12 +12,17 @@ except ModuleNotFoundError as error:
     from model import CatalogModel, StaleDraft, FIELDS
 
 EMPTY=('unconfigured','unconfigured','unconfigured')
-META_FIELDS=('id','mode','valid','binding_type','button_type','parameter_style','parameter_definition','definition_error','available','error')
-DISPLAY_FIELDS=('value_label','mapped','connected','plugin','touched','requires_relearn')
+META_FIELDS=('action_id','action_available','id','mode','valid','binding_type','button_type','parameter_style','parameter_definition','definition_error','available','error')
+DISPLAY_FIELDS=('action_available','action_result','error','value_label','mapped','connected','plugin','touched','requires_relearn')
 
 def metadata_signature(row,info):
     if not info:return None
-    return (row['Label'],row['Destination'],row['Minimum'],row['Maximum'])+tuple(info.get(n) for n in META_FIELDS)+tuple(info.get('menu_names',()))+tuple(info.get('menu_labels',()))
+    error=info.get('error')
+    # Provider execution details remain visible; source marks actual mapping
+    # failures separately. Unknown/older projections retain generic error fences.
+    if info.get('binding_type')=='action' and isinstance(info.get('mapping_error'),str):
+        error=info['mapping_error']
+    return (row['Label'],row['Destination'],row['Minimum'],row['Maximum'])+tuple(error if n=='error' else info.get(n) for n in META_FIELDS)+tuple(info.get('menu_names',()))+tuple(info.get('menu_labels',()))
 
 def project_records(states):
     rows=[dict(Label='Unassigned',Destination='',Minimum=0.,Maximum=1.,Value=0.) for _ in range(16)]
@@ -28,6 +33,8 @@ def project_records(states):
         i=slot-1+(8 if kind=='button' else 0)
         value=state.get('value');available=state.get('mode')!='pulse' and state.get('value_source')!='pulse' and isinstance(value,(int,float)) and math.isfinite(value)
         rows[i]=dict(Label=str(state.get('label') or 'Unavailable'),Destination=(str(state.get('comp') or '')+'.'+str(state.get('parameter') or '')) if state.get('parameter') else 'Python callback',Minimum=float(state.get('minimum',0)),Maximum=float(state.get('maximum',1)),Value=float(value) if available else 0.)
+        if state.get('binding_type')=='action':
+            rows[i]['Destination']='Action preset: '+str(state.get('action_id') or 'Unavailable')
         info[i]=dict(state,available=available)
     return rows,info
 
@@ -96,6 +103,10 @@ class ControllerCatalog(CatalogModel):
     def ValueText(self,context,slot):
         info=self.Info(context,slot);row=self.GetCatalog(context)[slot]
         if not info:return '—'
+        if info.get('binding_type')=='action':
+            result=(info.get('action_result') or {}).get('status','Ready')
+            if not info.get('action_available') or info.get('value_source')=='unavailable' or not info.get('valid') and result in ('Ready','succeeded'):return 'Unavailable'
+            return result
         if info.get('mode')=='pulse' or info.get('value_source')=='pulse':return 'Pulse'
         if not info['available']:return 'Unavailable'
         return format(row['Value'],'.4g')
@@ -127,6 +138,9 @@ class ControllerCatalog(CatalogModel):
 
     def _reject_stale(self):raise StaleDraft('Mapping changed; reopen this control')
     def ActivationToken(self,*args):return self._commands.ActivationToken(*args)
+    def FollowCompToken(self):return self._commands.FollowCompToken()
+    def FollowCompCapability(self):return self._commands.FollowCompCapability()
+    def SetFollowComp(self,*args):return self._commands.SetFollowComp(*args)
     def ActivationCapability(self,*args):return self._commands.ActivationCapability(*args)
     def Activate(self,*args):return self._commands.Activate(*args)
     def Library(self,*args):return self._commands.Library(*args)
@@ -248,7 +262,47 @@ class TDControllerAdapter:
         if not c:return dict(Connected=False,Learning=False,Label='Choose controller')
         state=c.State
         routing=c.GetLayoutContext();follow=c.GetCompContext()
-        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=follow.get('enabled',False),FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False),ActivationReason=self.ActivationReason(),Legacy=routing.get('legacy',False),Quarantined=routing.get('quarantined',False),RoutingEpoch=getattr(c.ext.RotoPythonExt._follow,'routing_epoch',None),ContextOwners={r['id']:dict(category=r.get('category','LEGACY'),owner=deepcopy(r.get('owner'))) for r in c.GetLayouts()} if not routing.get('legacy') else {})
+        preference=self.FollowCompState()
+        return dict(Connected=state['Connected'],Learning=state['Learning'],Touched=state['Touched'],Bindingvalid=state['Bindingvalid'],Lasterror=state['Lasterror'],InspectorError=c.op('inspector').fetch('refresh_error','') if c.op('inspector') else '',Label=routing['label'],Active=self.ActiveContext(),Locked=routing.get('locked',False),SelectedTrack=routing.get('selected_track_id'),SelectedDevice=routing.get('selected_plugin_id'),Follow=preference['FollowCompValue'],FollowStatus=follow.get('status',''),FollowError=follow.get('error',''),Gated=follow.get('gated',False),ActivationReason=self.ActivationReason(),Legacy=routing.get('legacy',False),Quarantined=routing.get('quarantined',False),RoutingEpoch=getattr(c.ext.RotoPythonExt._follow,'routing_epoch',None),ContextOwners={r['id']:dict(category=r.get('category','LEGACY'),owner=deepcopy(r.get('owner'))) for r in c.GetLayouts()} if not routing.get('legacy') else {},**preference)
+
+    def _follow_comp_parameter(self):
+        c=self.controller
+        if c is None or not c.valid:raise ValueError('Choose a valid controller')
+        e=c.ext.RotoPythonExt
+        if e.ownerComp != c or getattr(e,'_follow',None) is None:raise ValueError('Follow COMP controller unavailable')
+        par=getattr(c.par,'Followcomp',None)
+        if par is None:raise ValueError('Controller has no Follow COMP preference')
+        if getattr(par,'readOnly',False) or not par.enable or str(getattr(par,'mode','CONSTANT')).split('.')[-1].upper()!='CONSTANT':
+            raise ValueError('Follow COMP preference is not writable')
+        m=e._layout_manager()
+        if m.legacy:raise ValueError('Follow COMP requires Parameter mapping')
+        if m.mutating or e._dispatching or e._restoring or e._restore_pending:raise ValueError('Wait for controller mutation to finish')
+        if e._follow.paused:raise ValueError('Repair paused controller selection first')
+        m.owner_ready(required=True)
+        if m.quarantined:raise ValueError('Activate the repaired Layout before Follow COMP')
+        return c,e,par
+
+    def FollowCompState(self):
+        value=None
+        try:
+            c=self.controller;par=getattr(c.par,'Followcomp',None) if c is not None else None
+            if par is not None:value=bool(par.eval())
+            c,e,par=self._follow_comp_parameter()
+            return dict(FollowCompAvailable=True,FollowCompReason='',FollowCompBinding=(c.id,id(e)),FollowCompValue=value)
+        except (ValueError,AttributeError,RuntimeError) as error:
+            return dict(FollowCompAvailable=False,FollowCompReason=str(error),FollowCompBinding=None,FollowCompValue=value)
+
+    def SetFollowComp(self,enabled,session,binding,previous):
+        if type(enabled) is not bool:raise ValueError('Follow COMP requires ON or OFF')
+        c,e,par=self._follow_comp_parameter()
+        if (self.Session()!=session or self.controller != c or
+                (c.id,id(e))!=binding or bool(par.eval())!=previous):
+            raise ValueError('Controller session or Follow COMP changed; click again')
+        if bool(par.eval())!=enabled:
+            # Native parameterexecuteDAT is the only routing ingress. Do not
+            # call onParValueChange/observe/flush a second time here.
+            par.val=enabled
+        return bool(par.eval())
     def Exists(self,key):
         c=self.controller
         if not c:return key==EMPTY
@@ -311,7 +365,7 @@ class TDControllerAdapter:
             record=manager.plugin(*key);library={r['id']:r for r in self.Library(key)}
             rows=[]
             for target in record['targets']:
-                row=dict(library.get(target['id'],target),binding_type='parameter',mapped=False,connected=False,plugin=False,projection='last-saved preview')
+                row=dict(library.get(target['id'],target),binding_type='action' if target.get('action_id') else 'parameter',mapped=False,connected=False,plugin=False,projection='last-saved preview')
                 if key==self.ActiveContext() and manager.quarantined:row.update(value=None,valid=False,error='Activate the repaired Layout first')
                 rows.append(row)
         return self._definitions(rows,key)
@@ -596,7 +650,7 @@ class InspectorModel(ControllerCatalog):
     def WatchOwners(self):
         c=self.adapter.controller
         if not c:return []
-        owners=[c,c.op('base_state'),c.op('inspector/title')]
+        owners=[c,c.op('base_state')]
         for key in {context for context,_ in self._subscribers.values()}:
             if not self.HasContext(key):continue
             for info in self._info.get(key,[]):
@@ -634,8 +688,15 @@ class InspectorModel(ControllerCatalog):
     def Sync(self):
         super().Sync()
         if hasattr(self,'ownerComp'):self.RefreshWatchers()
+    def onInitTD(self):
+        wrapper=self.ownerComp.parent()
+        lifecycle=wrapper.op('owned_runtime')
+        if lifecycle is not None:
+            lifecycle.module.attach_views(wrapper.parent(),expected_model=self)
     def onDestroyTD(self):
+        if self._closed:return
         for pending in (self._queued_run,self._sync_run):
             if pending:pending.kill()
+        self._queued_run=self._sync_run=None
         if self.adapter.Targets:self.adapter.Targets.Reset()
         self.Shutdown()

@@ -74,3 +74,16 @@ Selection/unlock fences immediately suppress business input, mapping/page recall
 Each Track explicitly groups 1..127 Plugins with separate active Plugin, identities, targets and off-page library. Focus links are Plugin-scoped; sole selected COMP resolves to (Layout, Track, Plugin). Hardware SEL uses eight-item Device banks independently of Track browsing. PLUGIN 04 browses; PLUGIN 07 queues a page-relative Device selection. The existing arbiter/fences/session generations cover same-Track Device transitions. LOCK stops automatic Follow and hardware Track routing, but explicit hardware Device selection can replace the locked Device inside the routing Track after LEARN/touch/backlog guards. Selected Track divergence persists; unlock follows current selection. Reverse hardware-to-TD UI selection remains deferred.
 
 GetPlugins/CreatePlugin/SelectPlugin/RenamePlugin/RemovePlugin/SetPluginComp are promoted. v2 links move from Track to its sole Plugin without merging existing mapping variants or changing any stable ID/hash. Linked names follow COMP rename; manual names remain supported, Layout rename is independent. Upgrade captures current registry before replacing source. Software/native evidence and artifacts are recorded in the final HANDOFF entry.
+
+## Named Action presets — source-only #12 (2026-10-08)
+
+RegisterAction/AssignAction/RecallAction share the existing Pulse Button input path and return structured success/failure results. Layout/Device/page libraries persist explicit action IDs plus mapping metadata, never runtime callables. Both setup modes rebuild entry points from registration.onRegisterActions before mappings restore. Anonymous callbacks retain their legacy behavior. See docs/functions/actions.md for the stable consumer contract; Snapshot values and COMP ownership remain #13/#9 scope. Source tests pass; coordinated native fixture/reload/export and physical acceptance remain pending. Shared live/canonical artifacts have not been updated.
+
+## Owned Inspector composition (local preparation)
+
+The packaging candidate composes accepted #12 Actions, #10 v5 Follow and corrected
+#11 migration, excluding #13. `build_inspector.py` now owns model/views under the
+controller's `inspector` wrapper and exposes Connection `Openinspector`. Stable
+headless catalog/context publication stays; old Palette presentation is archived
+before disconnected upgrade. See `docs/plans/owned-inspector-packaging.md`. Source
+checks do not constitute native packaging acceptance or canonical promotion.

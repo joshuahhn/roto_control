@@ -3,7 +3,7 @@
 GROUPS = {
     '': [
         ('Host', ['RotoPythonExt', 'protocol', 'parameter_callbacks', 'lifecycle_callbacks', 'midi_process'], 2),
-        ('Binding', ['binding', 'target_callbacks', 'registration', 'setup', 'layouts'], 2),
+        ('Binding', ['binding', 'target_callbacks', 'registration', 'setup', 'layouts', 'layout_migration'], 2),
         ('Collection', ['base_targets', 'collection_protocol', 'controls'], 2),
         ('Free Learn', ['free_learn', 'learn_parameters'], 2),
         ('State', ['base_state'], 1),
@@ -21,13 +21,14 @@ GROUPS = {
         ('Output', ['controls_values', 'null_controls', 'out_controls'], 3),
     ],
     'inspector': [
-        ('List', ['title', 'title_callbacks', 'lister', 'listerConfig'], 2),
-        ('Data', ['targets', 'database', 'inspector_data', 'list_events'], 2),
-        ('Actions', ['page_select', 'clear_all', 'clear_all_yes', 'clear_all_no', 'toolbar_events'], 3),
+        ('Publication', ['targets', 'database', 'context_state', 'inspector_data', 'owned_runtime'], 2),
+        ('Shared model', ['inspector_model'], 1),
+        ('Fold + editor', ['inspector_below'], 1),
+        ('Popup presentation', ['inspector_popup'], 1),
     ],
     'docs': [
         ('Overview', ['overview_md', 'functions_md'], 2),
-        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md'], 3),
+        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md'], 3),
     ],
 }
 
@@ -103,3 +104,32 @@ def verify(comp, plans):
                 assert source.nodeX < node.nodeX, (source.path, node.path, 'backward wire')
     return {'networks': len(plans), 'groups': sum(len(p['boxes']) for p in plans), 'operators': checked,
             'containment': True, 'overlaps': False, 'backward_wires': False}
+
+
+def apply(comp, obsolete_annotations=()):
+    """Apply the measured recipe to this controller only; leave panel geometry.
+
+    Remove only our tagged groups or exact
+    obsolete annotation paths supplied by the caller. Other user notes survive.
+    Every functional node must remain
+    explicitly classified by plan(). Unclassified user nodes stop cleanup.
+    """
+    plans = plan(comp)
+    for entry in plans:
+        parent = comp if entry['path'] == comp.path else comp.op(entry['path'])
+        for node in tuple(parent.children):
+            if node.OPType == 'annotateCOMP' and (
+                    node.fetch('roto_network_group',False) or
+                    node.path in obsolete_annotations):
+                node.destroy()
+        for name, (x, y) in entry['positions'].items():
+            node = parent.op(name)
+            node.nodeX, node.nodeY = x, y
+        for index, box in enumerate(entry['boxes']):
+            node = parent.create(annotateCOMP, 'annotate_roto_group'+str(index))
+            node.store('roto_network_group',True)
+            node.par.Mode = 'networkbox'
+            node.par.Titletext = box['title']
+            node.nodeX, node.nodeY = box['x'], box['y']
+            node.nodeWidth, node.nodeHeight = box['w'], box['h']
+    return verify(comp, plans)

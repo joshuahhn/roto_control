@@ -102,10 +102,6 @@ def build(parent_comp, source_dir):
     controls_path = source / "upgrade_controls.py"
     exec(compile(controls_path.read_text(), str(controls_path), "exec"), controls_ns)
     controls_ns["upgrade"](parent_comp, source)
-    inspector_ns = dict(globals())
-    inspector_path = source / "build_inspector.py"
-    exec(compile(inspector_path.read_text(), str(inspector_path), "exec"), inspector_ns)
-    inspector_ns["build"](comp, source)
     docs["embed_project_docs"](comp, source)
     comp.op("readme_md").nodeX = 0
     comp.op("readme_md").nodeY = -300

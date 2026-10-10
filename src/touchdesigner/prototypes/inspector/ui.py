@@ -70,6 +70,7 @@ class InspectorView:
         self._clear_device_request=None
         self._device_message=''
         self._activation_token=None
+        self._follow_comp_token=None
         self._picker_generation=0
         self._menu_generation=0
         self._context_menu=None
@@ -139,6 +140,34 @@ class InspectorView:
     def ActivationHint(self,hover):
         if not self.IsLive():return
         self.ownerComp.op('text_status').par.text=(self._model.ActivationCapability(self._context)['reason'] or 'Activate browsed Device on controller') if hover else (self._main_message or '')
+
+    def _update_follow_comp(self):
+        button=self.ownerComp.op('follow_comp')
+        if not button:return
+        live=self.IsLive()
+        capability=self._model.FollowCompCapability() if live else {}
+        state=capability.get('state')
+        button.op('text_label').par.text='Follow COMP: '+('ON' if state is True else 'OFF' if state is False else '—')
+        button.par.enable=bool(capability.get('enabled'))
+        self._follow_comp_token=self._model.FollowCompToken() if live else None
+        paint(button,(.22,.24,.22) if state is True else SURFACE)
+
+    def FollowCompHint(self,hover):
+        if not self.IsLive():return
+        status=self._model.Status;capability=self._model.FollowCompCapability()
+        message=(capability['reason'] or status.get('FollowError') or
+                 'Follow COMP · '+str(status.get('FollowStatus') or 'current Network Editor selection'))
+        self.ownerComp.op('text_status').par.text=message if hover else (self._main_message or '')
+
+    def ToggleFollowComp(self):
+        if not self.IsLive():return False
+        token=getattr(self,'_follow_comp_token',None)
+        if token is None:return False
+        try:self._model.SetFollowComp(not token[-1],token)
+        except (ValueError,RuntimeError) as error:
+            self._device_message=str(error);self._update_main_status();self._update_follow_comp();return False
+        self._device_message='';self._update_main_status();self._update_follow_comp()
+        return True
 
     def ActivateDevice(self):
         if not self.IsLive() or self.Key()!=self._context:return False
@@ -326,7 +355,7 @@ class InspectorView:
                 button=section.op('native_'+kind)
                 if button:button.par.enable=bool(fresh and native_actions.get(kind,{}).get('enabled'))
 
-    def Connect(self):
+    def Connect(self,preserve_context=False):
         self.Disconnect()
         self._value_scope=None
         self._mapping.Close();self._menu_generation+=1
@@ -336,7 +365,9 @@ class InspectorView:
             self.ownerComp.op('text_status').par.text='Load the shared model first'
             return False
         self._model=component.ext.InspectorModel
-        if self.IsLive():self.ConfigureMenus(self._model.ActiveContext())
+        if self.IsLive():
+            preferred=self.Key() if preserve_context and not self._follow_routing else self._model.ActiveContext()
+            self.ConfigureMenus(preferred)
         self._context=self.Key()
         self._model.Subscribe(self._identity,self._context,self.OnModelChange)
         self.selected=None;self._token=None;self._original=None;self._display={}
@@ -696,7 +727,12 @@ class InspectorView:
         self._draft.par['Mapmode' if field=='mode' else 'Mapinput']=value;return True
 
     def onInitTD(self):
-        if not self._model:self.Connect()
+        wrapper=self.ownerComp.parent()
+        lifecycle=wrapper.op('owned_runtime')
+        if lifecycle is not None:
+            lifecycle.module.attach_views(wrapper.parent(),expected_view=self)
+        elif not self._model:
+            self.Connect()
 
     def onDestroyTD(self):self.Disconnect()
 
@@ -808,6 +844,8 @@ class InspectorView:
                 message=ownership+' · '+str(mapped)+'/'+str(registered)+' mapped'
         else:message='16 controls · click to edit'
         if getattr(self,'_device_message','') and not self._model.Learn:message=self._device_message
+        if self.IsLive() and self._model.Status.get('InspectorError'):
+            message += ' · Inspector unavailable: '+self._model.Status['InspectorError']
         if message!=self._main_message:
             self._main_message=message;self._write(self.ownerComp.op('text_status'),message)
 
@@ -864,6 +902,7 @@ class InspectorView:
             paint(refs['row'],(.20,.20,.20) if self.selected==i else ((.17,.165,.15) if learn else BASE))
             ink(refs['slot'],ACCENT if self.selected==i else MUTED)
         c.op('text_brand').par.text=('LIVE' if self._follow_routing else 'BROWSE') if self.IsLive() else 'DEMO'
+        self._update_follow_comp()
         if not c.op('clear_device'):c.op('text_footer').par.text='● MAPPED  ○ PENDING  ◇ SAVED  ! ISSUE' if self.IsLive() else 'SCROLL TO BROWSE'
         for e in self._editors:paint(e,(.18,.175,.16) if learn else SURFACE)
 
@@ -1177,6 +1216,7 @@ class InspectorView:
         elif name=='filter':return self.OpenFilter()
         elif name=='clear_device':return self.RequestClearDevice()
         elif name=='activate_device':return self.ActivateDevice()
+        elif name=='follow_comp':return self.ToggleFollowComp()
         elif name=='details_toggle':
             if self.selected is None or not self.IsLive():return False
             self.DiscardDefinition()

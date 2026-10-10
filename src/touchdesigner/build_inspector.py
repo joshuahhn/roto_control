@@ -1,140 +1,244 @@
-"""Execute in TouchDesigner: build(controller, source_dir). External Lister config."""
+"""Build the controller-owned compact Inspector; execute with native TD globals.
+
+build(controller, source_dir, legacy_archive=None) is also the disconnected
+upgrade entry point. Existing Lister presentation is archived before removal.
+Catalog/metadata DATs retain their stable publication paths.
+"""
 from pathlib import Path
-import os
+import hashlib
+
+OLD_PRESENTATION = ('lister', 'listerConfig', 'listerConfig1', 'title',
+                    'title_callbacks', 'list_events', 'toolbar_events',
+                    'page_select', 'clear_all', 'clear_all_yes', 'clear_all_no')
 
 
-def build(controller, source_dir):
-    source = Path(source_dir)
-    if controller.op('inspector') is not None:
-        raise FileExistsError('inspector already exists')
-    inspector = controller.create(containerCOMP,'inspector')
-    inspector.par.parentshortcut = 'RotoInspector'
-    inspector.viewer = inspector.display = True
-    inspector.par.w, inspector.par.h, inspector.par.alignorder = 1830, 580, 0
-    inspector.nodeX,inspector.nodeY,inspector.nodeWidth,inspector.nodeHeight = 1530,-40,280,170
-    config = inspector.copy(op.TDTox.op('lister').par.Configcomp.eval(),name='listerConfig')
-    config.viewer = True
-    config.nodeX,config.nodeY = 0,-400
-    metadata=inspector.create(textDAT,'context_state');metadata.par.language='json';metadata.viewer=True
-    metadata.nodeX,metadata.nodeY=1050,-130
-    table = inspector.create(tableDAT,'targets');table.viewer=True
-    table.nodeX,table.nodeY,table.nodeWidth,table.nodeHeight=350,-170,280,130
-    module = inspector.create(textDAT,'inspector_data');module.viewer=True
-    module.nodeX,module.nodeY = 700,-130
-    module.par.language='python'
-    path=source/'code/py/roto_python/inspector/inspector_data.py'
-    module.text=path.read_text()
-    module.par.file=os.path.relpath(path,project.folder)
-    module.par.loadonstart=True
-    module.par.syncfile=False
-    title=inspector.create(textCOMP,'title')
-    title.viewer=True
-    title.nodeX,title.nodeY=0,0
-    title.par.w.expr='parent.RotoInspector.par.w-160'
-    title.par.h=36
-    title.par.y.expr='parent.RotoInspector.par.h-36'
-    title.par.text='ROTO Mapping Inspector'
-    title.par.fontsize=13
-    title.par.fontcolorr=title.par.fontcolorg=title.par.fontcolorb=.9
-    title.par.bgcolorr=title.par.bgcolorg=title.par.bgcolorb=.10
-    title.par.display=True
-    module.module.refresh(inspector,controller.GetControlCatalog())
-    lister=inspector.copy(op.TDTox.op('lister'),name='lister')
-    lister.viewer=True
-    lister.nodeX,lister.nodeY=350,0
-    lister.par.clone.expr="op.TDTox.op('lister')"
-    lister.par.ext0object="op('./ListerExt').module.ListerExt(me)"
-    lister.par.ext0promote=True
-    lister.par.parentshortcut='Lister'
-    lister.par.callbacks="parent.RotoInspector.op('list_events').path" # expression below
-    lister.par.callbacks.expr="parent.RotoInspector.op('list_events').path"
-    lister.par.Configcomp.expr="me.parent().op('listerConfig').path"
-    lister.par.Autodefinecols=False
-    lister.par.Advancedcallbacks=True
-    lister.par.Allowundo=False
-    lister.par.Inputtabledat.expr="parent.RotoInspector.op('targets').path"
-    lister.par.Inputtablehasheaders=True
-    lister.par.Refreshoninputchange=True
-    lister.par.Autosyncinputtable=False
-    lister.par.w.expr='parent.RotoInspector.par.w'
-    lister.par.h.expr='parent.RotoInspector.par.h-72'
-    columns=[('Control',90),('Mapped',75),('Learn',85),('ClearLearn',150),('COMP',350),('Parameter',105),('Mode',75),
-             ('Hardware',85),('Min',75),('Max',75),('Value',80),('ID',185),('Error',220)]
-    coldef=config.op('colDefine')
-    row_names=[row[0].val for row in coldef.rows()]
-    assert len(row_names)==19
-    coldef.clear()
-    for field in row_names:
-        values=[]
-        for name,width in columns:
-            values.append({'column':name,'columnLabel':'Clear' if name=='ClearLearn' else name,'sourceData':name,'sourceDataMode':'string',
-                           'width':width,'stretch':int(name=='COMP'),'sizable':1,'editable':2 if name in ('Min','Max','Hardware','Value') else 0,
-                           'selectRow':int(name not in ('ClearLearn','Learn','COMP','Parameter')),'cellLook':'button' if name in ('ClearLearn','Learn') else '',
-                           'justify':'CENTER' if name in ('ClearLearn','Learn') else 'CENTERLEFT',
-                           'help':'Click to choose any COMP/custom parameter; assignment is saved automatically' if name in ('COMP','Parameter') else 'Delete target registration and hardware mapping; retain empty slot' if name=='ClearLearn' else 'Open hardware LEARN; select this slot, then send its registered target metadata' if name=='Learn' else '*'}.get(field,''))
-        coldef.appendRow([field,*values])
-    callback_path=source/'code/py/roto_python/inspector/lister_callbacks.py'
-    config.op('callbacks').text=callback_path.read_text()
-    config.op('callbacks').par.file=os.path.relpath(callback_path,project.folder)
-    config.op('callbacks').par.loadonstart=True
-    config.op('callbacks').par.syncfile=False
-    config.op('callbacks').par.language='python'
-    for name in ('list_events','toolbar_events'):
-        dat=inspector.create(textDAT if name=='list_events' else panelexecuteDAT,name)
-        dat.viewer=True
-        dat.nodeX,dat.nodeY=700 if name=='list_events' else 1050,-280
-        path=source/('code/py/roto_python/inspector/'+name+'.py')
-        dat.text=path.read_text();dat.par.language='python'
-        dat.par.file=os.path.relpath(path,project.folder)
-        dat.par.loadonstart=True;dat.par.syncfile=False
-        if name=='toolbar_events':
-            dat.par.panels='clear_all* page_select'
-            dat.par.panelvalue='lselect';dat.par.offtoon=True
-            dat.par.whileon=False;dat.par.whileoff=False;dat.par.ontooff=False;dat.par.valuechange=False
-    for index,(name,label,width,offset) in enumerate([
-            ('clear_all','Clear All',150,150),('clear_all_yes','Yes',73,150),('clear_all_no','No',73,73)]):
-        button=inspector.create(buttonCOMP,name);button.name=name;button.viewer=True
-        button.nodeX,button.nodeY=1050+index*175,0
-        button.par.label=label;button.par.buttontype='momentary'
-        button.par.w=width;button.par.h=30
-        button.par.x.expr='parent.RotoInspector.par.w-'+str(offset)
-        button.par.y.expr='parent.RotoInspector.par.h-33'
-        button.par.display=name=='clear_all'
-    database=inspector.create(textDAT,'database');database.viewer=True
-    database.par.language='json';database.nodeX,database.nodeY=350,-360
-    page_button=inspector.create(buttonCOMP,'page_select');page_button.name='page_select';page_button.viewer=True
-    page_button.nodeX,page_button.nodeY=1050,-150
-    page_button.par.label='Page: All COMPs v';page_button.par.buttontype='momentary'
-    page_button.par.w=800;page_button.par.h=30
-    page_button.par.y.expr='parent.RotoInspector.par.h-69'
-    inspector.store('pending_clear',None)
-    confirmation=config.create(containerCOMP,'confirm_buttons')
-    confirmation.viewer=True;confirmation.par.w=150;confirmation.par.h=24
-    confirmation.nodeX,confirmation.nodeY=0,-600
-    for name,label,x in [('yes','Yes',0),('no','No',77)]:
-        button=confirmation.create(buttonCOMP,name);button.name=name;button.viewer=True
-        button.par.label=label;button.par.w=73;button.par.h=24;button.par.x=x
-        button.nodeX,button.nodeY=x*3,0
-    graphic=config.create(opviewerTOP,'confirm_view');graphic.viewer=True
-    graphic.nodeX,graphic.nodeY=175,-600
-    graphic.par.opviewer='confirm_buttons';graphic.par.outputresolution='custom';graphic.par.resolutionw=150;graphic.par.resolutionh=24
-    output=config.create(nullTOP,'null_confirm');output.viewer=True
-    output.nodeX,output.nodeY=350,-600;output.inputConnectors[0].connect(graphic)
-    orphan=inspector.op('listerConfig1')
-    if orphan is not None and lister.par.Configcomp.eval()!=orphan:
-        orphan.destroy()
-    lister.par.reinitextensions.pulse()
-    lister.par.Refresh.pulse()
-    module.module.refresh(inspector,controller.GetControlCatalog())
-    callback=inspector.op('title_callbacks')
-    if callback is not None:
-        callback.nodeX,callback.nodeY=0,-175
-    boxes=[x for x in controller.ops('*',includeUtility=True) if x.type=='annotate' and x.par.Titletext.eval()=='Inspector']
-    box=boxes[0] if boxes else controller.create(annotateCOMP,'annotate_inspector')
-    for extra in boxes[1:]:
-        extra.destroy()
-    box.utility=False
-    box.par.Mode='networkbox'
-    box.par.Titletext='Inspector'
-    box.nodeX,box.nodeY,box.nodeWidth,box.nodeHeight=1505,-65,330,255
-    return inspector
+def _execute(path, namespace):
+    exec(compile(path.read_text(encoding='utf-8'), str(path), 'exec'), namespace)
+
+
+def _source(dat, text):
+    dat.par.syncfile = False
+    dat.par.loadonstart = False
+    dat.par.file = ''
+    dat.par.language = 'python'
+    dat.text = text
+    dat.viewer = True
+
+
+def _manifest(wrapper):
+    return {node.path[len(wrapper.path)+1:]: hashlib.sha256(node.text.encode()).hexdigest()
+            for node in wrapper.findChildren(type=DAT)
+            if node.OPType in ('textDAT', 'parameterexecuteDAT', 'datexecuteDAT', 'panelexecuteDAT')
+            and node.par.language.eval() == 'python'}
+
+
+def _fingerprint(source):
+    directory = source / 'prototypes/inspector'
+    paths = sorted(directory.glob('*.py')) + [source/'build_inspector.py',
+            source/'code/py/roto_python/inspector/inspector_data.py',
+            source/'code/py/roto_python/inspector/owned_runtime.py',
+            source/'cleanup_network.py',source/'scripts/td_project_docs.py',
+            source/'README.md',directory/'README.md'] + sorted((source/'docs').rglob('*.md'))
+    return hashlib.sha256(b''.join(str(p.relative_to(source)).encode()+b'\0'+p.read_bytes()
+                                  for p in paths)).hexdigest()
+
+
+def install_open_parameter(controller):
+    page = next(p for p in controller.customPages if p.name == 'Connection')
+    if getattr(controller.par, 'Openinspector', None) is None:
+        page.appendPulse('Openinspector', label='Open Inspector')
+    parameter = controller.par.Openinspector
+    parameter.page = page
+    parameter.label = 'Open Inspector'
+    parameter.order = controller.par.Disconnect.order + 1
+    callback = controller.op('parameter_callbacks')
+    names = callback.par.pars.eval().split()
+    callback.par.pars = ' '.join(names + ([] if 'Openinspector' in names else ['Openinspector']))
+
+
+def archive_legacy(controller, destination):
+    """Snapshot the untouched old UI before any upgrade source/settings writes."""
+    wrapper=controller.op('inspector')
+    if wrapper is None or wrapper.op('lister') is None:
+        return None
+    if destination is None:
+        raise ValueError('Provide a new legacy_archive tox path before removing old Inspector')
+    path=Path(destination).absolute()
+    if path.exists() or path.suffix!='.tox':
+        raise ValueError('Legacy Inspector archive must be a NEW tox')
+    wrapper.save(str(path),createFolders=True)
+    return dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                controller_id=controller.id,inspector_id=wrapper.id)
+
+
+def _check_archive(controller,wrapper,receipt):
+    path=Path(receipt['path'])
+    if (receipt['controller_id']!=controller.id or receipt['inspector_id']!=wrapper.id
+            or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=receipt['sha256']):
+        raise ValueError('Legacy Inspector archive does not match this upgrade')
+
+
+def _require_file_parameters(dat):
+    for name in ('file','syncfile','loadonstart'):
+        if getattr(dat.par,name,None) is None:
+            raise ValueError('Required embedded source parameter missing: '+dat.path+'.'+name)
+
+
+def _isolate_sources(component):
+    """Embed supported DAT file parameters; annotation internals may lack them."""
+    for dat in component.findChildren(type=DAT):
+        for name,value in (('syncfile',False),('loadonstart',False),('file','')):
+            parameter=getattr(dat.par,name,None)
+            if parameter is not None:
+                parameter.val=value
+                if parameter.eval()!=value:
+                    raise ValueError('Embedded source parameter did not settle: '+dat.path+'.'+name)
+
+
+def _verify_runtime_sources(controller,source):
+    names=('RotoPythonExt','protocol','collection_protocol','controls','binding',
+           'free_learn','layouts','layout_migration','text_comp_follow','setup',
+           'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
+    for name in names:
+        node=controller.op(name)
+        path=source/'code/py/roto_python'/f'{name}.py'
+        if node is None or node.text!=path.read_text(encoding='utf-8'):
+            raise ValueError('Upgrade runtime source before Inspector: '+name)
+        _require_file_parameters(node)
+    # These callbacks are embedded inside the controller's target component.
+    sources={'base_targets/mapping_marks':'base_targets/mapping_marks.py'}
+    sources.update({f'base_targets/watch_{kind}{slot}':'control_callbacks.py'
+                    for kind in ('knob','button') for slot in range(1,9)})
+    for name,filename in sources.items():
+        node=controller.op(name)
+        if node is None or node.text!=(source/'code/py/roto_python'/filename).read_text(encoding='utf-8'):
+            raise ValueError('Upgrade runtime source before Inspector: '+name)
+        _require_file_parameters(node)
+    helper=controller.op('midi_process')
+    if helper is None or helper.text!=(source/'midi_process.py').read_text(encoding='utf-8'):
+        raise ValueError('Embed the current MIDI helper before Inspector')
+    _require_file_parameters(helper)
+
+
+def build(controller, source_dir, legacy_archive=None, legacy_receipt=None):
+    if controller.ext.RotoPythonExt._process is not None:
+        raise ValueError('Disconnect before installing Inspector')
+    source = Path(source_dir).resolve()
+    directory = source / 'prototypes/inspector'
+    _verify_runtime_sources(controller,source)
+    fingerprint = _fingerprint(source)
+    wrapper = controller.op('inspector')
+    install_open_parameter(controller)
+    if wrapper is not None:
+        marker = wrapper.fetch('owned_inspector_sources', None)
+        if marker and marker['build'] == fingerprint and marker['dat'] == _manifest(wrapper):
+            wrapper.op('owned_runtime').module.validate(controller)
+            return wrapper
+        if wrapper.op('lister') is not None:
+            receipt=legacy_receipt or archive_legacy(controller,legacy_archive)
+            _check_archive(controller,wrapper,receipt)
+        if wrapper.op('owned_runtime') is not None:
+            wrapper.op('owned_runtime').module.quiesce(controller)
+    else:
+        wrapper = controller.create(containerCOMP, 'inspector')
+    wrapper.par.parentshortcut = 'RotoInspector'
+    wrapper.par.opshortcut = ''
+    wrapper.viewer = True
+    wrapper.par.w = 600
+    wrapper.par.h = 430
+    for name in OLD_PRESENTATION:
+        node = wrapper.op(name)
+        if node is not None:
+            node.destroy()
+    # Finish existing controller/helper FILE isolation before model/view init.
+    _isolate_sources(controller)
+    # Retain the publication DATs, including pending projection identity.
+    for name, kind, language in [('targets', tableDAT, 'plain'),
+            ('database', textDAT, 'json'), ('context_state', textDAT, 'json')]:
+        node = wrapper.op(name) or wrapper.create(kind, name)
+        if kind == textDAT:
+            node.par.language = language
+        node.viewer = True
+    for name in ('inspector_data', 'owned_runtime'):
+        node = wrapper.op(name) or wrapper.create(textDAT, name)
+        _source(node, (source/'code/py/roto_python/inspector'/f'{name}.py').read_text())
+    # Build commands/Targets before initializing the controller-backed model.
+    model = wrapper.op('inspector_model') or wrapper.create(baseCOMP, 'inspector_model')
+    model.par.parentshortcut = 'InspectorModel'
+    model.par.opshortcut = ''
+    model.viewer = True
+    if getattr(model.par, 'Controller', None) is None:
+        model.appendCustomPage('Data').appendOP('Controller', label='Local controller')
+    model.par.Controller.expr = 'parent().parent()'
+    for name, filename in [('InspectorModel', 'model.py'), ('live_model', 'live_model.py')]:
+        dat = model.op(name) or model.create(textDAT, name)
+        _source(dat, (directory/filename).read_text())
+    scope = dict(globals(), inspector_source_dir=directory, model_comp=model,
+                 prototype_parent=wrapper, model_expression="parent().op('inspector_model')")
+    _execute(directory/'build_commands.py', scope)
+    _execute(directory/'build_targets.py', dict(scope, targets_only=True))
+    model.seq.ext.numBlocks = 1
+    model.par.ext0object = "op('./live_model').module.InspectorModel(me)"
+    model.par.ext0promote = True
+    model.par.initextonstart = True
+    model.initializeExtensions(0)
+    views = []
+    for name, style in [('inspector_below', 'below'), ('inspector_popup', 'popup')]:
+        _execute(directory/'build.py', dict(scope, prototype_name=name, prototype_style=style))
+        views.append(wrapper.op(name))
+    scope.update(inspector_views=views, action_views=views, parity_views=views,
+                 target_views=views, context_views=views, activation_views=views)
+    _execute(directory/'build_definition_edit.py', scope)
+    _execute(directory/'build_activation.py', scope)
+    # These are the same event-driven observers as the accepted live builder.
+    definitions = (
+        ('controller_catalog', datexecuteDAT, 'dat', 'parent.InspectorModel.ControllerData()',
+         "def onTableChange(dat):\n    parent.InspectorModel.RequestSync()\n"),
+        ('controller_registry', datexecuteDAT, 'dat', 'parent.InspectorModel.ControllerMetadata()',
+         "def onTableChange(dat):\n    parent.InspectorModel.RequestSync()\n"),
+        ('controller_parameters', parameterexecuteDAT, 'op', '',
+         "def onValueChange(par,prev):\n    parent.InspectorModel.RequestSync()\ndef onModeChange(par,prev):\n    parent.InspectorModel.RefreshDefinitions()\n    parent.InspectorModel.RequestSync()\n"),
+        ('controller_changed', parameterexecuteDAT, 'op', 'parent.InspectorModel',
+         "def onValueChange(par,prev):\n    parent.InspectorModel.RequestSync()\n"))
+    for name, kind, parameter, expression, text in definitions:
+        node = model.op(name) or model.create(kind, name)
+        node.par.active = False
+        _source(node, text)
+        getattr(node.par, parameter).expr = expression
+        if kind == datexecuteDAT:
+            node.par.tablechange = True
+            for flag in ('rowchange', 'colchange', 'cellchange', 'sizechange'):
+                getattr(node.par, flag).val = False
+        else:
+            node.par.custom = True
+            node.par.builtin = name == 'controller_parameters'
+            node.par.valuechange = True
+            node.par.onpulse = False
+            node.par.modechange = name == 'controller_parameters'
+            node.par.pars = 'Controller' if name == 'controller_changed' else ''
+        if name == 'controller_changed':
+            node.par.active = True
+    for view in views:
+        # Preserve the accepted LIVE/BROWSE and presentation controls.
+        for target, action in [('text_style', 'presentation'), ('text_brand', 'follow')]:
+            view.op(target).par.clickthrough = False
+            click = view.op('click_'+action) or view.create(panelexecuteDAT, 'click_'+action)
+            click.par.panels = target
+            click.par.panelvalue = 'lselect'
+            click.par.offtoon = True
+            _source(click, "def onOffToOn(panelValue):\n    parent.InspectorDemo.Action(%r)\n" % action)
+    # Final subscriptions use current local model/view instances, never siblings.
+    wrapper.op('owned_runtime').module.initialize(controller)
+    controller.ext.RotoPythonExt._publish_inspector(force=True)
+    # All generated source callbacks are embedded; neither packaging nor load
+    # depends on the developer's source directory or Palette Lister clone.
+    _isolate_sources(wrapper)
+    docs=dict(globals())
+    _execute(source/'scripts/td_project_docs.py',docs)
+    docs['embed_project_docs'](model,directory)
+    docs['embed_project_docs'](controller,source)
+    cleanup=dict(globals())
+    _execute(source/'cleanup_network.py',cleanup)
+    cleanup['apply'](controller)
+    wrapper.store('owned_inspector_sources', dict(build=fingerprint, dat=_manifest(wrapper)))
+    return wrapper

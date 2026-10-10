@@ -1,6 +1,6 @@
 """Eight reusable dropdown rows inside each existing Inspector window."""
 from pathlib import Path
-source_dir=Path(project.folder)/'prototypes/inspector'
+source_dir=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
 helpers=dict(globals())
 exec((source_dir/'build_mapping.py').read_text().split('for view in views:')[0],helpers)
 panel=helpers['panel']
@@ -10,7 +10,7 @@ def text(*args,**kwargs):
     if callback and callback.parent()==label.parent() and callback.name==label.name+'_callbacks':callback.destroy()
     return label
 header={};exec((source_dir/'context_callbacks.py').read_text(),header)
-views=globals().get('context_views',[op('/inspector_below'),op('/inspector_popup')])
+views=(globals()['context_views'] if 'context_views' in globals() else [op('/inspector_below'),op('/inspector_popup')])
 
 def click(parent,name,target,action):
     cb=parent.op(name) or parent.create(panelexecuteDAT,name)

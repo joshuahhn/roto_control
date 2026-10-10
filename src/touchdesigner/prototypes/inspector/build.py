@@ -1,8 +1,10 @@
 """External builder for the native inspector design study."""
 from pathlib import Path
+inspector_source_dir=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
 prototype_name=globals().get('prototype_name','inspector_below')
 prototype_style=globals().get('prototype_style','below')
-c=op('/'+prototype_name)
+prototype_parent=globals().get('prototype_parent') or op('/')
+c=prototype_parent.op(prototype_name)
 if c:
     if c.extensions[0] is not None:c.ext.InspectorView.Disconnect()
     popup=c.op('window_editor')
@@ -11,7 +13,7 @@ if c:
         o=c.op(name)
         if o and name!='window_main': o.destroy()
 else:
-    c=op('/').create(containerCOMP,prototype_name); c.nodeX=400; c.nodeY=0
+    c=prototype_parent.create(containerCOMP,prototype_name); c.nodeX=400; c.nodeY=0
     c.par.w=240; c.par.h=390
 c.par.ext0object=''
 c.nodeX=400 if prototype_style=='below' else 750;c.nodeY=0
@@ -27,7 +29,7 @@ if not hasattr(c.par,'Model'):
     viewpage=c.appendCustomPage('View')
     viewpage.appendOP('Model',label='Shared model')
     presentation=viewpage.appendMenu('Presentation')[0];presentation.menuNames=['below','popup'];presentation.menuLabels=['Fold','Popup']
-c.par.Model.expr="getattr(op, 'InspectorModel', None)"
+c.par.Model.expr=globals().get('model_expression',"getattr(op, 'InspectorModel', None)")
 c.par.Presentation=prototype_style
 d=c.create(baseCOMP,'base_draft'); d.viewer=True
 p=d.appendCustomPage('Mapping')
@@ -36,10 +38,10 @@ for n in ('Minimum','Maximum','Value'): p.appendFloat(n)
 d.par.Maximum=1
 ui=c.create(textDAT,'ui'); ui.par.language='python'; ui.viewer=True
 state=c.create(textDAT,'editor_state');state.viewer=True;state.par.language='python'
-state.text=Path(project.folder+'/prototypes/inspector/editor_state.py').read_text()
-parity=c.create(textDAT,'parity');parity.viewer=True;parity.par.language='python';parity.text=Path(project.folder+'/prototypes/inspector/parity.py').read_text()
-context=c.create(textDAT,'context_menu');context.viewer=True;context.par.language='python';context.text=Path(project.folder+'/prototypes/inspector/context_menu.py').read_text()
-ui.text=Path(project.folder+'/prototypes/inspector/ui.py').read_text()
+state.text=Path(inspector_source_dir/'editor_state.py').read_text()
+parity=c.create(textDAT,'parity');parity.viewer=True;parity.par.language='python';parity.text=Path(inspector_source_dir/'parity.py').read_text()
+context=c.create(textDAT,'context_menu');context.viewer=True;context.par.language='python';context.text=Path(inspector_source_dir/'context_menu.py').read_text()
+ui.text=Path(inspector_source_dir/'ui.py').read_text()
 u=ui.module
 
 def panel(parent,typ,name,x,y,w,h,bg=None):
@@ -141,11 +143,11 @@ windowcb.text="def onPulse(par):\n    parent.InspectorDemo.OnWindowOpen()\n"
 for p in [c,v,content]+[content.op('slot'+str(i)) for i in range(16)]+list([content.op('editor_below'),u.popup_host(c)]):
     for i,o in enumerate(p.children): o.nodeX=(i%5)*200; o.nodeY=-(i//5)*160
 action_namespace=dict(globals(),action_views=[c])
-exec(Path(project.folder+'/prototypes/inspector/build_editor_actions.py').read_text(),action_namespace)
-exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text(),dict(globals(),action_views=[c]))
-exec(Path(project.folder+'/prototypes/inspector/build_targets.py').read_text(),dict(globals(),target_views=[c]))
-exec(Path(project.folder+'/prototypes/inspector/build_parity.py').read_text(),dict(globals(),parity_views=[c]))
-exec(Path(project.folder+'/prototypes/inspector/build_context_menu.py').read_text(),dict(globals(),context_views=[c],reload_context_views=False))
+exec(Path(inspector_source_dir/'build_editor_actions.py').read_text(),action_namespace)
+exec(Path(inspector_source_dir/'build_mapping.py').read_text(),dict(globals(),action_views=[c]))
+exec(Path(inspector_source_dir/'build_targets.py').read_text(),dict(globals(),target_views=[c]))
+exec(Path(inspector_source_dir/'build_parity.py').read_text(),dict(globals(),parity_views=[c]))
+exec(Path(inspector_source_dir/'build_context_menu.py').read_text(),dict(globals(),context_views=[c],reload_context_views=False))
 c.seq.ext.numBlocks=1;c.par.initextonstart=True
 c.par.ext0object="op('./ui').module.InspectorView(me)";c.par.ext0promote=True
 c.initializeExtensions(0)

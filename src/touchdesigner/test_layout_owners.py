@@ -169,7 +169,7 @@ class OwnerTests(unittest.TestCase):
         f.set_plugin_link(layout,track,variant,a.owner)
         self.assertEqual(m.plugin(layout,track,variant)['focus_comp']['owner_id'],m.layout(layout)['owner']['id'])
         m.save();e.SelectPlugin(layout,track,variant)
-        with self.assertRaisesRegex(ValueError,'unique Follow'):f.resolve(a.owner)
+        self.assertEqual(f.resolve(a.owner),(layout,track,variant))
         snapshot=copy.deepcopy(m.data)
         m.plugin(layout,track,variant)['focus_comp'].pop('owner_id')
         with self.assertRaisesRegex(ValueError,'Duplicate Focus'):Layouts.validate(m.data)

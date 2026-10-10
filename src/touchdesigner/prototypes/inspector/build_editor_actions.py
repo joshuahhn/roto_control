@@ -1,5 +1,5 @@
 """Install compact actions in existing editors; never rebuild or open windows."""
-action_views=globals().get('action_views',[op('/inspector_below'),op('/inspector_popup')])
+action_views=(globals()['action_views'] if 'action_views' in globals() else [op('/inspector_below'),op('/inspector_popup')])
 for view in action_views:
     if not view:continue
     popup=view.op('ui').module.popup_host(view)

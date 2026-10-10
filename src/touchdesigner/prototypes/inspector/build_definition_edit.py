@@ -1,7 +1,8 @@
 """Compact native Label/default draft inside the existing Details scroll area."""
 from pathlib import Path
+inspector_source_dir=Path(globals().get('inspector_source_dir',Path(project.folder)/'prototypes/inspector'))
 helpers=dict(globals())
-exec(Path(project.folder+'/prototypes/inspector/build_mapping.py').read_text().split('for view in views:')[0],helpers)
+exec(Path(inspector_source_dir/'build_mapping.py').read_text().split('for view in views:')[0],helpers)
 panel,text,button=[helpers[n] for n in ('panel','text','button')]
 def anchors(o,left,right,l=0,r=1):
     o.par.x.expr='';o.par.w.expr='';o.par.hmode='anchors'
@@ -10,7 +11,7 @@ def release(button,action):
     cb=button.parent().op('click_'+button.name)
     cb.par.offtoon=False;cb.par.ontooff=True
     cb.text="def onOnToOff(panelValue):\n    if parent().op(%r).panel.inside:parent.InspectorDemo.Action(%r)\n"%(button.name,action)
-for view in (op('/inspector_below'),op('/inspector_popup')):
+for view in (globals()['inspector_views'] if 'inspector_views' in globals() else [op('/inspector_below'),op('/inspector_popup')]):
     draft=view.op('base_draft')
     for key,name in view.op('ui').module.DEFINITION_FIELDS+view.op('ui').module.MENU_FIELDS+view.op('ui').module.STYLE_FIELDS:
         toggle=key.startswith('clamp')
@@ -72,7 +73,7 @@ for view in (op('/inspector_below'),op('/inspector_popup')):
                 if o.OPType=='textCOMP':o.par.scaletofit='never';o.par.fontsizeunits='panelunits'
 print('Four inline native definition drafts installed; no new windows')
 
-for view in (op('/inspector_below'),op('/inspector_popup')):
+for view in (globals()['inspector_views'] if 'inspector_views' in globals() else [op('/inspector_below'),op('/inspector_popup')]):
     draft=view.op('base_draft')
     watch=draft.op('native_draft_changed') or draft.create(parameterexecuteDAT,'native_draft_changed')
     watch.viewer=True;watch.par.op.expr="parent.InspectorDemo.op('base_draft')"
