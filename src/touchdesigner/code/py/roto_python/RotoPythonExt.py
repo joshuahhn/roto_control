@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import time
 from binding import parameter_value
+from snapshots import Snapshots
 
 
 class RotoPythonExt:
@@ -26,6 +27,8 @@ class RotoPythonExt:
         self._binding = None
         self._collection = None
         self._actions = None
+        self._snapshots = None
+        self._snapshot_error = ''
         self._identities = {}
         self._last_error = ""
         self._restoring = False
@@ -49,10 +52,56 @@ class RotoPythonExt:
             self._actions = self.ownerComp.op('controls').module.Actions()
         return self._actions
 
+    def _snapshot_manager(self):
+        if getattr(self, '_snapshots', None) is None:
+            self._snapshots = Snapshots(self)
+        return self._snapshots
+
+    def _snapshot_guard(self):
+        if self._dispatching or self._restoring or self._restore_pending or self._host.learning or self._host.touched:
+            raise ValueError('Exit LEARN/restore and release controls before Snapshot management')
+        follower = getattr(self, '_follow', None)
+        manager = getattr(self, '_layouts', None)
+        if (follower is not None and (follower.pending or follower.gated or follower.paused or getattr(follower,'backlog',False))) or (manager is not None and manager.mutating):
+            raise ValueError('Snapshot management is fenced during context transition')
+
+    def SaveSnapshot(self, label, slots=None, *, scope=None):
+        """Capture normalized current-page slots; no target writes or recall."""
+        self._snapshot_guard()
+        record = self._snapshot_manager().save(label, slots, scope)
+        self._publish()
+        return record
+
+    def OverwriteSnapshot(self, id, slots=None, *, expected_revision):
+        self._snapshot_guard()
+        manager = self._snapshot_manager()
+        record = manager.save(manager.record(id)['label'], slots, id=id, expected_revision=expected_revision)
+        self._publish()
+        return record
+
+    def DeleteSnapshot(self, id, *, expected_revision):
+        self._snapshot_guard()
+        result = self._snapshot_manager().delete(id, expected_revision)
+        self._publish()
+        return result
+
+    def GetSnapshot(self, id):
+        return self._snapshot_manager().inspect(id)
+
+    def GetSnapshots(self, scope=None):
+        manager = self._snapshot_manager()
+        return [manager.inspect(r['id']) for r in manager.database()['records']
+                if scope is None or r['scope'].get('context') == list(scope)]
+
+    def ValidateSnapshot(self, id):
+        return self._snapshot_manager().validate(id)
+
     def RegisterAction(self, id, label, recall, *, replace=False):
         """Register an explicit consumer recall(event); never execute it here."""
         if self._dispatching:
             raise ValueError('Do not register actions during dispatch')
+        if isinstance(id, str) and id.startswith('snapshot.') and not getattr(recall,'_snapshot_provider',False):
+            raise ValueError('snapshot. action namespace belongs to saved Snapshot providers')
         return self._action_registry().register(id, label, recall, replace=replace)
 
     def UnregisterAction(self, id):
@@ -82,6 +131,13 @@ class RotoPythonExt:
         except Exception as exc:
             registry.entries.clear()
             registry.error = 'Action registration failed: ' + str(exc)
+        # JSON slot values restore automatically; existing mappings resolve targets.
+        self._snapshots = Snapshots(self)
+        self._snapshot_error = ''
+        try:
+            self._snapshots.restore()
+        except Exception as exc:
+            self._snapshot_error = 'Snapshot reconstruction failed: ' + str(exc)
 
     def _action_callback(self, action_id):
         def dispatch(event):

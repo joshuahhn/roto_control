@@ -62,6 +62,7 @@ def upgrade(parent_comp, source_dir):
         hook.par.language = 'python'
         hook.text = 'def onRegister(controller):\n    # Replace this demo call with your Extension/DAT registration.\n    demo = controller.parent().op("base_callback_demo")\n    controller.BindCallback(id="demo.callback.speed", label="Callback", minimum=0, maximum=10, value=demo.par.Speed.eval(), on_change=demo.op("demo_callbacks").module.on_change)\n'
     for name, kind, pos in [('setup', textDAT, (725,-420)), ('binding', textDAT, (550,-210)),
+                            ('snapshots', textDAT, (725,-315)),
                             ('target_callbacks', parameterexecuteDAT, (725,-210))]:
         dat = comp.op(name) or comp.create(kind, name)
         dat.viewer = True

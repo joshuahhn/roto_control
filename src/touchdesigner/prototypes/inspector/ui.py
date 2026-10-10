@@ -61,6 +61,8 @@ class InspectorView:
         self._mapping=MappingDraft()
         self._picker=None
         self._filter='all'
+        self._snapshot_selections=[]
+        self._snapshot_generation=0
         self._details_open=False
         self._details_display=None
         self._diagnostics=None
@@ -182,6 +184,8 @@ class InspectorView:
         if not self.IsLive():return False
         choices=filter_choices(self._filter_info())
         items=[label+' ['+str(i)+']' for i,(key,label) in enumerate(choices)]
+        if hasattr(getattr(self._model,'adapter',None),'controller'):
+            items.append('Snapshot presets…')
         self._menu_generation+=1
         details=dict(context=self._context,generation=self._menu_generation,choices=dict(zip(items,(key for key,label in choices))))
         op.TDResources.op('popMenu').Open(items=items,callback=self.SelectFilter,callbackDetails=details,autoClose=1)
@@ -190,9 +194,77 @@ class InspectorView:
         if self.Key()!=self._context:self.Refresh();return False
         d=info.get('details',{});choice=d.get('choices',{}).get(info.get('item'))
         if d.get('context')!=self._context or d.get('generation')!=self._menu_generation:return False
+        if info.get('item')=='Snapshot presets…':return self.OpenSnapshots()
         if choice not in dict(filter_choices(self._filter_info())):return False
         self.CloseEditor();self._filter=choice;self._device_message='';self._menu_generation+=1
         self._editor_layout();self._update_main_status();return True
+
+    def OpenSnapshots(self, preset_id=None):
+        """Existing filter menu -> explicit selection and shared Action workflow."""
+        try:
+            self._snapshot_generation=getattr(self,'_snapshot_generation',0)+1
+            if any(tuple(c)!=self._context for c,_,_ in getattr(self,'_snapshot_selections',[])):
+                self._snapshot_selections=[]
+            selections=getattr(self,'_snapshot_selections',[])
+            intent=self._model.SnapshotIntent(self._context,selections,preset_id,self.selected)
+            if preset_id:
+                choices={'Inspect saved/current values':'inspect','Validate (no writes)':'validate',
+                         'Overwrite from current slots…':'overwrite','Delete Snapshot…':'delete',
+                         'Assign to selected Button':'assign','Recall explicitly':'recall'}
+            else:
+                choices={'Add/remove selected Knob':'select','Clear selection':'clear',
+                         ('Save '+str(len(selections))+' Knobs (0–1, this Device/page)…' if selections else 'Save current Knobs (0–1, this Device/page)…'):'save'}
+                for record in self._model.Snapshots(self._context):
+                    choices[record['label']+' [r'+str(record['revision'])+', '+record['id'][-8:]+']']=record['id']
+            details=dict(generation=self._snapshot_generation,intent=intent,choices=choices)
+            op.TDResources.op('popMenu').Open(items=list(choices),callback=self.SelectSnapshot,
+                                            callbackDetails=details,autoClose=1)
+            return True
+        except (ValueError,RuntimeError) as exc:self._set_error(str(exc));return False
+
+    def SelectSnapshot(self, info):
+        details=info.get('details',{});intent=details.get('intent',{})
+        if details.get('generation')!=self._snapshot_generation or self.Key()!=intent.get('context'):return False
+        operation=details.get('choices',{}).get(info.get('item'))
+        try:
+            if operation and operation.startswith('snapshot.'):return self.OpenSnapshots(operation)
+            if operation=='clear':self._snapshot_selections=[];return self.OpenSnapshots()
+            if operation=='select':
+                if self.selected is None:raise ValueError('Select a parameter control first')
+                item=(self._context,self.selected,self._model.GetToken(self._context,self.selected))
+                selected=list(getattr(self,'_snapshot_selections',[]))
+                selected=[old for old in selected if old[:2]!=item[:2]] if any(old[:2]==item[:2] for old in selected) else selected+[item]
+                self._model.SnapshotIntent(self._context,selected)
+                self._snapshot_selections=selected
+                self._set_error(str(len(selected))+' values selected for Snapshot');return True
+            if operation in ('save','overwrite','delete'):
+                self._snapshot_generation+=1
+                details=dict(generation=self._snapshot_generation,intent=intent,operation=operation)
+                text=('Knobs 1–8 · current Device/control page · normalized positions (0–1)\nRecall follows current mappings' if operation=='save' else
+                      'Overwrite Knob positions (0–1) in this Device/control page' if operation=='overwrite' else
+                      'Delete saved values; Button references remain unavailable')
+                op.TDResources.PopDialog.OpenDefault(text=text,title='Snapshot '+operation,
+                    buttons=['Cancel',operation.title()],callback=self.ConfirmSnapshot,details=details,
+                    textEntry='' if operation=='save' else False,escButton=1,enterButton=1,escOnClickAway=True)
+                return True
+            result=self._model.SnapshotCommand(operation,intent)
+            if operation=='inspect':
+                message='Knobs · current Device/control page · normalized positions (0–1)\n'+'\n'.join(e['kind'].title()+' '+str(e['slot'])+': saved '+str(e['value'])+' / current '+str(e['current_value'])+
+                                  (' / '+e['error'] if e['error'] else '') for e in result['entries'])
+                op.TDResources.PopDialog.OpenDefault(text=message,title=result['label'],buttons=['Close'])
+            else:self._set_error(str(result.get('status', 'Snapshot assigned')) if isinstance(result,dict) else str(result))
+            return True
+        except (ValueError,RuntimeError) as exc:self._set_error(str(exc));return False
+
+    def ConfirmSnapshot(self, info):
+        details=info.get('details',{})
+        if info.get('buttonNum')!=2 or details.get('generation')!=self._snapshot_generation:return False
+        if self.Key()!=details['intent']['context']:return False
+        self._snapshot_generation+=1  # consume confirmation once, even after failure
+        try:
+            self._model.SnapshotCommand(details['operation'],details['intent'],info.get('enteredText',''))
+            self._snapshot_selections=[];self._set_error('Snapshot '+details['operation']+' complete');return True
+        except (ValueError,RuntimeError) as exc:self._set_error(str(exc));return False
     def RequestClearDevice(self):
         if not self.IsLive():return False
         if self.Key()!=self._context:self.Refresh();return False
@@ -409,6 +481,8 @@ class InspectorView:
         self.Refresh()
 
     def Disconnect(self):
+        self._snapshot_generation=getattr(self,'_snapshot_generation',0)+1
+        self._snapshot_selections=[]
         self.CloseContextMenu()
         self.ClosePicker()
         if getattr(self,'_popup_extra',0):self._sync_popup_expansion(0)
@@ -1087,6 +1161,7 @@ class InspectorView:
             if schedule:self._popup_geometry_settle=schedule('args[0].SettlePopupGeometry(args[1])',self,self._popup_geometry_generation,delayFrames=3,delayRef=op.TDResources)
 
     def CloseEditor(self):
+        self._snapshot_generation=getattr(self,'_snapshot_generation',0)+1
         if getattr(self,'_context_menu',None):self.CloseContextMenu()
         self._value_scope=None
         self._value_type=None

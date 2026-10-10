@@ -353,7 +353,7 @@ class ReviewResponseTests(unittest.TestCase):
 
     def test_required_runtime_and_helper_source_mismatch_stops_packaging(self):
         c,w,m,views=fixture()
-        names=('RotoPythonExt','protocol','collection_protocol','controls','binding',
+        names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
                'free_learn','layouts','layout_migration','text_comp_follow','setup',
                'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
         for name in names:
@@ -397,7 +397,7 @@ class ReviewResponseTests(unittest.TestCase):
 def isolation_boundary():
     """Required native source shapes plus an annotation DAT lacking syncfile."""
     c=Node('roto_python');w=Node('inspector',c)
-    names=('RotoPythonExt','protocol','collection_protocol','controls','binding',
+    names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
            'free_learn','layouts','layout_migration','text_comp_follow','setup',
            'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
     required=[]

@@ -43,6 +43,11 @@ def upgrade(controller,source_dir,legacy_inspector_archive=None):
     follow.text=(source/'code/py/roto_python/text_comp_follow.py').read_text(encoding='utf-8')
     follow.nodeX,follow.nodeY=540,-740
     follow.nodeWidth,follow.nodeHeight=130,90
+    snapshots=controller.op('snapshots') or controller.create(textDAT,'snapshots')
+    snapshots.viewer=True;snapshots.par.language='python'
+    snapshots.par.file='';snapshots.par.syncfile=False;snapshots.par.loadonstart=False
+    snapshots.text=(source/'code/py/roto_python/snapshots.py').read_text(encoding='utf-8')
+    snapshots.nodeX,snapshots.nodeY=1500,-300
     box=next((n for n in controller.children if n.OPType=='annotateCOMP' and n.par.Titletext.eval()=='Focus'),None)
     if box is None:
         box=controller.create(annotateCOMP,'annotate_focus');box.par.Titletext='Focus'

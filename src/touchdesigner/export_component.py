@@ -13,18 +13,22 @@ def reset_mapping_storage(clone):
               'roto_control_owner_id':None,'pending_unmap_identities':[],
               'assignment_device_id':None,'parameter_assignments':[],
               'page_targets':[],'control_catalog':[],'removed_controls':[],
-              'pending_unmaps':[],'control_overrides':{},'needs_relearn':()}
+              'pending_unmaps':[],'control_overrides':{},'needs_relearn':(),
+              'snapshot_presets':dict(version=2,records=[],deleted=[])}
     for key,value in defaults.items():clone.store(key,value)
 
 
 def reset_registration(clone):
     """Sanitize both consumer hooks and runtime entries on an export clone."""
     clone.ext.RotoPythonExt._actions = None
+    clone.ext.RotoPythonExt._snapshots = None
+    clone.ext.RotoPythonExt._snapshot_error = ''
     clone.op('registration').text = (
         'def onRegister(controller):\n'
         '    # Register your parameters/callbacks here, then select Python registration.\n'
         '    raise ValueError("Configure registration.onRegister first")\n'
-        '\ndef onRegisterActions(controller):\n    pass\n')
+        '\ndef onRegisterActions(controller):\n    pass\n'
+)
 
 
 def export(controller, destination):

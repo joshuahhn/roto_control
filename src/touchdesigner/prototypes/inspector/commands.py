@@ -44,6 +44,71 @@ def ownership_stamp(status,context):
 class CommandService:
     def __init__(self,model):self.model=model
 
+    def SnapshotIntent(self, context, selections=(), preset_id=None, slot=None):
+        m=self.model;m.Sync();context=m._context(context)
+        controller=getattr(m.adapter,'controller',None)
+        if controller is None or not hasattr(controller,'GetSnapshots'):
+            raise ValueError('Controller does not support Snapshot presets')
+        reason=owner_reason(m.Status,context)
+        if reason:raise ValueError(reason)
+        selected=[]
+        for selected_context,index,token in selections:
+            if tuple(selected_context)!=context:raise ValueError('Snapshot selection context changed')
+            _,index,info=self._target(context,index,token)
+            if info.get('kind')!='knob' or info.get('placeholder') or info.get('mode')=='pulse' or info.get('binding_type') not in ('parameter','value'):
+                raise ValueError('Select a mapped Knob; no Buttons/Pulse/actions/callbacks')
+            selected.append((context,index,token))
+        record=controller.GetSnapshot(preset_id) if preset_id else None
+        if record and record['scope'].get('context')!=list(context):
+            raise ValueError('Snapshot belongs to another browsed context')
+        # Name/overwrite dialogs must fence every slot they will capture, even
+        # when the user chooses default Knobs instead of an explicit selection.
+        capture_indices=([index for _,index,_ in selected] if selected else
+                         [e['slot']-1 for e in record['entries']] if record else
+                         [index for index in range(8) if m.Info(context,index)])
+        capture_tokens=[]
+        for index in capture_indices:
+            token=m.GetToken(context,index)
+            self._target(context,index,token)
+            capture_tokens.append((index,token))
+        return dict(context=context,token=self.ActivationToken(context),session=m.adapter.Session(),
+                    selections=selected,preset_id=preset_id,revision=record['revision'] if record else None,
+                    capture_tokens=capture_tokens,
+                    slot=slot,slot_token=m.GetToken(context,slot) if slot is not None else None)
+
+    def SnapshotCommand(self, operation, intent, label=''):
+        m=self.model;m.Sync();context=m._context(intent['context'])
+        if intent['session']!=m.adapter.Session() or intent['token']!=self.ActivationToken(context):
+            raise ValueError('Snapshot session/owner/context changed; reopen')
+        fresh=self.SnapshotIntent(context,intent['selections'],intent['preset_id'],intent['slot'])
+        if fresh!=intent:raise ValueError('Snapshot definition/selection/revision changed; reopen')
+        controller=m.adapter.controller
+        slots=[(m.Info(context,index)['kind'],m.Info(context,index)['slot']) for _,index,_ in intent['selections']]
+        if operation in ('save','overwrite') and not self._active(context):
+            raise ValueError('Browse only: activate this Device before capture')
+        id=intent['preset_id']
+        try:
+            if operation=='save':return controller.SaveSnapshot(label,slots or None,scope=context)
+            if operation=='overwrite':return controller.OverwriteSnapshot(id,slots or None,expected_revision=intent['revision'])
+            if operation=='delete':return controller.DeleteSnapshot(id,expected_revision=intent['revision'])
+            if operation=='inspect':return controller.GetSnapshot(id)
+            if operation=='validate':return controller.ValidateSnapshot(id)
+            if operation=='recall':
+                if not self._active(context):raise ValueError('Browse only: activate this Device before recall')
+                return controller.RecallAction(id)
+            if operation=='assign':
+                index=intent['slot']
+                if index is None or index<8:raise ValueError('Select a Button for Snapshot assignment')
+                self._require(context,index,'assign')
+                current=m.Info(context,index)
+                mapping_id=current.get('id') if current.get('action_id')==id else None
+                return controller.AssignAction(index-7,id,id=mapping_id)
+            raise ValueError('Unknown Snapshot command')
+        finally:m.Sync()
+
+    def Snapshots(self, context):
+        return self.model.adapter.controller.GetSnapshots(scope=self.model._context(context))
+
     def FollowCompToken(self):
         m=self.model;status=m.Status;active=tuple(status.get('Active') or m.ActiveContext())
         return (m.Generation,m.adapter.Session(),active,ownership_stamp(status,active),

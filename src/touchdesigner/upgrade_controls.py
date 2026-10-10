@@ -15,7 +15,7 @@ def upgrade(parent_comp, source_dir):
         p = page.appendStr('Groupid', label='Stable collection ID')[0]
         p.default = p.val = 'demo.controls.v1'
     comp.par.Groupid.enableExpr = "me.par.Setupmode == 'collection'"
-    for name, pos in [('collection_protocol', (1150,-300)), ('controls', (1325,-300))]:
+    for name, pos in [('collection_protocol', (1150,-300)), ('controls', (1325,-300)), ('snapshots', (1500,-300))]:
         dat = comp.op(name) or comp.create(textDAT, name)
         dat.viewer = True
         dat.nodeX, dat.nodeY = pos
