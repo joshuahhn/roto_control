@@ -1,0 +1,10 @@
+{
+  "native_assign_identity": true,
+  "native_free_learn_identity": true,
+  "range_drift_preserved": true,
+  "late_failure_rollback": true,
+  "native_watcher_restored": true,
+  "table_and_library_restored": true,
+  "subsequent_ack_success": true,
+  "physical_acceptance": false
+}

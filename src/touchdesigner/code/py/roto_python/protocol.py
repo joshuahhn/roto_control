@@ -273,6 +273,7 @@ class Host:
                     self.rejected += 1
                     return
                 if bool(data[0]) != self.learning:
+                    self._parts.clear()
                     self._offered_in_learn = False
                 self.learning = bool(data[0])
                 self.last_event = "LEARN on" if self.learning else "LEARN off"

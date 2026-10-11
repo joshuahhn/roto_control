@@ -27,6 +27,152 @@ class FreeLearnTests(unittest.TestCase):
         t=learner.pending['template']
         return sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),kind,slot-1,0))
 
+    def test_range_changed_before_ack_preserves_registration(self):
+        ext, learner, sent = self.fixture()
+        old = ext.GetControlCatalog()
+        original = ext._collection.bindings['knob', 2]
+        parameter = self.parameter()
+        learner.offer(parameter)
+        packet = self.ack(learner, slot=2)
+        parameter.normMax = parameter.max = 20
+        self.assertTrue(learner.receive(packet))
+        self.assertIs(ext._collection.bindings['knob', 2], original)
+        self.assertEqual(ext.GetControlCatalog(), old)
+        self.assertFalse(ext._host.controls['knob', 2].mapped)
+
+    def test_equal_value_offer_uses_selected_parameter_identity(self):
+        from test_bound_parameter import BoundParameter
+        class NativeEqualPar(BoundParameter):
+            def __eq__(self, other):
+                return isinstance(other, BoundParameter) and self.eval() == other.eval()
+        ext, learner, sent = self.fixture()
+        old = NativeEqualPar(); old.owner.name = 'master'
+        selected = NativeEqualPar(); selected.owner.path = '/selected'; selected.owner.name = 'selected'
+        selected.name = 'Other'
+        ext.AssignParameter('knob', 3, old)
+        old_id = ext._collection.bindings['knob', 3].id
+        self.assertTrue(learner.offer(selected))
+        self.assertNotEqual(learner.pending['binding'].id, old_id)
+        packet = self.ack(learner, slot=3)
+        self.assertFalse(learner.receive(packet))
+        self.assertIs(ext._collection.bindings['knob', 3].parameter, selected)
+
+    def test_failed_commit_restores_registration_and_saved_assignment(self):
+        ext, learner, sent = self.fixture()
+        original_parameter = self.parameter()
+        original = ext.AssignParameter('knob', 2, original_parameter)
+        old_binding = ext._collection.bindings['knob', 2]
+        old_assignments = list(ext.ownerComp.fetch('parameter_assignments'))
+        selected = self.parameter(); selected.name = 'Other'
+        learner.offer(selected)
+        packet = self.ack(learner, slot=2)
+        store = ext.ownerComp.store
+        failed = False
+        def fail_once(key, value):
+            nonlocal failed
+            if key == 'removed_controls' and not failed:
+                failed = True
+                raise RuntimeError('injected persistence failure')
+            return store(key, value)
+        ext.ownerComp.store = fail_once
+        self.assertTrue(learner.receive(packet))
+        self.assertIs(ext._collection.bindings['knob', 2], old_binding)
+        self.assertEqual(ext.ownerComp.fetch('parameter_assignments'), old_assignments)
+        self.assertEqual(ext.GetControlState(original['id'])['parameter'], 'Speed')
+        self.assertFalse(ext._host.controls['knob', 2].mapped)
+
+    def test_equal_valued_pulse_does_not_suppress_another_destination(self):
+        from test_bound_parameter import BoundParameter
+        class NativeEqualPar(BoundParameter):
+            def __eq__(self, other):
+                return isinstance(other, BoundParameter) and self.eval() == other.eval()
+        ext, learner, sent = self.fixture()
+        old = NativeEqualPar('Pulse'); old.name = 'Reset'; old.owner.name = 'master'
+        selected = NativeEqualPar('Pulse'); selected.name = 'Other'; selected.owner.name = 'master'
+        ext.AssignParameter('button', 3, old)
+        ext._collection.bindings['button', 3].pulse_expected = 1
+        learner.pulse(selected)
+        self.assertIs(learner.pending['parameter'], selected)
+
+    def test_single_target_callback_ignores_equal_valued_foreign_parameter(self):
+        from binding import Binding
+        from test_bound_parameter import BoundParameter
+        class NativeEqualPar(BoundParameter):
+            def __eq__(self, other):
+                return isinstance(other, BoundParameter) and self.eval() == other.eval()
+            def __ne__(self, other):
+                return not self == other
+        ext, learner, sent = self.fixture()
+        target = NativeEqualPar(); foreign = NativeEqualPar(); foreign.name = 'Other'
+        ext._binding = Binding('single', 'Single', 0, 10, 4, parameter=target)
+        writes = []; ext.SetValue = writes.append
+        ext.onTargetValueChange(foreign, 4)
+        self.assertEqual(writes, [])
+
+    def test_style_drift_is_rejected_before_assignment(self):
+        ext, learner, sent = self.fixture()
+        parameter = self.parameter(); parameter.style = 'Pulse'
+        parameter.normMax = parameter.max = 1; parameter._value = 0
+        learner.offer(parameter)
+        packet = self.ack(learner, kind=1, slot=3)
+        parameter.style = 'Toggle'
+        calls = []; ext.AssignParameter = lambda *args, **kwargs: calls.append(args)
+        self.assertTrue(learner.receive(packet))
+        self.assertEqual(calls, [])
+
+    def test_late_failure_restores_watcher_and_manual_controls(self):
+        ext, learner, sent = self.fixture()
+        ext.ownerComp.par.Value.enable = ext.ownerComp.par.Offerparameter.enable = False
+        parameter = self.parameter(); learner.offer(parameter)
+        packet = self.ack(learner, slot=1)
+        watcher = ext.ownerComp.op('base_targets/watch_knob1')
+        watcher.par.active = False; watcher.par.pars = 'Original'
+        original_op = watcher.par.op.expr
+        failed = False
+        def publish():
+            nonlocal failed
+            if not failed:
+                failed = True
+                raise RuntimeError('injected late publication failure')
+        ext._publish = publish
+        self.assertTrue(learner.receive(packet))
+        self.assertNotIn(('knob', 1), ext._collection.bindings)
+        self.assertFalse(ext.ownerComp.par.Value.enable)
+        self.assertFalse(ext.ownerComp.par.Offerparameter.enable)
+        self.assertFalse(watcher.par.active)
+        self.assertEqual(watcher.par.pars, 'Original')
+        self.assertEqual(watcher.par.op.expr, original_op)
+
+    def test_failed_layout_commit_restores_saved_library(self):
+        import copy
+        ext, learner, sent = self.fixture()
+        registry = {'library': [{'id': 'off-page', 'value': 8}]}
+        manager = SimpleNamespace(data=copy.deepcopy(registry), legacy=False,
+                                  quarantined=False, owner_ready=lambda **kwargs: True)
+        def capture(**kwargs):
+            manager.data['library'].append({'id': 'captured'})
+            ext.ownerComp.store('layout_registry', copy.deepcopy(manager.data))
+            ext.ownerComp.store('page_targets', [{'id': 'changed'}])
+        manager.capture = capture
+        ext._layouts = manager
+        ext.ownerComp.store('layout_registry', copy.deepcopy(registry))
+        ext.ownerComp.store('page_targets', [{'id': 'off-page', 'index': 129}])
+        parameter = self.parameter(); learner.offer(parameter)
+        packet = self.ack(learner, slot=2)
+        store = ext.ownerComp.store
+        failed = False
+        def fail_once(key, value):
+            nonlocal failed
+            if key == 'removed_controls' and not failed:
+                failed = True
+                raise RuntimeError('injected commit failure')
+            return store(key, value)
+        ext.ownerComp.store = fail_once
+        self.assertTrue(learner.receive(packet))
+        self.assertEqual(manager.data, registry)
+        self.assertEqual(ext.ownerComp.fetch('layout_registry'), registry)
+        self.assertEqual(ext.ownerComp.fetch('page_targets'), [{'id': 'off-page', 'index': 129}])
+
     def test_unregistered_parameter_is_offered_then_committed_to_hardware_slot(self):
         ext,learner,sent=self.fixture();p=self.parameter();p.val=6
         learner.changes([(p,5)])

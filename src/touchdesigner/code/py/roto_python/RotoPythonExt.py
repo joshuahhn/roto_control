@@ -1,13 +1,13 @@
 """TD adapter. All hardware MIDI runs in the owned external Python process."""
 
 import copy
-from contextlib import nullcontext
+from contextlib import nullcontext, contextmanager
 import json
 import os
 from pathlib import Path
 import subprocess
 import time
-from binding import parameter_value
+from binding import parameter_value, same_parameter
 from snapshots import Snapshots
 
 
@@ -707,6 +707,76 @@ class RotoPythonExt:
                                button_type=record['button_type'], index=record.get('index',record['slot']-1+(8 if record['kind']=='button' else 0))))
         return result
 
+    @contextmanager
+    def _learn_transaction(self):
+        """Rollback host registration and saved configuration on a failed ACK commit."""
+        owner = self.ownerComp
+        missing = object()
+        fields = ('parameter_assignments', 'assignment_device_id', 'removed_controls',
+                  'control_overrides', 'pending_unmaps', 'pending_unmap_identities',
+                  'needs_relearn', 'control_catalog', 'page_targets', 'layout_registry')
+        saved = {key: owner.fetch(key, missing) for key in fields}
+        saved = {key: copy.deepcopy(value) if value is not missing else missing
+                 for key, value in saved.items()}
+        extension = self.__dict__.copy()
+        host, collection = self._host, self._collection
+        host_state = {key: value.copy() if isinstance(value, (dict, set, list)) else value
+                      for key, value in host.__dict__.items()}
+        collection_state = ({key: value.copy() if isinstance(value, dict) else value
+                             for key, value in collection.__dict__.items()}
+                            if collection is not None else None)
+        manager = getattr(self, '_layouts', None)
+        registry = copy.deepcopy(manager.data) if manager is not None else None
+        table = owner.op('base_targets/targets')
+        table_text = getattr(table, 'text', None)
+        watchers = [owner.op('base_targets/watch_' + kind + str(slot))
+                    for kind in ('knob', 'button') for slot in range(1, 9)]
+        watchers = [watcher for watcher in watchers if watcher is not None]
+        callbacks = owner.op('target_callbacks')
+        if callbacks is not None:
+            watchers.append(callbacks)
+        manual = [self._value_parameter(), getattr(owner.par, 'Offerparameter', None)]
+        enables = [(par, par.enable) for par in manual if par is not None]
+        parameters = []
+        for watcher in watchers:
+            for name in ('active', 'op', 'pars'):
+                par = getattr(watcher.par, name, missing)
+                if par is missing:
+                    continue
+                parameters.append((watcher.par, name, par,
+                                   getattr(par, 'val', par),
+                                   getattr(par, 'expr', None)))
+        try:
+            yield
+        except Exception:
+            self.__dict__.clear(); self.__dict__.update(extension)
+            host.__dict__.clear(); host.__dict__.update(host_state)
+            if collection is not None:
+                collection.__dict__.clear(); collection.__dict__.update(collection_state)
+            if manager is not None:
+                manager.data = registry
+            if table_text is not None:
+                table.text = table_text
+            for container, name, par, value, expression in parameters:
+                if hasattr(par, 'val'):
+                    par.val = value
+                    if expression is not None:
+                        par.expr = expression
+                else:
+                    setattr(container, name, value)
+            for par, enabled in enables:
+                par.enable = enabled
+            for key, value in saved.items():
+                if value is missing:
+                    if owner.fetch(key, missing) is not missing:
+                        if hasattr(owner, 'unstore'):
+                            owner.unstore(key)
+                        else:
+                            owner.store(key, None)
+                else:
+                    owner.store(key, value)
+            raise
+
     def AssignParameter(self, kind, slot, parameter, *, button_type=None, _id=None, _wire_index=None, _hardware_mapped=False, _saved_spec=None):
         """Assign one parameter slot, preserving other controls."""
         return self._assign_target(kind, slot, parameter, button_type=button_type, _id=_id,
@@ -739,13 +809,7 @@ class RotoPythonExt:
             self._layout_dirty=True
         old = self._collection.bindings.get(key) if self._collection is not None else self._binding if key == ('knob', 1) else None
         # Native TD Par equality compares values, not destination identity.
-        same_parameter = old is not None and old.valid and (
-            old.parameter is None and parameter is None or
-            old.parameter is not None and parameter is not None and
-            getattr(old.parameter, 'valid', True) and
-            (getattr(old.parameter.owner, 'id', old.parameter.owner.path), old.parameter.name) ==
-            (getattr(parameter.owner, 'id', parameter.owner.path), parameter.name))
-        if old is not None and (_id is None or old.id==_id) and same_parameter and getattr(old, 'action_id', None) == action_id and old.valid and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
+        if old is not None and (_id is None or old.id==_id) and same_parameter(old.parameter, parameter) and getattr(old, 'action_id', None) == action_id and old.valid and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
             return self.GetControlState(old.id)
         style = getattr(parameter, 'style', '')
         mode = 'pulse' if action_id else 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'
@@ -1034,7 +1098,7 @@ class RotoPythonExt:
 
     def onTargetValueChange(self, par, prev):
         binding = self._binding
-        if binding is None or par != binding.parameter or not binding.valid:
+        if binding is None or not same_parameter(par, binding.parameter) or not binding.valid:
             return
         try:
             if binding.external_changed(par.eval()):

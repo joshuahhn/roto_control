@@ -108,6 +108,7 @@ class CollectionHost(Host):
         for target in self.controls.values():
             target.connected, target.plugin = self.connected, self.plugin
             if target.learning != self.learning:
+                target._parts.clear()
                 target._offered_in_learn = False
             target.learning = self.learning
 
