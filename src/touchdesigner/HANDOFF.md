@@ -987,3 +987,54 @@ and Snapshots/embedded sources all pass. Test roots quiesced/removed, connected 
 source/registry/PID preserved. BUILDER_RECHECK.md + builder_recheck evidence record
 initial failure, corrections and limits. Current working toe was not upgraded to
 these additional source fixes; no physical retest/commit/push.
+
+## Issue #3 source fix — 2026-10-11
+
+Isolated branch `fix/issue-3-learn-transaction`, based on main `7d95455`.
+Shared destination identity comparison now covers Assign, Free Learn, Pulse
+suppression and single-target callbacks without native Par value equality.
+ACK preflight validates current range/Menu signature and non-Menu mode/wire
+identity before assignment. Delayed Menu knob/button conversion remains supported.
+ACK commit snapshots registration, watcher configuration, manual enable flags,
+saved assignments, target table and Layout/off-page library; failures restore
+these before invalidating the affected hardware mapping.
+
+450 runtime tests pass, including range drift, equal-valued destinations, mode
+drift, injected persistence/publication failures and non-legacy library rollback.
+`git diff --check` passes. Software verification only: no live TD source reload,
+physical acceptance, canonical artifact save/export, commit, push or issue closure.
+
+### Issue #3 native verification and physical-test readiness
+
+TD 2025.33230 isolated fresh builder passed real equal-valued Par Assign/Free
+Learn, range drift rejection, injected late publication failure, native watcher
+and target-table/registry/library restoration, and subsequent successful ACK.
+Native testing found OP Par.eval() returns None for an empty reference; snapshot
+now uses Par.val (the serializable reference string), fixing rollback. 450 tests
+and diff checks pass. Native harness/evidence: diagnostics/issue3/.
+
+Installed only binding/free_learn/RotoPythonExt DAT source into active
+/roto_clean_demo/roto_python after live component recovery exports. Configuration
+comparison preserves IDs, targets, library and assignment fields; reload hydrates
+identity/Menu metadata and changes only runtime catalog/revision. Physical MIDI
+reconnect recalls demo_A Amount on Knob 1 at 0.6, errors empty. Isolated test root
+removed. Recovery and test-ready component exports retained; current project file
+not overwritten. Physical #3 acceptance pending; no commit/push.
+
+### Issue #3 physical identity acceptance
+
+User confirmed existing Amount/Knob1 input, LCD and motor feedback normal after
+source install. Temporary ISSUE 3 TEST Layout and base_issue3_identity COMP then
+verified Alpha baseline. With Alpha/Beta equal at 0, Assign replaced Knob1 with
+Beta; user confirmed LEARN/rotation/LCD, native state confirmed Beta mapped and
+Alpha unchanged. With both at 0.5277421717634133, physical LEARN + Knob1 touch
+followed by an explicit same-value Alpha offer used a distinct identity. After
+LEARN exit/rotation, user reported done; ACK confirmed Alpha mapped, Alpha=1,
+Beta remained 0.5277421717634133. This accepts same-value Assign and Free Learn
+hardware replacement, not physical failure injection or every Menu/button case.
+
+Temporary test Layout/COMP and controller test storage removed. Original mapping
+configuration/IDs/libraries and all original demo parameter values preserved;
+original Amount mapping recalls on Knob1, connected, errors empty. Native snapshots
+and recovery/accepted demo tox exports retained in diagnostics/issue3. Canonical
+project/export not replaced; no commit/push or GitHub issue closure.
