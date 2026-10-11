@@ -1,0 +1,47 @@
+{
+  "saved_value": 0.004150643960202649,
+  "record": {
+    "id": "snapshot.2a77225c5e5943848a8dd6367f983dd6",
+    "label": "Hardware test 11:41:39",
+    "scope": {
+      "category": "COMP",
+      "context": [
+        "b72f840e99854761a3003d7dd95e8ac6",
+        "track.a49e79d8e21d4de2a4bfd4342ae6c856",
+        "plugin.bc87445a6b014fa3ba60a75b2a31f0ad"
+      ],
+      "owner_id": "owner.6acf026ed6ce4d5597cad5d07da896fd"
+    },
+    "revision": 1,
+    "entries": [
+      {
+        "kind": "knob",
+        "slot": 1,
+        "value": 0.004150643960202649
+      }
+    ]
+  },
+  "save_no_write": true,
+  "intent_sync": 1,
+  "save_sync": 2,
+  "intent_ms": 0.9394160006195307,
+  "state_before_feedback": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 2302,
+    "Tx": 48,
+    "Rejected": 0,
+    "Echoblocked": 174,
+    "Status": "COMP / demo_A / EFFECT / demo_A: controls recalled",
+    "Lasterror": "",
+    "Targetid": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+    "Value": 0.004150643960202649,
+    "Targetvalue": 0.004150643960202649,
+    "Manualvalue": 0.004150643960202649
+  },
+  "software_value": 0.75
+}

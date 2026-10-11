@@ -46,5 +46,5 @@ assert not any(o.errors(recurse=True) for o in (c,m,v,op('/inspector_popup')))
 result=dict(native_float_int_bounds_setters=True,native_clamp_flag_setters=True,live_value_default_preserved=True,
     real_k2_mapping_range_rejection=True,real_k2_noop_apply=True,production_catalog_registry_process_preserved=True,
     fixture_removed=True,details_height=402,subscribers=2)
-Path(project.folder+'/prototypes/inspector/definition_bounds_verification.json').write_text(json.dumps(result,indent=2)+'\n')
+Path(project.folder+'/diagnostics/inspector/results/definition_bounds_verification.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps(result))

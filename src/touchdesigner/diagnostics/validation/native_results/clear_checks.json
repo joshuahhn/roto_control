@@ -1,0 +1,16 @@
+{
+  "native": true,
+  "physical": false,
+  "results": {
+    "before": {
+      "syncs": 3,
+      "elapsed_ms": 3.800041973590851
+    },
+    "after": {
+      "syncs": 2,
+      "elapsed_ms": 3.287915955297649
+    },
+    "touch_between_clicks_rejected": true
+  },
+  "errors": ""
+}

@@ -1,0 +1,23 @@
+{
+  "learning": true,
+  "touched": false,
+  "offered": true,
+  "state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": false,
+    "Touched": false,
+    "Learning": true,
+    "Bindingvalid": true,
+    "Rx": 741,
+    "Tx": 13,
+    "Rejected": 0,
+    "Echoblocked": 0,
+    "Status": "Offered demo_A.Amount; waiting for hardware slot",
+    "Lasterror": "",
+    "Targetid": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+    "Value": 0.0,
+    "Targetvalue": 0.0,
+    "Manualvalue": 0.0
+  }
+}

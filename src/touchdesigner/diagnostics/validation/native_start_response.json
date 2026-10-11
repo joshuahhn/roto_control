@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "variables": {
+    "var": "<built-in function var>",
+    "varExists": "<built-in function varExists>",
+    "varOwner": "<built-in function varOwner>",
+    "passive": "<built-in function passive>",
+    "run": "<built-in function run>",
+    "fetchStamp": "<built-in function fetchStamp>",
+    "isMainThread": "<built-in function isMainThread>",
+    "importDAT": "<built-in function importDAT>",
+    "cookRate": "<built-in function cookRate>",
+    "power": "<built-in function power>",
+    "realTime": "<built-in function realTime>",
+    "clear": "<built-in function clear>",
+    "stdout": "<built-in function stdout>",
+    "stderr": "<built-in function stderr>",
+    "tdError": "<class 'td.tdError'>",
+    "tdAttributeError": "<class 'td.tdAttributeError'>",
+    "tdWarning": "<class 'td.tdWarning'>",
+    "OP": "<class 'td.OP'>",
+    "Par": "<class 'td.Par'>",
+    "ParCollection": "<class 'td.ParCollection'>",
+    "ParGroupCollection": "<class 'td.ParGroupCollection'>",
+    "ParGroup": "<class 'td.ParGroup'>",
+    "ParGroupPulse": "<class 'td.ParGroupPulse'>",
+    "ParGroupUnit": "<class 'td.ParGroupUnit'>"
+  },
+  "variables_omitted": 826,
+  "output": "Shared target discovery and compact typed widgets installed\n/roto_clean_demo/base_validation_fixture/roto_python/inspector/inspector_below native editor anchors installed\nMapping sections installed; native window dimensions retained\nShared target discovery and compact typed widgets installed\nCompact filters, Details and Clear Device installed\nIn-window dropdowns installed; fixed eight-row pools, no menu Window\n/roto_clean_demo/base_validation_fixture/roto_python/inspector/inspector_below {'context': ('custom', 'track.custom', 'plugin.custom'), 'selected': None, 'dirty_slots': 0, 'notifications': 0, 'text_writes': 49, 'window_opens': 0, 'model_connected': True}\n/roto_clean_demo/base_validation_fixture/roto_python/inspector/inspector_popup native editor anchors installed\nMapping sections installed; native window dimensions retained\nShared target discovery and compact typed widgets installed\nCompact filters, Details and Clear Device installed\nIn-window dropdowns installed; fixed eight-row pools, no menu Window\n/roto_clean_demo/base_validation_fixture/roto_python/inspector/inspector_popup {'context': ('custom', 'track.custom', 'plugin.custom'), 'selected': None, 'dirty_slots': 0, 'notifications': 0, 'text_writes': 49, 'window_opens': 0, 'model_connected': True}\nFour inline native definition drafts installed; no new windows\n{\"fixture\": \"/roto_clean_demo/base_validation_fixture\", \"controller\": \"/roto_clean_demo/base_validation_fixture/roto_python\", \"recovery\": \"/private/tmp/roto-control-issue15/native-recovery/owned_main_before_fixture.tox\"}\n"
+}

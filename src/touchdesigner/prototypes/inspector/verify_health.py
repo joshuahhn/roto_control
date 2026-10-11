@@ -97,7 +97,7 @@ def verify():
     result.update(production_catalog_registry_session_preserved=True,idle_text_write_delta=0,
                   sync_p95_ms=sorted(samples)[94],burst_requests=1000,pending_sync_runs=1,
                   cache_contexts=model.Stats()['cache_contexts'],definition_cache_contexts=len(model.ext.InspectorModel.adapter._definitions_cache),errors='')
-    Path(project.folder+'/prototypes/inspector/health_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/health_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 verify()

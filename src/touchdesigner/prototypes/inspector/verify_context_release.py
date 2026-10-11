@@ -12,7 +12,7 @@ def finish():
     result=dict(virtual_mouse_only=True,physical_item_fix_verified=False,samples=rows,
                 all_pass=all(not r['opened_while_held'] and r['opened_after_release'] and r['drag_out_cancelled'] for r in rows),
                 routing_session_preserved=controller.GetLayoutContext()['key']==routing and m.adapter.Session()==session)
-    Path(project.folder+'/prototypes/inspector/context_release_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/context_release_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 def cancelled():

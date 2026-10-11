@@ -1,3 +1,8 @@
+from pathlib import Path
+import sys
+_SOURCE_ROOT = Path(__file__).resolve().parents[2]
+for _path in (_SOURCE_ROOT / "tests/runtime", _SOURCE_ROOT / "scripts", _SOURCE_ROOT / "diagnostics/runtime"):
+    sys.path.insert(0, str(_path))
 """Real command/adapter/controller callbacks; fake native pars/panels, no TD/MIDI PASS."""
 from pathlib import Path
 from types import SimpleNamespace as S

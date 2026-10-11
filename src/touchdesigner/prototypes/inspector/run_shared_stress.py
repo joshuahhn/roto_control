@@ -43,9 +43,9 @@ r.initialize();e.par.active=True
             print(state,flush=True)
             if state.startswith('complete'):break
         else:raise TimeoutError('Shared stress timed out')
-        result=json.loads((ROOT/'prototypes/inspector/shared_stress_results.json').read_text())
+        result=json.loads((ROOT/'diagnostics/inspector/results/shared_stress_results.json').read_text())
         if result['failures']:raise RuntimeError(result['failures'])
-        print('Complete:',ROOT/'prototypes/inspector/shared_stress_results.json')
+        print('Complete:',ROOT/'diagnostics/inspector/results/shared_stress_results.json')
     finally:
         call('execute_code',{'code':"b=op('/inspector_shared_stress')\nif b and 'shared_stress_harness' in b.tags:\n e=b.op('execute_frames')\n if e:\n  e.par.active=False\n  r=getattr(e.module,'runner',None)\n  if r and not r.done:r.finish()\n b.destroy()"})
 

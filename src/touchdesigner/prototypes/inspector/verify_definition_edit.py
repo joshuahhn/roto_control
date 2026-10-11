@@ -44,5 +44,5 @@ assert m.Stats()['subscribers']==2
 assert not any(o.errors(recurse=True) for o in (c,m,v,op('/inspector_popup')))
 result=dict(native_float_int_setters=True,live_value_mode_identity_preserved=True,native_stale_draft_rejected=True,
     production_ui_noop_apply_cancel=True,production_catalog_registry_process_preserved=True,details_height=402,fixture_removed=True,subscribers=2)
-Path(project.folder+'/prototypes/inspector/definition_edit_verification.json').write_text(json.dumps(result,indent=2)+'\n')
+Path(project.folder+'/diagnostics/inspector/results/definition_edit_verification.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps(result))

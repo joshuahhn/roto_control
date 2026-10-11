@@ -1,0 +1,11 @@
+{
+  "open_this": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.toe",
+  "sha256": "05d6417a953c233e0f147ec8d3a33c9644482913af7a06b071b4aa58a54216b2",
+  "source": "live TouchDesigner save after physical Knob1/Button8/Snapshot/Clear acceptance",
+  "python": "/Users/huihongnin/project/roto_control/src/touchdesigner/.venv/bin/python",
+  "midi_helper": "embedded; durable original-checkout external fallback",
+  "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/organization-recovery",
+  "candidate_source_checkout": "/tmp/roto-control-issue15",
+  "open_filename": "ROTO-CONTROL.toe",
+  "td_title_counter": "ROTO-CONTROL.1.toe"
+}

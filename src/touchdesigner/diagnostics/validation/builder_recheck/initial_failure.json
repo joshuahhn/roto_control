@@ -1,0 +1,8 @@
+{
+  "failure": "upgrade mapping ID reverted to Value",
+  "diagnosis": [
+    "fresh build returned with pending restore before first assignment",
+    "native Par equality considers distinct equal-valued parameters equal"
+  ],
+  "source_write_observation": "temporary bidirectional DAT sync rewrote source LF as CRLF; disabled at builder initialization and restored LF"
+}

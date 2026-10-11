@@ -25,6 +25,32 @@ class SnapshotController:
 
 
 class SnapshotCommandsTests(TestCase):
+    def test_multi_knob_intent_uses_one_fresh_observation_and_rejects_unsynced_drift(self):
+        a,m=self.model()
+        a.records[KEY]=[dict(a.records[KEY][0],id='knob'+str(i),slot=i+1) for i in range(8)]
+        m.Sync()
+        selections=[(KEY,i,m.GetToken(KEY,i)) for i in range(8)]
+        before=m.Stats()['sync_calls']
+        intent=m.SnapshotIntent(KEY,selections)
+        self.assertEqual(m.Stats()['sync_calls']-before,1)
+        self.assertEqual(len(intent['capture_tokens']),8)
+        # No observer Sync: the command itself must detect replacement.
+        a.records[KEY][7]['id']='replacement'
+        with self.assertRaises(ValueError):m.SnapshotCommand('save',intent,'Stale')
+        self.assertEqual(a.controller.calls,[])
+
+    def test_snapshot_batch_refreshes_native_definitions_before_token_checks(self):
+        a,m=self.model()
+        intent=m.SnapshotIntent(KEY,[(KEY,1,m.GetToken(KEY,1))])
+        refreshed=[]
+        def refresh(context,slot):
+            refreshed.append((context,slot))
+            a.records[KEY][0]['parameter_definition']=(('changed bind master',),)
+        a.RefreshDefinitions=refresh
+        with self.assertRaises(ValueError):m.SnapshotCommand('save',intent,'Stale native definition')
+        self.assertEqual(refreshed,[(KEY,None)])
+        self.assertEqual(a.controller.calls,[])
+
     def test_default_save_and_overwrite_fence_other_captured_knobs_and_slot_membership(self):
         for operation, drift in [('save','definition'), ('save','new_slot'), ('overwrite','definition')]:
             a,m=self.model()

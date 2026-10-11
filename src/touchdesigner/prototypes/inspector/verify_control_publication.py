@@ -45,5 +45,5 @@ finally:
     holder.destroy()
 assert production.GetControlCatalog()==before and production.fetch('layout_registry')==registry
 result['production_preserved']=True
-Path(project.folder+'/prototypes/inspector/control_publication_verification.json').write_text(json.dumps(result,indent=2)+'\n')
+Path(project.folder+'/diagnostics/inspector/results/control_publication_verification.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps(result))

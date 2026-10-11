@@ -1,0 +1,46 @@
+{
+  "user_feedback": "Motor and LCD both followed software value 0.75",
+  "before": 0.75,
+  "tx_before": 52,
+  "result": {
+    "preset_id": "snapshot.2a77225c5e5943848a8dd6367f983dd6",
+    "revision": 1,
+    "status": "succeeded",
+    "error": "",
+    "entries": [
+      {
+        "kind": "knob",
+        "slot": 1,
+        "value": 0.004150643960202649,
+        "attempted": true,
+        "verified": true,
+        "actual_value": 0.004150643960202649,
+        "error": "",
+        "mapping_id": "parameter.1ef4053018fc4d6cae015902b4419923",
+        "output_value": 0.004150643960202649
+      }
+    ],
+    "action_id": "snapshot.2a77225c5e5943848a8dd6367f983dd6"
+  },
+  "command_ms": 2.5341250002384186,
+  "after": 0.004150643960202649,
+  "state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 2685,
+    "Tx": 55,
+    "Rejected": 0,
+    "Echoblocked": 174,
+    "Status": "Mapped; target ready",
+    "Lasterror": "",
+    "Targetid": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+    "Value": 0.004150643960202649,
+    "Targetvalue": 0.004150643960202649,
+    "Manualvalue": 0.004150643960202649
+  },
+  "errors": ""
+}

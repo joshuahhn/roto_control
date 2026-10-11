@@ -7,7 +7,7 @@ assert controller
 before=controller.GetControlCatalog()
 try:
     for view in views:view.Disconnect()
-    m.reload(project.folder+'/prototypes/inspector/inspector_model.tox');m.initializeExtensions(0)
+    m.reload(project.folder+'/projects/components/inspector/inspector_model.tox');m.initializeExtensions(0)
     assert m.par.Controller.eval() is None
     assert not m.Status['Connected']
     assert not m.ext.InspectorModel.adapter._definitions_cache
@@ -112,5 +112,5 @@ assert controller.State['Connected']
 result['production_session_preserved']=True
 result['activation_embedded_unconfigured_hidden']=True
 result['native_definition_embedded_and_snapshot_fields_empty']=True
-Path(project.folder+'/prototypes/inspector/live_export_reload.json').write_text(json.dumps(result,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/live_export_reload.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

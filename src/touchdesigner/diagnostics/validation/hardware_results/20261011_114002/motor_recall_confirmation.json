@@ -1,0 +1,22 @@
+{
+  "user": "Motor and LCD both returned to low snapshot value",
+  "Amount": 0.004150643960202649,
+  "state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 3262,
+    "Tx": 56,
+    "Rejected": 0,
+    "Echoblocked": 174,
+    "Status": "Mapped; target ready",
+    "Lasterror": "",
+    "Targetid": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+    "Value": 0.004150643960202649,
+    "Targetvalue": 0.004150643960202649,
+    "Manualvalue": 0.004150643960202649
+  }
+}

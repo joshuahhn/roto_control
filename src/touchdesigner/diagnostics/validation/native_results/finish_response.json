@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "variables": {
+    "var": "<built-in function var>",
+    "varExists": "<built-in function varExists>",
+    "varOwner": "<built-in function varOwner>",
+    "passive": "<built-in function passive>",
+    "run": "<built-in function run>",
+    "fetchStamp": "<built-in function fetchStamp>",
+    "isMainThread": "<built-in function isMainThread>",
+    "importDAT": "<built-in function importDAT>",
+    "cookRate": "<built-in function cookRate>",
+    "power": "<built-in function power>",
+    "realTime": "<built-in function realTime>",
+    "clear": "<built-in function clear>",
+    "stdout": "<built-in function stdout>",
+    "stderr": "<built-in function stderr>",
+    "tdError": "<class 'td.tdError'>",
+    "tdAttributeError": "<class 'td.tdAttributeError'>",
+    "tdWarning": "<class 'td.tdWarning'>",
+    "OP": "<class 'td.OP'>",
+    "Par": "<class 'td.Par'>",
+    "ParCollection": "<class 'td.ParCollection'>",
+    "ParGroupCollection": "<class 'td.ParGroupCollection'>",
+    "ParGroup": "<class 'td.ParGroup'>",
+    "ParGroupPulse": "<class 'td.ParGroupPulse'>",
+    "ParGroupUnit": "<class 'td.ParGroupUnit'>"
+  },
+  "variables_omitted": 826,
+  "output": "{\"main_preserved\": true, \"fixtures_removed\": true, \"project\": \"cleaned_owned_inspector_review.1.toe\"}\n"
+}

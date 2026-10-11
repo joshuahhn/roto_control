@@ -1,0 +1,10 @@
+{
+  "entry": "/tmp/roto-control-issue15/src/touchdesigner/scripts/build_network.py",
+  "fixture": "/roto_clean_demo/base_folder_validation",
+  "errors": "",
+  "fixture_connected": false,
+  "embedded_midi_matches": true,
+  "main_connected": true,
+  "fixture_removed": true,
+  "main_source_preserved": true
+}

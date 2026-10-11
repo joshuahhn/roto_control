@@ -20,7 +20,7 @@ def finish():
     result=dict(virtual_mouse_only=True,physical_item_selection_verified=False,
                 samples=rows,all_selected_once=all(r['selected_once'] for r in rows),
                 routing_session_preserved=controller.GetLayoutContext()['key']==routing and m.adapter.Session()==session)
-    Path(project.folder+'/prototypes/inspector/selector_item_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/selector_item_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(dict(samples=len(rows),all_selected_once=result['all_selected_once'],routing_session_preserved=result['routing_session_preserved'])))
 
 def check():

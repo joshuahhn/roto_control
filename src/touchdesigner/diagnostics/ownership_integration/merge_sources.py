@@ -6,7 +6,7 @@ ISSUE=Path('/Users/huihongnin/.t3/worktrees/roto_control/t3-issue-9-comp-custom-
 RUN=Path(RUN_PATH)
 patch=Path('/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-issue9-reviewed-emhbnibb/review.patch')
 assert hashlib.sha256(patch.read_bytes()).hexdigest()=='277f734d9697292066551278c4805d90e74612059180f002bf10b2837b109a7f'
-include=['src/touchdesigner/'+x for x in ('code/py/roto_python/free_learn.py','code/py/roto_python/layouts.py','code/py/roto_python/text_comp_follow.py','export_component.py','test_tag_devices.py','test_layout_owners.py','diagnostics/issue_9/*','docs/plans/issue-9-owner-layouts.md')]
+include=['src/touchdesigner/'+x for x in ('code/py/roto_python/free_learn.py','code/py/roto_python/layouts.py','code/py/roto_python/text_comp_follow.py','scripts/export_component.py','test_tag_devices.py','test_layout_owners.py','diagnostics/issue_9/*','docs/plans/issue-9-owner-layouts.md')]
 args=['git','apply']+['--include='+x for x in include]+[str(patch)]
 subprocess.run(args[:2]+['--check']+args[2:],cwd=ROOT,check=True)
 subprocess.run(args,cwd=ROOT,check=True)

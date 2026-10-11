@@ -10,7 +10,7 @@ live project, canonical binary, upstream integration or other worktree is change
 
 ## Workflow and authority
 
-The migration module is embedded as `layout_migration` by `upgrade_layouts.py`;
+The migration module is embedded as `layout_migration` by `scripts/upgrade_layouts.py`;
 the existing external builder calls that upgrade. Updating source does not run
 migration. There is no startup/discovery migration or guessed classification.
 

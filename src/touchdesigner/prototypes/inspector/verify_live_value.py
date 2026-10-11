@@ -49,6 +49,6 @@ elif phase=='finish':
         assert m.ext.InspectorModel.adapter.Session()==holder.fetch('session')
         holder.destroy()
     result['production_catalog_registry_session_preserved']=True
-    Path(project.folder+'/prototypes/inspector/live_value_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result))
+    Path(project.folder+'/diagnostics/inspector/results/live_value_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result))
 else:raise ValueError('Unknown phase')
 print('Live Value phase:',phase)

@@ -1,0 +1,31 @@
+{
+  "unchanged_runtime_files": [
+    "code/py/controls_demo.py",
+    "code/py/parameter_demo.py",
+    "code/py/callback_demo.py",
+    "code/py/roto_python/controls.py",
+    "code/py/roto_python/snapshots.py",
+    "code/py/roto_python/learn_parameters.py",
+    "code/py/roto_python/free_learn.py",
+    "code/py/roto_python/lifecycle_callbacks.py",
+    "code/py/roto_python/text_comp_follow.py",
+    "code/py/roto_python/collection_protocol.py",
+    "code/py/roto_python/protocol.py",
+    "code/py/roto_python/parameter_callbacks.py",
+    "code/py/roto_python/setup.py",
+    "code/py/roto_python/control_callbacks.py",
+    "code/py/roto_python/layout_migration.py",
+    "code/py/roto_python/binding.py",
+    "code/py/roto_python/layouts.py",
+    "code/py/roto_python/target_callbacks.py",
+    "code/py/roto_python/inspector/inspector_data.py",
+    "code/py/roto_python/inspector/owned_runtime.py",
+    "code/py/roto_python/inspector/toolbar_events.py",
+    "code/py/roto_python/inspector/lister_callbacks.py",
+    "code/py/roto_python/inspector/list_events.py",
+    "code/py/roto_python/base_targets/mapping_marks.py"
+  ],
+  "adapter_fix_sha256": "24d5823fac3495ecc1161ce99e4740493cffa360630498bec668f60f0ce245bc",
+  "git_diff_check": "PASS",
+  "all_runtime_files_LF": true
+}

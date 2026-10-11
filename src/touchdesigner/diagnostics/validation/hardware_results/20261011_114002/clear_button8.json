@@ -1,0 +1,13 @@
+{
+  "confirmed_syncs": 2,
+  "elapsed_ms": 5.555375013500452,
+  "removed": true,
+  "knob1_preserved": true,
+  "pending_unmaps": [
+    [
+      "button",
+      8
+    ]
+  ],
+  "errors": ""
+}

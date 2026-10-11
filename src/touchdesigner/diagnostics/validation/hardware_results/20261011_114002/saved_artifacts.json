@@ -1,0 +1,29 @@
+{
+  "project": "hardware_verified.1.toe",
+  "folder": "/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/hardware_results/20261011_114002",
+  "connected": true,
+  "errors": "",
+  "artifacts": [
+    {
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/hardware_results/20261011_114002/main_before_hardware.tox",
+      "bytes": 389290,
+      "sha256": "d4a9f1f29cc571fec96e56d68520c3ab136aa87d3bacb7693fe3c561757a8f59"
+    },
+    {
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/hardware_results/20261011_114002/hardware_verified_controller.tox",
+      "bytes": 400354,
+      "sha256": "c59761658ffc1ae0245a3088910b534959487272ae17e98f355191811cb14813"
+    },
+    {
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/hardware_results/20261011_114002/hardware_verified.toe",
+      "bytes": 983572,
+      "sha256": "78c9f931bcbb4f278ac60c35b8a5683314769e49c9ae92331e3ad5630d81c838"
+    }
+  ],
+  "active_saved_project": {
+    "path": "/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/hardware_results/20261011_114002/hardware_verified.1.toe",
+    "exists": true,
+    "bytes": 983572,
+    "sha256": "78c9f931bcbb4f278ac60c35b8a5683314769e49c9ae92331e3ad5630d81c838"
+  }
+}

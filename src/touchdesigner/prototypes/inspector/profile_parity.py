@@ -30,5 +30,5 @@ finally:
     for v,style in zip(views,styles):v.ext.InspectorView.style=style;v.CloseEditor();v.op('window_editor').par.winclose.pulse()
 assert c.GetControlCatalog()==before and m.ext.InspectorModel.adapter.Session()==session
 result['production_catalog_session_preserved']=True
-Path(project.folder+'/prototypes/inspector/parity_performance.json').write_text(json.dumps(result,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/parity_performance.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

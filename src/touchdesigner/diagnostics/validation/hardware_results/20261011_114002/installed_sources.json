@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "dat": "/roto_clean_demo/roto_python/RotoPythonExt",
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/code/py/roto_python/RotoPythonExt.py",
+      "sha256": "791d20189c07d98f6bb58a1db6e9c145da71494e3b351a1fe0446a023380556c",
+      "matches": true
+    },
+    {
+      "dat": "/roto_clean_demo/roto_python/snapshots",
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/code/py/roto_python/snapshots.py",
+      "sha256": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
+      "matches": true
+    },
+    {
+      "dat": "/roto_clean_demo/roto_python/inspector/inspector_model/base_commands/InspectorCommands",
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/prototypes/inspector/commands.py",
+      "sha256": "1cd75cf5d4268413fd0f2580d6c7a696e9ca12a68ac35333418f29f83b1c8ec7",
+      "matches": true
+    },
+    {
+      "dat": "/roto_clean_demo/roto_python/inspector/inspector_below/ui",
+      "path": "/tmp/roto-control-issue15/src/touchdesigner/prototypes/inspector/ui.py",
+      "sha256": "20bb7dc9dff21ac2831b0072db221f031b3e446ee8966aee274e674ba99340cc",
+      "matches": true
+    }
+  ],
+  "errors": ""
+}

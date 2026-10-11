@@ -119,7 +119,7 @@ def verify():
     assert model.Stats()['subscribers']==2 and not model.Stats()['subscriber_errors']
     assert not any(c.errors(recurse=True) for c in [model]+views)
     result.update(production_catalog_registry_session_preserved=True,subscribers=2,errors='')
-    Path(project.folder+'/prototypes/inspector/mapping_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/mapping_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 verify()

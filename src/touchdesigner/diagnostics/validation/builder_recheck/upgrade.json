@@ -1,0 +1,9 @@
+{
+  "entry": "scripts/upgrade_layouts.py",
+  "mapping_retained": true,
+  "layout_retained": true,
+  "inspector_idempotent": true,
+  "native_equal_value_reassignment": true,
+  "snapshot_no_write": true,
+  "errors": ""
+}

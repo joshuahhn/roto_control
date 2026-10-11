@@ -1,0 +1,10 @@
+{
+  "entry": "scripts/build_network.py",
+  "errors": "",
+  "embedded_midi": true,
+  "embedded_docs": true,
+  "local_controller": true,
+  "source_bytes_preserved": true,
+  "hardware_process": false,
+  "explicit_python": "/Users/huihongnin/project/roto_control/src/touchdesigner/.venv/bin/python"
+}

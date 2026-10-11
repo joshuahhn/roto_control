@@ -84,5 +84,5 @@ def verify():
             v._viewport.panel.scrollv=s['scroll']
 
 result=verify()
-Path(project.folder+'/prototypes/inspector/shared_correctness.json').write_text(json.dumps(result,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/shared_correctness.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

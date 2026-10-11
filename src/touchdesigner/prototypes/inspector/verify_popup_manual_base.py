@@ -19,6 +19,6 @@ def step():
     else:
         result['restored']=(p.contentWidth,p.contentHeight,p.x,p.y)==saved
         result['all_pass']=all(x for x in result.values() if type(x)is bool)
-        Path(project.folder+'/prototypes/inspector/popup_manual_base_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result));return
+        Path(project.folder+'/diagnostics/inspector/results/popup_manual_base_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result));return
     stage+=1;run('args[0]()',step,delayFrames=4,delayRef=op.TDResources)
 step()

@@ -17,7 +17,7 @@ def finish():
     result['routing_session_catalog_preserved']=controller.GetLayoutContext()['key']==routing and m.adapter.Session()==session and controller.GetControlCatalog()==catalog
     result['operator_count_preserved']=len(view.findChildren())==count
     result['all_pass']=all(value for value in result.values() if type(value)is bool) and 'error' not in result
-    Path(project.folder+'/prototypes/inspector/inline_menu_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/inline_menu_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 def step():

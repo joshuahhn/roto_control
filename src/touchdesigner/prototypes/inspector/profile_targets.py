@@ -61,5 +61,5 @@ finally:
 assert controller.GetControlCatalog()==before and m.ext.InspectorModel.adapter.Session()==session
 assert m.Stats()['subscribers']==2 and not m.Stats()['subscriber_errors']
 result['production_catalog_session_preserved']=True
-Path(project.folder+'/prototypes/inspector/targets_performance.json').write_text(json.dumps(result,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/targets_performance.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result))

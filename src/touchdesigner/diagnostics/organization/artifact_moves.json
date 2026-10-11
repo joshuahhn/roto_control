@@ -1,0 +1,1328 @@
+[
+  {
+    "old": "inspector_editor_actions.toe",
+    "new": "projects/archive/legacy/inspector_editor_actions.toe",
+    "bytes": 707392,
+    "sha256": "bf5b7a3f9a7772e0b8042a695f8a8204c864e0283e72706fba5956644e49b5e6"
+  },
+  {
+    "old": "inspector_restart_checkpoint.1.toe",
+    "new": "projects/archive/legacy/inspector_restart_checkpoint.1.toe",
+    "bytes": 430540,
+    "sha256": "e7c17ee3f6666dcb7ac8867f0c4dea7d2c466bfdf41beb97961a4f2a669eb74a"
+  },
+  {
+    "old": "roto_control_python.38.toe",
+    "new": "projects/archive/legacy/roto_control_python.38.toe",
+    "bytes": 345828,
+    "sha256": "3f9a0adf42f2b15243d73a494d012fd02fd6268060a9f37f9e017fef986e23d8"
+  },
+  {
+    "old": "inspector_real_data.toe",
+    "new": "projects/archive/legacy/inspector_real_data.toe",
+    "bytes": 442388,
+    "sha256": "2136807673ccfe3c3a9452117b3010d0342d2fee1e39ca1a1bac602da0a49c05"
+  },
+  {
+    "old": "roto_control_python.49.toe",
+    "new": "projects/archive/legacy/roto_control_python.49.toe",
+    "bytes": 355300,
+    "sha256": "a868cdb67d27d76243a24865a7512ba9bd6fa1857cbc6277a259ac4918717caf"
+  },
+  {
+    "old": "roto_control_python.61.toe",
+    "new": "projects/archive/legacy/roto_control_python.61.toe",
+    "bytes": 367932,
+    "sha256": "4296a1b276948bbb2e15722edad4b37b60c5187aa9123a0d69ed8673d4fe05ca"
+  },
+  {
+    "old": "roto_control_python.75.toe",
+    "new": "projects/archive/legacy/roto_control_python.75.toe",
+    "bytes": 399172,
+    "sha256": "cc8e900f35edbe98a859c47abe5eae275ac9738f7a9f0bdbe809f73ca9f093e0"
+  },
+  {
+    "old": "roto_control_python.63.toe",
+    "new": "projects/archive/legacy/roto_control_python.63.toe",
+    "bytes": 368076,
+    "sha256": "a946a4f9af80e12085c79da14d87c1ef6862d9226fb6d287cd0a7327268d107f"
+  },
+  {
+    "old": "inspector_real_data.1.toe",
+    "new": "projects/archive/legacy/inspector_real_data.1.toe",
+    "bytes": 442388,
+    "sha256": "2136807673ccfe3c3a9452117b3010d0342d2fee1e39ca1a1bac602da0a49c05"
+  },
+  {
+    "old": "roto_control_python.73.toe",
+    "new": "projects/archive/legacy/roto_control_python.73.toe",
+    "bytes": 398964,
+    "sha256": "78fc88d70223a0d2cf4e96cb7d12b794c75d59af11d49ce38d246e822d32de5b"
+  },
+  {
+    "old": "roto_control_python.67.toe",
+    "new": "projects/archive/legacy/roto_control_python.67.toe",
+    "bytes": 398916,
+    "sha256": "cf3dc91d58eb35dd795fa53fa34cf57a6f783b59a5ebee5a4c106e8c6cf7e101"
+  },
+  {
+    "old": "roto_control_python.59.toe",
+    "new": "projects/archive/legacy/roto_control_python.59.toe",
+    "bytes": 367044,
+    "sha256": "cec622a55770c0267a60929375969729bd9ed0388bb70aa36fde87788dd90a18"
+  },
+  {
+    "old": "roto_control_python.71.toe",
+    "new": "projects/archive/legacy/roto_control_python.71.toe",
+    "bytes": 398868,
+    "sha256": "634ddcf10761e6092647594dc2c832520e31975110163986dd17968b7e3c3ea9"
+  },
+  {
+    "old": "roto_control_python.65.toe",
+    "new": "projects/archive/legacy/roto_control_python.65.toe",
+    "bytes": 398748,
+    "sha256": "27c2678078ddb8da6250ab587d97a7fcf6b5f784afc049834ae6afd817a9aca2"
+  },
+  {
+    "old": "roto_control_python.toe",
+    "new": "projects/archive/legacy/roto_control_python.toe",
+    "bytes": 399172,
+    "sha256": "cc8e900f35edbe98a859c47abe5eae275ac9738f7a9f0bdbe809f73ca9f093e0"
+  },
+  {
+    "old": "inspector_editor_actions.45.toe",
+    "new": "projects/archive/legacy/inspector_editor_actions.45.toe",
+    "bytes": 707392,
+    "sha256": "bf5b7a3f9a7772e0b8042a695f8a8204c864e0283e72706fba5956644e49b5e6"
+  },
+  {
+    "old": "roto_control_python.55.toe",
+    "new": "projects/archive/legacy/roto_control_python.55.toe",
+    "bytes": 362276,
+    "sha256": "a7ca3faf1a43a641d32be07d318f922b0243e949039248a443a10dfd58b7641f"
+  },
+  {
+    "old": "roto_control_python.69.toe",
+    "new": "projects/archive/legacy/roto_control_python.69.toe",
+    "bytes": 398884,
+    "sha256": "34ba9509d896aaa816912dce90a42f43194c131aba7d824d74ccd3b63c25b67b"
+  },
+  {
+    "old": "inspector_restart_checkpoint.toe",
+    "new": "projects/archive/legacy/inspector_restart_checkpoint.toe",
+    "bytes": 430540,
+    "sha256": "e7c17ee3f6666dcb7ac8867f0c4dea7d2c466bfdf41beb97961a4f2a669eb74a"
+  },
+  {
+    "old": "roto_control_python.42.toe",
+    "new": "projects/archive/legacy/roto_control_python.42.toe",
+    "bytes": 351652,
+    "sha256": "840f0626d20099ef6d1bfc181348408d1389d29fad61b834da5a1b19d40074d8"
+  },
+  {
+    "old": "roto_control_python.57.toe",
+    "new": "projects/archive/legacy/roto_control_python.57.toe",
+    "bytes": 365604,
+    "sha256": "d12e3a0be9bd050545451b630c012796b615e0cde90f0b855a5819b10725dfa4"
+  },
+  {
+    "old": "roto_control_python.47.toe",
+    "new": "projects/archive/legacy/roto_control_python.47.toe",
+    "bytes": 354268,
+    "sha256": "ec7f8d8ac0fadb7f4a7623a98c142812413822997562cc2ff843095a5eddb3ba"
+  },
+  {
+    "old": "roto_control_python.53.toe",
+    "new": "projects/archive/legacy/roto_control_python.53.toe",
+    "bytes": 360540,
+    "sha256": "42a6f9144dabe768daec4263cee236aa595cf058080c89489bac4c432b51323c"
+  },
+  {
+    "old": "roto_control_python.45.toe",
+    "new": "projects/archive/legacy/roto_control_python.45.toe",
+    "bytes": 353892,
+    "sha256": "563a6b2087ac8b3344fe55ef6674d1895261f669927bdf2b6a02e5d043f75f22"
+  },
+  {
+    "old": "roto_control_python.51.toe",
+    "new": "projects/archive/legacy/roto_control_python.51.toe",
+    "bytes": 355940,
+    "sha256": "e781564bfcea255a26013bcc0f99cda3581ce32401e74ae3fdf888cb9d6f5489"
+  },
+  {
+    "old": "roto_control_python.37.toe",
+    "new": "projects/archive/legacy/roto_control_python.37.toe",
+    "bytes": 345660,
+    "sha256": "d1bdf2372b4b8f896ed9f0e8b966cc2b318b819e3a7a211ed5f39f621d263d9f"
+  },
+  {
+    "old": "roto_control_python.35.toe",
+    "new": "projects/archive/legacy/roto_control_python.35.toe",
+    "bytes": 335412,
+    "sha256": "c5d484e9208e40cf126fbf88396e9efb1a54134091b32bb3a93cbebca97c0977"
+  },
+  {
+    "old": "roto_control_python.30.toe",
+    "new": "projects/archive/legacy/roto_control_python.30.toe",
+    "bytes": 290418,
+    "sha256": "5f2a7f2825298daa1eabded46642775174fbce4adac44054b1db8cc2a3ab002c"
+  },
+  {
+    "old": "roto_control_python.pre_multitrack.toe",
+    "new": "projects/archive/legacy/roto_control_python.pre_multitrack.toe",
+    "bytes": 345828,
+    "sha256": "3f9a0adf42f2b15243d73a494d012fd02fd6268060a9f37f9e017fef986e23d8"
+  },
+  {
+    "old": "cycle_feedback_hardware_verification.json",
+    "new": "diagnostics/runtime/results/cycle_feedback_hardware_verification.json",
+    "bytes": 7853,
+    "sha256": "f1d43e9a66b642401004d005b1cef1620b7bf3a98ade1f63ba5cd1c86cafc687"
+  },
+  {
+    "old": "setup_verification.json",
+    "new": "diagnostics/runtime/results/setup_verification.json",
+    "bytes": 930,
+    "sha256": "162c17a975c518c80bc49b9dc52a7fa48650cd8640d950287c7ae8386e3b7567"
+  },
+  {
+    "old": "real_components_verification.json",
+    "new": "diagnostics/runtime/results/real_components_verification.json",
+    "bytes": 2293,
+    "sha256": "14bd39e91cface68ddcdbd635a1624f199868fd987b02e0214932c3a3e7555d4"
+  },
+  {
+    "old": "layout_hardware_verification.json",
+    "new": "diagnostics/runtime/results/layout_hardware_verification.json",
+    "bytes": 2129,
+    "sha256": "a01e5a291e27446a0c0c5a428b88c1d649c47242dd0503de1bf8371e7e9f29e9"
+  },
+  {
+    "old": "controls_verification.json",
+    "new": "diagnostics/runtime/results/controls_verification.json",
+    "bytes": 28771,
+    "sha256": "27636f7476be75cbd3f95c3e5c27d102ba44ed74563989bea2706d7ba21ffe26"
+  },
+  {
+    "old": "tag_device_accepted_before_save.json",
+    "new": "diagnostics/runtime/results/tag_device_accepted_before_save.json",
+    "bytes": 37636,
+    "sha256": "8cc926c62d902610a44fbf872e76bd6f6089ab24d25ffccd280fd6ffe7f5ec45"
+  },
+  {
+    "old": "migration_verification.json",
+    "new": "diagnostics/runtime/results/migration_verification.json",
+    "bytes": 581,
+    "sha256": "616f905db3a07458da7f6ea471fb93d88bfa52e4ffa21a8657651f1d31c2b12f"
+  },
+  {
+    "old": "control_pages_native_verification.json",
+    "new": "diagnostics/runtime/results/control_pages_native_verification.json",
+    "bytes": 390,
+    "sha256": "c042e9a749f2dc918b30c7afcbf0d1fb417f1321c7ae7f987d7db7c7d4615f14"
+  },
+  {
+    "old": "button8_toggle_acceptance.json",
+    "new": "diagnostics/runtime/results/button8_toggle_acceptance.json",
+    "bytes": 642,
+    "sha256": "688d51a96ad8727fc737ae6093a01b0e9d51f16daad70b186fe3cd73dd82d51c"
+  },
+  {
+    "old": "comp_follow_native_verification.json",
+    "new": "diagnostics/runtime/results/comp_follow_native_verification.json",
+    "bytes": 2134,
+    "sha256": "8973373655081b6b6824c053a9e707f7028d672878721621e6a8bde1e938efbc"
+  },
+  {
+    "old": "device_metadata_native_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_native_verification.json",
+    "bytes": 230,
+    "sha256": "c8df99e805f075cce0b22073c28da54b5b80530d95242f038f0afa590169b53b"
+  },
+  {
+    "old": "binding_simplification_verification.json",
+    "new": "diagnostics/runtime/results/binding_simplification_verification.json",
+    "bytes": 1091,
+    "sha256": "d861eed70f657b6997aea388517d1c2cc72d798053b05f97510309eb5cc948db"
+  },
+  {
+    "old": "cycle_feedback_before.json",
+    "new": "diagnostics/runtime/results/cycle_feedback_before.json",
+    "bytes": 4819,
+    "sha256": "30e5d02d9448b67752eff10734d5f048e53ed679bcb92045ae7de7808d40ad3d"
+  },
+  {
+    "old": "tag_device_learn_trace.json",
+    "new": "diagnostics/runtime/results/tag_device_learn_trace.json",
+    "bytes": 12432,
+    "sha256": "afcd93d7c568e75673f7bc5dd06ac88709ed660e5832ba2048d59c41ce6a7109"
+  },
+  {
+    "old": "device_metadata_main_before.json",
+    "new": "diagnostics/runtime/results/device_metadata_main_before.json",
+    "bytes": 35745,
+    "sha256": "3aad6450cc54e22218b2ade88d66a532cbc7c07d0c7c28cb54dbacd991a8c775"
+  },
+  {
+    "old": "control_pages_hardware_verification.json",
+    "new": "diagnostics/runtime/results/control_pages_hardware_verification.json",
+    "bytes": 2607,
+    "sha256": "4aeb619f3d578439f74d2089cbffb6a78941f13efb18c9a0b03b671108ff5200"
+  },
+  {
+    "old": "menu_verification.json",
+    "new": "diagnostics/runtime/results/menu_verification.json",
+    "bytes": 643,
+    "sha256": "864e29d5fc61ca2e61012774ab3becfab44cb08e64a7f1788cb614553871cff6"
+  },
+  {
+    "old": "tag_device_context_diagnosis.json",
+    "new": "diagnostics/runtime/results/tag_device_context_diagnosis.json",
+    "bytes": 15531,
+    "sha256": "e6ade758fd7248b3e78e51eb96ec294affd079d5fa351251ad255ddb4793f9f9"
+  },
+  {
+    "old": "control_page_trace.json",
+    "new": "diagnostics/runtime/results/control_page_trace.json",
+    "bytes": 2711,
+    "sha256": "b45214a0f87313f0553bbed5488df91d3cc1348c5d34ba27e6d9f364ce0e151d"
+  },
+  {
+    "old": "device_lock_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_lock_hardware_verification.json",
+    "bytes": 4195,
+    "sha256": "1e2ba6a44ae79e0e62cdd68e0b8ecf52f65a0a298df60b9d21e0c934e4c7a422"
+  },
+  {
+    "old": "exit_verification.json",
+    "new": "diagnostics/runtime/results/exit_verification.json",
+    "bytes": 1023,
+    "sha256": "935a1021c63c7febd389b08f61caccc679ff2b4cfaf3bdfe86f8a42bee6e0368"
+  },
+  {
+    "old": "lowthresh_button_issue_snapshot.json",
+    "new": "diagnostics/runtime/results/lowthresh_button_issue_snapshot.json",
+    "bytes": 26121,
+    "sha256": "8b4508ade16082084c419741689bb8e8b6be63246312012f8c91eedeeabbba6c"
+  },
+  {
+    "old": "tag_device_hardware_verification.json",
+    "new": "diagnostics/runtime/results/tag_device_hardware_verification.json",
+    "bytes": 5599,
+    "sha256": "fd10521eef664235806e3df6e851f8f9853e7a9a13b4b30628ed1c4adce5618b"
+  },
+  {
+    "old": "tag_device_native_verification.json",
+    "new": "diagnostics/runtime/results/tag_device_native_verification.json",
+    "bytes": 858,
+    "sha256": "21942bf4d4d08f4d9868b7afcba677650ada5c7d0bba09a49a5bf5f33c5f1724"
+  },
+  {
+    "old": "device_context_before.json",
+    "new": "diagnostics/runtime/results/device_context_before.json",
+    "bytes": 18980,
+    "sha256": "138815da6a50ba9aae2de2a324607ae2e399f7771007a20b56bda4a94171e107"
+  },
+  {
+    "old": "live_select_before.json",
+    "new": "diagnostics/runtime/results/live_select_before.json",
+    "bytes": 18994,
+    "sha256": "e5e6a4f69d065a2bbe268f92aa70d60c8cc3066c1b8bfcffbbb167bb15b4f793"
+  },
+  {
+    "old": "network_cleanup_verification.json",
+    "new": "diagnostics/runtime/results/network_cleanup_verification.json",
+    "bytes": 157,
+    "sha256": "7b2b890c84e482a2bb8d9316208a649af5d65601d758e4c3c46e62e7958624f0"
+  },
+  {
+    "old": "button8_push_acceptance.json",
+    "new": "diagnostics/runtime/results/button8_push_acceptance.json",
+    "bytes": 1235,
+    "sha256": "05e044acbd97a10814a7596cbf6881d854d4deae0a5a28627b410c83de08b759"
+  },
+  {
+    "old": "layout_native_verification.json",
+    "new": "diagnostics/runtime/results/layout_native_verification.json",
+    "bytes": 351,
+    "sha256": "95ff17cd1e1db43a58579d2c81d0b97798c2b527c089acbdb1e4dca35639d4c3"
+  },
+  {
+    "old": "control_page_issue_snapshot.json",
+    "new": "diagnostics/runtime/results/control_page_issue_snapshot.json",
+    "bytes": 13446,
+    "sha256": "442903856221ec96aafd606059a1b041e78d4f837a864ee1b362f86d7a1cb54f"
+  },
+  {
+    "old": "lowthresh_button_learn_trace.json",
+    "new": "diagnostics/runtime/results/lowthresh_button_learn_trace.json",
+    "bytes": 20496,
+    "sha256": "2181abc923e06d5554db5b93636822bc447f8cac85d06955039ea858450cf3dc"
+  },
+  {
+    "old": "device_metadata_upgrade_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_upgrade_verification.json",
+    "bytes": 550,
+    "sha256": "77abc2c41cdb20cf4071391de1eba5b05106ca0ab499026687081c7e4fb5170c"
+  },
+  {
+    "old": "portable_tox_verification.json",
+    "new": "diagnostics/runtime/results/portable_tox_verification.json",
+    "bytes": 755,
+    "sha256": "833d50fba9e54923b882c558fded2ee7c93420e08afc71fdac04591841add752"
+  },
+  {
+    "old": "assignment_verification.json",
+    "new": "diagnostics/runtime/results/assignment_verification.json",
+    "bytes": 691,
+    "sha256": "a60701ff19fe77fe10cce2cdada939686f3baa576b2b99fdb972d08703c10130"
+  },
+  {
+    "old": "device_context_native_verification.json",
+    "new": "diagnostics/runtime/results/device_context_native_verification.json",
+    "bytes": 1149,
+    "sha256": "37700e5ae4d515735a9d2b1f46df2a6bb91eb17121510112d92efb745014b27b"
+  },
+  {
+    "old": "device_metadata_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_hardware_verification.json",
+    "bytes": 705,
+    "sha256": "64538b7c48bf6b641641de7bc89bc0f9c13e9efeb52e521ef3fad2e3edf222e2"
+  },
+  {
+    "old": "device_lock_controls_physical_before.json",
+    "new": "diagnostics/runtime/results/device_lock_controls_physical_before.json",
+    "bytes": 35155,
+    "sha256": "26baa21252e066c8e010bb1cb3834cf98e4f0d65ffc20019bb17ffae0f593933"
+  },
+  {
+    "old": "device_lock_controls_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_lock_controls_hardware_verification.json",
+    "bytes": 4761,
+    "sha256": "56fdc2761d111902596ba7b63e72ee8c4b1f6b4cfa6fe7f195ca7e6d30653b93"
+  },
+  {
+    "old": "learn_overlap_hardware_verification.json",
+    "new": "diagnostics/runtime/results/learn_overlap_hardware_verification.json",
+    "bytes": 6107,
+    "sha256": "e715ffae59a6099c8756dfdfa6d3ef7d65c22bc0444cafec5dc997289cb790a9"
+  },
+  {
+    "old": "comp_follow_hardware_verification.json",
+    "new": "diagnostics/runtime/results/comp_follow_hardware_verification.json",
+    "bytes": 544,
+    "sha256": "6b7b56117410894e4d901da09445b70cf519d37d687cb952466f9a38ba71a64d"
+  },
+  {
+    "old": "multitrack_hardware_verification.json",
+    "new": "diagnostics/runtime/results/multitrack_hardware_verification.json",
+    "bytes": 12255,
+    "sha256": "1984889b08fb22a0e61998e9f9ea2afc10ab1f3b92efc3271a9c7c51f828dd5b"
+  },
+  {
+    "old": "binding_verification.json",
+    "new": "diagnostics/runtime/results/binding_verification.json",
+    "bytes": 1603,
+    "sha256": "7c3d5a780baf53735ec263c113e9dd058c81fec5411292d0f291e4a37c815872"
+  },
+  {
+    "old": "verification.json",
+    "new": "diagnostics/runtime/results/verification.json",
+    "bytes": 687,
+    "sha256": "bb314c85a1193c7240b88fff60f6929a200b8d29584a054a70fc33ec4edaab48"
+  },
+  {
+    "old": "device_context_upgrade_verification.json",
+    "new": "diagnostics/runtime/results/device_context_upgrade_verification.json",
+    "bytes": 1839,
+    "sha256": "f5450361778279d6225f592d5c1f194726bdfe48a25344663fb3df65792a6b07"
+  },
+  {
+    "old": "learn_overlap_main_before.json",
+    "new": "diagnostics/runtime/results/learn_overlap_main_before.json",
+    "bytes": 25153,
+    "sha256": "ec4f677634403a52840d0fca8e8916e26eb22391ba5e24468bcf1174952af2d7"
+  },
+  {
+    "old": "free_learn_verification.json",
+    "new": "diagnostics/runtime/results/free_learn_verification.json",
+    "bytes": 951,
+    "sha256": "3f789205371df311d3dae00e1a9d36aea55a7ee158bc3ba9c5ea5b3ca66f085d"
+  },
+  {
+    "old": "control_ui_removal_verification.json",
+    "new": "diagnostics/runtime/results/control_ui_removal_verification.json",
+    "bytes": 2020,
+    "sha256": "e35d56cc96fee8546147c8198ea599af2341e1715656bc83b42cea4015913f00"
+  },
+  {
+    "old": "multitrack_native_verification.json",
+    "new": "diagnostics/runtime/results/multitrack_native_verification.json",
+    "bytes": 1088,
+    "sha256": "e741df77a8734f232f1a87909daa6449facfaf14ea948d48142f3afb7f4c5d9d"
+  },
+  {
+    "old": "device_metadata_physical_before.json",
+    "new": "diagnostics/runtime/results/device_metadata_physical_before.json",
+    "bytes": 32932,
+    "sha256": "5d77298802f032a1b40b3957a11c0825fac7bdc18342335f8af0e32b4f1b1938"
+  },
+  {
+    "old": "learn_overlap_native_verification.json",
+    "new": "diagnostics/runtime/results/learn_overlap_native_verification.json",
+    "bytes": 295,
+    "sha256": "d7c3be08624a605845b89c40c37d2e69d99e2dd2d70714f1215a1a0099802820"
+  },
+  {
+    "old": "device_lock_physical_before.json",
+    "new": "diagnostics/runtime/results/device_lock_physical_before.json",
+    "bytes": 35027,
+    "sha256": "68034df1cbe2dfb0e444a752e1f9b6ce98be2b790bfa253cbb2bbcf1161acb12"
+  },
+  {
+    "old": "tag_device_main_before.json",
+    "new": "diagnostics/runtime/results/tag_device_main_before.json",
+    "bytes": 34500,
+    "sha256": "bf2118d259443d44877a0e87f5bc64f573a9d6a252c6b4bf305582b86bbe32b6"
+  },
+  {
+    "old": "context_page_verification.json",
+    "new": "diagnostics/runtime/results/context_page_verification.json",
+    "bytes": 1015,
+    "sha256": "b9cceadde6a3dd424ab185ae6ac05449d64e7ea6e9ed59757859ef2327204d48"
+  },
+  {
+    "old": "prototypes/inspector/parity_verification.json",
+    "new": "diagnostics/inspector/results/parity_verification.json",
+    "bytes": 798,
+    "sha256": "a2f9559c4303a373fc7e95d18bb6b28f7ca5cb4e8800f4da0d354b9b9eb6b606"
+  },
+  {
+    "old": "prototypes/inspector/control_publication_install.json",
+    "new": "diagnostics/inspector/results/control_publication_install.json",
+    "bytes": 9727,
+    "sha256": "ef1d3f5a04eaaae73199b190a9bc1b310da491bdb21415888da0a802fc357373"
+  },
+  {
+    "old": "prototypes/inspector/health_before.json",
+    "new": "diagnostics/inspector/results/health_before.json",
+    "bytes": 37312,
+    "sha256": "e8fab654f37dee37ba7c139e6d6d79a72211682e9579c681e2f58c82890f39f0"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_timings.json",
+    "new": "diagnostics/inspector/results/callback_cost_timings.json",
+    "bytes": 82292,
+    "sha256": "096021c2631f9e31fe2fd2d124e3ee96cef42082c3f7e6b4c37c65b16ec70ae6"
+  },
+  {
+    "old": "prototypes/inspector/physical_button_adapter_setup.json",
+    "new": "diagnostics/inspector/results/physical_button_adapter_setup.json",
+    "bytes": 10216,
+    "sha256": "a45be5aad4befa308a9ad200eec0180ee17e0722d98eb11f31929df7a82054ca"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_projection_timings.json",
+    "new": "diagnostics/inspector/results/callback_cost_projection_timings.json",
+    "bytes": 86829,
+    "sha256": "75dc404af882ecf0477a2042d99a198a27544c7c4cd3e0fdc333a599dbc6ed39"
+  },
+  {
+    "old": "prototypes/inspector/targets_verification.json",
+    "new": "diagnostics/inspector/results/targets_verification.json",
+    "bytes": 886,
+    "sha256": "d0c5a712518d7e804a1d148ca3aa055374164b6871ecb480074b090037d41148"
+  },
+  {
+    "old": "prototypes/inspector/selector_item_release_capture.json",
+    "new": "diagnostics/inspector/results/selector_item_release_capture.json",
+    "bytes": 679896,
+    "sha256": "7a348278c758dbf71b1f3dc4e7bb437fcb5b1edca8427b67a87a5406ffbb40fc"
+  },
+  {
+    "old": "prototypes/inspector/shared_correctness.json",
+    "new": "diagnostics/inspector/results/shared_correctness.json",
+    "bytes": 925,
+    "sha256": "ab0ddad41bd9f21e06d33ca827dca4eeb6589f2591d2e9a7ea6b8dfad0f1dcb3"
+  },
+  {
+    "old": "prototypes/inspector/cadence_60hz_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_60hz_acceptance.json",
+    "bytes": 321,
+    "sha256": "567e856f6bf1ae226acb11476588794a77be1f0bf8c8100cfe93df8f69cb5b54"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_native.json",
+    "new": "diagnostics/inspector/results/cadence_native_native.json",
+    "bytes": 1004159,
+    "sha256": "9f1c9eda0fa1add5e366b33013077c087af73a1e09acc0e4e7a1fb1a79c2b2a1"
+  },
+  {
+    "old": "prototypes/inspector/inline_menu_verification.json",
+    "new": "diagnostics/inspector/results/inline_menu_verification.json",
+    "bytes": 536,
+    "sha256": "a18dfb48dc88f5fec7c4ac74b1f18395031a1786fcedd57939a747ff99ffc640"
+  },
+  {
+    "old": "prototypes/inspector/tab_layout_capture.json",
+    "new": "diagnostics/inspector/results/tab_layout_capture.json",
+    "bytes": 244153,
+    "sha256": "70151b929dc309191240409000f54f9cfb73ef18217ee0e722292f64e4994463"
+  },
+  {
+    "old": "prototypes/inspector/definition_bounds_verification.json",
+    "new": "diagnostics/inspector/results/definition_bounds_verification.json",
+    "bytes": 501,
+    "sha256": "da6e24832ef78525c9b1412f780dbfe38e4dbac2a791bfbe98ed3b51fd2842f8"
+  },
+  {
+    "old": "prototypes/inspector/targets_hardware_acceptance.json",
+    "new": "diagnostics/inspector/results/targets_hardware_acceptance.json",
+    "bytes": 1450,
+    "sha256": "69d343c6b915dcae7285b15fa9605fc1f093082cefea9b49a40c0b07e6b5f59d"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_bursts_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_native_bursts_acceptance.json",
+    "bytes": 320,
+    "sha256": "c535c03b802e75459d30f9d4f2b68faf5eb207cd024d72d261574416d6c53307"
+  },
+  {
+    "old": "prototypes/inspector/stress_edges_before.json",
+    "new": "diagnostics/inspector/results/stress_edges_before.json",
+    "bytes": 820,
+    "sha256": "24eb1b7dd2960418427949b8cdff64fd530a13776118fd3a6e218dd71c79b3b2"
+  },
+  {
+    "old": "prototypes/inspector/mapping_checkpoint.json",
+    "new": "diagnostics/inspector/results/mapping_checkpoint.json",
+    "bytes": 489,
+    "sha256": "468078d3217b85c8596dc64dccb26cd628a5a4039f2bc95208018402fb860887"
+  },
+  {
+    "old": "prototypes/inspector/health_events.json",
+    "new": "diagnostics/inspector/results/health_events.json",
+    "bytes": 288,
+    "sha256": "739abfca24d3f0d7cabeec3e478bf25b4498e567f928064ec308722b42b81d4f"
+  },
+  {
+    "old": "prototypes/inspector/selector_item_replay.json",
+    "new": "diagnostics/inspector/results/selector_item_replay.json",
+    "bytes": 362,
+    "sha256": "b7d77e68a8e7536fc1ed527e1332bc8af2f6caa822253ae3a87eae283bedbab2"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_final_acceptance.json",
+    "new": "diagnostics/inspector/results/callback_cost_final_acceptance.json",
+    "bytes": 321,
+    "sha256": "b9ad75767ba426936e80422d20ca3de5e2934fdf1b2edbeec152959c80bdbe26"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_progress.json",
+    "new": "diagnostics/inspector/results/cadence_native_progress.json",
+    "bytes": 814,
+    "sha256": "ec757d014e6176653b4ad0094987c8e321f48eb6eba5f9941dff00337126af22"
+  },
+  {
+    "old": "prototypes/inspector/popup_height_race_before.json",
+    "new": "diagnostics/inspector/results/popup_height_race_before.json",
+    "bytes": 1122,
+    "sha256": "4b375b38a7cbac63332b761a717a319d557ae86848f5c4c9548cf12fa0689639"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_cached_timings.json",
+    "new": "diagnostics/inspector/results/callback_cost_cached_timings.json",
+    "bytes": 86834,
+    "sha256": "bfae038b2d23c41cbff65a1555e141f368e4554b5ef7547d93f95fee1e713e77"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_cached_acceptance.json",
+    "new": "diagnostics/inspector/results/callback_cost_cached_acceptance.json",
+    "bytes": 320,
+    "sha256": "15a475d0432c44fb889fdd937e7cd4c973f4b1f43d2cc0dc6cdafeefefdfd0fd"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_bursts_timings.json",
+    "new": "diagnostics/inspector/results/cadence_native_bursts_timings.json",
+    "bytes": 37785,
+    "sha256": "271a7dcf12c1f45b2996d2857f7f9b2bb0f1baa05fa20f4bedac1357081258c7"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_bursts_native.json",
+    "new": "diagnostics/inspector/results/cadence_native_bursts_native.json",
+    "bytes": 1530367,
+    "sha256": "07c3ec1214ecd41ac78923278ec13d44bf9796d62ce63c11272bfe5b3a104120"
+  },
+  {
+    "old": "prototypes/inspector/selector_item_capture.json",
+    "new": "diagnostics/inspector/results/selector_item_capture.json",
+    "bytes": 181766,
+    "sha256": "f6f19823f78dfe63dac827ff52427ed8bbed22f6b1f4eca99e5d763a1cfac9d2"
+  },
+  {
+    "old": "prototypes/inspector/selector_click_verification.json",
+    "new": "diagnostics/inspector/results/selector_click_verification.json",
+    "bytes": 2769,
+    "sha256": "715e75f3e4a02154293dee97ed8fe1f700dbd1c0496566d054f6f5f26bc49854"
+  },
+  {
+    "old": "prototypes/inspector/popup_reopen_height_after.json",
+    "new": "diagnostics/inspector/results/popup_reopen_height_after.json",
+    "bytes": 2091,
+    "sha256": "481d1fd406cda6b34a7c4484a3027303ab71c5e88a1f08755e8e7093796b241a"
+  },
+  {
+    "old": "prototypes/inspector/editor_dropdown_verification.json",
+    "new": "diagnostics/inspector/results/editor_dropdown_verification.json",
+    "bytes": 1445,
+    "sha256": "d9daa1b41acfb8373b3bc40d6db4aa45ab77ccd45019251e3741cb95e2bc3ce6"
+  },
+  {
+    "old": "prototypes/inspector/style_migration_verification.json",
+    "new": "diagnostics/inspector/results/style_migration_verification.json",
+    "bytes": 1385,
+    "sha256": "d069a8c0a65dbdea3953e076057785b28c240d7f746fc654298a9e034e0477fc"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_cached_progress.json",
+    "new": "diagnostics/inspector/results/callback_cost_cached_progress.json",
+    "bytes": 819,
+    "sha256": "4543af968d90c258a05feae3bf30bc0dd9da9aa1b8f9c20af5b4d1d28d2dc6cf"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_timings.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_timings.json",
+    "bytes": 64193,
+    "sha256": "7c674caed4bb642d230d8ce867cac67c847b67950d0c7dfb696b45aad4ed8505"
+  },
+  {
+    "old": "prototypes/inspector/popup_no_reopen_verification.json",
+    "new": "diagnostics/inspector/results/popup_no_reopen_verification.json",
+    "bytes": 473,
+    "sha256": "42e620cc4ef9e9f9a963952e17bbd9e143e4bee15156c0ed4729aa17f0a401be"
+  },
+  {
+    "old": "prototypes/inspector/cadence_ablation_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_ablation_acceptance.json",
+    "bytes": 322,
+    "sha256": "269d159dcb4895391358e9bed8a226cf2090bc8bbc80f9db451f3edcc7cfa07f"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_final_timings.json",
+    "new": "diagnostics/inspector/results/callback_cost_final_timings.json",
+    "bytes": 86866,
+    "sha256": "0cb06f478ac877c1549694b779684a9bd78bf6629bdfcef9bc0e8fb673de8692"
+  },
+  {
+    "old": "prototypes/inspector/popup_reopen_height_before.json",
+    "new": "diagnostics/inspector/results/popup_reopen_height_before.json",
+    "bytes": 607,
+    "sha256": "0d3395f6c229194c776559705d5e28e519de9429f7f78836ba8111a2c9be6d45"
+  },
+  {
+    "old": "prototypes/inspector/stress_review.json",
+    "new": "diagnostics/inspector/results/stress_review.json",
+    "bytes": 30768,
+    "sha256": "2719162e199124c861312f593b8bc3d2f65b23c9fe0da130a4b1c8015a8691fd"
+  },
+  {
+    "old": "prototypes/inspector/replacement_builder_verification.json",
+    "new": "diagnostics/inspector/results/replacement_builder_verification.json",
+    "bytes": 209,
+    "sha256": "968866ad8e4764677793dc4601f45a8d2746dabf2462ba6cd3ace9a6548a458f"
+  },
+  {
+    "old": "prototypes/inspector/cadence_ablation_native.json",
+    "new": "diagnostics/inspector/results/cadence_ablation_native.json",
+    "bytes": 10999,
+    "sha256": "466979928d26fc14ea872853febeadb27cc59ab73a5ced35aeaa26717a31e831"
+  },
+  {
+    "old": "prototypes/inspector/shared_stress_results.json",
+    "new": "diagnostics/inspector/results/shared_stress_results.json",
+    "bytes": 25515,
+    "sha256": "0bb80dd848f16063395cf684f0919be456a2e2481cfa585c947cc22ef5790410"
+  },
+  {
+    "old": "prototypes/inspector/targets_performance.json",
+    "new": "diagnostics/inspector/results/targets_performance.json",
+    "bytes": 625,
+    "sha256": "cc15f639f37a8a9d24d521d44e05c71f06098c710719b6fc49187bdbef22ea74"
+  },
+  {
+    "old": "prototypes/inspector/editor_actions_verification.json",
+    "new": "diagnostics/inspector/results/editor_actions_verification.json",
+    "bytes": 1191,
+    "sha256": "ec5d9eeb2bb45ed5115741f13c790f3da409597bddfb2d1a990f9ae81cb72f1c"
+  },
+  {
+    "old": "prototypes/inspector/physical_button_push.json",
+    "new": "diagnostics/inspector/results/physical_button_push.json",
+    "bytes": 12771,
+    "sha256": "75b45ce6bcd0c5f0420c0b78f61987be28d0df4a3a0b7bbcd7decf594e235543"
+  },
+  {
+    "old": "prototypes/inspector/stress_results.json",
+    "new": "diagnostics/inspector/results/stress_results.json",
+    "bytes": 40127,
+    "sha256": "f53b889e31f5c1012dfb45e8d0046755b3bdf9a94eb7d50b09b4a1965f4c0946"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_projection_acceptance.json",
+    "new": "diagnostics/inspector/results/callback_cost_projection_acceptance.json",
+    "bytes": 321,
+    "sha256": "73337984332d7088bca822d165122cc7e6f643f538475a9b622aede8d67645df"
+  },
+  {
+    "old": "prototypes/inspector/popup_height_fix_smoke_acceptance.json",
+    "new": "diagnostics/inspector/results/popup_height_fix_smoke_acceptance.json",
+    "bytes": 11641,
+    "sha256": "f5ef434ad9e144a3a023e0547c6dec50ebf44b8fa95ec11f47f6d9f1382757f3"
+  },
+  {
+    "old": "prototypes/inspector/health_network.json",
+    "new": "diagnostics/inspector/results/health_network.json",
+    "bytes": 752,
+    "sha256": "15e5ae66d26d8828ad3718a5bb39c1db6d59587260fcc29f5f652e88b2142b17"
+  },
+  {
+    "old": "prototypes/inspector/reveal_verification.json",
+    "new": "diagnostics/inspector/results/reveal_verification.json",
+    "bytes": 516,
+    "sha256": "621462e13f2c5c778e37bbf3fa63d94e4063fa09afb90db28f1e271d0aaf4770"
+  },
+  {
+    "old": "prototypes/inspector/mapping_verification.json",
+    "new": "diagnostics/inspector/results/mapping_verification.json",
+    "bytes": 562,
+    "sha256": "422f5c44c971baf42cd943bf3fd4092ec881dfd56722eff93d31e23f9c108c6a"
+  },
+  {
+    "old": "prototypes/inspector/project_restart_verification.json",
+    "new": "diagnostics/inspector/results/project_restart_verification.json",
+    "bytes": 1961141,
+    "sha256": "c867ab93cce8e19152c0184fe9810d7f22632988655ea5a2bbadd491b6556db6"
+  },
+  {
+    "old": "prototypes/inspector/performance_summary.json",
+    "new": "diagnostics/inspector/results/performance_summary.json",
+    "bytes": 5039,
+    "sha256": "4645b34c4f266d053d2c2d0668368397b86f42c9594a0e0454a8de65edddeaa9"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_native_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_native_acceptance.json",
+    "bytes": 320,
+    "sha256": "5cba0ef6db295793c4aa36944501f999825a0c2e9d6572e4d6ef02a5d9067c75"
+  },
+  {
+    "old": "prototypes/inspector/parity_performance.json",
+    "new": "diagnostics/inspector/results/parity_performance.json",
+    "bytes": 708,
+    "sha256": "c34a046b4c39e4a2632e8330c37a5b8d321f08ab36fd4f985fc0ae2841a51a6a"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_native_native.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_native_native.json",
+    "bytes": 1440989,
+    "sha256": "03a21da3bec78552fca915dc18f24aebed79f78f7fd5c315db1b088bfb7868a3"
+  },
+  {
+    "old": "prototypes/inspector/live_verification.json",
+    "new": "diagnostics/inspector/results/live_verification.json",
+    "bytes": 982,
+    "sha256": "7897c5c476074e427415c9c3e35e22da018b71ddf7619238b24b4e1d02231675"
+  },
+  {
+    "old": "prototypes/inspector/selector_release_smoke.json",
+    "new": "diagnostics/inspector/results/selector_release_smoke.json",
+    "bytes": 1130543,
+    "sha256": "25c5a4c53d508a2415dccf9486852088e0325946cbed5717c85e243533b93332"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_bursts_progress.json",
+    "new": "diagnostics/inspector/results/cadence_native_bursts_progress.json",
+    "bytes": 815,
+    "sha256": "5117414f3884a90dbaf2a38d4056820f17dfaa4f85751d942b345318f073c857"
+  },
+  {
+    "old": "prototypes/inspector/stress_preliminary.json",
+    "new": "diagnostics/inspector/results/stress_preliminary.json",
+    "bytes": 31795,
+    "sha256": "c9b463657a2a2dae0d13ba4e39d0d9d070c249bcd252b7c313528d1682ec93fb"
+  },
+  {
+    "old": "prototypes/inspector/inline_selector_capture.json",
+    "new": "diagnostics/inspector/results/inline_selector_capture.json",
+    "bytes": 89119,
+    "sha256": "9571afd013487e653933ae5d5c858210d0abd7717b9830e965446fa16f2020c8"
+  },
+  {
+    "old": "prototypes/inspector/targets_network.json",
+    "new": "diagnostics/inspector/results/targets_network.json",
+    "bytes": 616,
+    "sha256": "7efc30d6de5377482da033411e7fdf97fb91561adb49d3fd8591f2802ee440fb"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_acceptance.json",
+    "new": "diagnostics/inspector/results/callback_cost_acceptance.json",
+    "bytes": 321,
+    "sha256": "cb7631c0f0b46135cae40b9d8e5c52bce3ed1dee1fa9406f37643dd89b17cd96"
+  },
+  {
+    "old": "prototypes/inspector/live_performance.json",
+    "new": "diagnostics/inspector/results/live_performance.json",
+    "bytes": 619,
+    "sha256": "9abdec726633928570ac3b23a68fb4fa9579d0bf00e8fdb0f25e6ade9d5ce732"
+  },
+  {
+    "old": "prototypes/inspector/health_checkpoint.json",
+    "new": "diagnostics/inspector/results/health_checkpoint.json",
+    "bytes": 342,
+    "sha256": "b034bef581a1199c353de0ecf2034e696ea222f121a329aa18b0da4b1b4e76f3"
+  },
+  {
+    "old": "prototypes/inspector/popup_height_race_after.json",
+    "new": "diagnostics/inspector/results/popup_height_race_after.json",
+    "bytes": 5397,
+    "sha256": "c89a88537bc2f85fc82d381e32926f23aa40dd048778a9a8122ba30c6fa6d706"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_native_timings.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_native_timings.json",
+    "bytes": 37827,
+    "sha256": "b88b7a4350aee7d81e23108b37346c79b4dbaa990ae1ecaaa6fcb274080ab113"
+  },
+  {
+    "old": "prototypes/inspector/cadence_ablation_progress.json",
+    "new": "diagnostics/inspector/results/cadence_ablation_progress.json",
+    "bytes": 816,
+    "sha256": "6cdd5add76538bc04d9af2d4c53879e1b0a98efa3e8ade4bca50cbd4bc1dd1c7"
+  },
+  {
+    "old": "prototypes/inspector/style_api_probe.json",
+    "new": "diagnostics/inspector/results/style_api_probe.json",
+    "bytes": 1645,
+    "sha256": "acd406bf51bda830646ec88c49cc62b3aa079df1b4755a923c326f48e3ab2bdb"
+  },
+  {
+    "old": "prototypes/inspector/context_release_verification.json",
+    "new": "diagnostics/inspector/results/context_release_verification.json",
+    "bytes": 572,
+    "sha256": "32e949bed3688d53de8253e93c7039fa349ab74707a4cd5ce678f0933b5cf630"
+  },
+  {
+    "old": "prototypes/inspector/activation_verification.json",
+    "new": "diagnostics/inspector/results/activation_verification.json",
+    "bytes": 757,
+    "sha256": "dfeeb0d131bae2511e7e30eecda06797269d3f87cc36f5bf6db3557f7aefe2d5"
+  },
+  {
+    "old": "prototypes/inspector/tab_layout_probe_smoke.json",
+    "new": "diagnostics/inspector/results/tab_layout_probe_smoke.json",
+    "bytes": 11081,
+    "sha256": "e1866209db9cfd383925c5640249f08424dd95cd8fd780234fc150e2648a5ca1"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_progress.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_progress.json",
+    "bytes": 815,
+    "sha256": "d5a89db01f10d8c9825f19f6c418ac2172aa0dee2f84871fd3188cd12e75bc17"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_timings.json",
+    "new": "diagnostics/inspector/results/cadence_native_timings.json",
+    "bytes": 37783,
+    "sha256": "867495bf08ea6698c098392810123cecefcdf8f633a07ea4e8c72f655f1e2b04"
+  },
+  {
+    "old": "prototypes/inspector/mapping_network.json",
+    "new": "diagnostics/inspector/results/mapping_network.json",
+    "bytes": 628,
+    "sha256": "8f71194416f5d546a1fe0a6eefe93baf7488e3179fbbd91da98f8ca6b5dda51b"
+  },
+  {
+    "old": "prototypes/inspector/stress_followup_after.json",
+    "new": "diagnostics/inspector/results/stress_followup_after.json",
+    "bytes": 10557,
+    "sha256": "cbb5786571db357fe64327674f4b78f4ad49305efa3eab7b878914b95365492f"
+  },
+  {
+    "old": "prototypes/inspector/live_value_verification.json",
+    "new": "diagnostics/inspector/results/live_value_verification.json",
+    "bytes": 338,
+    "sha256": "09fa64def7a4ee07ff46bb6af2791cf937c0236f7acbfe0555b2501317d40a77"
+  },
+  {
+    "old": "prototypes/inspector/stress_followup_before.json",
+    "new": "diagnostics/inspector/results/stress_followup_before.json",
+    "bytes": 9238,
+    "sha256": "4adfe09862f2896ae7afe484988aeb02bbc9219265e9a84af07da36ed1fb60a3"
+  },
+  {
+    "old": "prototypes/inspector/health_performance.json",
+    "new": "diagnostics/inspector/results/health_performance.json",
+    "bytes": 354,
+    "sha256": "69f86ee7a6a9264012fdb0237f6524af343635e35d07aabc7add1fc15db7ddb3"
+  },
+  {
+    "old": "prototypes/inspector/replacement_acceptance.json",
+    "new": "diagnostics/inspector/results/replacement_acceptance.json",
+    "bytes": 51334,
+    "sha256": "b99b1373ad91a2e2629ae898eedcf1e52ae75d272cce485ce51b3b24ac0e3170"
+  },
+  {
+    "old": "prototypes/inspector/health_verification.json",
+    "new": "diagnostics/inspector/results/health_verification.json",
+    "bytes": 796,
+    "sha256": "d5d97298367ea6f8538219fbe382ec4356bf52a5c2972b8af51223ce7ace13c4"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_native_progress.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_native_progress.json",
+    "bytes": 816,
+    "sha256": "6a61096b852fba05b02a20193dd0c9df48ee31997fb366dadba9593046950669"
+  },
+  {
+    "old": "prototypes/inspector/stress_baseline.json",
+    "new": "diagnostics/inspector/results/stress_baseline.json",
+    "bytes": 41914,
+    "sha256": "c09816a4dee9d969a1b620a8d1978e586832ac8e31da73af0bd5692022223a8f"
+  },
+  {
+    "old": "prototypes/inspector/replacement_physical_gates.json",
+    "new": "diagnostics/inspector/results/replacement_physical_gates.json",
+    "bytes": 1966,
+    "sha256": "71db40f7a7252fb4fa5d1d8c0c4b01ec3f57c88a284cfdac9a49a8ac4ab0428c"
+  },
+  {
+    "old": "prototypes/inspector/shared_reload.json",
+    "new": "diagnostics/inspector/results/shared_reload.json",
+    "bytes": 718,
+    "sha256": "027e8a26300bf65922d7258d7651603a115a0e58bd5d663053bcddad9af21d5c"
+  },
+  {
+    "old": "prototypes/inspector/projection_install.json",
+    "new": "diagnostics/inspector/results/projection_install.json",
+    "bytes": 5051,
+    "sha256": "3c07e8eb7fffe5a44e26855412d0eb21d7d02762402569746cb3fb2949dbe624"
+  },
+  {
+    "old": "prototypes/inspector/advanced_builder_verification.json",
+    "new": "diagnostics/inspector/results/advanced_builder_verification.json",
+    "bytes": 177,
+    "sha256": "9dd4e4d3fce46f9083da52295fb3746d0e1ca377c751c37bbef9e8cb40aad557"
+  },
+  {
+    "old": "prototypes/inspector/replacement_summary.json",
+    "new": "diagnostics/inspector/results/replacement_summary.json",
+    "bytes": 1380,
+    "sha256": "2357dd2226bfb89af7be0dc8e72a7307062c61fe199e756726ee80c10a40fb0e"
+  },
+  {
+    "old": "prototypes/inspector/editor_actions_before.json",
+    "new": "diagnostics/inspector/results/editor_actions_before.json",
+    "bytes": 4572,
+    "sha256": "186ee7337a18557c70763c71017849006dba1f4b238e16741500340b5c03dff6"
+  },
+  {
+    "old": "prototypes/inspector/live_export_reload.json",
+    "new": "diagnostics/inspector/results/live_export_reload.json",
+    "bytes": 694,
+    "sha256": "1109b0251299fec3d7fc1d904314f4d805278efe50ddc9824591dfe472ccdba8"
+  },
+  {
+    "old": "prototypes/inspector/selector_item_smoke.json",
+    "new": "diagnostics/inspector/results/selector_item_smoke.json",
+    "bytes": 1426969,
+    "sha256": "8c558c00d6b45dc5eab8e06360ffa4d2cadbb945c760df3f8ab6836076eff018"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_progress.json",
+    "new": "diagnostics/inspector/results/callback_cost_progress.json",
+    "bytes": 816,
+    "sha256": "cb529a23038334a46ccfd8a7b180addcd372b35a41569846fe096cd06888d4c1"
+  },
+  {
+    "old": "prototypes/inspector/tab_layout_findings.json",
+    "new": "diagnostics/inspector/results/tab_layout_findings.json",
+    "bytes": 752,
+    "sha256": "0684d3459a01ce5558ca250e3b2664b1a13e077df59e00c4e5b0250a98ffc9f6"
+  },
+  {
+    "old": "prototypes/inspector/replacement_progress.json",
+    "new": "diagnostics/inspector/results/replacement_progress.json",
+    "bytes": 246,
+    "sha256": "6c7a55941b5fd33aaa2fceca0117b8213bb88f09db02f1cdb18b01a500aaaf0d"
+  },
+  {
+    "old": "prototypes/inspector/replacement_progress_interrupted.json",
+    "new": "diagnostics/inspector/results/replacement_progress_interrupted.json",
+    "bytes": 1126,
+    "sha256": "b402561443b6400a07ad69591eb517af4ea0cfb0eb1697f8da519f0c74c19b0a"
+  },
+  {
+    "old": "prototypes/inspector/cadence_60hz_timings.json",
+    "new": "diagnostics/inspector/results/cadence_60hz_timings.json",
+    "bytes": 37905,
+    "sha256": "7050a6f0a877dd9465872b8580e04bd64b564a1cc9bb3b210558bf050f9fabea"
+  },
+  {
+    "old": "prototypes/inspector/popup_manual_base_verification.json",
+    "new": "diagnostics/inspector/results/popup_manual_base_verification.json",
+    "bytes": 225,
+    "sha256": "de2afc1b1b17208874a0e193e70f1e364131b08377fa42dbf5fee2c535f65d32"
+  },
+  {
+    "old": "prototypes/inspector/mapping_performance.json",
+    "new": "diagnostics/inspector/results/mapping_performance.json",
+    "bytes": 327,
+    "sha256": "8dc4069fe21f48f49098cc35960cc4ccb1560e824f1bdf63638580245f812b59"
+  },
+  {
+    "old": "prototypes/inspector/cadence_summary.json",
+    "new": "diagnostics/inspector/results/cadence_summary.json",
+    "bytes": 8980,
+    "sha256": "d3698a09c5223b6c64eccc510eba1f0fedbea0bdfe82d10bd1459a2fb0edce59"
+  },
+  {
+    "old": "prototypes/inspector/physical_button_toggle.json",
+    "new": "diagnostics/inspector/results/physical_button_toggle.json",
+    "bytes": 9851,
+    "sha256": "3ffbb66b7b10af8a2f829913331bb658673a0e50c2376cab12d73d8a2a02b708"
+  },
+  {
+    "old": "prototypes/inspector/physical_range_relearn.json",
+    "new": "diagnostics/inspector/results/physical_range_relearn.json",
+    "bytes": 20820,
+    "sha256": "826c8b9e36170eee6bea711c60cc46ef2832877aa515be2191352327dd8e1074"
+  },
+  {
+    "old": "prototypes/inspector/advanced_install.json",
+    "new": "diagnostics/inspector/results/advanced_install.json",
+    "bytes": 5424,
+    "sha256": "08543c5f080ea2b27dcc86e8a3f6b560e73e43a7d642290dcdcafca7ec3f88e3"
+  },
+  {
+    "old": "prototypes/inspector/cadence_60hz_progress.json",
+    "new": "diagnostics/inspector/results/cadence_60hz_progress.json",
+    "bytes": 817,
+    "sha256": "ad9855e72c7ebd57771baa72ead0a3c90a99a363023ab0e771f0bef9c76b72d8"
+  },
+  {
+    "old": "prototypes/inspector/cadence_native_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_native_acceptance.json",
+    "bytes": 319,
+    "sha256": "154651aad52aafdf3d51c88453d07509cc5c9ee72f937e4046647e9fdbb5b3b1"
+  },
+  {
+    "old": "prototypes/inspector/native_draw_idle_sample.json",
+    "new": "diagnostics/inspector/results/native_draw_idle_sample.json",
+    "bytes": 32208,
+    "sha256": "eed0355c269c33fd885502b74297c93c19fd89e3cd873e6522356956ecb2c763"
+  },
+  {
+    "old": "prototypes/inspector/stress_final.json",
+    "new": "diagnostics/inspector/results/stress_final.json",
+    "bytes": 7292,
+    "sha256": "c6bd46b7aa91d127031aea62acf93ea62e60280b84465dc5d641011fe044c1b8"
+  },
+  {
+    "old": "prototypes/inspector/cadence_ablation_timings.json",
+    "new": "diagnostics/inspector/results/cadence_ablation_timings.json",
+    "bytes": 64125,
+    "sha256": "269ec74f933933d7a4fe78826ddf2230fa01c1630e7f845d57b6af07f1e17e5e"
+  },
+  {
+    "old": "prototypes/inspector/advanced_verification.json",
+    "new": "diagnostics/inspector/results/advanced_verification.json",
+    "bytes": 1154,
+    "sha256": "ac04517869b3b7482c458580f4a1fea4ff123e602da9f91e605cfbd1be2636d4"
+  },
+  {
+    "old": "prototypes/inspector/definition_menu_verification.json",
+    "new": "diagnostics/inspector/results/definition_menu_verification.json",
+    "bytes": 628,
+    "sha256": "8127d93c7b49bd072c1cc9e0b36c1a0ba7581f6b4a844fa021799b7bd6ed8525"
+  },
+  {
+    "old": "prototypes/inspector/stress_edges_after.json",
+    "new": "diagnostics/inspector/results/stress_edges_after.json",
+    "bytes": 972,
+    "sha256": "f778a8aff480bb2842ff2cb082b57fae389bb3b888ea8ab976434edf0469b960"
+  },
+  {
+    "old": "prototypes/inspector/definition_edit_verification.json",
+    "new": "diagnostics/inspector/results/definition_edit_verification.json",
+    "bytes": 419,
+    "sha256": "e1fefd704b06cc1f14479a578999e178bbe24311e41b7bbeb3ccd8dfcdba44d8"
+  },
+  {
+    "old": "prototypes/inspector/control_publication_verification.json",
+    "new": "diagnostics/inspector/results/control_publication_verification.json",
+    "bytes": 233,
+    "sha256": "be36ae287679fdab6489b9bacf56c5d3252cba8adc01ac47059d3c1ebb87ad78"
+  },
+  {
+    "old": "prototypes/inspector/replacement_restoration_before.json",
+    "new": "diagnostics/inspector/results/replacement_restoration_before.json",
+    "bytes": 679,
+    "sha256": "9dcb6840f41dc13d8522dc953c03c5f841f04b539e3865baf12d7ed81d89bcb7"
+  },
+  {
+    "old": "prototypes/inspector/selector_item_verification.json",
+    "new": "diagnostics/inspector/results/selector_item_verification.json",
+    "bytes": 8697,
+    "sha256": "39d54a94a2acfed31c6a4e25102893efbac6e412e23fc3c3d211b376fcc83b05"
+  },
+  {
+    "old": "prototypes/inspector/control_publication_checkpoint.json",
+    "new": "diagnostics/inspector/results/control_publication_checkpoint.json",
+    "bytes": 435,
+    "sha256": "aebfff55dd362f511479a982a418a8cd68b4c20c8a7166ed1be483109846524e"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_native.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_native.json",
+    "bytes": 19315,
+    "sha256": "ecccb5f98a8ba8cb3df4c2931c01d64a6cb220fcf44185a31eb2aceaab288f6c"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_final_progress.json",
+    "new": "diagnostics/inspector/results/callback_cost_final_progress.json",
+    "bytes": 818,
+    "sha256": "7e6b757e15317680472509fd00acc768ff96b51b4caa103b2560726bd1b6eab8"
+  },
+  {
+    "old": "prototypes/inspector/control_publication_export.json",
+    "new": "diagnostics/inspector/results/control_publication_export.json",
+    "bytes": 433,
+    "sha256": "d3806256da5dec2c4bacbbc0abc37b848958f5b6786db554ae709f33ea86c603"
+  },
+  {
+    "old": "prototypes/inspector/callback_cost_projection_progress.json",
+    "new": "diagnostics/inspector/results/callback_cost_projection_progress.json",
+    "bytes": 819,
+    "sha256": "d2329be00478eef1feb913de1d74bd7b4386859985839820756330a95a71af0b"
+  },
+  {
+    "old": "prototypes/inspector/resize_frame_profile.json",
+    "new": "diagnostics/inspector/results/resize_frame_profile.json",
+    "bytes": 243,
+    "sha256": "f041d7808a6e4e282c1eb7e244bdf64f458c57ddd11dfb39fcb5caef28744f98"
+  },
+  {
+    "old": "prototypes/inspector/context_menu_network.json",
+    "new": "diagnostics/inspector/results/context_menu_network.json",
+    "bytes": 302,
+    "sha256": "014006c8205cef780dbf364715449e44af56ac82c09151f27b3067b7b053979f"
+  },
+  {
+    "old": "prototypes/inspector/cadence_candidate_acceptance.json",
+    "new": "diagnostics/inspector/results/cadence_candidate_acceptance.json",
+    "bytes": 322,
+    "sha256": "097c1847db45d823120bfd04adfa670ee99325ca593f44febb939c8197bcec7b"
+  },
+  {
+    "old": "prototypes/inspector/stress_runner_smoke.json",
+    "new": "diagnostics/inspector/results/stress_runner_smoke.json",
+    "bytes": 4876,
+    "sha256": "ad870981b007f1a6acfe3b4602061ba4318614f85e40938558233ccef4c0ded5"
+  },
+  {
+    "old": "prototypes/inspector/restart_before.json",
+    "new": "diagnostics/inspector/results/restart_before.json",
+    "bytes": 37476,
+    "sha256": "20ae0d1f6c54b4bec942b38f349256d2c085382d4f5cedd26fb97f7dc3e526bd"
+  },
+  {
+    "old": "prototypes/inspector/cadence_60hz_native.json",
+    "new": "diagnostics/inspector/results/cadence_60hz_native.json",
+    "bytes": 11418,
+    "sha256": "1e902e3abfab44c26485fcf6ad301674219421522a1f6daa67fb27a729e97817"
+  },
+  {
+    "old": "prototypes/inspector/replacement_acceptance_interrupted.json",
+    "new": "diagnostics/inspector/results/replacement_acceptance_interrupted.json",
+    "bytes": 17036,
+    "sha256": "f13ffed36a8ac621a5df526ba185646c0f140f634e511493a08c8b17cf15c6f7"
+  },
+  {
+    "old": "prototypes/inspector/live_saved_state.json",
+    "new": "diagnostics/inspector/results/live_saved_state.json",
+    "bytes": 4706,
+    "sha256": "5517d77bce135720e8b1232e8a587c67578b403f65348aabe4250471fa519fc4"
+  },
+  {
+    "old": "prototypes/inspector/replacement_restoration_after.json",
+    "new": "diagnostics/inspector/results/replacement_restoration_after.json",
+    "bytes": 533,
+    "sha256": "cd4df0ac2c19f6a991676671b95d03a8f5a12784fbc0eec518e4b1c5d6a874e6"
+  },
+  {
+    "old": "prototypes/inspector/inline_selector_acceptance.json",
+    "new": "diagnostics/inspector/results/inline_selector_acceptance.json",
+    "bytes": 522,
+    "sha256": "36441515d5c6c879c73471e2bd09c340f3bfb78a4df31c77deac6f35ec82d190"
+  },
+  {
+    "old": "prototypes/inspector/window_sizes_verification.json",
+    "new": "diagnostics/inspector/results/window_sizes_verification.json",
+    "bytes": 917,
+    "sha256": "9d79633c445f465123a8f3da5971b1c4bb5f26212ed2a61171956afe61f31193"
+  },
+  {
+    "old": "prototypes/inspector/dropdown_verification.json",
+    "new": "diagnostics/inspector/results/dropdown_verification.json",
+    "bytes": 231,
+    "sha256": "c76cf0e8d9c37e01945438a1431565ab01d902593a4b4482d02a4981bb434409"
+  },
+  {
+    "old": "prototypes/inspector/popup_height_fix_smoke_progress.json",
+    "new": "diagnostics/inspector/results/popup_height_fix_smoke_progress.json",
+    "bytes": 1103,
+    "sha256": "3733ad33063605d9c9dc06948e06b214aa0a2d209af335f1323f12c6bebecf39"
+  },
+  {
+    "old": "prototypes/inspector/advanced_network.json",
+    "new": "diagnostics/inspector/results/advanced_network.json",
+    "bytes": 1901,
+    "sha256": "b0b984207a476fdd04f763a04967738cae03abda3f0a7e038b04e1abfb4ff773"
+  },
+  {
+    "old": "prototypes/inspector/replacement_rss_interrupted.jsonl",
+    "new": "diagnostics/inspector/results/replacement_rss_interrupted.jsonl",
+    "bytes": 4141,
+    "sha256": "e53cada1293109351387ee97cd8f8389414b2948e9fc58bedb4e448e0acbb0d5"
+  },
+  {
+    "old": "prototypes/inspector/replacement_rss.jsonl",
+    "new": "diagnostics/inspector/results/replacement_rss.jsonl",
+    "bytes": 23608,
+    "sha256": "2edf18c8ba37daf6a92d2b6e3da54a1e34184f64b16428147ebd908d1843dd9e"
+  },
+  {
+    "old": "prototypes/inspector/inspector_below.tox",
+    "new": "projects/components/inspector/inspector_below.tox",
+    "bytes": 338640,
+    "sha256": "d8d3c4d9df868d3e1caa96aa8c4443b07e5f627cb562b3b6b4f6d12795456246"
+  },
+  {
+    "old": "prototypes/inspector/inspector_demo.tox",
+    "new": "projects/components/inspector/inspector_demo.tox",
+    "bytes": 45846,
+    "sha256": "4dc668ca3444bce8a03b8b9dc15d36f663b9901f706fe2dc651f1d2ba99f4217"
+  },
+  {
+    "old": "prototypes/inspector/inspector_popup.tox",
+    "new": "projects/components/inspector/inspector_popup.tox",
+    "bytes": 333584,
+    "sha256": "370fb8f5a2b916504f340660acc57a1e096e1ea2b8d67ddae3de04f824c850f3"
+  },
+  {
+    "old": "prototypes/inspector/inspector_model.tox",
+    "new": "projects/components/inspector/inspector_model.tox",
+    "bytes": 68206,
+    "sha256": "47b67b11b085a22b946c1e5a60c2c5d77335c0b2923d02b00fac9b65611aea7e"
+  }
+]

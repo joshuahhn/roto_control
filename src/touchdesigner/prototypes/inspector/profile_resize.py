@@ -30,7 +30,7 @@ elif phase=='finish':
         samples=probe.fetch('samples');gaps=sorted(s['gap_ms'] for s in samples[1:])
         changing=[s for i,s in enumerate(samples[1:],1) if s['sizes']!=samples[i-1]['sizes']]
         result=dict(samples=len(samples),resize_frames=len(changing),gap_p95_ms=gaps[int((len(gaps)-1)*.95)] if gaps else None,max_gap_ms=max(gaps) if gaps else None,latest_metrics=samples[-1]['metrics'] if samples else {},resize_max_gap_ms=max((s['gap_ms'] for s in changing),default=None),native_drag_visual_verified=False)
-        Path(project.folder+'/prototypes/inspector/resize_frame_profile.json').write_text(json.dumps(result,indent=2))
+        Path(project.folder+'/diagnostics/inspector/results/resize_frame_profile.json').write_text(json.dumps(result,indent=2))
         print(json.dumps(result))
     finally:probe.destroy()
 else:raise ValueError('Unknown phase')
