@@ -23,15 +23,15 @@ State['Value'] is the normalized monitor; the old outer Control / Value and Offe
 
 A deleted target, readonly/mode change or callback exception suspends that binding and clears mapping. Further target dispatch is stopped. Fix the cause and bind again; Disconnect stays available. Error strings are diagnostics, not stable error codes. A failed SetValue raises as well as reporting its error.
 
-Saved Binding page configuration is restored after initialization (first Tick, or Apply/Connect). Python registration mode recreates its runtime registration using registration.onRegister(controller). MIDI remains disconnected until Connect. Temporary direct API/demo-button registrations do not change saved setup. Development source DATs stay synced to disk. Use export_component.py for an embedded-code tox with no demo bindings; The MIDI helper is embedded; only Python with the MIDI packages remains external. See portability.md.
+Saved Binding page configuration is restored after initialization (first Tick, or Apply/Connect). Python registration mode recreates its runtime registration using registration.onRegister(controller). MIDI remains disconnected until Connect. Temporary direct API/demo-button registrations do not change saved setup. Development source DATs stay synced to disk. Use scripts/export_component.py for an embedded-code tox with no demo bindings; The MIDI helper is embedded; only Python with the MIDI packages remains external. See portability.md.
 
 ## Source upgrades
 
-Disconnect, load changed dependency DAT source, then reinitialize the Extension. Existing host instances can retain old class implementations even when a synced DAT displays new source. Verify the restored setup/runtime before Connect. upgrade_controls.py applies this ordering; it preserves the user-owned targets table and registration hook.
+Disconnect, load changed dependency DAT source, then reinitialize the Extension. Existing host instances can retain old class implementations even when a synced DAT displays new source. Verify the restored setup/runtime before Connect. scripts/upgrade_controls.py applies this ordering; it preserves the user-owned targets table and registration hook.
 
 ## Sequence verification
 
-`verify_api_sequences.py` builds an isolated six-target fixture without opening MIDI ports. Run build_fixture, wait one TD frame, then exercise. Check the deferred native Pulse callback on the next frame. The saved registration hook also supports extension reinit and tox reload checks. This complements test_api.py with real TD parameters/watchers; synthetic MIDI does not establish physical PUSH acceptance.
+`diagnostics/runtime/verify_api_sequences.py` builds an isolated six-target fixture without opening MIDI ports. Run build_fixture, wait one TD frame, then exercise. Check the deferred native Pulse callback on the next frame. The saved registration hook also supports extension reinit and tox reload checks. This complements test_api.py with real TD parameters/watchers; synthetic MIDI does not establish physical PUSH acceptance.
 
 Collection restore refreshes watcher OP expressions even when their source text is unchanged, to clear initialization-time unresolved caches. Verify actual watcher OP handles and a direct parameter edit after disk reopen.
 

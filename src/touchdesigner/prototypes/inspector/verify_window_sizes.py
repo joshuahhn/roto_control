@@ -30,7 +30,7 @@ elif phase=='finish':
         v.CloseEditor();popup.par.winclose.pulse();u.style=saved['style']
         main.par.winw,main.par.winh=saved['main'];main.par.winopen.pulse()
         popup.par.winw,popup.par.winh=saved['popup'];v.Refresh();v.unstore('window_size_fixture');v.unstore('window_size_corner')
-    path=Path(project.folder+'/prototypes/inspector/window_sizes_verification.json')
+    path=Path(project.folder+'/diagnostics/inspector/results/window_sizes_verification.json')
     evidence=json.loads(path.read_text()) if path.exists() else {}
     evidence.pop('mapping_expansion_preserves_popup_size',None)
     evidence.update(result);path.write_text(json.dumps(evidence,indent=2));print(json.dumps(evidence))

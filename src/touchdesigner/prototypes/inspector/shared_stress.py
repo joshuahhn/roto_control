@@ -91,7 +91,7 @@ def tick():
     except Exception:
         result['failures'].append(traceback.format_exc());finish()
 
-def write():Path(project.folder+'/prototypes/inspector/'+output_name).write_text(json.dumps(result,indent=2))
+def write():Path(project.folder+'/diagnostics/inspector/results/'+output_name).write_text(json.dumps(result,indent=2))
 
 def finish():
     global done,state

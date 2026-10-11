@@ -22,5 +22,5 @@ try:
     back=page.appendFloat('Amount',label='Amount A',order=1,replace=True)[0]
     result.update(reverse=snap(back),int_handle_valid=new.valid,int_handle_style=new.style)
 finally:holder.destroy()
-Path(project.folder+'/prototypes/inspector/style_api_probe.json').write_text(json.dumps(result,indent=2)+'\n')
+Path(project.folder+'/diagnostics/inspector/results/style_api_probe.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps(result))

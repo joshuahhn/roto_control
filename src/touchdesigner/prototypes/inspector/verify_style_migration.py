@@ -169,5 +169,5 @@ class StyleMigrationProbe:
         assert self.model.Stats()['subscribers']==2
         assert not any(o.errors(recurse=True) for o in [self.production,self.model]+self.views)
         self.result.update(production_catalog_registry_process_preserved=True,fixture_removed=True,no_physical_midi=True,subscribers=2)
-        Path(project.folder+'/prototypes/inspector/style_migration_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
+        Path(project.folder+'/diagnostics/inspector/results/style_migration_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
         print(json.dumps(self.result))

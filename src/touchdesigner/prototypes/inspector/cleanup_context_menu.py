@@ -30,5 +30,5 @@ for view in (op('/inspector_below'),op('/inspector_popup')):
             nodes=check(component);annotate(component,'annotate_dropdown','Dropdown',nodes)
     assert not view.errors(recurse=True)
     results.append(dict(view=view.path,pools=3,rows_per_pool=8,no_overlap=True,contained=True,menu_windows=0))
-Path(project.folder+'/prototypes/inspector/context_menu_network.json').write_text(json.dumps(results,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/context_menu_network.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results))

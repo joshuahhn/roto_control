@@ -1,0 +1,54 @@
+{
+  "offered": true,
+  "learning": true,
+  "button8": {
+    "action_id": "snapshot.2a77225c5e5943848a8dd6367f983dd6",
+    "action_result": {
+      "preset_id": "snapshot.2a77225c5e5943848a8dd6367f983dd6",
+      "revision": 1,
+      "status": "succeeded",
+      "error": "",
+      "entries": [
+        {
+          "kind": "knob",
+          "slot": 1,
+          "value": 0.004150643960202649,
+          "attempted": true,
+          "verified": true,
+          "actual_value": 0.004150643960202649,
+          "error": "",
+          "mapping_id": "parameter.1ef4053018fc4d6cae015902b4419923",
+          "output_value": 0.004150643960202649
+        }
+      ],
+      "action_id": "snapshot.2a77225c5e5943848a8dd6367f983dd6"
+    },
+    "action_available": true,
+    "mapping_error": "",
+    "id": "action.db310f88e7b642059e92c251430f0c40",
+    "kind": "button",
+    "slot": 8,
+    "mode": "pulse",
+    "label": "Hardware test 11:41:39",
+    "value": 0,
+    "value_source": "action",
+    "normalized": 0.0,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mapped": false,
+    "touched": false,
+    "valid": true,
+    "connected": true,
+    "plugin": true,
+    "error": "",
+    "button_type": "push",
+    "binding_type": "action",
+    "comp": "",
+    "parameter": "",
+    "menu_names": [],
+    "menu_labels": [],
+    "value_label": "",
+    "parameter_style": "",
+    "requires_relearn": true
+  }
+}

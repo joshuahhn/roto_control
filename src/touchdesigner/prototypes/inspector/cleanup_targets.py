@@ -47,5 +47,5 @@ for view in [op('/inspector_below'),op('/inspector_popup')]:
     annotate(view.op('base_popup'),'annotate_popup','Popup',[host])
 annotations=[o for o in model.children if o.OPType=='annotateCOMP'];verify([],annotations)
 assert not any(o.errors(recurse=True) for o in [model,op('/inspector_below'),op('/inspector_popup')])
-Path(project.folder+'/prototypes/inspector/targets_network.json').write_text(json.dumps(results,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/targets_network.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results))

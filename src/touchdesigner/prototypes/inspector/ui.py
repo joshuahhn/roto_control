@@ -1434,9 +1434,9 @@ class InspectorView:
                     acknowledged=bool(info.get('mapped') and not info.get('requires_relearn'))
                     self._set_error('Ping sent · mapping already acknowledged' if acknowledged else 'Ping sent · awaiting hardware ACK')
                 else:
-                    self._model.CheckClear(self._context,self.selected,self._token)
                     pending=(self._context,self.selected,self._token)
                     if not self._clear_pending or self._clear_pending[0]!=pending or monotonic()>self._clear_pending[1]:
+                        self._model.CheckClear(self._context,self.selected,self._token)
                         self._clear_pending=(pending,monotonic()+8)
                         for e in self._editors:e.op('clear/text_label').par.text=ICONS['confirm']
                         slot=('K' if self.selected<8 else 'B')+str(self.selected%8+1)

@@ -1,0 +1,58 @@
+{
+  "baseline": "a035d7386813b3a94bd26f57ab3514c780c6de87",
+  "scope": "synthetic source counts; four cached contexts; eight Knobs",
+  "before": {
+    "snapshot_default": {
+      "syncs": 9,
+      "context_reads": 36,
+      "capture_slots": 8
+    },
+    "save_default": {
+      "syncs": 11,
+      "context_reads": 44,
+      "dispatches": 1
+    },
+    "snapshot_explicit": {
+      "syncs": 17,
+      "context_reads": 68,
+      "capture_slots": 8
+    },
+    "save_explicit": {
+      "syncs": 19,
+      "context_reads": 76,
+      "dispatches": 1
+    },
+    "clear_confirm": {
+      "syncs": 3,
+      "context_reads": 12,
+      "dispatches": 1
+    }
+  },
+  "after": {
+    "snapshot_default": {
+      "syncs": 1,
+      "context_reads": 4,
+      "capture_slots": 8
+    },
+    "save_default": {
+      "syncs": 2,
+      "context_reads": 8,
+      "dispatches": 1
+    },
+    "snapshot_explicit": {
+      "syncs": 1,
+      "context_reads": 4,
+      "capture_slots": 8
+    },
+    "save_explicit": {
+      "syncs": 2,
+      "context_reads": 8,
+      "dispatches": 1
+    },
+    "clear_confirm": {
+      "syncs": 2,
+      "context_reads": 8,
+      "dispatches": 1
+    }
+  }
+}

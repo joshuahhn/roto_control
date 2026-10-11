@@ -11,7 +11,7 @@ view=op('/inspector_below');u=view.ext.InspectorView;m=u._model
 menu=op.TDResources.op('popMenu');native=menu.op('lister').ext.ListerExt
 saved_key=u.Key();saved_follow=u._follow_routing
 controller=m.ownerComp.par.Controller.eval();routing=controller.GetLayoutContext()['key'];session=m.adapter.Session()
-events=json.loads(Path(project.folder+'/prototypes/inspector/selector_item_capture.json').read_text())['events']
+events=json.loads(Path(project.folder+'/diagnostics/inspector/results/selector_item_capture.json').read_text())['events']
 gesture=[e for e in events if e['kind']=='native_list_selection'][:4]
 assert [(e['data']['start'],e['data']['end']) for e in gesture]==[(False,True),(True,False),(True,False),(False,True)]
 accepted=[];had_override='SelectContextMenu' in vars(u);previous=vars(u).get('SelectContextMenu');original=u.SelectContextMenu
@@ -37,6 +37,6 @@ def finish():
         else:delattr(u,'SelectContextMenu')
         u.ConfigureMenus(saved_key);u.OnContext();u._follow_routing=saved_follow;u.Refresh()
     result['routing_session_preserved']=controller.GetLayoutContext()['key']==routing and m.adapter.Session()==session
-    Path(project.folder+'/prototypes/inspector/selector_item_replay.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/selector_item_replay.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 run('args[0]()',finish,delayFrames=3,delayRef=op.TDResources)

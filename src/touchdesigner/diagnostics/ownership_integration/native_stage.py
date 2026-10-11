@@ -16,13 +16,13 @@ def build_fixture(parent,source,python,execution_folder):
     original_hashes={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in source.rglob('*') if p.is_file()}
     assert all(hashlib.sha256((execution/p).read_bytes()).hexdigest()==h for p,h in original_hashes.items())
     namespace=dict(globals())
-    builder=source/'build_network.py'
+    builder=source/'scripts/build_network.py'
     exec(compile(builder.read_text(),str(builder),'exec'),namespace)
     controller=namespace['build'](parent,str(execution))
     # The stock builder creates demo targets; this fixture intentionally starts empty.
     controller.ext.RotoPythonExt.BindControls([],group_id='ownership.fixture',_allow_empty=True)
     export_namespace=dict(globals())
-    export_source=source/'export_component.py'
+    export_source=source/'scripts/export_component.py'
     exec(compile(export_source.read_text(),str(export_source),'exec'),export_namespace)
     export_namespace['reset_mapping_storage'](controller)
     controller.ext.RotoPythonExt._layouts=None

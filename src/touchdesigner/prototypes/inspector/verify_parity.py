@@ -150,7 +150,7 @@ def verify():
     assert m.Stats()['subscribers']==2 and not m.Stats()['subscriber_errors']
     assert not any(o.errors(recurse=True) for o in [m]+views)
     result.update(production_catalog_registry_routing_session_preserved=True,subscribers=2,errors='')
-    Path(project.folder+'/prototypes/inspector/parity_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/parity_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 verify()

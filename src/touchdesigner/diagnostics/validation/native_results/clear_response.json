@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "variables": {
+    "var": "<built-in function var>",
+    "varExists": "<built-in function varExists>",
+    "varOwner": "<built-in function varOwner>",
+    "passive": "<built-in function passive>",
+    "run": "<built-in function run>",
+    "fetchStamp": "<built-in function fetchStamp>",
+    "isMainThread": "<built-in function isMainThread>",
+    "importDAT": "<built-in function importDAT>",
+    "cookRate": "<built-in function cookRate>",
+    "power": "<built-in function power>",
+    "realTime": "<built-in function realTime>",
+    "clear": "<built-in function clear>",
+    "stdout": "<built-in function stdout>",
+    "stderr": "<built-in function stderr>",
+    "tdError": "<class 'td.tdError'>",
+    "tdAttributeError": "<class 'td.tdAttributeError'>",
+    "tdWarning": "<class 'td.tdWarning'>",
+    "OP": "<class 'td.OP'>",
+    "Par": "<class 'td.Par'>",
+    "ParCollection": "<class 'td.ParCollection'>",
+    "ParGroupCollection": "<class 'td.ParGroupCollection'>",
+    "ParGroup": "<class 'td.ParGroup'>",
+    "ParGroupPulse": "<class 'td.ParGroupPulse'>",
+    "ParGroupUnit": "<class 'td.ParGroupUnit'>"
+  },
+  "variables_omitted": 826,
+  "output": "{\"before\": {\"syncs\": 3, \"elapsed_ms\": 3.800041973590851}, \"after\": {\"syncs\": 2, \"elapsed_ms\": 3.287915955297649}, \"touch_between_clicks_rejected\": true}\n{\"exported\": \"/private/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/native_results/validated_fixture.tox\"}\n"
+}

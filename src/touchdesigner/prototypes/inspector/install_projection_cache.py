@@ -11,7 +11,7 @@ assert not op('/base_inspector_acceptance')
 before=c.GetControlCatalog();context=c.GetLayoutContext()['key']
 ext=c.ext.RotoPythonExt;ext._layouts.capture(force=True)
 record=dict(before=before,context=context,project=project.name)
-Path(project.folder+'/prototypes/inspector/projection_install.json').write_text(json.dumps(record,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/projection_install.json').write_text(json.dumps(record,indent=2))
 c.Disconnect()
 c.op('inspector/inspector_data').text=Path(project.folder+'/code/py/roto_python/inspector/inspector_data.py').read_text()
 c.op('RotoPythonExt').text=Path(project.folder+'/code/py/roto_python/RotoPythonExt.py').read_text()

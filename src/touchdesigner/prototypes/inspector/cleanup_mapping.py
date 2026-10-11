@@ -33,5 +33,5 @@ for view in [op('/inspector_below'),op('/inspector_popup')]:
     check(nodes);annotate(popup,'annotate_viewport','Viewport',nodes)
     if view.op('base_popup'):annotate(view.op('base_popup'),'annotate_popup','Popup',[popup])
 assert not any(c.errors(recurse=True) for c in [op('/inspector_model'),op('/inspector_below'),op('/inspector_popup')])
-Path(project.folder+'/prototypes/inspector/mapping_network.json').write_text(json.dumps(results,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/mapping_network.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results))

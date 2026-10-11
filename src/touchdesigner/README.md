@@ -1,6 +1,10 @@
 # ROTO-CONTROL
 
+**Open the current project: [projects/current/ROTO-CONTROL.toe](projects/current/ROTO-CONTROL.toe)** · [Project index](projects/README.md) · [JSON evidence](diagnostics/README.md)
+
 A reusable TouchDesigner tool for freely mapping ROTO-CONTROL knobs and buttons to custom parameters or Python callbacks.
+
+See the [file map](docs/index.md) for source, current contracts, historical reports and retained evidence.
 
 ## Quick Start
 
@@ -31,7 +35,7 @@ See [portability](docs/functions/portability.md), [Inspector](docs/functions/ins
 
 ## Development
 
-Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. build_network.py constructs the development component; export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
+Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. scripts/build_network.py constructs the development component; scripts/export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
 
 Validation: `python3 -m unittest discover -q`. Hardware acceptance and live checks are recorded in HANDOFF.md and verification JSON files.
 

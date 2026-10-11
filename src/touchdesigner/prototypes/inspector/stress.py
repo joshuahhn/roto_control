@@ -233,7 +233,7 @@ def tick():
         result['failures'].append(traceback.format_exc());finish()
 
 def write_result():
-    Path(project.folder+'/prototypes/inspector/'+output_name).write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/'+output_name).write_text(json.dumps(result,indent=2))
 
 def finish():
     global done,state

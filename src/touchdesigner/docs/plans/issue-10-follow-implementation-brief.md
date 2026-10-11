@@ -71,12 +71,12 @@ Startup／reinit／file reload／pane return只建立 baseline；Follow off→on
 | Inspector／hardware context | controller routing／active selectors／announce source同commit triple一致；BROWSE唔改routing／owner；LIVE跟routing；pending唔當ready | 協調Inspector最後fixture核對View、routing token、draft、disabled reason；本thread不搬UI | 記錄FUNC／SEL完整candidates、bank offsets、mapping reports同人手LCD markers |
 | 無Preset／Pulse sideeffects | selection／metadata／ACK／reload對numeric／Menu／Toggle無writes，Pulse/callback計數不變；切換輸入唔dispatchaction | native pulse observer零count；target值與前後baseline比對 | selection本身無action；正常mapped button input另行驗收 |
 
-Unit整合以 [test_comp_follow.py](../../test_comp_follow.py)、[test_layouts.py](../../test_layouts.py)、[test_device_context.py](../../test_device_context.py)、[test_tag_devices.py](../../test_tag_devices.py) 同 #9新owner tests為基礎。唔用手工填placeholder owner metadata作feature coverage。Existing Active-Layout-scope test喺#9 stable contract後再調整，保留duplicate/unlink及legacy unavailable checks。
+Unit整合以 [test_comp_follow.py](../../tests/runtime/test_comp_follow.py)、[test_layouts.py](../../tests/runtime/test_layouts.py)、[test_device_context.py](../../tests/runtime/test_device_context.py)、[test_tag_devices.py](../../tests/runtime/test_tag_devices.py) 同 #9新owner tests為基礎。唔用手工填placeholder owner metadata作feature coverage。Existing Active-Layout-scope test喺#9 stable contract後再調整，保留duplicate/unlink及legacy unavailable checks。
 
 ## 最少 native / physical 驗證方案
 
 1. #9可整合後，先完成source regression及完整suite。Native builder由external Python source建一次隔離fixture，用#9真實API建立A/B owner Layout、CUSTOM shared target、不同range、off-page definitions及Pulse observer；唔拷貝user mappings或建立live owner registry替身。
-2. Native stage喺獲協調嘅獨立TD process／isolated project執行；先核對active project、TD build、source revision及no physical port ownership。使用真實pane/callback、temp TD save/load及failure injection；清理fixture／owned processes。現有 `verify_comp_follow.py.begin()` 會改current project/pane，唔直接喺shared live執行。
+2. Native stage喺獲協調嘅獨立TD process／isolated project執行；先核對active project、TD build、source revision及no physical port ownership。使用真實pane/callback、temp TD save/load及failure injection；清理fixture／owned processes。現有 `diagnostics/runtime/verify_comp_follow.py.begin()` 會改current project/pane，唔直接喺shared live執行。
 3. Physical gate由協調thread同Inspector最後一次驗證排程合併，唔另開live project搶MIDI。先capture原Routing/View/Follow/session、registry/mapping IDs/libraries、values及可恢復baseline；再執行cross-owner A/B/A、guards、fresh recall、input／motor／LCD。每步記source、triple、完整FUNC／SEL candidates、bank offsets、matching reports及人手觀察。
 4. Cross-owner fixture需要真正#9 Layout allocation；歷史同一Layout SEL A/B/A可補Inspector parity，但唔取代#10 gate。未得到新scope acceptance就保持pending。Queued TX、synthetic ACK／CC、native parameter callback同physical wire/input觀察各自記錄；不得以synthetic標physical pass。
 

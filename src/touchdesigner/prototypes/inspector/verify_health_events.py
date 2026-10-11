@@ -71,7 +71,7 @@ elif phase=='finish':
         assert model.ext.InspectorModel.adapter.Session()==holder.fetch('session')
         holder.destroy()
     result['production_session_registry_catalog_preserved']=True
-    Path(project.folder+'/prototypes/inspector/health_events.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/health_events.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 else:raise ValueError('Unknown phase')
 print('Native event phase:',phase)

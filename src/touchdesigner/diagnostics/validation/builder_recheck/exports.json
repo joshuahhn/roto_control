@@ -1,0 +1,23 @@
+{
+  "configured_save_load": true,
+  "restored_local_target": true,
+  "restored_local_model": true,
+  "snapshot_restored": true,
+  "generic_export_load": true,
+  "generic_empty_mappings": true,
+  "generic_empty_snapshots": true,
+  "generic_embedded_sources": true,
+  "export_source_preserved": true,
+  "errors": "",
+  "hardware_process": false,
+  "artifacts": [
+    {
+      "path": "/private/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/builder_recheck/configured_fixture.tox",
+      "sha256": "0cab3301c76e89edce81897cdc206d513b4de967981cbe8ad4897612a39a53d6"
+    },
+    {
+      "path": "/private/tmp/roto-control-issue15/src/touchdesigner/diagnostics/validation/builder_recheck/generic_controller.tox",
+      "sha256": "438527338d4521a3447b1531c60ff1c4a0f74ce4ae44b1808ebafb6b81f58e6a"
+    }
+  ]
+}

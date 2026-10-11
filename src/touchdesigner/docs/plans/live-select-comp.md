@@ -155,7 +155,7 @@ Builders/upgrades install source before extension reinit, with repeated upgrade 
 | `text_comp_follow` | textDAT / DAT | X=540, Y=-740, W=130, H=90 | `language=python`; development `file=code/py/roto_python/text_comp_follow.py`, `syncfile=True`, `loadonstart=True`. Embed and clear these file references for portable exports. |
 | Focus annotation | annotateCOMP / COMP | X=515, Y=-815, W=355, H=225 | Title `Focus`; contains the helper. No runtime role. |
 
-The right-side temporary insertion slot, if needed, is DAT (1320, 0), with annotation (1295, -25, 180, 175). Use measured final geometry after creation. Final placement adds a Focus group after Guide in `cleanup_network.py`; a read-only dry run of the real planner produced (540, -740) and the annotation above, with every existing operator position unchanged. Prefer these verified final coordinates over leaving the new module at the insertion slot.
+The right-side temporary insertion slot, if needed, is DAT (1320, 0), with annotation (1295, -25, 180, 175). Use measured final geometry after creation. Final placement adds a Focus group after Guide in `scripts/cleanup_network.py`; a read-only dry run of the real planner produced (540, -740) and the annotation above, with every existing operator position unchanged. Prefer these verified final coordinates over leaving the new module at the insertion slot.
 
 Position map: `{"text_comp_follow": [540, -740]}`. New group respects 25px side/bottom padding, 60px header clearance and existing group spacing.
 

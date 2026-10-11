@@ -61,5 +61,5 @@ for view in (op('/inspector_below'),op('/inspector_popup')):
         results.append(dict(editor=editor.path,native_rows=8,footer_actions=5,measured_containment=True,no_overlap=True,
             section_groups=[dict(name=a.name,x=a.nodeX,y=a.nodeY,w=a.nodeWidth,h=a.nodeHeight) for a in groups]))
 assert not any(o.errors(recurse=True) for o in (op('/inspector_model'),op('/inspector_below'),op('/inspector_popup')))
-Path(project.folder+'/prototypes/inspector/advanced_network.json').write_text(json.dumps(results,indent=2)+'\n')
+Path(project.folder+'/diagnostics/inspector/results/advanced_network.json').write_text(json.dumps(results,indent=2)+'\n')
 print(json.dumps(results))

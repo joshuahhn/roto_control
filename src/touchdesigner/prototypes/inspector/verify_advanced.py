@@ -142,7 +142,7 @@ class AdvancedProbe:
         assert self.model.ext.InspectorModel.adapter.Session()==self.session and self.model.Stats()['subscribers']==2
         assert not any(c.errors(recurse=True) for c in [self.production,self.model]+self.views)
         self.result.update(production_catalog_registry_routing_process_session_preserved=True,subscribers=2,errors=[])
-        Path(project.folder+'/prototypes/inspector/advanced_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
+        Path(project.folder+'/diagnostics/inspector/results/advanced_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
         print(json.dumps(self.result))
 
     def Cleanup(self):

@@ -1,0 +1,31 @@
+{
+  "success": true,
+  "variables": {
+    "var": "<built-in function var>",
+    "varExists": "<built-in function varExists>",
+    "varOwner": "<built-in function varOwner>",
+    "passive": "<built-in function passive>",
+    "run": "<built-in function run>",
+    "fetchStamp": "<built-in function fetchStamp>",
+    "isMainThread": "<built-in function isMainThread>",
+    "importDAT": "<built-in function importDAT>",
+    "cookRate": "<built-in function cookRate>",
+    "power": "<built-in function power>",
+    "realTime": "<built-in function realTime>",
+    "clear": "<built-in function clear>",
+    "stdout": "<built-in function stdout>",
+    "stderr": "<built-in function stderr>",
+    "tdError": "<class 'td.tdError'>",
+    "tdAttributeError": "<class 'td.tdAttributeError'>",
+    "tdWarning": "<class 'td.tdWarning'>",
+    "OP": "<class 'td.OP'>",
+    "Par": "<class 'td.Par'>",
+    "ParCollection": "<class 'td.ParCollection'>",
+    "ParGroupCollection": "<class 'td.ParGroupCollection'>",
+    "ParGroup": "<class 'td.ParGroup'>",
+    "ParGroupPulse": "<class 'td.ParGroupPulse'>",
+    "ParGroupUnit": "<class 'td.ParGroupUnit'>"
+  },
+  "variables_omitted": 826,
+  "output": "{\"configured\": true, \"key\": [\"custom\", \"track.custom\", \"plugin.custom\"], \"controls\": 8}\n{\"native\": true, \"physical\": false, \"project\": \"cleaned_owned_inspector_review.1.toe\", \"build\": \"2025.33230\", \"counts\": {\"default_before\": 9, \"default_after\": 1, \"explicit_before\": 17, \"explicit_after\": 1}, \"timings\": {\"default\": {\"before\": [3.2407919643446803, 3.370625083334744, 3.3432500204071403, 2.856166916899383, 2.687874948605895, 2.6248749345541, 2.626375062391162, 2.2826670901849866, 2.2247089073061943, 2.1947500063106418, 2.2310410859063268, 2.272666897624731], \"after\": [0.3529589157551527, 0.6109579699113965, 0.4462499637156725, 0.35370909608900547, 0.4987079882994294, 0.49341702833771706, 0.447375001385808, 0.44374994467943907, 0.3754580393433571, 0.3897499991580844, 0.4017089959233999, 0.40487502701580524]}, \"explicit\": {\"before\": [4.005625029094517, 3.778541926294565, 3.617375041358173, 3.4850420197471976, 3.430332988500595, 3.3088750205934048, 3.169541945680976, 3.0717089539393783, 3.0653339345008135, 3.2649579225108027, 3.0897919787093997, 3.284416045062244], \"after\": [0.3791250055655837, 0.37183298263698816, 0.34020794555544853, 0.3415419487282634, 0.3314169589430094, 0.3327080048620701, 0.29920891392976046, 0.29679108411073685, 0.2987500047311187, 0.2941250568255782, 0.3096660366281867, 0.3062079194933176]}}, \"summary\": {\"default\": {\"before\": {\"median_ms\": 2.625624998472631, \"p95_ms\": 3.370625083334744, \"samples\": 12}, \"after\": {\"median_ms\": 0.42431248584762216, \"p95_ms\": 0.6109579699113965, \"samples\": 12}}, \"explicit\": {\"before\": {\"median_ms\": 3.2966455328278244, \"p95_ms\": 4.005625029094517, \"samples\": 12}, \"after\": {\"median_ms\": 0.32054149778559804, \"p95_ms\": 0.3791250055655837, \"samples\": 12}}}, \"save_no_value_writes\": true, \"stale_native_definition_rejected\": true, \"value_only_confirmation\": true, \"process\": false}\n"
+}

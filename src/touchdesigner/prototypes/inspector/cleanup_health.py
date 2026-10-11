@@ -38,5 +38,5 @@ for i,a in enumerate(annotations):
     for b in annotations[i+1:]:
         assert a.nodeX+a.nodeWidth+20<=b.nodeX or b.nodeX+b.nodeWidth+20<=a.nodeX or a.nodeY+a.nodeHeight+20<=b.nodeY or b.nodeY+b.nodeHeight+20<=a.nodeY
 assert not any(o.errors(recurse=True) for o in [model,op('/inspector_below'),op('/inspector_popup')])
-Path(project.folder+'/prototypes/inspector/health_network.json').write_text(json.dumps(results,indent=2))
+Path(project.folder+'/diagnostics/inspector/results/health_network.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results))

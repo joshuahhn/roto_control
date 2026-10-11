@@ -47,7 +47,7 @@ elif phase=='finish':
             empty_channels=True,embedded_source_current=True,no_process_pending_or_projection_callback=True,
             initial_projection_queued=holder.fetch('initial_projection_queued'),settled_frames=elapsed,
             production_catalog_and_session_preserved=True,errors=[])
-        Path(project.folder+'/prototypes/inspector/control_publication_export.json').write_text(json.dumps(result,indent=2)+'\n')
+        Path(project.folder+'/diagnostics/inspector/results/control_publication_export.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result))
     finally:
         holder.destroy()

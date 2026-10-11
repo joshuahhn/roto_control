@@ -9,7 +9,7 @@ assert not getattr(c.ext.RotoPythonExt,'_button_adapter_probe',None)
 before=c.GetControlCatalog();context=c.GetLayoutContext()['key']
 assert len(before)==6 and all(r['mapped'] and not r['requires_relearn'] for r in before)
 c.ext.RotoPythonExt._layouts.capture(force=True)
-path=Path(project.folder+'/prototypes/inspector/control_publication_install.json')
+path=Path(project.folder+'/diagnostics/inspector/results/control_publication_install.json')
 record=dict(project=project.name,before=before,context=context)
 path.write_text(json.dumps(record,indent=2)+'\n')
 c.Disconnect()

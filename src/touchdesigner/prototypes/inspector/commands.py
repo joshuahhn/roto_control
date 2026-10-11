@@ -45,7 +45,10 @@ class CommandService:
     def __init__(self,model):self.model=model
 
     def SnapshotIntent(self, context, selections=(), preset_id=None, slot=None):
-        m=self.model;m.Sync();context=m._context(context)
+        m=self.model;context=m._context(context)
+        # One fresh observation for the whole capture set, not a full model
+        # scan for every Knob. No dialog or controller mutation occurs here.
+        m.RefreshDefinitions(context);m.Sync();context=m._context(context)
         controller=getattr(m.adapter,'controller',None)
         if controller is None or not hasattr(controller,'GetSnapshots'):
             raise ValueError('Controller does not support Snapshot presets')
@@ -54,7 +57,7 @@ class CommandService:
         selected=[]
         for selected_context,index,token in selections:
             if tuple(selected_context)!=context:raise ValueError('Snapshot selection context changed')
-            _,index,info=self._target(context,index,token)
+            _,index,info=self._current_target(context,index,token)
             if info.get('kind')!='knob' or info.get('placeholder') or info.get('mode')=='pulse' or info.get('binding_type') not in ('parameter','value'):
                 raise ValueError('Select a mapped Knob; no Buttons/Pulse/actions/callbacks')
             selected.append((context,index,token))
@@ -69,7 +72,7 @@ class CommandService:
         capture_tokens=[]
         for index in capture_indices:
             token=m.GetToken(context,index)
-            self._target(context,index,token)
+            self._current_target(context,index,token)
             capture_tokens.append((index,token))
         return dict(context=context,token=self.ActivationToken(context),session=m.adapter.Session(),
                     selections=selected,preset_id=preset_id,revision=record['revision'] if record else None,
@@ -77,10 +80,10 @@ class CommandService:
                     slot=slot,slot_token=m.GetToken(context,slot) if slot is not None else None)
 
     def SnapshotCommand(self, operation, intent, label=''):
-        m=self.model;m.Sync();context=m._context(intent['context'])
-        if intent['session']!=m.adapter.Session() or intent['token']!=self.ActivationToken(context):
-            raise ValueError('Snapshot session/owner/context changed; reopen')
+        m=self.model;context=m._context(intent['context'])
         fresh=self.SnapshotIntent(context,intent['selections'],intent['preset_id'],intent['slot'])
+        if intent['session']!=fresh['session'] or intent['token']!=fresh['token']:
+            raise ValueError('Snapshot session/owner/context changed; reopen')
         if fresh!=intent:raise ValueError('Snapshot definition/selection/revision changed; reopen')
         controller=m.adapter.controller
         slots=[(m.Info(context,index)['kind'],m.Info(context,index)['slot']) for _,index,_ in intent['selections']]
@@ -282,7 +285,12 @@ class CommandService:
 
     def _target(self,context,slot,token):
         m=self.model;context=m._context(context);slot=m._slot(slot)
-        m.RefreshDefinitions(context,slot);m.Sync();context=m._context(context)
+        m.RefreshDefinitions(context,slot);m.Sync()
+        return self._current_target(context,slot,token)
+
+    def _current_target(self,context,slot,token):
+        """Check a token against the observation refreshed by the caller."""
+        m=self.model;context=m._context(context);slot=m._slot(slot)
         if token!=m.GetToken(context,slot):
             # Catalog owns the exception type; avoid a cross-COMP DAT import.
             m._reject_stale()

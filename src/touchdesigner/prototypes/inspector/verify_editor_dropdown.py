@@ -22,7 +22,7 @@ def finish():
         result['two_subscribers']=m.Stats()['subscribers']==2
         result['no_errors']=not any(v.errors(recurse=True) for v in views)
         result['all_pass']=all(x for x in result.values() if type(x)is bool) and 'error' not in result
-        Path(project.folder+'/prototypes/inspector/editor_dropdown_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result))
+        Path(project.folder+'/diagnostics/inspector/results/editor_dropdown_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result))
     except Exception as error:print('Fixture restoration failed',str(error));raise
 
 def step():

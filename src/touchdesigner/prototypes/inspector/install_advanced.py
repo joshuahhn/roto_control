@@ -12,7 +12,7 @@ assert len(before)==6 and all(r['mapped'] and not r['requires_relearn'] for r in
 u=op('/inspector_below').ext.InspectorView
 record=dict(project=project.name,before=before,process_pid=pid,main=(u._main.contentWidth,u._main.contentHeight),
     popup=(u._popup.contentWidth,u._popup.contentHeight),selected=u.selected,mapping_open=u._mapping.open)
-path=Path(project.folder+'/prototypes/inspector/advanced_install.json')
+path=Path(project.folder+'/diagnostics/inspector/results/advanced_install.json')
 path.write_text(json.dumps(record,indent=2)+'\n')
 exec(Path(project.folder+'/prototypes/inspector/build_live.py').read_text(),dict(globals()))
 assert c.State['Connected'] and c.ext.RotoPythonExt._process.pid==pid

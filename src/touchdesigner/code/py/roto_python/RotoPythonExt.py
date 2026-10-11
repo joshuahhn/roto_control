@@ -736,7 +736,14 @@ class RotoPythonExt:
             manager.capture(force=True)
             self._layout_dirty=True
         old = self._collection.bindings.get(key) if self._collection is not None else self._binding if key == ('knob', 1) else None
-        if old is not None and (_id is None or old.id==_id) and old.parameter == parameter and getattr(old, 'action_id', None) == action_id and old.valid and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
+        # Native TD Par equality compares values, not destination identity.
+        same_parameter = old is not None and old.valid and (
+            old.parameter is None and parameter is None or
+            old.parameter is not None and parameter is not None and
+            getattr(old.parameter, 'valid', True) and
+            (getattr(old.parameter.owner, 'id', old.parameter.owner.path), old.parameter.name) ==
+            (getattr(parameter.owner, 'id', parameter.owner.path), parameter.name))
+        if old is not None and (_id is None or old.id==_id) and same_parameter and getattr(old, 'action_id', None) == action_id and old.valid and (not old.menu_names or tuple(parameter.menuNames) == old.menu_names and tuple(parameter.menuLabels) == old.menu_labels):
             return self.GetControlState(old.id)
         style = getattr(parameter, 'style', '')
         mode = 'pulse' if action_id else 'value' if kind == 'knob' else 'cycle' if style == 'Menu' else 'pulse' if style == 'Pulse' else 'toggle'

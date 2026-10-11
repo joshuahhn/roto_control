@@ -1,0 +1,7 @@
+{
+  "retained_failure": true,
+  "stage": "configure",
+  "error": "'NoneType' object has no attribute 'text'",
+  "cause": "Harness used base_commands/commands, but builder installs base_commands/InspectorCommands",
+  "response": "Corrected harness path and resumed existing fixture configuration without recreating native parameters; no product source change"
+}

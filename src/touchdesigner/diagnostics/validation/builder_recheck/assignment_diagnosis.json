@@ -1,0 +1,168 @@
+{
+  "before": {
+    "ready": true,
+    "dirty": false,
+    "restore": false,
+    "legacy": false
+  },
+  "assigned": {
+    "action_id": null,
+    "action_result": null,
+    "action_available": null,
+    "mapping_error": "",
+    "id": "Value",
+    "kind": "knob",
+    "slot": 1,
+    "mode": "value",
+    "label": "Value",
+    "value": 0.35,
+    "value_source": "live",
+    "normalized": 0.35,
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "mapped": false,
+    "touched": false,
+    "valid": true,
+    "connected": false,
+    "plugin": false,
+    "error": "",
+    "button_type": null,
+    "binding_type": "parameter",
+    "comp": "/base_builder_recheck/roto_python/base_state",
+    "parameter": "Manualvalue",
+    "menu_names": [],
+    "menu_labels": [],
+    "value_label": "",
+    "parameter_style": "Float",
+    "requires_relearn": false
+  },
+  "registry_immediate": {
+    "version": 3,
+    "active": "custom",
+    "records": [
+      {
+        "id": "custom",
+        "name": "Custom",
+        "active_track": "track.custom",
+        "tracks": [
+          {
+            "id": "track.custom",
+            "name": "EFFECT",
+            "active_plugin": "plugin.custom",
+            "plugins": [
+              {
+                "group_id": "legacy:TD Python Value Prototype",
+                "device_id": "TD Python Value Prototype",
+                "plugin_name": "CUSTOM",
+                "targets": [
+                  {
+                    "kind": "knob",
+                    "slot": 1,
+                    "id": "Value",
+                    "label": "Value",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 0,
+                    "identity": "Value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "base_state",
+                    "parameter": "Manualvalue"
+                  }
+                ],
+                "state": {
+                  "parameter_assignments": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "Value",
+                      "label": "Value",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 0,
+                      "identity": "Value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "base_state",
+                      "parameter": "Manualvalue"
+                    }
+                  ],
+                  "assignment_device_id": {
+                    "group_id": "legacy:TD Python Value Prototype",
+                    "device_id": "TD Python Value Prototype"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [],
+                  "pending_unmaps": [],
+                  "needs_relearn": [],
+                  "control_catalog": [
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "Value",
+                      "kind": "knob",
+                      "slot": 1,
+                      "mode": "value",
+                      "label": "Value",
+                      "value": 0.35,
+                      "value_source": "live",
+                      "normalized": 0.35,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/base_builder_recheck/roto_python/base_state",
+                      "parameter": "Manualvalue",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Float",
+                      "requires_relearn": false,
+                      "last_mapped": false
+                    }
+                  ],
+                  "pending_unmap_identities": [],
+                  "page_targets": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "Value",
+                      "label": "Value",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 0,
+                      "identity": "Value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "base_state",
+                      "parameter": "Manualvalue"
+                    }
+                  ]
+                },
+                "id": "plugin.custom",
+                "name_mode": "manual"
+              }
+            ]
+          }
+        ],
+        "category": "CUSTOM"
+      }
+    ],
+    "ownership_version": 1,
+    "revision": 3
+  }
+}

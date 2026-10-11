@@ -45,7 +45,7 @@ elif phase in ('target','back','collapse','finish'):
         result=dict(mapping_target_mapping_collapse_no_open_close_pulses=True,
                     native_height_deltas=[134,250,134,0],width_top_left_main_preserved=True,
                     production_catalog_session_preserved=True,native_visual_flash_verified=False)
-        Path(project.folder+'/prototypes/inspector/popup_no_reopen_verification.json').write_text(json.dumps(result,indent=2))
+        Path(project.folder+'/diagnostics/inspector/results/popup_no_reopen_verification.json').write_text(json.dumps(result,indent=2))
         print(json.dumps(result))
 else:raise ValueError('Unknown phase')
 print('Popup no-reopen phase:',phase)

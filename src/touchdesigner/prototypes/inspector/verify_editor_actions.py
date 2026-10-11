@@ -105,7 +105,7 @@ def verify():
                     assert a.nodeX+a.nodeWidth<=b.nodeX or b.nodeX+b.nodeWidth<=a.nodeX or a.nodeY+a.nodeHeight<=b.nodeY or b.nodeY+b.nodeHeight<=a.nodeY
             geometry.append(dict(editor=editor.path,width=editor.width,height=editor.height,ping_x=px,clear_x=cx))
     result.update(production_catalog_registry_session_preserved=True,errors='',geometry=geometry)
-    Path(project.folder+'/prototypes/inspector/editor_actions_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/editor_actions_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result))
 
 verify()

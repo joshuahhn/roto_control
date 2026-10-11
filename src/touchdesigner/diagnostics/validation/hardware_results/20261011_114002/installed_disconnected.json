@@ -1,0 +1,755 @@
+{
+  "snapshots_DAT": true,
+  "process": false,
+  "errors": "",
+  "registry": {
+    "version": 3,
+    "active": "b72f840e99854761a3003d7dd95e8ac6",
+    "records": [
+      {
+        "id": "custom",
+        "name": "CUSTOM DEMO",
+        "active_track": "track.custom",
+        "tracks": [
+          {
+            "id": "track.custom",
+            "name": "EFFECT",
+            "active_plugin": "plugin.custom",
+            "plugins": [
+              {
+                "group_id": "legacy:TD Python Value Prototype",
+                "device_id": "TD Python Value Prototype",
+                "plugin_name": "CUSTOM",
+                "targets": [
+                  {
+                    "kind": "knob",
+                    "slot": 1,
+                    "id": "custom.demo.amount",
+                    "label": "Amount",
+                    "minimum": 0.2,
+                    "maximum": 0.8,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 0,
+                    "identity": "custom.demo.amount:0.2:0.8:0:value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../demo_A",
+                    "parameter": "Amount"
+                  }
+                ],
+                "state": {
+                  "parameter_assignments": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "custom.demo.amount",
+                      "comp": "../demo_A",
+                      "parameter": "Amount",
+                      "mode": "value",
+                      "label": "Amount",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "button_type": null,
+                      "index": 0
+                    }
+                  ],
+                  "assignment_device_id": {
+                    "group_id": "legacy:TD Python Value Prototype",
+                    "device_id": "TD Python Value Prototype"
+                  },
+                  "control_overrides": {
+                    "custom.demo.amount": {
+                      "minimum": 0.2,
+                      "maximum": 0.8,
+                      "mode": "value",
+                      "button_type": null
+                    }
+                  },
+                  "removed_controls": [
+                    "Value"
+                  ],
+                  "pending_unmaps": [],
+                  "needs_relearn": [
+                    "custom.demo.amount"
+                  ],
+                  "control_catalog": [
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "custom.demo.amount",
+                      "kind": "knob",
+                      "slot": 1,
+                      "mode": "value",
+                      "label": "Amount",
+                      "value": 0.4,
+                      "value_source": "live",
+                      "normalized": 0.3333333333333333,
+                      "minimum": 0.2,
+                      "maximum": 0.8,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_A",
+                      "parameter": "Amount",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Float",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    }
+                  ],
+                  "pending_unmap_identities": [],
+                  "page_targets": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "custom.demo.amount",
+                      "label": "Amount",
+                      "minimum": 0.2,
+                      "maximum": 0.8,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 0,
+                      "identity": "custom.demo.amount:0.2:0.8:0:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_A",
+                      "parameter": "Amount"
+                    }
+                  ]
+                },
+                "id": "plugin.custom",
+                "name_mode": "manual"
+              }
+            ]
+          }
+        ],
+        "category": "CUSTOM"
+      },
+      {
+        "id": "b72f840e99854761a3003d7dd95e8ac6",
+        "name": "demo_A",
+        "category": "COMP",
+        "active_track": "track.a49e79d8e21d4de2a4bfd4342ae6c856",
+        "tracks": [
+          {
+            "id": "track.a49e79d8e21d4de2a4bfd4342ae6c856",
+            "name": "EFFECT",
+            "active_plugin": "plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+            "plugins": [
+              {
+                "id": "plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+                "group_id": "plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+                "device_id": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+                "plugin_name": "demo_A",
+                "name_mode": "comp",
+                "targets": [],
+                "state": {
+                  "parameter_assignments": [],
+                  "assignment_device_id": {
+                    "group_id": "plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+                    "device_id": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [],
+                  "pending_unmaps": [],
+                  "needs_relearn": [
+                    "demo_A.steps",
+                    "demo_A.mode",
+                    "demo_A.enabled",
+                    "demo_A.amount",
+                    "demo_A.reset"
+                  ],
+                  "control_catalog": [],
+                  "pending_unmap_identities": [],
+                  "page_targets": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "demo_A.amount",
+                      "label": "Amount",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 0,
+                      "identity": "demo_A.amount:0.0:1.0:0:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_A",
+                      "parameter": "Amount"
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 2,
+                      "id": "demo_A.steps",
+                      "label": "Steps",
+                      "minimum": 0.0,
+                      "maximum": 10.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 1,
+                      "identity": "demo_A.steps:0.0:10.0:1:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_A",
+                      "parameter": "Steps"
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 3,
+                      "id": "demo_A.mode",
+                      "label": "Mode",
+                      "minimum": 0.0,
+                      "maximum": 2.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 2,
+                      "identity": "demo_A.mode:0.0:2.0:1(('first', 'second', 'third'), ('FIRST', 'SECOND', 'THIRD')):value",
+                      "menu_names": [
+                        "first",
+                        "second",
+                        "third"
+                      ],
+                      "menu_labels": [
+                        "FIRST",
+                        "SECOND",
+                        "THIRD"
+                      ],
+                      "comp": "../demo_A",
+                      "parameter": "Mode"
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 1,
+                      "id": "demo_A.enabled",
+                      "label": "Enabled",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "toggle",
+                      "button_type": "toggle",
+                      "index": 8,
+                      "identity": "demo_A.enabled:0.0:1.0:1:toggle",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_A",
+                      "parameter": "Enabled"
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 2,
+                      "id": "demo_A.reset",
+                      "label": "Reset",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "pulse",
+                      "button_type": "push",
+                      "index": 9,
+                      "identity": "demo_A.reset:0.0:1.0:1:pulse",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_A",
+                      "parameter": "Reset"
+                    }
+                  ]
+                },
+                "comp_name": "demo_A",
+                "focus_comp": {
+                  "path": "../demo_A",
+                  "state": "bound",
+                  "owner_id": "owner.6acf026ed6ce4d5597cad5d07da896fd"
+                }
+              }
+            ]
+          }
+        ],
+        "owner": {
+          "id": "owner.6acf026ed6ce4d5597cad5d07da896fd",
+          "path": "../demo_A",
+          "state": "bound",
+          "entry_plugin_id": "plugin.bc87445a6b014fa3ba60a75b2a31f0ad"
+        }
+      },
+      {
+        "id": "8ef481cc6a7449fbaad1dc5db8090393",
+        "name": "demo_B",
+        "category": "COMP",
+        "active_track": "track.33b78ae215a64837b5d8a29c309853ca",
+        "tracks": [
+          {
+            "id": "track.33b78ae215a64837b5d8a29c309853ca",
+            "name": "EFFECT",
+            "active_plugin": "plugin.188e9250b2564bc7927524a845bdc5e5",
+            "plugins": [
+              {
+                "id": "plugin.188e9250b2564bc7927524a845bdc5e5",
+                "group_id": "plugin.188e9250b2564bc7927524a845bdc5e5",
+                "device_id": "TD controls:plugin.188e9250b2564bc7927524a845bdc5e5",
+                "plugin_name": "demo_B",
+                "name_mode": "comp",
+                "targets": [
+                  {
+                    "kind": "knob",
+                    "slot": 1,
+                    "id": "demo_B.amount",
+                    "label": "Amount",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 0,
+                    "identity": "demo_B.amount:0.0:1.0:0:value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../demo_B",
+                    "parameter": "Amount"
+                  },
+                  {
+                    "kind": "knob",
+                    "slot": 2,
+                    "id": "demo_B.steps",
+                    "label": "Steps",
+                    "minimum": 0.0,
+                    "maximum": 10.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 1,
+                    "identity": "demo_B.steps:0.0:10.0:1:value",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../demo_B",
+                    "parameter": "Steps"
+                  },
+                  {
+                    "kind": "knob",
+                    "slot": 3,
+                    "id": "demo_B.mode",
+                    "label": "Mode",
+                    "minimum": 0.0,
+                    "maximum": 2.0,
+                    "mode": "value",
+                    "button_type": null,
+                    "index": 2,
+                    "identity": "demo_B.mode:0.0:2.0:1(('first', 'second', 'third'), ('FIRST', 'SECOND', 'THIRD')):value",
+                    "menu_names": [
+                      "first",
+                      "second",
+                      "third"
+                    ],
+                    "menu_labels": [
+                      "FIRST",
+                      "SECOND",
+                      "THIRD"
+                    ],
+                    "comp": "../demo_B",
+                    "parameter": "Mode"
+                  },
+                  {
+                    "kind": "button",
+                    "slot": 1,
+                    "id": "demo_B.enabled",
+                    "label": "Enabled",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "toggle",
+                    "button_type": "toggle",
+                    "index": 8,
+                    "identity": "demo_B.enabled:0.0:1.0:1:toggle",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../demo_B",
+                    "parameter": "Enabled"
+                  },
+                  {
+                    "kind": "button",
+                    "slot": 2,
+                    "id": "demo_B.reset",
+                    "label": "Reset",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "mode": "pulse",
+                    "button_type": "push",
+                    "index": 9,
+                    "identity": "demo_B.reset:0.0:1.0:1:pulse",
+                    "menu_names": [],
+                    "menu_labels": [],
+                    "comp": "../demo_B",
+                    "parameter": "Reset"
+                  }
+                ],
+                "state": {
+                  "parameter_assignments": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "demo_B.amount",
+                      "comp": "../demo_B",
+                      "parameter": "Amount",
+                      "mode": "value",
+                      "label": "Amount",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "button_type": null,
+                      "index": 0
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 2,
+                      "id": "demo_B.steps",
+                      "comp": "../demo_B",
+                      "parameter": "Steps",
+                      "mode": "value",
+                      "label": "Steps",
+                      "minimum": 0.0,
+                      "maximum": 10.0,
+                      "button_type": null,
+                      "index": 1
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 3,
+                      "id": "demo_B.mode",
+                      "comp": "../demo_B",
+                      "parameter": "Mode",
+                      "mode": "value",
+                      "label": "Mode",
+                      "minimum": 0.0,
+                      "maximum": 2.0,
+                      "button_type": null,
+                      "index": 2
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 1,
+                      "id": "demo_B.enabled",
+                      "comp": "../demo_B",
+                      "parameter": "Enabled",
+                      "mode": "toggle",
+                      "label": "Enabled",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "button_type": "toggle",
+                      "index": 8
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 2,
+                      "id": "demo_B.reset",
+                      "comp": "../demo_B",
+                      "parameter": "Reset",
+                      "mode": "pulse",
+                      "label": "Reset",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "button_type": "push",
+                      "index": 9
+                    }
+                  ],
+                  "assignment_device_id": {
+                    "group_id": "plugin.188e9250b2564bc7927524a845bdc5e5",
+                    "device_id": "TD controls:plugin.188e9250b2564bc7927524a845bdc5e5"
+                  },
+                  "control_overrides": {},
+                  "removed_controls": [],
+                  "pending_unmaps": [],
+                  "needs_relearn": [
+                    "demo_B.mode",
+                    "demo_B.enabled",
+                    "demo_B.amount",
+                    "demo_B.steps",
+                    "demo_B.reset"
+                  ],
+                  "control_catalog": [
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "demo_B.amount",
+                      "kind": "knob",
+                      "slot": 1,
+                      "mode": "value",
+                      "label": "Amount",
+                      "value": 0.4,
+                      "value_source": "live",
+                      "normalized": 0.4,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_B",
+                      "parameter": "Amount",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Float",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    },
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "demo_B.steps",
+                      "kind": "knob",
+                      "slot": 2,
+                      "mode": "value",
+                      "label": "Steps",
+                      "value": 3,
+                      "value_source": "live",
+                      "normalized": 0.3,
+                      "minimum": 0.0,
+                      "maximum": 10.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_B",
+                      "parameter": "Steps",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Int",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    },
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "demo_B.mode",
+                      "kind": "knob",
+                      "slot": 3,
+                      "mode": "value",
+                      "label": "Mode",
+                      "value": 0,
+                      "value_source": "live",
+                      "normalized": 0.0,
+                      "minimum": 0.0,
+                      "maximum": 2.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": null,
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_B",
+                      "parameter": "Mode",
+                      "menu_names": [
+                        "first",
+                        "second",
+                        "third"
+                      ],
+                      "menu_labels": [
+                        "FIRST",
+                        "SECOND",
+                        "THIRD"
+                      ],
+                      "value_label": "FIRST",
+                      "parameter_style": "Menu",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    },
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "demo_B.enabled",
+                      "kind": "button",
+                      "slot": 1,
+                      "mode": "toggle",
+                      "label": "Enabled",
+                      "value": true,
+                      "value_source": "live",
+                      "normalized": 1.0,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": "toggle",
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_B",
+                      "parameter": "Enabled",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Toggle",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    },
+                    {
+                      "action_id": null,
+                      "action_result": null,
+                      "action_available": null,
+                      "mapping_error": "",
+                      "id": "demo_B.reset",
+                      "kind": "button",
+                      "slot": 2,
+                      "mode": "pulse",
+                      "label": "Reset",
+                      "value": 0,
+                      "value_source": "pulse",
+                      "normalized": 0.0,
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mapped": false,
+                      "touched": false,
+                      "valid": true,
+                      "connected": false,
+                      "plugin": false,
+                      "error": "",
+                      "button_type": "push",
+                      "binding_type": "parameter",
+                      "comp": "/roto_clean_demo/demo_B",
+                      "parameter": "Reset",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "value_label": "",
+                      "parameter_style": "Pulse",
+                      "requires_relearn": true,
+                      "last_mapped": false
+                    }
+                  ],
+                  "pending_unmap_identities": [],
+                  "page_targets": [
+                    {
+                      "kind": "knob",
+                      "slot": 1,
+                      "id": "demo_B.amount",
+                      "label": "Amount",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 0,
+                      "identity": "demo_B.amount:0.0:1.0:0:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_B",
+                      "parameter": "Amount"
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 2,
+                      "id": "demo_B.steps",
+                      "label": "Steps",
+                      "minimum": 0.0,
+                      "maximum": 10.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 1,
+                      "identity": "demo_B.steps:0.0:10.0:1:value",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_B",
+                      "parameter": "Steps"
+                    },
+                    {
+                      "kind": "knob",
+                      "slot": 3,
+                      "id": "demo_B.mode",
+                      "label": "Mode",
+                      "minimum": 0.0,
+                      "maximum": 2.0,
+                      "mode": "value",
+                      "button_type": null,
+                      "index": 2,
+                      "identity": "demo_B.mode:0.0:2.0:1(('first', 'second', 'third'), ('FIRST', 'SECOND', 'THIRD')):value",
+                      "menu_names": [
+                        "first",
+                        "second",
+                        "third"
+                      ],
+                      "menu_labels": [
+                        "FIRST",
+                        "SECOND",
+                        "THIRD"
+                      ],
+                      "comp": "../demo_B",
+                      "parameter": "Mode"
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 1,
+                      "id": "demo_B.enabled",
+                      "label": "Enabled",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "toggle",
+                      "button_type": "toggle",
+                      "index": 8,
+                      "identity": "demo_B.enabled:0.0:1.0:1:toggle",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_B",
+                      "parameter": "Enabled"
+                    },
+                    {
+                      "kind": "button",
+                      "slot": 2,
+                      "id": "demo_B.reset",
+                      "label": "Reset",
+                      "minimum": 0.0,
+                      "maximum": 1.0,
+                      "mode": "pulse",
+                      "button_type": "push",
+                      "index": 9,
+                      "identity": "demo_B.reset:0.0:1.0:1:pulse",
+                      "menu_names": [],
+                      "menu_labels": [],
+                      "comp": "../demo_B",
+                      "parameter": "Reset"
+                    }
+                  ]
+                },
+                "comp_name": "demo_B",
+                "focus_comp": {
+                  "path": "../demo_B",
+                  "state": "bound",
+                  "owner_id": "owner.4b25cb6c9e184499b3bb9c13f5d772bf"
+                }
+              }
+            ]
+          }
+        ],
+        "owner": {
+          "id": "owner.4b25cb6c9e184499b3bb9c13f5d772bf",
+          "path": "../demo_B",
+          "state": "bound",
+          "entry_plugin_id": "plugin.188e9250b2564bc7927524a845bdc5e5"
+        }
+      }
+    ],
+    "ownership_version": 1,
+    "revision": 26
+  },
+  "catalog": []
+}

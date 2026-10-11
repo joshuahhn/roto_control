@@ -13,7 +13,7 @@ def finish():
     result=dict(virtual_mouse_only=True,macos_physical_click_delivery_verified=False,
                 single_click_results=observations,all_opened_once=all(r['open'] and r['menu_name']==r['button'] for r in observations),
                 routing_session_preserved=controller.GetLayoutContext()['key']==key and op('/inspector_model').ext.InspectorModel.adapter.Session()==session)
-    Path(project.folder+'/prototypes/inspector/selector_click_verification.json').write_text(json.dumps(result,indent=2))
+    Path(project.folder+'/diagnostics/inspector/results/selector_click_verification.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(dict(samples=len(observations),all_opened_once=result['all_opened_once'],routing_session_preserved=result['routing_session_preserved'])))
 
 def check():

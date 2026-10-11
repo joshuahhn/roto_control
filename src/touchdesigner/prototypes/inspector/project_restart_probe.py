@@ -7,7 +7,7 @@ import time
 
 c = op('/roto_control_python/roto_python')
 folder = Path(project.folder)
-artifact = folder / 'prototypes/inspector/project_restart_verification.json'
+artifact = folder / 'diagnostics/inspector/results/project_restart_verification.json'
 phase = globals().get('phase', 'before')
 
 def window(p):

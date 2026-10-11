@@ -16,15 +16,16 @@ Outer pages are Connection, Binding, Layout and Device. `setup.combine_context_p
 
 ## Source Files
 
-- `build_network.py`: explicit-parent builder; source-synced code DATs and embedded README.
+- `scripts/build_network.py`: explicit-parent builder; embedded source snapshots and README; binding restore
+  completes before return, so immediate caller assignments survive the first Tick.
 - `code/py/roto_python/protocol.py`: protocol and one-parameter host.
 - `code/py/roto_python/RotoPythonExt.py`: TD adapter and process lifecycle.
 - `code/py/roto_python/*_callbacks.py`: parameter/frame/exit callbacks.
-- `midi_process.py`: external MIDI owner; exact port resolution.
-- `upgrade_network.py`: in-place disconnected upgrade and demo construction.
+- `scripts/midi_process.py`: external MIDI owner; exact port resolution.
+- `scripts/upgrade_network.py`: in-place disconnected upgrade and demo construction.
 - `code/py/roto_python/binding.py`: target metadata/conversion and adapters.
-- `test_binding.py`: binding behavior, failures and target identity checks.
-- `test_protocol.py`: behavior tests through MIDI and parameter interfaces.
+- `tests/runtime/test_binding.py`: binding behavior, failures and target identity checks.
+- `tests/runtime/test_protocol.py`: behavior tests through MIDI and parameter interfaces.
 
 ## Constraints
 
@@ -40,7 +41,7 @@ collection_protocol.CollectionHost shares the established session handshake and 
 
 API sequence is documented in docs/functions/lifecycle.md. Button input declares hardware button_type separately from TD action mode; targets table column defaults existing buttons to toggle. Shared button confirmation follows successful consumer dispatch, while knobs retain motor echo suppression.
 
-Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. External Lister config lives inside the inspector wrapper. Build entrypoint includes build_inspector.py; Inspector source is code/py/roto_python/inspector/inspector_data.py.
+Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. External Lister config lives inside the inspector wrapper. Build entrypoint includes scripts/build_inspector.py; Inspector source is code/py/roto_python/inspector/inspector_data.py.
 
 Inspector Clear uses RemoveControl / RemoveAllControls: delete registration, disable watcher, suppress saved-hook restore and replay outgoing PLUGIN 0E on reconnect. ClearLearn / ClearAllLearn retain registration as separate hardware-only APIs. Hardware persistence is verified by reconnect, not an unmap acknowledgement.
 
@@ -82,7 +83,7 @@ RegisterAction/AssignAction/RecallAction share the existing Pulse Button input p
 ## Owned Inspector composition (local preparation)
 
 The packaging candidate composes accepted #12 Actions, #10 v5 Follow and corrected
-#11 migration, excluding #13. `build_inspector.py` now owns model/views under the
+#11 migration, excluding #13. `scripts/build_inspector.py` now owns model/views under the
 controller's `inspector` wrapper and exposes Connection `Openinspector`. Stable
 headless catalog/context publication stays; old Palette presentation is archived
 before disconnected upgrade. See `docs/plans/owned-inspector-packaging.md`. Source

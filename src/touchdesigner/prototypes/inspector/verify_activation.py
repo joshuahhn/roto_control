@@ -89,7 +89,7 @@ class ActivationProbe:
             self.result['native_footer_click']=True
             assert not any(o.errors(recurse=True) for o in [self.clone,self.model]+self.views)
         finally:self.Stop()
-        Path(project.folder+'/prototypes/inspector/activation_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
+        Path(project.folder+'/diagnostics/inspector/results/activation_verification.json').write_text(json.dumps(self.result,indent=2)+'\n')
         print(json.dumps(self.result))
     def Stop(self):
         for v,style in zip(self.views,self.styles):v.CloseEditor();v.op('window_editor').par.winclose.pulse();v.ext.InspectorView.style=style
