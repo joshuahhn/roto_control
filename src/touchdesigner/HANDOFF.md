@@ -1038,3 +1038,39 @@ configuration/IDs/libraries and all original demo parameter values preserved;
 original Amount mapping recalls on Knob1, connected, errors empty. Native snapshots
 and recovery/accepted demo tox exports retained in diagnostics/issue3. Canonical
 project/export not replaced; no commit/push or GitHub issue closure.
+
+## Issue #4 state-transition source fix — 2026-10-11
+
+Isolated branch fix/issue-4-state-transitions based on main 7d95455. Unlock now
+replaces an unflushed locked hardware Device request with the selected Track,
+while preserving newer TD Follow and other pending request ordering. LEARN entry
+and exit clear partial CC pairs in both Host and all collection controls; duplicate
+LEARN messages do not clear a valid in-progress pair.
+
+446 tests pass: same/split batch LOCK/FUNC/SEL/Unlock, backlog/LEARN/touch guards,
+all eight knobs and both partial-pair directions, with old fenced input not writing.
+Existing mixed TD/hardware owner Follow ordering passes after constraining Unlock
+replacement to pending None or hardware_plugin. Standards/Spec re-review clear;
+git diff --check passes.
+
+Native TD 2025.33230 isolated fresh build passes partial-pair rejection, same/split
+batch Unlock and locked explicit Device selection. Main MIDI PID retained; fixture
+removed. Evidence/harness: diagnostics/issue4. Production live controller retains
+issue #3 source; #4 has not been installed there or physically accepted. No #4
+commit/push, canonical artifact save/export or GitHub mutation.
+
+### Issue #4 live install and physical selection acceptance
+
+Installed only protocol/collection_protocol/text_comp_follow DAT source into the
+active controller; retained issue #3 source. Recovery demo tox retained locally.
+Physical test in temporary ISSUE 4 TEST Layout: LOCK on, FUNC selects TRACK B,
+SEL selects A DEVICE 2 while routing remains TRACK A. Native inspection confirms
+LOCK true, selected Track B and routing A Device 2. User then unlocks and confirms
+TRACK B / B DEVICE 1; native inspection agrees, no pending/fence/errors.
+This accepts physical selector sequence, not proven same-batch hardware arrival or
+physical partial-CC injection (those remain software/native synthetic evidence).
+
+Temporary Layout/test storage removed; original IDs/configuration/libraries and
+all demo values retained. Amount recalls on Knob1, connected, no errors. Recovery,
+accepted demo tox and evidence retained in diagnostics/issue4. Canonical project
+not overwritten; no #4 commit/push or issue closure.

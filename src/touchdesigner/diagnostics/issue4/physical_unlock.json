@@ -1,0 +1,30 @@
+{
+  "user_report": "yes",
+  "scenario": "LOCK / FUNC Track B / SEL A Device 2 / Unlock",
+  "context": {
+    "legacy": false,
+    "category": "CUSTOM",
+    "owner": null,
+    "revision": 93,
+    "quarantined": false,
+    "layout_id": "2324947057424e008274a67073a04f55",
+    "track_id": "track.2e3fb5527338430aad576e65d05aefca",
+    "plugin_id": "plugin.4bde6ad59f214257aab6e3b71ec32dce",
+    "selected_track_id": "track.2e3fb5527338430aad576e65d05aefca",
+    "locked": false,
+    "selected_plugin_id": "plugin.4bde6ad59f214257aab6e3b71ec32dce",
+    "first_plugin": 0,
+    "plugin_count": 1,
+    "key": [
+      "2324947057424e008274a67073a04f55",
+      "track.2e3fb5527338430aad576e65d05aefca",
+      "plugin.4bde6ad59f214257aab6e3b71ec32dce"
+    ],
+    "label": "CUSTOM / ISSUE 4 TEST / TRACK B / B DEVICE 1"
+  },
+  "pending": null,
+  "errors": "",
+  "physical_selection_acceptance": true,
+  "same_batch_physical_verified": false,
+  "physical_partial_cc_injection": false
+}

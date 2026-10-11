@@ -360,7 +360,9 @@ class CompFollower:
 
     def unlocked(self):
         m = self.manager
-        if self.pending is None and m.selected_track and m.selected_track != m.track()['id']:
+        # Unlock follows FUNC selection even when a locked SEL request has
+        # not yet flushed. Batch boundaries must not determine routing.
+        if (self.pending is None or self.pending['source'] == 'hardware_plugin') and m.selected_track and m.selected_track != m.track()['id']:
             self.request(m.data['active'], m.selected_track, 'hardware')
         if self.pending or m.selected_track != m.track()['id']:
             self.fence()

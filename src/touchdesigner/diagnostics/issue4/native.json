@@ -1,0 +1,10 @@
+{
+  "native_build": "2025.33230",
+  "partial_pairs_discarded": true,
+  "both_half_directions": true,
+  "same_batch_unlock": true,
+  "split_batch_unlock": true,
+  "locked_device_selection_retained": true,
+  "main_midi_pid_preserved": true,
+  "physical_acceptance": false
+}

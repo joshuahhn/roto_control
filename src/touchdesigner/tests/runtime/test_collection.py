@@ -33,6 +33,25 @@ class CollectionTests(unittest.TestCase):
         t=self.host.controls[kind,slot]
         self.host.receive(sysex(11,11,(0,t.index,*digest(t.target_id,6),int(kind=='button'),slot-1,0)))
 
+    def test_learn_transitions_discard_interleaved_partial_pairs_on_all_slots(self):
+        for reverse in (False, True):
+            with self.subTest(reverse=reverse):
+                self.setUp()
+                for slot in range(1, 9):
+                    self.map('knob', slot)
+                    self.host.receive((191, (43 if reverse else 11)+slot, 64))
+                self.host.receive(sysex(11,9,(1,)))
+                self.host.receive(sysex(11,9,(0,)))
+                for slot in reversed(range(1, 9)):
+                    self.host.receive((191, (11 if reverse else 43)+slot, 0))
+                self.assertEqual(self.events, [])
+                for slot in range(1, 9):
+                    self.host.receive((191, 11+slot, 127))
+                    self.host.receive((191, 43+slot, 127))
+                self.assertEqual({key for key, value in self.events},
+                                 {('knob', slot) for slot in range(1, 9)})
+                self.assertTrue(all(value > .99 for key, value in self.events))
+
     def test_all_slots_recall_and_feedback_addresses(self):
         for kind in ('knob','button'):
             for slot in range(1,9):
