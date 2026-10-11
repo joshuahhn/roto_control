@@ -1,7 +1,7 @@
 """DAW-style learning: offer an edited Par, commit only the hardware's slot/hash."""
 import time
 import uuid
-from binding import parameter_chain, parameter_value
+from binding import parameter_chain, parameter_value, same_parameter
 from protocol import digest
 
 
@@ -152,7 +152,7 @@ class FreeLearner:
         if not self.active:
             return
         collection = self.extension._collection
-        if collection is not None and any(binding.parameter == parameter and getattr(binding,'pulse_expected',0)
+        if collection is not None and any(same_parameter(binding.parameter, parameter) and getattr(binding,'pulse_expected',0)
                                           for binding in collection.bindings.values()):
             return
         self.offer(parameter)
@@ -176,7 +176,7 @@ class FreeLearner:
             kind = self.selected_kind if parameter.style == 'Menu' else 'button' if parameter.style in ('Toggle','Pulse') else 'knob'
             mode = 'value' if kind == 'knob' else 'cycle' if parameter.style == 'Menu' else 'pulse' if parameter.style == 'Pulse' else 'toggle'
             collection = e._collection
-            existing = next((key for key,binding in collection.bindings.items() if binding.parameter == parameter),None) if collection else None
+            existing = next((key for key,binding in collection.bindings.items() if same_parameter(binding.parameter, parameter)),None) if collection else None
             if existing is not None:
                 binding = collection.bindings[existing]
                 wire = next(spec for spec in collection.specs() if (spec['kind'],spec['slot']) == existing)
@@ -244,20 +244,33 @@ class FreeLearner:
             if not self.parameter_in_scope(pending['parameter']):
                 raise ValueError('Device Focus COMP changed during LEARN; edit the parameter again')
             pending['binding'].check_parameter()
-            state = e.AssignParameter(kind,data[9]+1,pending['parameter'],
-                _id=pending['binding'].id,_wire_index=template.index,_hardware_mapped=True)
-            replacement = e._host.controls[kind,data[9]+1]
-            binding = e._collection.bindings[kind,data[9]+1]
-            if replacement.index != template.index or binding.signature != pending['binding'].signature:
+            # Rebuild current semantics before any registration/storage mutation.
+            parameter = pending['parameter']
+            mode = 'value' if kind == 'knob' else 'cycle' if menu else 'pulse' if parameter.style == 'Pulse' else 'toggle'
+            candidate = self.owner.op('controls').module.Controls([dict(
+                kind=kind, slot=data[9]+1, id=pending['binding'].id,
+                parameter=parameter, mode=mode, index=template.index,
+                button_type=None if kind == 'knob' else template.button_type or ('push' if mode == 'pulse' else 'toggle'))])
+            wire = next(candidate.specs())
+            if not menu and wire['identity'] != template.target_id:
+                raise ValueError('Parameter mode or identity changed during LEARN; edit it again')
+            if candidate.bindings[kind, data[9]+1].signature != pending['binding'].signature:
                 raise ValueError('Parameter semantics changed during LEARN; edit it again')
-            if menu:
-                # Hardware may report its selected kind only on LEARN exit.
-                # Menu supports both value and cycle; keep its offered hash
-                # while using the ACK's knob/button adapter. Layout capture
-                # persists this identity with the actual mode and options.
-                replacement.target_id = template.target_id
-            elif replacement.target_id != template.target_id:
-                raise ValueError('Parameter semantics changed during LEARN; edit it again')
+            with e._learn_transaction():
+                state = e.AssignParameter(kind,data[9]+1,pending['parameter'],
+                    _id=pending['binding'].id,_wire_index=template.index,_hardware_mapped=True)
+                replacement = e._host.controls[kind,data[9]+1]
+                binding = e._collection.bindings[kind,data[9]+1]
+                if replacement.index != template.index or binding.signature != pending['binding'].signature:
+                    raise ValueError('Parameter semantics changed during LEARN; edit it again')
+                if menu:
+                    # Hardware may report its selected kind only on LEARN exit.
+                    # Menu supports both value and cycle; keep its offered hash
+                    # while using the ACK's knob/button adapter. Layout capture
+                    # persists this identity with the actual mode and options.
+                    replacement.target_id = template.target_id
+                elif replacement.target_id != template.target_id:
+                    raise ValueError('Parameter semantics changed during LEARN; edit it again')
             self._consume(offer_key)
             self.status('Learned '+kind.capitalize()+' '+str(data[9]+1)+': '+state['label'])
         except Exception as exc:

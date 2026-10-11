@@ -3,6 +3,16 @@ import math
 from protocol import format_number
 
 
+def same_parameter(left, right):
+    """Compare destinations without invoking TD's value-based Par equality."""
+    if left is None or right is None:
+        return left is right
+    if not getattr(left, 'valid', True) or not getattr(right, 'valid', True):
+        return False
+    return ((getattr(left.owner, 'id', left.owner.path), left.name) ==
+            (getattr(right.owner, 'id', right.owner.path), right.name))
+
+
 def parameter_chain(parameter):
     """Writable Par references, ending at a constant-mode Par master.
 

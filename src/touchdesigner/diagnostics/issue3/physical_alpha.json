@@ -1,0 +1,39 @@
+{
+  "Alpha": 0.0,
+  "Beta": 0.5,
+  "catalog": [
+    {
+      "action_id": null,
+      "action_result": null,
+      "action_available": null,
+      "mapping_error": "",
+      "id": "parameter.a0e3adbdd3ea4533b7ef831cd62e9dea",
+      "kind": "knob",
+      "slot": 1,
+      "mode": "value",
+      "label": "Alpha",
+      "value": 0.0,
+      "value_source": "live",
+      "normalized": 0.0,
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "mapped": true,
+      "touched": false,
+      "valid": true,
+      "connected": true,
+      "plugin": true,
+      "error": "",
+      "button_type": null,
+      "binding_type": "parameter",
+      "comp": "/roto_clean_demo/base_issue3_identity",
+      "parameter": "Alpha",
+      "menu_names": [],
+      "menu_labels": [],
+      "value_label": "",
+      "parameter_style": "Float",
+      "requires_relearn": false,
+      "last_mapped": true
+    }
+  ],
+  "user_report": "done"
+}
