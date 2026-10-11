@@ -1,0 +1,12 @@
+{
+  "native_build": "2025.33230",
+  "shared_master_write_blocked": true,
+  "both_controls_suspended": true,
+  "unrelated_control_works": true,
+  "explicit_reregistration_recovers": true,
+  "bind_expressions_preserved": true,
+  "unclaimed_master_rebind_allowed": true,
+  "hardware_dispatch_no_feedback": true,
+  "main_midi_pid_preserved": true,
+  "physical_acceptance": false
+}
