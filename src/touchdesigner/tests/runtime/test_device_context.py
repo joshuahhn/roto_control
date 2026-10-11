@@ -22,6 +22,46 @@ class DeviceTests(unittest.TestCase):
 
     def hw(self,e,index):e._receive_midi(sysex(11,7,(index,)))
 
+    def test_unlock_routes_selected_track_with_unflushed_locked_device_intent(self):
+        for split in (False, True):
+            with self.subTest(split=split):
+                e,m,f,a,b,t,pa,pb,s,_ = self.fixture()
+                other = m.create_track('custom', 'Other')
+                e._receive_midi(sysex(11,13,(1,)))
+                e._receive_midi(sysex(10,9,(0,1)))
+                self.hw(e,1)
+                if split:
+                    f.flush()
+                e._receive_midi(sysex(11,13,(0,)))
+                f.flush()
+                self.assertEqual(m.track()['id'], other)
+                self.assertEqual(m.selected_track, other)
+                self.assertIsNone(f.pending)
+
+    def test_unlock_track_intent_survives_backlog_learn_and_touch_guards(self):
+        for guard in ('backlog', 'learn', 'touch'):
+            with self.subTest(guard=guard):
+                e,m,f,a,b,t,pa,pb,s,_ = self.fixture()
+                other = m.create_track('custom', 'Other')
+                e._receive_midi(sysex(11,13,(1,)))
+                e._receive_midi(sysex(10,9,(0,1)))
+                self.hw(e,1)
+                e._receive_midi(sysex(11,13,(0,)))
+                if guard == 'learn': e._receive_midi(sysex(11,9,(1,)))
+                if guard == 'touch': e._receive_midi((191,52,127))
+                f.flush(backlog=guard == 'backlog')
+                self.assertEqual(m.track()['id'], t)
+                self.assertIsNotNone(f.pending)
+                if guard == 'learn': e._receive_midi(sysex(11,9,(0,)))
+                if guard == 'touch': e._receive_midi((191,52,0))
+                f.flush()
+                self.assertEqual(m.track()['id'], other)
+                self.assertEqual(m.selected_track, other)
+                self.assertIsNone(f.pending)
+                values = (a.eval(), b.eval())
+                e._receive_midi((191,12,127));e._receive_midi((191,44,127))
+                self.assertEqual((a.eval(), b.eval()), values)
+
     def test_deleting_preceding_device_reindexes_later_metadata(self):
         import json
         for deleted_active,connected in ((False,False),(False,True),(True,False),(True,True)):

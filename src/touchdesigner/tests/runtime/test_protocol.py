@@ -23,6 +23,23 @@ class ProtocolTests(unittest.TestCase):
         self.ready()
         self.host.receive(sysex(11, 11, (0, 0, *digest("Value", 6), 0, 0, 0)))
 
+    def test_learn_transitions_discard_partial_knob_pairs(self):
+        for first, second in ((12, 44), (44, 12)):
+            for transitions in ((1, 0), (0,)):
+                with self.subTest(first=first, transitions=transitions):
+                    self.setUp(); self.map()
+                    if transitions == (0,):
+                        self.host.receive(sysex(11, 9, (1,)))
+                    self.host.receive((191, first, 64))
+                    for state in transitions:
+                        self.host.receive(sysex(11, 9, (state,)))
+                    if transitions[-1]:
+                        self.host.receive(sysex(11, 9, (0,)))
+                    self.host.receive((191, second, 0))
+                    self.assertEqual(self.assigned, [])
+                    self.host.receive((191, first, 127))
+                    self.assertEqual(len(self.assigned), 1)
+
     def test_compact_numeric_display_preserves_value(self):
         self.map()
         value = 0.123456789
