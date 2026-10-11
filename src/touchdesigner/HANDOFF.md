@@ -1074,3 +1074,42 @@ Temporary Layout/test storage removed; original IDs/configuration/libraries and
 all demo values retained. Amount recalls on Knob1, connected, no errors. Recovery,
 accepted demo tox and evidence retained in diagnostics/issue4. Canonical project
 not overwritten; no #4 commit/push or issue closure.
+
+## Issue #5 runtime BIND ownership source fix — 2026-10-11
+
+Isolated branch fix/issue-5-bind-ownership, main 7d95455. Current parameter-chain
+claims are checked before SetValue, hardware dispatch, feedback callbacks, MIDI
+receive, Tick and offers. Overlapping claims (including suspended registrations)
+suspend all affected controls with public errors, clear mapping/deferred input,
+and withdraw unsent per-control feedback while retaining unrelated/session output.
+Semantic validation failure does not hide an otherwise valid chain claim.
+
+448 tests pass: runtime rebind, no hardware/feedback writes, both owners suspended,
+unrelated control retained, selective queued feedback removal, narrower-clamp
+conflict, valid unclaimed rebind and explicit re-registration recovery. Existing
+cycle/missing/readonly/EXPRESSION/EXPORT checks remain. Native TD 2025.33230 verifies
+real BIND chains, blockade, unaffected control, preserved expressions, recovery,
+unclaimed rebind and synthetic hardware no feedback; main MIDI PID retained and
+fixture removed. Harness/results: diagnostics/issue5. Standards/Spec review performed.
+
+Physical acceptance pending. Main live controller retains #3/#4 code, not #5.
+No #5 commit/push or canonical project/export replacement.
+
+### Issue #5 integrated live install and physical acceptance
+
+Composed #5 extension changes over #3 and retained #4 protocol/arbiter sources in
+a temporary integration bundle; combined 460 tests pass. Installed controls and
+composed extension DATs after live recovery export; original configuration retained.
+
+In temporary ISSUE 5 TEST Layout, user LEARNed three explicit BIND aliases via
+Offerparameter and confirmed each knob changes only its own master. Runtime
+Aliastwo rebind to Masterone produces ownership errors on Knob1/2; both suspend,
+user rotation leaves Masterone/Mastertwo unchanged while Knob3 changes Masterthree.
+Restoring reference alone retains suspension. Apply setup recalls all three
+mappings without re-LEARN; user rotates Knob1/2, native inspection confirms both
+masters changed independently and unrelated Masterthree remained unchanged.
+
+Temporary Layout/COMP/test storage removed; original mapping configuration, IDs,
+libraries and all original demo values retained. Amount recalls on Knob1, connected,
+errors empty. Evidence and recovery/accepted demo exports retained locally in
+diagnostics/issue5. Canonical toe/tox not replaced. No #5 commit/push or issue closure.

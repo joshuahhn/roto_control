@@ -117,6 +117,27 @@ class Controls:
         if not self.bindings and not allow_empty:
             raise ValueError('Register at least one control')
 
+    def ownership_errors(self):
+        """Resolve every current chain, including claims of suspended controls."""
+        claims, errors = {}, {}
+        for key, binding in self.bindings.items():
+            if binding.parameter is None:
+                continue
+            try:
+                for parameter in parameter_chain(binding.parameter):
+                    identity = (getattr(parameter.owner, 'id', parameter.owner.path), parameter.name)
+                    claims.setdefault(identity, set()).add(key)
+                binding.check_parameter()
+            except (ValueError, AttributeError, RuntimeError, TypeError) as exc:
+                errors[key] = str(exc)
+        for identity, owners in claims.items():
+            if len(owners) > 1:
+                labels = ', '.join(self.bindings[key].id for key in sorted(owners))
+                reason = 'BIND ownership conflict: ' + labels + ' share ' + identity[1]
+                for key in owners:
+                    errors[key] = reason
+        return errors
+
     def specs(self):
         for key, binding in self.bindings.items():
             mode = self.modes[key]

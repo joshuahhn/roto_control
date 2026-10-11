@@ -215,6 +215,8 @@ class RotoPythonExt:
         stale = follower is not None and token is not None and token != follower.token
         unavailable = manager is not None and (not manager.owner_ready() or manager.quarantined and not manager.legacy)
         fenced = unavailable or (follower is not None and (follower.gated or stale)) or self._dispatching or bool(manager and manager.mutating)
+        if not fenced and self._collection is not None:
+            self._validate_control_ownership()
         consumed = manager.receive(message, control_only=fenced) if manager is not None else False
         if not consumed and not fenced and learner is not None:
             consumed = learner.receive(message)
@@ -1027,6 +1029,7 @@ class RotoPythonExt:
             if self._collection.modes[key] == "pulse":
                 raise ValueError("Pulse targets use Offerparameter for LEARN")
             try:
+                self._validate_control_ownership(key)
                 learner = getattr(self,"_free_learner",None)
                 if learner is not None and self._host.learning:
                     learner.ignore(binding.parameter,binding.clamp(value))
@@ -1266,6 +1269,49 @@ class RotoPythonExt:
             return binding.parameter.owner
         return ""
 
+    def _discard_control_output(self, keys):
+        """Keep session/unrelated output while dropping unsent suspended feedback."""
+        cc = {number for kind, slot in keys for number in
+              ((11+slot, 43+slot) if kind == 'knob' else (19+slot,))}
+        addresses = {(int(kind == 'button'), slot-1) for kind, slot in keys}
+        indices = {self._host.controls[key].index for key in keys}
+        kept = []
+        for line in getattr(self, '_pending', b'').splitlines(keepends=True):
+            try:
+                message = json.loads(line)['midi']
+            except (ValueError, KeyError, TypeError):
+                kept.append(line); continue  # a partially written line cannot be withdrawn
+            drop = len(message) == 3 and message[0] == 191 and message[1] in cc
+            if len(message) >= 10 and tuple(message[:5]) == (240,0,34,3,2):
+                if message[5:7] == [10,24]:
+                    drop |= tuple(message[7:9]) in addresses
+                elif message[5:7] == [11,10]:
+                    drop |= (message[7]<<7 | message[8]) in indices
+            if not drop:
+                kept.append(line)
+        self._pending = b''.join(kept)
+
+    def _validate_control_ownership(self, key=None):
+        """Suspend overlapping runtime claims before input, writes or feedback."""
+        if self._collection is None:
+            return
+        errors = self._collection.ownership_errors()
+        changed = False
+        for affected, reason in errors.items():
+            binding = self._collection.bindings[affected]
+            target = self._host.controls[affected]
+            changed |= binding.valid or self._collection.errors.get(affected) != reason
+            self._collection.suspend(affected, reason)
+            target.enabled = False
+            target._clear_mapping_state()
+            self._last_error = reason
+        if changed:
+            self._discard_control_output(errors)
+            self._host._sync()
+            self._publish()
+        if key is not None and not self._collection.bindings[key].valid:
+            raise ValueError(self._collection.errors.get(key, 'Binding suspended; apply setup to resume'))
+
     def _control_fault(self, key, exc):
         self._collection.suspend(key, exc)
         self._host.controls[key].enabled = False
@@ -1283,6 +1329,7 @@ class RotoPythonExt:
             manager=getattr(self,'_layouts',None)
             if manager is not None:manager.owner_ready(required=True)
             if manager is not None and manager.quarantined and not manager.legacy:raise ValueError('Activate the repaired Layout before dispatch')
+            self._validate_control_ownership(key)
             self._dispatching = True
             if self._collection.modes[key] == "pulse":
                 self._collection.pulse(key)
@@ -1309,6 +1356,7 @@ class RotoPythonExt:
                 or par.owner != binding.parameter.owner or par.name != binding.parameter.name):
             return
         try:
+            self._validate_control_ownership(key)
             if pulse:
                 # Hardware dispatch already executes the business Pulse. Its
                 # deferred callback must never offer or execute it again.
@@ -1341,6 +1389,7 @@ class RotoPythonExt:
                 table.deleteRow(1)
 
     def _check_controls(self):
+        self._validate_control_ownership()
         for key, binding in self._collection.bindings.items():
             if not binding.valid:
                 continue
@@ -1469,6 +1518,8 @@ class RotoPythonExt:
                     (follower is not None and (follower.gated or follower.paused or follower.pending)) or
                     (manager is not None and manager.mutating)):
                 return False
+        if key is not None:
+            self._validate_control_ownership(key)
         result = self._host.offer_parameter(key) if key is not None else self._host.offer_parameter()
         self._publish()
         return result
