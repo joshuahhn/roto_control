@@ -1113,3 +1113,29 @@ Temporary Layout/COMP/test storage removed; original mapping configuration, IDs,
 libraries and all original demo values retained. Amount recalls on Knob1, connected,
 errors empty. Evidence and recovery/accepted demo exports retained locally in
 diagnostics/issue5. Canonical toe/tox not replaced. No #5 commit/push or issue closure.
+
+## Artifact sync — 2026-10-12
+
+Current `/roto_clean_demo/roto_python` runtime, watcher callbacks, embedded MIDI helper
+and 16 principal Inspector source DATs matched merged main `2de08c9` before changes.
+No runtime reinstall was needed. Updated five embedded Markdown snapshots from that
+source (README, actions, inspector, lifecycle, portability), preserving geometry.
+Live TD 2025.33230 saved `projects/current/ROTO-CONTROL.3.toe`; canonical
+`ROTO-CONTROL.toe` matches its bytes. Refreshed `projects/current/project.json`.
+
+Exported `exports/roto_python.synced.20261012.tox` through live TD and promoted its
+bytes to `exports/roto_python.tox`. Native reload passed runtime/Inspector parity,
+local Inspector ownership, empty mappings/Snapshots, disconnected startup, Follow off,
+Python=python3 and no DAT file dependencies. Original mapping registry, Snapshots,
+parameter values and geometry match the pre-operation baseline; zero scoped errors.
+Live project remains disconnected, as found. No new hardware acceptance is claimed.
+
+Recovery copies of prior project/export/receipt and configured controller are retained
+in `projects/archive/sync-20261012-recovery`. One-off harness/results are in the system
+temporary directory `/private/tmp/roto-artifact-sync-20261012`. Original dirty local
+main/source checkout was not synchronized; other project components were not upgraded.
+The artifact-sync operation did not change issue #6.
+
+Publication scope: canonical project/export, identity receipt and this entry only.
+Numbered saves, dated export and recovery copies remain local; earlier acceptance
+is reused within the scope above. The original dirty checkout remains intact.

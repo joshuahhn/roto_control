@@ -1,11 +1,18 @@
 {
   "open_this": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.toe",
-  "sha256": "05d6417a953c233e0f147ec8d3a33c9644482913af7a06b071b4aa58a54216b2",
-  "source": "live TouchDesigner save after physical Knob1/Button8/Snapshot/Clear acceptance",
-  "python": "/Users/huihongnin/project/roto_control/src/touchdesigner/.venv/bin/python",
+  "sha256": "7da87da94beb8aaf146b8b61dc30e6af3454098ddcbaa0dbbb5868b2596d249b",
+  "source": "Live TD source parity checked against merged main 2de08c9; refreshed embedded Markdown and saved through TD",
+  "python": "../../.venv/bin/python",
   "midi_helper": "embedded; durable original-checkout external fallback",
   "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/organization-recovery",
-  "candidate_source_checkout": "/tmp/roto-control-issue15",
+  "candidate_source_checkout": "/private/tmp/roto-connect-portability",
   "open_filename": "ROTO-CONTROL.toe",
-  "td_title_counter": "ROTO-CONTROL.1.toe"
+  "td_title_counter": "ROTO-CONTROL.3.toe",
+  "interpreter_verification": "diagnostics/runtime/results/python_portability",
+  "interpreter_recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/python-portability-recovery",
+  "source_commit": "2de08c9254e116ccf66b7fb63e7d6d01adb82b9f",
+  "source_controller": "/roto_clean_demo/roto_python",
+  "sync_recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/sync-20261012-recovery",
+  "generic_export_sha256": "e564e3fee22894fd00a7a26413ab4829dc4dae5c5af38c44b03796e154f36a90",
+  "sync_validation": "Native source parity, generic tox reload empty/disconnected, mapping/value/geometry preservation; no new physical acceptance"
 }
