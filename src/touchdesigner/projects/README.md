@@ -5,7 +5,9 @@ It has the compact owned Inspector and the candidate tested with the physical
 ROTO-CONTROL on 2026-10-11: Knob1→demo_A.Amount, Snapshot motor/LCD feedback,
 Button8 Snapshot Recall, and Clear/reconnect. Button8 is now cleared; Amount0.6.
 
-This is a saved working candidate; source changes have not been committed/merged.
+This description records the 2026-10-11 saved candidate. Check `current/project.json`
+and dated HANDOFF save/export entries for artifact identity; source merges alone
+do not update embedded DATs or prove a saved artifact matches the checkout.
 Connect uses the existing external Python environment, with an embedded MIDI helper.
 
 - `current/`: current working project and identity receipt.

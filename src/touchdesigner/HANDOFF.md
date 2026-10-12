@@ -1,6 +1,32 @@
 # ROTO-CONTROL Python handoff
 
-## Current State
+## Current requirements and evidence routing
+
+Use [AGENTS.md](../../AGENTS.md#change-scoped-validation) for validation requirements,
+[CONTEXT.md](CONTEXT.md) for current architecture and [projects/README.md](projects/README.md)
+for saved-project identity. Source baseline for this index: `2de08c9` (2026-10-12).
+A source merge does not establish the embedded version of a saved `.toe`/`.tox`.
+
+The entries below are chronological evidence. Read a claim with its date, source,
+artifact and test method; later acceptance supersedes earlier pending wording only
+for the same case. Historical resume steps, gates and “no commit/push” statements
+are checkpoint records, not a new task queue or current authorization.
+Owned Inspector/Snapshot integration, #15 validation changes and #3–#5 fixes have
+later source/native/physical results below. Reuse their unaffected acceptance;
+source tests and synthetic native messages do not establish physical acceptance.
+
+## Unresolved limitations and deferred work
+
+- Native Inspector/Popup drag deformation is deferred in issue #6; the user has
+  explicitly put #6 on hold. It is not a blocker for unrelated changes.
+- Other platforms, full-day reliability and USB hot-plug behavior are not broadly
+  accepted. Only claim the environments and interactions actually recorded.
+- Historical manual gates without a later matching result remain unproven in that
+  scope. Investigate them only when the requested change depends on that behavior.
+
+## Historical milestones
+
+### First hardware milestone (2026-10-03)
 
 First hardware milestone accepted on TD 2025.33230, 2026-10-03:
 
@@ -24,13 +50,13 @@ Value edits now auto-offer once per LEARN session. Hardware-origin callbacks are
 - Default Value mapping recall after reconnect still passes. Custom parameter binding physical LEARN and knob input passed (user confirmation); motor/LCD and reconnect recall also passed for the custom parameter target. Callback binding physical LEARN, hardware events, motor and LCD also passed; reconnect mapping recall passed for both targets. Software SetValue left callback Events unchanged. Cleanup reaped the owned process in about 40 ms. Synthetic messages are not physical acceptance.
 - Saved component remains source-file/venv dependent. Callback objects and bindings reset on extension reload; startup registration is explicit.
 
-## Known Issues
+## Historical limitations (2026-10-04)
 
 Single-target mode is physically accepted. Collection supports up to 8 knobs/8 PLUGIN buttons in software; physical acceptance is in progress. No bank/page editor, MIX or transport controls. macOS was tested; other platforms are unverified. Numeric display is a temporary firmware overlay. No full-day reliability or USB hot-plug acceptance is claimed. Disconnect before source reload; extension reinit deliberately resets connection state.
 
 TD 2025.33230 native MIDI receive defects are avoided through the external Python process, not fixed. No native MIDI operators are added to this project's user network. TD's system MIDI operators are unchanged.
 
-## Resume Steps
+## Historical resume steps (2026-10-04)
 
 Open `roto_control_python.toe`, select `roto_python`, press Connect. Learned mapping should recall automatically. In collection mode inspect each base_targets/state row: aggregate Mapped stays false until all 16 configured targets are learned. If learning again, follow the ordered README steps. Disconnect before editing source. For another target, press the corresponding demo Use this binding. Saved Binding page setup is restored after initialization; temporary direct API registrations are replaced by that saved setup. Inspect diagnostics inside base_state or controller.State.
 

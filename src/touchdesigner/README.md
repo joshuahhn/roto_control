@@ -37,7 +37,7 @@ See [portability](docs/functions/portability.md), [Inspector](docs/functions/ins
 
 Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. scripts/build_network.py constructs the development component; scripts/export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
 
-Validation: `python3 -m unittest discover -q`. Hardware acceptance and live checks are recorded in HANDOFF.md and verification JSON files.
+Validation follows [AGENTS.md](../../AGENTS.md#change-scoped-validation): run relevant existing tests during development and required checks for affected source before delivery. See [test entry points](tests/README.md). Reuse unaffected acceptance in [HANDOFF.md](HANDOFF.md); historical pending gates are not a new task queue. Documentation-only edits need scoped diff/link review and `git diff --check`, without runtime or live acceptance. One-off probes and outputs go in temporary storage; see [diagnostics](diagnostics/README.md).
 
 
 ## Menu parameters

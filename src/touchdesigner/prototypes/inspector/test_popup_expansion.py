@@ -151,3 +151,62 @@ class PopupExpansionTests(TestCase):
         v._restore_popup_base()
         self.assertEqual((p.par.winw.eval(),p.par.winh.eval()),(286,214))
         self.assertFalse(v._popup_size_pending)
+
+
+class PopupProbeInfrastructureTests(TestCase):
+    """Resolve owned views without root OP or saved project folder assumptions."""
+    def fixture(self):
+        from popup_probe import prepare
+        controller = object()
+        model = SimpleNamespace(ownerComp=SimpleNamespace(
+            par=SimpleNamespace(Controller=SimpleNamespace(eval=lambda: controller))))
+        view = SimpleNamespace(ext=SimpleNamespace(InspectorView=SimpleNamespace(
+            _model=model, _popup=SimpleNamespace(isOpen=True),
+            _main=SimpleNamespace(isOpen=True))))
+        calls = []
+        def lookup(path):
+            calls.append(path)
+            return view if path == '/owned/inspector/view' else None
+        return prepare, dict(op=lookup, view_path='/owned/inspector/view'), calls, controller, model
+
+    def test_explicit_view_supplies_its_own_model_and_controller(self):
+        prepare, scope, calls, controller, model = self.fixture()
+        result = prepare(scope)
+        self.assertEqual(calls, ['/owned/inspector/view'])
+        self.assertIs(result['m'], model.ownerComp)
+        self.assertIs(result['controller'], controller)
+
+    def test_missing_or_unknown_target_fails(self):
+        prepare, scope, calls, _, _ = self.fixture()
+        for target in (None, 'relative/view', '/missing'):
+            with self.subTest(target=target), self.assertRaises(ValueError):
+                prepare(dict(scope, view_path=target))
+        self.assertEqual(calls, ['/missing'])
+
+    def test_temporary_and_explicit_outputs_preserve_payload(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        prepare, scope, _, _, _ = self.fixture()
+        with tempfile.TemporaryDirectory() as directory:
+            with patch('popup_probe.tempfile.mkdtemp', return_value=directory) as make:
+                path = prepare(scope)['write_result']('probe.json', {'all_pass': False})
+                make.assert_called_once_with(prefix='roto-popup-')
+                self.assertEqual(json.loads(path.read_text()), {'all_pass': False})
+            explicit = dict(scope, output_dir=Path(directory) / 'selected')
+            path = prepare(explicit)['write_result']('probe.json', {'all_pass': True})
+            self.assertEqual(path.parent, explicit['output_dir'])
+            with self.assertRaises(ValueError):
+                prepare(explicit)['write_result']('../escape.json', {})
+
+    def test_closed_windows_are_rejected_before_sampling_cached_geometry(self):
+        prepare, scope, _, _, _ = self.fixture()
+        ui = scope['op'](scope['view_path']).ext.InspectorView
+        ui._popup.isOpen = False
+        with self.assertRaises(ValueError):
+            prepare(scope)
+        prepare(scope, require_popup=False)
+        ui._main.isOpen = False
+        with self.assertRaises(ValueError):
+            prepare(scope, require_popup=False)

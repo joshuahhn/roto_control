@@ -2,11 +2,13 @@
 
 ## Purpose
 
-Build a new Python host from scratch, using official Ableton/Logic integration behavior as reference. First milestone accepted: handshake and Value controlled by Knob 1. Current milestone: up to 8 knobs and 8 buttons with parameter/callback targets; software verification passed; physical Knob 2/8 and Button 1/2/8 acceptance passed. Other slots have software coverage.
+Python host for ROTO-CONTROL in TouchDesigner, with Layout/Track/Device mapping, parameter and callback targets, an owned compact Inspector, Action presets and slot-value Snapshots. Official Ableton/Logic integration behavior remains a reference.
+
+This current overview was reconciled against source `2de08c9` (2026-10-12). Source checkout, embedded DATs and saved artifacts can differ: identify the relevant baseline before changing behavior. Use [projects/README.md](projects/README.md) for the canonical project entry and its receipt, and [HANDOFF.md](HANDOFF.md) for dated acceptance scope.
 
 ## Architecture
 
-`protocol.Host` owns protocol and session state behind complete-message send/receive and normalized parameter callbacks and configurable target identity/label/display. binding.Binding converts target units and handles target writes/callback dispatch. `RotoPythonExt` adapts that interface to TD parameters and a managed external MIDI process. The child owns mido/rtmidi ports; nonblocking pipes keep MIDI I/O out of TD's native MIDI library. Internal base_state owns readonly diagnostics; Parameter CHOP, selective Null and outCHOP expose its channels. Saved Binding page configuration is reapplied after extension initialization; callback mode runs the user-editable registration DAT.
+`protocol.Host` owns protocol and session state behind complete-message send/receive and normalized parameter callbacks and configurable target identity/label/display. binding.Binding converts target units and handles target writes/callback dispatch. `RotoPythonExt` adapts that interface to TD parameters and a managed external MIDI process. The child owns mido/rtmidi ports; nonblocking pipes keep MIDI I/O out of TD's native MIDI library. Internal base_state owns readonly diagnostics. The generic controller has no CHOP input/output connectors; public State and APIs expose runtime data. Saved Binding page configuration is reapplied after extension initialization; callback mode runs the user-editable registration DAT.
 
 Binding UI now exposes only Parameter mapping (`collection`: Free LEARN, Inspector, Layouts/Tracks) and Python registration (`callback`: saved reconstruction hook). Legacy single-target APIs remain callable; their outer configuration fields are removed after disconnected migration. `setup.configure_ui` is the shared builder/export upgrade. Native input-only receive retesting and its reproducible runner are documented in `diagnostics/native_midi/README.md`; production continues to use the external backend.
 
@@ -33,15 +35,15 @@ No legacy host imports, no automatic hardware connection, no arbitrary parameter
 
 ## Verification
 
-Protocol unit tests cover handshake, metadata, input pairing, mapping validation, touch and echo suppression. Live TD checks must additionally prove extension promotion, callbacks, CHOP output, process cleanup and errors. Physical knob input, LCD, LEARN and motor follow require controller acceptance and must be recorded separately in HANDOFF.md.
+Follow [AGENTS.md](../../AGENTS.md#change-scoped-validation) for the authoritative change-scoped policy and [tests/README.md](tests/README.md) for test entry points. Native checks cover only affected TD behavior; physical checks cover only affected MIDI/ACK/feedback behavior, including indirect changes. Record the baseline, changed paths and evidence scope; reuse unaffected acceptance. Documentation changes need diff/link/consistency review, not live TD or hardware acceptance.
 
 ## Collection architecture
 
-collection_protocol.CollectionHost shares the established session handshake and holds independent Control state. controls.Controls validates adapters and table specifications. base_targets contains persistent targets, 16 event-driven watchers, per-target runtime state, bounded real button/mapping RX diagnostics and target-unit CHOP output. Existing single-target API and saved configuration remain available. Buttons have Toggle/Pulse modes; Pulse uses native hardware TOGGLE with immediate latched CC and Trigger/Ready display feedback, no TD timeout; both latched values trigger actions. No MIX transport buttons or firmware configuration is in scope.
+collection_protocol.CollectionHost shares the established session handshake and holds independent Control state. controls.Controls validates adapters and table specifications. base_targets contains persistent targets, 16 event-driven watchers, per-target runtime state, bounded real button/mapping RX diagnostics. Target values are available through the runtime APIs; historical CHOP presentation is not the current generic interface. Existing single-target API and saved configuration remain available. Buttons have Toggle/Pulse modes; Pulse uses native hardware TOGGLE with immediate latched CC and Trigger/Ready display feedback, no TD timeout; both latched values trigger actions. No MIX transport buttons or firmware configuration is in scope.
 
 API sequence is documented in docs/functions/lifecycle.md. Button input declares hardware button_type separately from TD action mode; targets table column defaults existing buttons to toggle. Shared button confirmation follows successful consumer dispatch, while knobs retain motor echo suppression.
 
-Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. External Lister config lives inside the inspector wrapper. Build entrypoint includes scripts/build_inspector.py; Inspector source is code/py/roto_python/inspector/inspector_data.py.
+Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. The owned compact Inspector packages its model, Fold view and Popup inside each controller. Connection Open Inspector opens it. Build entrypoint is scripts/build_inspector.py; current view/model sources live in prototypes/inspector. The former Lister presentation is historical.
 
 Inspector Clear uses RemoveControl / RemoveAllControls: delete registration, disable watcher, suppress saved-hook restore and replay outgoing PLUGIN 0E on reconnect. ClearLearn / ClearAllLearn retain registration as separate hardware-only APIs. Hardware persistence is verified by reconnect, not an unmap acknowledgement.
 
@@ -57,12 +59,16 @@ FreeLearner retains pending parameter offers independently by index/hash during 
 
 ## Active repository
 
-Continue development in joshuahhn/roto_control, src/touchdesigner. The nin-lab location is a migration backup. Documentation embedding uses the local scripts/td_project_docs.py; current project is .32.toe and portable export is .20.tox.
+Continue development in joshuahhn/roto_control, src/touchdesigner. The nin-lab location is a migration backup. Documentation embedding uses scripts/td_project_docs.py. Canonical entries are projects/current/ROTO-CONTROL.toe and exports/roto_python.tox; use the project receipt and dated save/export evidence to identify their source baseline. Markdown-only changes are embedded during the next authorized save/export.
+
+## Historical architecture and milestone notes
+
+The dated sections below preserve implementation history. Their source-only, pending, local-preparation and numbered-artifact statements describe that checkpoint, not current requirements. Later owned Inspector, Snapshot, #15 and #3–#5 results in HANDOFF.md supersede earlier status for the same case. Reuse only the scope actually accepted; outstanding limitations are listed at the top of HANDOFF.md.
 
 
 ## Multi-Track registry v2 (2026-10-06)
 
-Historical v2 baseline: Layouts own ordered Tracks; each Track originally owned one Plugin with independent parameter mappings. See the v3 section below for current multi-Device behavior. layouts.py owns versioned migration and Track metadata/selection; protocol.Host delegates Track announcements through tracks_callback. Hardware Track pages are distinct from selection. Only the current routing Track's Plugin is advertised. Under LOCK, selected Track and routing Track may differ; physical behavior remains pending acceptance. Inspector context and clear confirmations are Plugin-scoped. See docs/functions/layouts.md and multitrack_native_verification.json. The .32 baseline above is historical; consult the final HANDOFF entry for current artifacts.
+Historical v2 baseline: Layouts own ordered Tracks; each Track originally owned one Plugin with independent parameter mappings. See the v3 section below for current multi-Device behavior. layouts.py owns versioned migration and Track metadata/selection; protocol.Host delegates Track announcements through tracks_callback. Hardware Track pages are distinct from selection. Only the current routing Track's Plugin is advertised. Under LOCK, selected Track and routing Track may differ; physical behavior remains pending acceptance. Inspector context and clear confirmations are Plugin-scoped. See docs/functions/layouts.md and multitrack_native_verification.json. The .32 baseline is historical; consult the project receipt and dated HANDOFF save/export entries for artifact identity.
 
 ## Live Select COMP (2026-10-07)
 

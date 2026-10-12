@@ -8,9 +8,9 @@ Use `build_inspector.build(controller, source_dir)` after current runtime setup,
 with a new legacy archive path when replacing old Lister presentation.
 See [owned packaging](../../docs/plans/owned-inspector-packaging.md).
 
-# Compact real-data Inspector prototype
+## Historical prototype context
 
-The current Inspector checkpoint is saved through live TD 2025.33230; use the active project filename for its save version. The earlier `inspector_real_data.toe` checkpoint passed reload verification. Both retain the existing Roto controller and mappings. MIDI starts disconnected after reload; use the existing controller's Connect pulse. The compact UI is separate from the production table Inspector.
+The pre-owned Inspector checkpoint was saved through live TD 2025.33230; use the active project filename for its save version. The earlier `inspector_real_data.toe` checkpoint passed reload verification. Both retain the existing Roto controller and mappings. MIDI starts disconnected after reload; use the existing controller's Connect pulse. At that checkpoint the compact UI was separate from the table Inspector; production now uses the owned compact Inspector described above.
 
 ## Use
 
@@ -64,12 +64,54 @@ exec(Path(project.folder + '/prototypes/inspector/build_live.py').read_text(), n
 
 ## Verification
 
+Follow [change-scoped validation](../../../../AGENTS.md#change-scoped-validation)
+and the [test entry points](../../tests/README.md). Select tests for the changed
+behavior; the commands below are available suites, not a requirement for docs edits.
+Native geometry/lifecycle checks are needed only when that behavior changes.
+Historical counts and pending gates below describe their checkpoints; consult later
+[HANDOFF.md](../../HANDOFF.md) entries for matching acceptance before rerunning.
+
+Popup harnesses overlap but have distinct failure cases: `verify_popup_height_race.py`
+covers rapid section changes; `verify_popup_reopen_height.py` covers close/reopen
+settlement; `verify_popup_no_reopen.py` counts Open/Close pulses; and
+`verify_popup_manual_base.py` checks manual-size anchoring. Keep `test_popup_expansion.py`
+regressions. Select the harness that answers the changed behavior, rather than running
+all four by default. They share `popup_probe.py` for explicit view/model resolution
+and result storage; existing native experiments and historical evidence are retained.
+
+Confirm the active TD project and intended controller first. Supply an absolute
+`view_path` for its initialized Inspector view; no root OP is assumed. Height-race,
+reopen and manual-base probes require an open, settled Popup with sections collapsed.
+The main Inspector must also be open: a closed Window can report cached dimensions
+including its title bar. Preconditions reject that case before sampling.
+These probes change window/editor state: retain recovery before use. No-reopen manages
+its own opening; run phases `start`, `mapping`, `target`, `back`, `collapse`, `finish`
+in separate TD turns with at least two frames between phases. The other probes
+schedule finite steps. An interrupted probe may need fixture/window cleanup.
+
+Example inside live TD with an explicitly verified view path:
+
+```python
+import runpy
+source = '/absolute/path/to/src/touchdesigner'
+runpy.run_path(source + '/prototypes/inspector/verify_popup_reopen_height.py',
+              init_globals=dict(op=op, run=run, view_path=verified_view_path,
+                                cycles=5, label='after'))
+```
+
+For no-reopen also pass `parameterexecuteDAT=parameterexecuteDAT` and `phase` each
+turn. Direct `exec` callers must supply `inspector_source_dir` pointing to
+`prototypes/inspector`. Results default to a new system temp folder whose path is
+printed; optional `output_dir` selects a capture directory. Retain repo results only
+for an explicit reusable need (see [diagnostics](../../diagnostics/README.md)).
+Host-side tests cover helper behavior and geometry logic, not native acceptance.
+
 ```sh
 python3 -m unittest discover -q
 python3 -m unittest discover -s prototypes/inspector -p 'test_*.py' -q
 ```
 
-239 runtime tests and 179 Inspector tests pass. Milestone 4 filters, Details, scoped removal and native verification are recorded in [PARITY_REPORT.md](../../docs/history/inspector/PARITY_REPORT.md). Milestone 3 assignment/typed-widget fixtures, fresh native builder, generic export/reload and bounded picker workloads are recorded in [TARGET_REPORT.md](../../docs/history/inspector/TARGET_REPORT.md). Native checks and the user's physical acceptance cover real K2 updates and hardware Learn alerts. Additional checks cover Value Apply, inactive Power updates through a native watcher, independent browsing, a single main window, saved project reload and generic exports. A disconnected native fixture verifies Ping protocol output without Value/Pulse dispatch, Clear's second-click confirmation and removal isolation; the user has now confirmed physical target assignment and Ping working; physical Range re-LEARN and restoration are accepted; B1 Menu/Cycle PUSH/TOGGLE input-adapter acceptance and original TOGGLE/value1 restoration now pass. Milestone 1 fixtures additionally verify native touch/mode callbacks, invalid inactive targets, six-context cache bounds, zero idle text writes and generic command reload. Popup Mapping expands downward with width/top-left preserved; native resize rendering is unresolved and deferred in [issue #6](https://github.com/joshuahhn/roto_control/issues/6) (see MAPPING_REPORT.md). Milestone 2 additionally verifies configuration failures, ACK/re-LEARN distinctions, independent Mapping drafts, callback factory targets, direct native dropdown selection, independent width/height mouse resizing, Popup wheel scrolling and continuous Value callbacks without deferred write echoes. See `LIVE_REPORT.md`, `MAPPING_REPORT.md`, `HEALTH_REPORT.md`, `live_verification.json`, `live_export_reload.json` and `editor_actions_verification.json`.
+Historical checkpoint: 239 runtime tests and 179 Inspector tests passed. Milestone 4 filters, Details, scoped removal and native verification are recorded in [PARITY_REPORT.md](../../docs/history/inspector/PARITY_REPORT.md). Milestone 3 assignment/typed-widget fixtures, fresh native builder, generic export/reload and bounded picker workloads are recorded in [TARGET_REPORT.md](../../docs/history/inspector/TARGET_REPORT.md). Native checks and the user's physical acceptance cover real K2 updates and hardware Learn alerts. Additional checks cover Value Apply, inactive Power updates through a native watcher, independent browsing, a single main window, saved project reload and generic exports. A disconnected native fixture verifies Ping protocol output without Value/Pulse dispatch, Clear's second-click confirmation and removal isolation; the user has now confirmed physical target assignment and Ping working; physical Range re-LEARN and restoration are accepted; B1 Menu/Cycle PUSH/TOGGLE input-adapter acceptance and original TOGGLE/value1 restoration now pass. Milestone 1 fixtures additionally verify native touch/mode callbacks, invalid inactive targets, six-context cache bounds, zero idle text writes and generic command reload. Popup Mapping expands downward with width/top-left preserved; native resize rendering is unresolved and deferred in [issue #6](https://github.com/joshuahhn/roto_control/issues/6) (see MAPPING_REPORT.md). Milestone 2 additionally verifies configuration failures, ACK/re-LEARN distinctions, independent Mapping drafts, callback factory targets, direct native dropdown selection, independent width/height mouse resizing, Popup wheel scrolling and continuous Value callbacks without deferred write echoes. See `LIVE_REPORT.md`, `MAPPING_REPORT.md`, `HEALTH_REPORT.md`, `live_verification.json`, `live_export_reload.json` and `editor_actions_verification.json`.
 
 `shared_verify.py` and `run_shared_stress.py` require the mock model and reject live mode before synthetic mutation. The earlier mock evidence remains in `SHARED_MODEL_REPORT.md` and `shared_*` files; `STRESS_REPORT.md` / `stress_*` describe the preceding architecture. `run_stress.py` is a legacy harness and rejects shared-model views.
 
@@ -96,7 +138,7 @@ The saved Popup had retained 551px of height for 178px of collapsed content. `fi
 
 Rapid collapse/close/reopen previously adopted a stale expanded viewport cache and added 134px on every Mapping cycle. The view now retains the latest intended geometry while native Window and Size From Window settle, uses it for reopening and dropdown space decisions, then clears it with one cancellable three-frame callback. Disconnect/export cancel the callback. No permanent frame poll or new Window is added. Manual dimensions after settlement remain the base. Twenty native reopen cycles, thirty rapid section cycles and manual-size checks pass; see popup_reopen_height_before.json, popup_reopen_height_after.json and [REPLACEMENT_REPORT.md](../../docs/history/inspector/REPLACEMENT_REPORT.md).
 
-The first acceptance soak stopped at 352 seconds upon finding this height bug; its partial capture is archived with an `_interrupted` suffix. A new full 1800-second run completed 16,437 update batches with no errors, height drift or bounded-state growth; real data and the original 328x178 Popup were restored. Whole-process RSS plateaued, but minute frame p95 reached 19.46ms and cadence spikes need isolated profiling. See [REPLACEMENT_REPORT.md](../../docs/history/inspector/REPLACEMENT_REPORT.md). Replacement remains unaccepted; physical Range re-LEARN and restoration pass, while the other listed gates remain pending.
+The first acceptance soak stopped at 352 seconds upon finding this height bug; its partial capture is archived with an `_interrupted` suffix. A new full 1800-second run completed 16,437 update batches with no errors, height drift or bounded-state growth; real data and the original 328x178 Popup were restored. Whole-process RSS plateaued, but minute frame p95 reached 19.46ms and cadence spikes need isolated profiling. See [REPLACEMENT_REPORT.md](../../docs/history/inspector/REPLACEMENT_REPORT.md). At that checkpoint replacement remained unaccepted; physical Range re-LEARN and restoration passed, while other listed gates were pending. Later replacement and owned-composition evidence in HANDOFF.md must be considered before treating a gate as unresolved.
 
 ## Publication performance
 

@@ -1,7 +1,13 @@
 """Manual size becomes the base; section deltas retain width and top-left."""
 from pathlib import Path
 import json
-v=op('/inspector_below');u=v.ext.InspectorView;p=u._popup
+import runpy
+
+# run_path supplies __file__; exec callers supply inspector_source_dir explicitly.
+_probe_dir = globals().get('inspector_source_dir')
+if _probe_dir is None:
+    _probe_dir = Path(__file__).resolve().parent
+globals().update(runpy.run_path(str(Path(_probe_dir) / 'popup_probe.py'))['prepare'](globals()))
 saved=(p.contentWidth,p.contentHeight,p.x,p.y);stage=0;result={}
 def step():
     global stage
@@ -19,6 +25,6 @@ def step():
     else:
         result['restored']=(p.contentWidth,p.contentHeight,p.x,p.y)==saved
         result['all_pass']=all(x for x in result.values() if type(x)is bool)
-        Path(project.folder+'/diagnostics/inspector/results/popup_manual_base_verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result));return
+        write_result('popup_manual_base_verification.json',result);print(json.dumps(result));return
     stage+=1;run('args[0]()',step,delayFrames=4,delayRef=op.TDResources)
 step()
