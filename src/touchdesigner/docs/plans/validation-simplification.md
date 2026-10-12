@@ -2,8 +2,11 @@
 
 Source baseline: `a035d7386813b3a94bd26f57ab3514c780c6de87` (merged #2 and #16).
 PR #14 closed without merge; its proposed content is not assumed implemented.
-Current status: targeted native and physical tests passed; candidate installed in
-the owned Inspector project with recovery. Canonical artifacts remain unchanged.
+Historical #15 acceptance status (2026-10-11): targeted native and physical tests
+passed; candidate installed in the owned Inspector project with recovery. Canonical
+artifacts were unchanged by that acceptance. Later saves have their own receipts.
+Current workflow requirements live in [AGENTS.md](../../../../AGENTS.md#change-scoped-validation);
+this plan records #15 decisions and evidence, not a standing acceptance checklist.
 
 Normal performance control should be direct. Each retained check needs a concrete
 failure it prevents; validation should occur at the relevant operation boundary.
@@ -52,7 +55,8 @@ No before/after claim is made for unchanged Learn/Activate/recall/dispatch/recov
 
 ## Verification proportional to the change
 
-Always run required runtime and Inspector source checks and diff validation.
+For the #15 runtime/Inspector delta, run the affected source checks and diff validation.
+For subsequent changes, select checks using the current AGENTS.md policy.
 Keep wrong-target, stale ACK, persistence and exactly-once regressions. Do not
 repeat hardware acceptance for byte-identical protocol/dispatch code merely because
 an unrelated source file changed; record baseline, changed paths and reused evidence.

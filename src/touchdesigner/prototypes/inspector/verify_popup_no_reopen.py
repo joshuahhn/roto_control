@@ -4,9 +4,15 @@ Run phases in separate TD turns with at least two frames between them;
 Window COMP size updates are observed after native window processing."""
 from pathlib import Path
 import json
+import runpy
 
-v=op('/inspector_below');u=v.ext.InspectorView;p=v.op('window_editor')
-m=op('/inspector_model');phase=globals().get('phase','start')
+# run_path supplies __file__; exec callers supply inspector_source_dir explicitly.
+_probe_dir = globals().get('inspector_source_dir')
+if _probe_dir is None:
+    _probe_dir = Path(__file__).resolve().parent
+globals().update(runpy.run_path(str(Path(_probe_dir) / 'popup_probe.py'))['prepare'](globals(), require_popup=False))
+
+phase=globals().get('phase','start')
 if phase=='start':
     assert v.fetch('popup_reopen_fixture',None) is None
     c=m.par.Controller.eval()
@@ -23,7 +29,7 @@ elif phase=='mapping':
     cb=v.op('probe_section_window') or v.create(parameterexecuteDAT,'probe_section_window')
     cb.viewer=True;cb.par.language='python';cb.nodeX=1660;cb.nodeY=-210
     cb.par.op='window_editor';cb.par.pars='winopen winclose';cb.par.custom=False;cb.par.builtin=True;cb.par.onpulse=True
-    cb.text="def onPulse(par):\n    parent.InspectorDemo.fetch('popup_reopen_pulses').append(par.name)\n"
+    cb.text="def onPulse(par):\n    parent().fetch('popup_reopen_pulses').append(par.name)\n"
     assert v.Action('mapping_toggle')
 elif phase in ('target','back','collapse','finish'):
     saved=v.fetch('popup_reopen_fixture');assert saved
@@ -45,7 +51,7 @@ elif phase in ('target','back','collapse','finish'):
         result=dict(mapping_target_mapping_collapse_no_open_close_pulses=True,
                     native_height_deltas=[134,250,134,0],width_top_left_main_preserved=True,
                     production_catalog_session_preserved=True,native_visual_flash_verified=False)
-        Path(project.folder+'/diagnostics/inspector/results/popup_no_reopen_verification.json').write_text(json.dumps(result,indent=2))
+        write_result('popup_no_reopen_verification.json',result)
         print(json.dumps(result))
 else:raise ValueError('Unknown phase')
 print('Popup no-reopen phase:',phase)
