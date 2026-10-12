@@ -5,10 +5,27 @@ from contextlib import nullcontext, contextmanager
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import time
 from binding import parameter_value, same_parameter
 from snapshots import Snapshots
+
+
+def resolve_python(value, folder):
+    """Accept a PATH command or project-relative interpreter; retain venv symlinks."""
+    value = str(value).strip()
+    if value and not Path(value).is_absolute() and not any(c in value for c in ('/', '\\')):
+        executable = shutil.which(value)
+        if executable is not None:
+            return executable
+    elif value:
+        executable = (Path(folder) / Path(value).expanduser()).absolute()
+        if executable.is_file():
+            return str(executable)
+    raise FileNotFoundError(
+        "Python interpreter not found: " + repr(value) +
+        ". Use python3 on PATH or a project-relative venv with mido and python-rtmidi")
 
 
 class RotoPythonExt:
@@ -1450,10 +1467,7 @@ class RotoPythonExt:
             raise ValueError("Apply a valid binding before connecting")
         self.Disconnect()
         folder = Path(project.folder)
-        # Keep the venv entry-point symlink: resolving it loses venv discovery.
-        python = (folder / self.ownerComp.par.Python.eval()).absolute()
-        if not python.is_file():
-            raise FileNotFoundError("Configure a Python interpreter with mido and python-rtmidi")
+        python = resolve_python(self.ownerComp.par.Python.eval(), folder)
         embedded = self.ownerComp.op("midi_process")
         if embedded is not None and embedded.text.strip():
             command = [str(python), "-u", "-c", embedded.text,
