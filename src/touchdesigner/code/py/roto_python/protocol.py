@@ -6,6 +6,7 @@ No Live, TouchDesigner, or legacy nin-lab host dependency.
 
 import hashlib
 import math
+from typing import NamedTuple, Optional
 
 
 HEADER = (0xF0, 0, 0x22, 3, 2)
@@ -51,6 +52,32 @@ def raw_value(value):
     if not math.isfinite(value):
         raise ValueError("Value must be finite")
     return round(min(1.0, max(0.0, value)) * 16383)
+
+
+class LearnParameter(NamedTuple):
+    """Immutable offer metadata, independent of a control's session state."""
+
+    index: int
+    target_id: str
+    target_label: str
+    key: tuple
+    mode: str
+    button_type: Optional[str] = None
+    menu_labels: tuple = ()
+
+
+def learn_parameter_message(parameter, value):
+    """Encode one LEARN PARAM message without touching routing or targets."""
+    value = raw_value(value)
+    steps = 2 if parameter.key[0] == 'button' else 0
+    labels = ('Ready', 'Trigger') if parameter.mode == 'pulse' else ('Off', 'On')
+    strings = tuple(byte for label in labels for byte in text13(label)) if steps else ()
+    if parameter.key[0] == 'knob' and parameter.menu_labels:
+        steps = len(parameter.menu_labels)
+        strings = tuple(byte for label in parameter.menu_labels for byte in text13(label)) if steps <= 16 else ()
+    return sysex(PLUGIN, 0x0A, (parameter.index >> 7, parameter.index & 127,
+                              *digest(parameter.target_id, 6), 0, 0, steps,
+                              value >> 7, value & 127, *text13(parameter.target_label), *strings))
 
 
 class Host:
@@ -198,10 +225,8 @@ class Host:
         return True
 
     def _parameter_details(self):
-        value = raw_value(self.value)
-        self._command(PLUGIN, 0x0A, (0, 0, *digest(self.target_id, 6),
-                                    0, 0, 0, value >> 7, value & 127,
-                                    *text13(self.target_label)))
+        parameter = LearnParameter(0, self.target_id, self.target_label, ('knob', 1), 'value')
+        self._send(learn_parameter_message(parameter, self.value))
 
     def _display(self):
         self._command(GENERAL, 0x18, (0, 0, *text13(self.format_value(self.value))))

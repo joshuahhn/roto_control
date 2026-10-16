@@ -143,8 +143,29 @@ class Controls:
             mode = self.modes[key]
             yield dict(kind=key[0], slot=key[1], index=self.indices[key], identity=binding.wire_identity + (':action:' + repr(binding.action_id) if binding.action_id else '') + ':' + mode,
                        label=binding.label, mode=mode, button_type=self.button_types[key], value=binding.normalized(binding.value),
+                       menu_labels=binding.menu_labels,
                        formatter=binding.format_value if mode in ('value','cycle') else lambda value, b=binding, m=mode: ('Ready' if m == 'pulse' else
                                  ('On' if value >= .5 else 'Off') if m == 'toggle' else b.format_value(value)))
+
+    def mapped_page(self, controls):
+        """Common public TD parameter page of acknowledged slots, or None."""
+        common = None
+        for key, target in controls.items():
+            if not target.mapped:
+                continue
+            binding = self.bindings.get(key)
+            parameter = binding.parameter if binding is not None else None
+            if (binding is None or not binding.valid or not target.enabled
+                    or parameter is None or not parameter.owner.valid):
+                return None
+            page = getattr(parameter, 'page', None)
+            if page is None or not page.name:
+                return None
+            candidate = parameter.owner.id, page.name
+            if common is not None and common != candidate:
+                return None
+            common = candidate
+        return common
 
     def key(self, id=None):
         if id is None:

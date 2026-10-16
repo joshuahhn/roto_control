@@ -1,14 +1,15 @@
 """One PLUGIN device with independently acknowledged knobs/buttons."""
 import time
-from protocol import Host, GENERAL, PLUGIN, digest, raw_value, text13
+from protocol import Host, GENERAL, PLUGIN, LearnParameter, digest, learn_parameter_message, raw_value, text13
 
 
 class Control(Host):
-    def __init__(self, send, key, index, identity, label, value, formatter, mode, button_type=None):
+    def __init__(self, send, key, index, identity, label, value, formatter, mode, button_type=None, *, menu_labels=()):
         super().__init__(send, lambda value: None, value)
         self.key, self.index, self.mode = key, index, mode
         self.target_id, self.target_label, self.format_value = identity, label, formatter
         self.button_type = button_type
+        self.menu_labels = tuple(menu_labels)
         self.last_pulse = float('-inf')
         self._pulse_state = 0
 
@@ -19,17 +20,9 @@ class Control(Host):
         return result
 
     def _parameter_details(self):
-        value = raw_value(self.value)
-        steps = 2 if self.key[0] == 'button' else 0
-        labels = ('Ready', 'Trigger') if self.mode == 'pulse' else ('Off', 'On')
-        strings = (*text13(labels[0]), *text13(labels[1])) if steps else ()
-        binding = getattr(self.format_value, '__self__', None)
-        if self.key[0] == 'knob' and binding is not None and binding.menu_names:
-            steps = len(binding.menu_names)
-            strings = tuple(byte for label in binding.menu_labels for byte in text13(label)) if steps <= 16 else ()
-        self._command(PLUGIN, 10, (self.index >> 7, self.index & 127,
-                                   *digest(self.target_id, 6), 0, 0, steps,
-                                   value >> 7, value & 127, *text13(self.target_label), *strings))
+        parameter = LearnParameter(self.index, self.target_id, self.target_label,
+                                   self.key, self.mode, self.button_type, self.menu_labels)
+        self._send(learn_parameter_message(parameter, self.value))
 
     def _display(self):
         kind, slot = self.key
@@ -96,7 +89,8 @@ class CollectionHost(Host):
             if kind == 'button' and button_type not in ('toggle', 'push') or kind == 'knob' and button_type is not None:
                 raise ValueError('button_type is toggle/push for buttons only')
             self.controls[key] = Control(self._send, key, index, identity, spec['label'],
-                                          spec['value'], spec['formatter'], mode, button_type)
+                                          spec['value'], spec['formatter'], mode, button_type,
+                                          menu_labels=spec.get('menu_labels', ()))
         if not self.controls and not allow_empty:
             raise ValueError('Register at least one control')
 

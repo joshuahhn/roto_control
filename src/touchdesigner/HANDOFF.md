@@ -1139,3 +1139,127 @@ Temporary Layout/COMP/test storage removed; original mapping configuration, IDs,
 libraries and all original demo values retained. Amount recalls on Knob1, connected,
 errors empty. Evidence and recovery/accepted demo exports retained locally in
 diagnostics/issue5. Canonical toe/tox not replaced. No #5 commit/push or issue closure.
+
+## Automatic parameter-page hint — 2026-10-17
+
+Parameter mapping now uses the main Menu Window's lower name field for a brief
+TD parameter-page hint, restoring the real Track name after two seconds on the
+next safe Tick. Only acknowledged matching slots contribute. Different pages or
+COMPs, callback/action targets, invalid targets and empty mappings use the Track
+name. Existing LEARN/touch/LOCK/restore/context/backlog guards and queue fences
+remain in force. No new timer, UI setting, Screen 8 output or routing policy.
+
+Runtime changes are confined to RotoPythonExt, controls and layouts. Nine new
+regressions cover expiry/deduplication, native page metadata, matching/rejected ACKs
+and partial readiness, ambiguous/invalid/callback targets, empty/same-name recall,
+guards, session/selection replay and existing fence cancellation. Full source
+discovery passes 478 tests on this PR's 9f02879 baseline. Its runtime before the
+caption delta matches the physically tested saved source 2de08c9; the intervening
+main changes affect validation documentation only.
+
+On TD 2025.33230, firmware 3.3.0 / API 1.6, the user confirmed COMP Follow
+demo_A to demo_B and back: each main screen shows Demo then EFFECT, with normal
+control screens. A hardware right/left arrow-page round trip recalls the original
+three knobs and replays the hint. Native output intervals were about 2.00–2.30
+seconds. Earlier manual Demo/Controls caption checks passed three round trips;
+FUNC's list retained EFFECT. Exact guarded/mixed-target physical rendering, new
+LEARN behavior and the initial-connection Track-line refresh are not accepted by
+these observations.
+
+Restored the original four control definitions/IDs, registry except monotonic
+revision 221, controller parameters, linked-COMP values/modes, Snapshots, Follow,
+LOCK and original context. TD remains open/disconnected; temporary observers were
+removed and scoped native errors are zero. The existing ordinary connection
+stale/Menu reconciliation limitations were observed, not changed.
+
+Local candidate project and generic export were saved through TD after retaining
+recovery copies. That generic tox reloaded empty/disconnected with no user mappings,
+ownership/Focus links or Snapshots, embedded helper/docs and Python=python3.
+Its principal runtime hashes match the tested source. Remote canonical artifacts
+predate the current source and are intentionally unchanged by this source-only PR;
+artifact synchronization is separate. Layout documentation retains current-main
+ownership and Follow policy; the caption section alone was added, and the local
+candidate snapshot was refreshed.
+
+One-off native evidence and original recovery remain local, not in this PR:
+system temporary roto-page-feedback-m_1qjypu and
+projects/archive/page-caption-20261017-recovery. No hardware learned-storage
+readback or full main-project restart is claimed. These caption observations do
+not establish physical LEARN/ACK acceptance for the metadata refactor below.
+
+## LEARN metadata integration — 2026-10-17
+
+Integrated the scoped LEARN refactor over caption source `e6a5c2f` in the same
+PR, preserving current ownership/transaction code and page-caption behavior.
+Immutable `LearnParameter` and the pure `learn_parameter_message` encoder serve
+registered controls, Free LEARN and the legacy Host. Menu labels pass explicitly
+through Controls specs and replacement-Control paths. Formatter introspection
+and the temporary session-enabled Control are removed; index/hash/Menu
+signatures, multiple pending offers, matching ACK handling, routing and target
+writes keep their established paths.
+
+The combined source passes 481 tests through `python3 -m unittest discover -q`
+from `src/touchdesigner`. Three added regressions cover formatter-independent
+Menu metadata, the 16-label boundary and Free LEARN/registered packet parity
+without parameter or Pulse writes. A previously captured corpus of 163 complete
+LEARN messages matches before/after byte for byte.
+
+Earlier native TD integration captured packets from four actual registered
+controls and four isolated FreeLearner offers against the same native parameters.
+All eight packets match before/after; callbacks were restored immediately and
+the isolated learner made no real Inspector/status or session writes. Imports
+share the same LearnParameter class. Native reload preserved all four original
+definitions/IDs, registry revision 221, controller parameters, linked-COMP
+values/modes and Snapshots; scoped errors were zero. Generic tox reloaded empty
+and disconnected with no user mappings, Focus/ownership links or Snapshots,
+embedded helper/docs and Python=python3. This is native encoding/import/reload
+evidence, not a new physical LEARN/ACK or full project-restart acceptance.
+
+Local project/tox were saved through TD, with recovery retained in
+`projects/archive/learn-metadata-20261017-recovery`. The local receipt records
+caption source e6a5c2f plus the reproducible LEARN patch and the eight principal
+runtime hashes, which match this combined PR source. Checked-in binaries and
+their older receipt remain unchanged; this PR publishes the source/tests/docs
+for both changes. No TD/controller operation was needed to package the PR.
+
+One-off packet captures, native probes and save/export results remain in the
+system temporary directory `roto-learn-integration-r84fm_j_`, including
+`packets-before.json`, `packets-after.json`, `native-packets-before.json`,
+`native-packets-after.json`, `candidate-native.json`,
+`generic-export-validation.json` and `save-result.json`. No MIDI connection,
+hardware LEARN, parameter/Pulse write or new hardware acceptance was invoked
+by the metadata integration.
+
+## Generic export sync — 2026-10-17
+
+The user selected generic tox and version receipt synchronization, leaving the
+demo toe out of scope. Verified the active project, then compared the intended
+`/roto_clean_demo/roto_python` with PR source `0ed7d97`. All 19 present
+runtime/helper DATs match; the four absent files are legacy outer-Control/Lister
+callbacks outside the owned export. The project also contains an older controller
+at `/roto_control_python/roto_python`; it was observed only and not upgraded.
+
+Loaded the local generic tox in an isolated root fixture. All 19 embedded
+runtime/helper sources match the combined PR. Its embedded README was older;
+refreshed source Markdown on the detached clone and exported through live TD,
+then reloaded the resulting artifact. All 19 source hashes and ten documentation
+snapshots match the recorded source commit. The export is empty/disconnected,
+Follow off, Python=python3, with embedded helper, no DAT file dependencies,
+no user mappings, Focus/ownership links or Snapshots, and zero scoped errors.
+The fixture was quiesced and removed; original controller storage, runtime
+sources and linked demo parameter values/modes are unchanged. No hardware/MIDI
+operation or new physical acceptance was performed.
+
+Promoted only `exports/roto_python.tox` and its adjacent `roto_python.json`
+receipt, plus the export index/current-context documentation. The receipt pins
+runtime/documentation source to `0ed7d975d17a50c193c134cffac97ea63a6ea976` and
+artifact SHA-256
+`509911ddcb0d23db9c8db3aa4706140c1475cb64dad4bcd975d659aff125515d`.
+The 481-test source result is reused because runtime sources did not change.
+The demo toe and its checked-in project receipt remain unchanged.
+
+Recovery of the prior local tox/project receipt is retained locally under
+`projects/archive/generic-export-20261017-jh0ke_d6`; the prior checked-in tox,
+one-off native script and validation result remain in system temporary
+`roto-generic-sync-4hp7mefd`. Local working-project receipt now points to the
+updated generic export receipt without changing the demo toe bytes.

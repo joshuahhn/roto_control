@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import time
 from binding import parameter_value, same_parameter
+from protocol import text13
 from snapshots import Snapshots
 
 
@@ -54,6 +55,7 @@ class RotoPythonExt:
         self._delete_request = None
         self._follow = None
         self._receive_epoch = None
+        self._page_caption = None
         self._inspector_refresh_run = None
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
@@ -688,7 +690,7 @@ class RotoPythonExt:
         wire = list(candidate.specs())[0]
         replacement = self.ownerComp.op('collection_protocol').module.Control(
             target.send, key, target.index, wire['identity'], wire['label'], wire['value'],
-            wire['formatter'], wire['mode'], wire['button_type'])
+            wire['formatter'], wire['mode'], wire['button_type'], menu_labels=wire['menu_labels'])
         # Do not leave old hardware semantics driving a newly configured target.
         if target.mapped:
             self._host.clear_learn(key)
@@ -876,7 +878,8 @@ class RotoPythonExt:
             wire = next(wire for wire in candidate.specs() if (wire['kind'],wire['slot']) == key)
             replacement = self.ownerComp.op('collection_protocol').module.Control(
                 self._host._send, key, wire['index'],
-                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter)
+                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter,
+                menu_labels=wire['menu_labels'])
             if target is not None and target.mapped and not self._host.learning and not _hardware_mapped:
                 self._host.clear_learn(key)
             watcher.par.active = False
@@ -1127,10 +1130,39 @@ class RotoPythonExt:
         follower = getattr(self, '_follow', None)
         if follower is not None and follower.gated and follower.context_output(message):
             return False
+        if (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2)
+                and tuple(message[5:7]) in ((10, 0x16), (11, 8), (12, 4))):
+            self._page_caption = None
         self._pending += (json.dumps({"midi": message}) + "\n").encode()
         if len(self._pending) > 262144:
             self.Disconnect()
             raise RuntimeError("MIDI output queue exceeded limit")
+
+    def _flush_page_caption(self, now):
+        """Briefly show acknowledged controls' TD page, then restore Track text."""
+        host = self._host
+        if not host.connected or not host.plugin or self._collection is None:
+            self._page_caption = None
+            return
+        follower = getattr(self, '_follow', None)
+        manager = getattr(self, '_layouts', None)
+        if (host.learning or host.touched or self._receive
+                or self._restore_pending or self._restoring
+                or follower is not None and (follower.gated or follower.pending
+                    or follower.paused or follower.backlog)
+                or manager is not None and (manager.mutating or manager.locked)):
+            return
+        page = self._collection.mapped_page(host.controls)
+        key = host, follower.token if follower is not None else None, page, host.track_name
+        previous = getattr(self, '_page_caption', None)
+        if previous is None or previous[0] != key:
+            label, deadline = (page[1], now + 2) if page else (host.track_name, None)
+        elif previous[1] is not None and now >= previous[1]:
+            label, deadline = host.track_name, None
+        else:
+            return
+        host._command(10, 0x16, text13(label))
+        self._page_caption = key, deadline
 
     def _publish(self):
         manager=getattr(self,'_layouts',None)
@@ -1488,6 +1520,7 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        self._page_caption = None
         self._cancel_inspector_refresh()
         follower = getattr(self, '_follow', None)
         if follower is not None:
@@ -1870,6 +1903,7 @@ class RotoPythonExt:
             except (OSError, TimeoutError):
                 self.Disconnect(); raise
         try:
+            self._flush_page_caption(time.monotonic())
             self._host.flush_display(time.monotonic())
             if self._pending:
                 try:
