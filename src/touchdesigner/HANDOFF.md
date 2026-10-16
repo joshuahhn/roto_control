@@ -1172,12 +1172,14 @@ LOCK and original context. TD remains open/disconnected; temporary observers wer
 removed and scoped native errors are zero. The existing ordinary connection
 stale/Menu reconciliation limitations were observed, not changed.
 
-Canonical project and generic export were saved through TD after retaining local
-recovery copies. The generic tox reloaded empty/disconnected with no user mappings,
+Local candidate project and generic export were saved through TD after retaining
+recovery copies. That generic tox reloaded empty/disconnected with no user mappings,
 ownership/Focus links or Snapshots, embedded helper/docs and Python=python3.
-Runtime hashes match the tested source. Project receipt records source/artifact
-identity. Layout documentation retains current-main ownership and Follow policy;
-the caption section alone was added and its embedded snapshot refreshed.
+Its principal runtime hashes match the tested source. Remote canonical artifacts
+predate the current source and are intentionally unchanged by this source-only PR;
+artifact synchronization is separate. Layout documentation retains current-main
+ownership and Follow policy; the caption section alone was added, and the local
+candidate snapshot was refreshed.
 
 One-off native evidence and original recovery remain local, not in this PR:
 system temporary roto-page-feedback-m_1qjypu and
