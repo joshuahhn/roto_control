@@ -6,6 +6,10 @@ Python host for ROTO-CONTROL in TouchDesigner, with Layout/Track/Device mapping,
 
 This current overview was reconciled against source `2de08c9` (2026-10-12). Source checkout, embedded DATs and saved artifacts can differ: identify the relevant baseline before changing behavior. Use [projects/README.md](projects/README.md) for the canonical project entry and its receipt, and [HANDOFF.md](HANDOFF.md) for dated acceptance scope.
 
+## Main-screen page feedback
+
+Parameter mapping briefly shows the common TD custom page of acknowledged controls on the main screen, then restores the Track name after two seconds on a safe Tick. Ambiguous or unavailable pages use the Track name. See [Layouts](docs/functions/layouts.md#main-screen-context) and the dated acceptance in [HANDOFF.md](HANDOFF.md#automatic-parameter-page-hint--2026-10-17). The current artifact receipt identifies the source used for the saved controller; source merges alone do not refresh it.
+
 ## Architecture
 
 `protocol.Host` owns protocol and session state behind complete-message send/receive and normalized parameter callbacks and configurable target identity/label/display. binding.Binding converts target units and handles target writes/callback dispatch. `RotoPythonExt` adapts that interface to TD parameters and a managed external MIDI process. The child owns mido/rtmidi ports; nonblocking pipes keep MIDI I/O out of TD's native MIDI library. Internal base_state owns readonly diagnostics. The generic controller has no CHOP input/output connectors; public State and APIs expose runtime data. Saved Binding page configuration is reapplied after extension initialization; callback mode runs the user-editable registration DAT.

@@ -1139,3 +1139,48 @@ Temporary Layout/COMP/test storage removed; original mapping configuration, IDs,
 libraries and all original demo values retained. Amount recalls on Knob1, connected,
 errors empty. Evidence and recovery/accepted demo exports retained locally in
 diagnostics/issue5. Canonical toe/tox not replaced. No #5 commit/push or issue closure.
+
+## Automatic parameter-page hint — 2026-10-17
+
+Parameter mapping now uses the main Menu Window's lower name field for a brief
+TD parameter-page hint, restoring the real Track name after two seconds on the
+next safe Tick. Only acknowledged matching slots contribute. Different pages or
+COMPs, callback/action targets, invalid targets and empty mappings use the Track
+name. Existing LEARN/touch/LOCK/restore/context/backlog guards and queue fences
+remain in force. No new timer, UI setting, Screen 8 output or routing policy.
+
+Runtime changes are confined to RotoPythonExt, controls and layouts. Nine new
+regressions cover expiry/deduplication, native page metadata, matching/rejected ACKs
+and partial readiness, ambiguous/invalid/callback targets, empty/same-name recall,
+guards, session/selection replay and existing fence cancellation. Full source
+discovery passes 478 tests on this PR's 9f02879 baseline. Its runtime before the
+caption delta matches the physically tested saved source 2de08c9; the intervening
+main changes affect validation documentation only.
+
+On TD 2025.33230, firmware 3.3.0 / API 1.6, the user confirmed COMP Follow
+demo_A to demo_B and back: each main screen shows Demo then EFFECT, with normal
+control screens. A hardware right/left arrow-page round trip recalls the original
+three knobs and replays the hint. Native output intervals were about 2.00–2.30
+seconds. Earlier manual Demo/Controls caption checks passed three round trips;
+FUNC's list retained EFFECT. Exact guarded/mixed-target physical rendering, new
+LEARN behavior and the initial-connection Track-line refresh are not accepted by
+these observations.
+
+Restored the original four control definitions/IDs, registry except monotonic
+revision 221, controller parameters, linked-COMP values/modes, Snapshots, Follow,
+LOCK and original context. TD remains open/disconnected; temporary observers were
+removed and scoped native errors are zero. The existing ordinary connection
+stale/Menu reconciliation limitations were observed, not changed.
+
+Canonical project and generic export were saved through TD after retaining local
+recovery copies. The generic tox reloaded empty/disconnected with no user mappings,
+ownership/Focus links or Snapshots, embedded helper/docs and Python=python3.
+Runtime hashes match the tested source. Project receipt records source/artifact
+identity. Layout documentation retains current-main ownership and Follow policy;
+the caption section alone was added and its embedded snapshot refreshed.
+
+One-off native evidence and original recovery remain local, not in this PR:
+system temporary roto-page-feedback-m_1qjypu and
+projects/archive/page-caption-20261017-recovery. No hardware learned-storage
+readback or full main-project restart is claimed. The separate LEARN metadata
+refactor is excluded from this PR.
