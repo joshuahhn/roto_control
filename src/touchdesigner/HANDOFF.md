@@ -1229,3 +1229,37 @@ system temporary directory `roto-learn-integration-r84fm_j_`, including
 `generic-export-validation.json` and `save-result.json`. No MIDI connection,
 hardware LEARN, parameter/Pulse write or new hardware acceptance was invoked
 by the metadata integration.
+
+## Generic export sync — 2026-10-17
+
+The user selected generic tox and version receipt synchronization, leaving the
+demo toe out of scope. Verified the active project, then compared the intended
+`/roto_clean_demo/roto_python` with PR source `0ed7d97`. All 19 present
+runtime/helper DATs match; the four absent files are legacy outer-Control/Lister
+callbacks outside the owned export. The project also contains an older controller
+at `/roto_control_python/roto_python`; it was observed only and not upgraded.
+
+Loaded the local generic tox in an isolated root fixture. All 19 embedded
+runtime/helper sources match the combined PR. Its embedded README was older;
+refreshed source Markdown on the detached clone and exported through live TD,
+then reloaded the resulting artifact. All 19 source hashes and ten documentation
+snapshots match the recorded source commit. The export is empty/disconnected,
+Follow off, Python=python3, with embedded helper, no DAT file dependencies,
+no user mappings, Focus/ownership links or Snapshots, and zero scoped errors.
+The fixture was quiesced and removed; original controller storage, runtime
+sources and linked demo parameter values/modes are unchanged. No hardware/MIDI
+operation or new physical acceptance was performed.
+
+Promoted only `exports/roto_python.tox` and its adjacent `roto_python.json`
+receipt, plus the export index/current-context documentation. The receipt pins
+runtime/documentation source to `0ed7d975d17a50c193c134cffac97ea63a6ea976` and
+artifact SHA-256
+`509911ddcb0d23db9c8db3aa4706140c1475cb64dad4bcd975d659aff125515d`.
+The 481-test source result is reused because runtime sources did not change.
+The demo toe and its checked-in project receipt remain unchanged.
+
+Recovery of the prior local tox/project receipt is retained locally under
+`projects/archive/generic-export-20261017-jh0ke_d6`; the prior checked-in tox,
+one-off native script and validation result remain in system temporary
+`roto-generic-sync-4hp7mefd`. Local working-project receipt now points to the
+updated generic export receipt without changing the demo toe bytes.

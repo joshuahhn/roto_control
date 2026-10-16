@@ -8,7 +8,7 @@ This current overview was reconciled against source `2de08c9` (2026-10-12). Sour
 
 ## Main-screen page feedback
 
-Parameter mapping briefly shows the common TD custom page of acknowledged controls on the main screen, then restores the Track name after two seconds on a safe Tick. Ambiguous or unavailable pages use the Track name. See [Layouts](docs/functions/layouts.md#main-screen-context) and the dated acceptance in [HANDOFF.md](HANDOFF.md#automatic-parameter-page-hint--2026-10-17). The caption and LEARN metadata changes are source-only in this PR. The local saved project/export include both, while checked-in artifacts retain their prior receipt; a separate artifact sync is needed to distribute the new embedded runtime.
+Parameter mapping briefly shows the common TD custom page of acknowledged controls on the main screen, then restores the Track name after two seconds on a safe Tick. Ambiguous or unavailable pages use the Track name. See [Layouts](docs/functions/layouts.md#main-screen-context) and the dated acceptance in [HANDOFF.md](HANDOFF.md#automatic-parameter-page-hint--2026-10-17). The [generic export and receipt](exports/README.md) distribute both caption and LEARN metadata changes. The checked-in demo `.toe` retains its separate older project receipt; the locally saved working project includes both changes.
 
 ## LEARN metadata
 
