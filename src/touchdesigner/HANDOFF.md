@@ -1410,3 +1410,18 @@ and the old controller is unchanged. This supersedes the earlier artifact hashes
 The feature worktree's generic export is updated; its checked-in demo toe and
 receipt retain their independent older version. PR #23 was already merged on
 GitHub when checked; it was not merged by this work.
+
+## Track color source and generic publication — 2026-10-17
+
+Committed Track color, read-only background preview, regression tests and scoped
+native evidence as `0254000d1f3810fea47713043c8951f6f1d098ee`. Generic receipts
+now pin all 19 runtime/helper and ten embedded documentation hashes to that
+commit, replacing the temporary base-plus-patch description. The source patch
+is retained in local recovery rather than duplicated in the published source.
+The generic tox keeps SHA-256
+`97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50`.
+The local canonical project receipt also identifies the same committed source;
+its saved bytes and current values were not changed while packaging publication.
+Checked-in demo project/receipt retain their separate earlier baseline.
+The 487 source tests and scoped preview/native/export/physical evidence above
+are reused, because publication does not alter runtime or UI behavior.
