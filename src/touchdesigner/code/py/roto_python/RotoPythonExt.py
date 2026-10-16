@@ -323,7 +323,7 @@ class RotoPythonExt:
 
     def GetTracks(self, layout_id=None):
         manager=self._layout_manager();layout=manager.layout(layout_id)
-        return [dict(id=t['id'],name=t['name'],plugin_id=t['active_plugin'],
+        return [dict(id=t['id'],name=t['name'],color=t.get('color',0),plugin_id=t['active_plugin'],
                      plugin_name=manager.plugin(layout['id'],t['id'])['plugin_name'],
                      plugin_count=len(t['plugins']),
                      active=t['id']==layout['active_track']) for t in layout['tracks']]
@@ -363,6 +363,10 @@ class RotoPythonExt:
 
     def RenameTrack(self, layout_id, track_id, name):
         return self._layout_manager().rename_track(layout_id,track_id,name)
+
+    def SetTrackColor(self, layout_id, track_id, color):
+        """Persist a fixed ROTO palette index, 0..82, for one Track group."""
+        return self._layout_manager().set_track_color(layout_id,track_id,color)
 
     def RemoveTrack(self, layout_id, track_id):
         return self._layout_manager().remove_track(layout_id,track_id)
@@ -1604,6 +1608,12 @@ class RotoPythonExt:
             try:self.SelectTrack(manager.data['active'],par.eval())
             except ValueError as exc:
                 par.val=manager.layout()['active_track'];self._last_error=str(exc);self._publish()
+        elif par.name == 'Trackcolor':
+            manager=self._layout_manager()
+            if manager.mutating:return
+            try:self.SetTrackColor(manager.data['active'],manager.track()['id'],int(par.eval()))
+            except ValueError as exc:
+                par.val=str(manager.track().get('color',0));self._last_error=str(exc);self._publish()
         elif par.name == 'Plugin':
             manager=self._layout_manager()
             if manager.mutating or par.eval()==manager.plugin()['id']:return

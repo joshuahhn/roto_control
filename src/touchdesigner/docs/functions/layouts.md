@@ -4,6 +4,35 @@ A saved Layout contains multiple selectable Track groups. Each Track contains 1.
 
 The Layout custom page manages the saved mapping set and Track groups. The separate Device page manages the active COMP/Device, its Focus link and display name. Active Layout selects the saved configuration; New / rename Layout is its name draft. Active Track group (FUNC) selects a group, and Active Device (SEL) selects one tool inside it. New Track / Device actions create and select empty records; Focus linking does not automatically map parameters. Delete actions open a native popup with Cancel; no permanent confirmation buttons. Last Layout/Track/Device deletion is rejected. Popup choices expire on any of the three context IDs or extension reload. Save the containing TD project to persist changes.
 
+## Track group colors
+
+`Track color` on the Layout page selects a fixed ROTO palette color for the
+active Track group. Each menu entry shows its palette index, background hex
+color and dark/light text where specified in the official SysEx v1.6 Appendix A.
+Index 47 is identified by index because that table prints a non-hex component.
+`Track BG preview` shows that background as a read-only RGB color parameter
+beside the menu. It follows palette edits and Track selection without MIDI
+output of its own. Palette 47 disables the preview because both official tables
+print an invalid RGB component; its disabled placeholder does not mean black.
+The correction is tracked in [issue #24](https://github.com/joshuahhn/roto_control/issues/24).
+This first version uses the 83-entry palette, rather than arbitrary RGB output.
+
+Colors belong to Tracks, independently of Devices, parameter pages and COMP node
+colors. They persist with the containing TD project and replay through the
+existing Track-list/selection metadata. Old records without a color retain
+palette 0. Changing colors does not change IDs, mappings or parameter values.
+Edits require LOCK, LEARN, touch and routing-recovery guards to be clear; a
+rejected edit restores the saved choice in the UI. Python registration does not
+expose Track colors. Generic exports begin with the default color and no saved
+user groups.
+
+Physical acceptance on 2026-10-17 covers palette 71 red and palette 82 purple
+with white text in FUNC, then hardware selection from `demo_A / EFFECT` to
+`CUSTOM / COLOR TEST` and back. The user confirmed both main-screen names and
+group colors, with the original Knob 1–3 screens normal. Temporary test groups
+and colors were removed afterward. This accepts those two palette entries in
+PLUGIN mode; arbitrary RGB and all 83 physical colors were not tested.
+
 ## Tagged COMP workflow
 
 Add the `roto_device` OP tag to an external COMP under the controller's parent scope, or call `RegisterComp(comp)`. While idle, registration ensures its dedicated COMP-owned Layout with an empty Track/Device entry, without selecting or moving existing mappings. Repeated registration, rename and reload reuse durable owner metadata; names and Focus links do not establish ownership. Removing the tag retains the Layout/mappings; explicit unregister retains a tombstone. Direct owner Layout/entry deletion remains guarded. See the [owner contract](../plans/issue-9-owner-layouts.md) and its [accepted integration evidence](../../diagnostics/issue_9/integration_acceptance.md).
@@ -79,10 +108,11 @@ Offline deletion is reconciled only against the matching removed-target identity
 
 - `GetLayouts()` returns detached IDs, labels, active state, active display names and Track count.
 - `CreateLayout(name)`, `SelectLayout(id)`, `RenameLayout(id, name)`, `RemoveLayout(id)` manage outer configurations. Creating does not select; the UI combines both actions.
-- `GetTracks(layout_id=None)` returns detached Track IDs/names, active Plugin IDs/names, Plugin counts and saved active state. Omitted Layout means current Layout.
+- `GetTracks(layout_id=None)` returns detached Track IDs/names, palette `color` indices, active Plugin IDs/names, Plugin counts and saved active state. Omitted Layout means current Layout.
 - `CreateTrack(layout_id, name)` creates an empty Track and returns its ID without selecting it.
 - `SelectTrack(layout_id, track_id)` activates the specified Layout and Track.
 - `RenameTrack(layout_id, track_id, name)` changes its hardware display name.
+- `SetTrackColor(layout_id, track_id, color)` saves an integer palette index from 0 to 82 and returns that index. Default 0 needs no new stored field. It does not select a different Track.
 - `RemoveTrack(layout_id, track_id)` removes it; active removal selects a surviving Track. It does not erase unrelated hardware mappings.
 - `GetPlugins(layout_id=None, track_id=None)` returns detached Device IDs, names, full COMP names, name policy, Focus links and active state.
 - `CreatePlugin(layout_id, track_id, name)`, `SelectPlugin(layout_id, track_id, plugin_id)`, `RenamePlugin(layout_id, track_id, plugin_id, name)`, `RemovePlugin(layout_id, track_id, plugin_id)` manage independent Devices. Creation does not select; active removal selects a surviving Device.

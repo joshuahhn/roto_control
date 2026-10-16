@@ -37,7 +37,7 @@ def begin(controller):
         p=t.appendCustomPage('Controls').appendFloat('Power')[0]
         p.min=p.normMin=2;p.max=p.normMax=16;p.val=8
     assert len(next(p for p in c.customPages if p.name=='Device').pars)==6
-    assert len(next(p for p in c.customPages if p.name=='Layout').pars)==10
+    assert len(next(p for p in c.customPages if p.name=='Layout').pars)==14
     assert c.par.Plugin.page.name=='Device' and c.par.Layout.page.name=='Layout'
     assert c.par.Plugin.label=='Active Device (SEL)' and c.par.Track.label=='Active Track group (FUNC)'
     h.store('result',dict(layout=layout,track=e._layouts.track()['id'],native_build=str(app.build),physical_acceptance=False))

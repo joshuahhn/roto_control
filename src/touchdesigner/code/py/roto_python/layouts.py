@@ -119,6 +119,8 @@ class Layouts:
             for track in tracks:
                 if not isinstance(track.get('id'),str) or not track['id'] or track['id'] in track_ids:raise ValueError('Invalid or duplicate Track ID')
                 track_ids.add(track['id']);display_name(track['name'])
+                if type(track.get('color',0)) is not int or not 0<=track.get('color',0)<83:
+                    raise ValueError('Track color must be a palette index from 0 to 82')
                 plugins=track.get('plugins')
                 if not isinstance(plugins,list) or not 1<=len(plugins)<=127:raise ValueError('Track needs 1..127 Plugins')
                 if track.get('active_plugin') not in [p['id'] for p in plugins]:raise ValueError('Active Plugin is missing')
@@ -486,6 +488,8 @@ class Layouts:
                 par.menuNames=[r['id'] for r in records]
                 par.menuLabels=[r.get('category','LEGACY')+' / '+r['name'] for r in records] if name=='Layout' else [r['name'] for r in records]
                 par.val=active
+        color=getattr(self.owner.par,'Trackcolor',None)
+        if color is not None:color.val=str(self.track().get('color',0))
         par=getattr(self.owner.par,'Plugin',None)
         if par is not None:
             par.menuNames=[p['id'] for p in self.track()['plugins']]
@@ -508,7 +512,7 @@ class Layouts:
 
     def track_detail(self,index):
         track=self.layout()['tracks'][index]
-        return (index>>7,index&127,*text13(track['name']),0,0)
+        return (index>>7,index&127,*text13(track['name']),track.get('color',0),0)
 
     def announce_tracks(self,select=True):
         host=self.ext._host;tracks=self.layout()['tracks']
@@ -778,6 +782,24 @@ class Layouts:
             track['name']=name;self.save();self.menu()
             if layout_id==self.data['active'] and self.ext._host.connected:self.announce_tracks(select=False)
         return track_id
+
+    def set_track_color(self,layout_id,track_id,color):
+        if type(color) is not int or not 0<=color<83:
+            raise ValueError('Track color must be a palette index from 0 to 82')
+        if self.legacy:raise ValueError('Track colors require Parameter mapping')
+        track=self.track(layout_id,track_id)
+        if track.get('color',0)==color:return color
+        self.guard()
+        follower=getattr(self.ext,'_follow',None)
+        if follower and (follower.gated or follower.pending or follower.paused or follower.backlog):
+            raise ValueError('Wait for routing recovery before changing Track color')
+        if color:track['color']=color
+        else:track.pop('color',None)
+        self.save();self.menu()
+        if layout_id==self.data['active'] and self.ext._host.connected:
+            self.announce_tracks(select=track_id==(self.selected_track or self.track()['id']))
+        self.ext._publish()
+        return color
 
     def remove(self,id):
         if self.layout(id).get('owner'):raise ValueError('Use UnregisterLayoutOwner; owner Layouts retain recovery records')

@@ -7,7 +7,7 @@ import test_assignment
 from controls import Controls
 from collection_protocol import CollectionHost
 from layouts import Layouts
-from protocol import digest,sysex
+from protocol import digest,sysex,text13
 
 class Par:
     def __init__(self,value):self.val=value;self.enable=True
@@ -117,6 +117,92 @@ class LayoutTests(unittest.TestCase):
         self.assertFalse(m.receive(packet))
         self.assertEqual(ext._pending,b'')
         self.assertEqual(ext.ownerComp.fetch('pending_unmap_identities'),[])
+
+class TrackColorTests(unittest.TestCase):
+    fixture=LayoutTests.fixture
+
+    def packets(self,ext):
+        return [tuple(json.loads(line)['midi']) for line in ext._pending.splitlines()]
+
+    def test_color_metadata_preserves_targets_values_and_survives_reload(self):
+        ext,m,p=self.fixture();track=m.track()['id']
+        plugin=copy.deepcopy(m.plugin());value=p.eval()
+        ext._pending=b''
+        self.assertEqual(ext.SetTrackColor('custom',track,71),71)
+        detail=(0,0,*text13('EFFECT'),71,0)
+        packets=self.packets(ext)
+        self.assertIn(sysex(10,7,detail),packets)
+        self.assertEqual(packets[-1],sysex(12,4,detail))
+        self.assertEqual(m.plugin(),plugin);self.assertEqual(p.eval(),value)
+        self.assertEqual(ext.GetTracks()[0]['color'],71)
+        restored=Layouts(ext);ext._layouts=restored
+        self.assertEqual(restored.track()['color'],71)
+        other=restored.create_track('custom','OTHER')
+        restored.select_track('custom',other);restored.select_track('custom',track)
+        self.assertEqual(restored.track_detail(0)[-2:],(71,0))
+        self.assertEqual(p.eval(),value)
+
+    def test_offline_color_and_track_list_refresh_keep_selected_track(self):
+        ext,m,p=self.fixture();original=m.track()['id']
+        other=m.create_track('custom','OTHER')
+        ext._host.connected=ext._host.plugin=False;ext._pending=b''
+        ext.SetTrackColor('custom',other,82)
+        self.assertEqual(ext._pending,b'')
+        self.assertEqual(m.track()['id'],original)
+        ext._host.connected=ext._host.plugin=True
+        m.announce_tracks()
+        details=[packet for packet in self.packets(ext) if packet[5:7]==(10,7)]
+        self.assertEqual([packet[-3] for packet in details],[0,82])
+        self.assertEqual(self.packets(ext)[-1],sysex(12,4,m.track_detail(0)))
+        selected=m.selected_track
+        ext._pending=b''
+        ext.SetTrackColor('custom',other,71)
+        self.assertFalse(any(packet[5:7]==(12,4) for packet in self.packets(ext)))
+        self.assertEqual(m.track()['id'],original)
+        self.assertEqual(m.selected_track,selected)
+        self.assertEqual(m.track_detail(1)[-2:],(71,0))
+
+    def test_invalid_colors_and_default_noop_leave_registry_unchanged(self):
+        ext,m,p=self.fixture();track=m.track()['id']
+        before=copy.deepcopy(m.data);ext._pending=b''
+        self.assertEqual(ext.SetTrackColor('custom',track,0),0)
+        self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
+        self.assertNotIn('color',m.track())
+        for color in (-1,83,True,1.5,'71',None):
+            with self.subTest(color=color):
+                with self.assertRaises(ValueError):ext.SetTrackColor('custom',track,color)
+                self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
+                broken=copy.deepcopy(m.data);broken['records'][0]['tracks'][0]['color']=color
+                with self.assertRaises(ValueError):Layouts.validate(broken)
+        ext.SetTrackColor('custom',track,71)
+        ext._pending=b''
+        self.assertEqual(ext.SetTrackColor('custom',track,0),0)
+        self.assertNotIn('color',m.track())
+        self.assertEqual(self.packets(ext)[-1],sysex(12,4,(0,0,*text13('EFFECT'),0,0)))
+
+    def test_guards_reject_color_edits_before_persistence_or_output(self):
+        ext,m,p=self.fixture();track=m.track()['id'];before=copy.deepcopy(m.data)
+        for obj,field,value in ((m,'locked',True),(m,'mutating',True),
+                                (m,'touched',{52}),(ext._host,'touched',True),(ext._host,'learning',True)):
+            with self.subTest(field=field):
+                old=getattr(obj,field);setattr(obj,field,value);ext._pending=b''
+                with self.assertRaises(ValueError):ext.SetTrackColor('custom',track,71)
+                self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
+                setattr(obj,field,old)
+        ext._follow=SimpleNamespace(gated=True,pending=None,paused=False,backlog=False)
+        with self.assertRaisesRegex(ValueError,'routing'):ext.SetTrackColor('custom',track,71)
+        self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
+
+    def test_ui_edit_persists_and_rejected_edit_restores_saved_color(self):
+        ext,m,p=self.fixture()
+        color=Par('71');color.name='Trackcolor';ext.ownerComp.par.Trackcolor=color
+        ext.onParValueChange(color,'0')
+        self.assertEqual(m.track()['color'],71)
+        m.locked=True;color.val='72';before=copy.deepcopy(m.data);ext._pending=b''
+        ext.onParValueChange(color,'71')
+        self.assertEqual(color.eval(),'71');self.assertEqual(m.data,before)
+        self.assertEqual(ext._pending,b'')
+
 
 class MultiTrackTests(unittest.TestCase):
     fixture=LayoutTests.fixture

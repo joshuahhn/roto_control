@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import unittest
 
 sys.path.insert(0,str(Path(__file__).parents[2]/'code/py/roto_python'))
-from setup import restore
+from setup import restore, track_color_rgb
 
 
 class Par:
@@ -38,6 +38,15 @@ class Controller:
 
 
 class SetupTests(unittest.TestCase):
+    def test_track_background_preview_uses_normalized_palette_colors(self):
+        self.assertEqual(track_color_rgb(0),(1.0,148/255,160/255))
+        self.assertEqual(track_color_rgb(71),(1.0,0.0,0.0))
+        self.assertEqual(track_color_rgb(82),(132/255,0.0,123/255))
+        self.assertIsNone(track_color_rgb(47))
+        for index in (-1,83,True,'71'):
+            with self.subTest(index=index),self.assertRaises(ValueError):
+                track_color_rgb(index)
+
     def test_value_restores_default(self):
         c=Controller('value')
         self.assertEqual(restore(c),'Value')
