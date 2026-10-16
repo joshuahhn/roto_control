@@ -143,6 +143,7 @@ class Controls:
             mode = self.modes[key]
             yield dict(kind=key[0], slot=key[1], index=self.indices[key], identity=binding.wire_identity + (':action:' + repr(binding.action_id) if binding.action_id else '') + ':' + mode,
                        label=binding.label, mode=mode, button_type=self.button_types[key], value=binding.normalized(binding.value),
+                       menu_labels=binding.menu_labels,
                        formatter=binding.format_value if mode in ('value','cycle') else lambda value, b=binding, m=mode: ('Ready' if m == 'pulse' else
                                  ('On' if value >= .5 else 'Off') if m == 'toggle' else b.format_value(value)))
 

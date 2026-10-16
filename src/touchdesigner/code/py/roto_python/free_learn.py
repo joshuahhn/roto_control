@@ -2,7 +2,7 @@
 import time
 import uuid
 from binding import parameter_chain, parameter_value, same_parameter
-from protocol import digest
+from protocol import LearnParameter, digest, learn_parameter_message
 
 
 class FreeLearner:
@@ -194,14 +194,12 @@ class FreeLearner:
                     parameter=parameter,mode=mode,button_type=adapter,index=index)])
                 binding = candidate.bindings[kind,1]
                 wire = next(candidate.specs())
-            template = self.owner.op('collection_protocol').module.Control(e._host._send,(kind,1),index,
-                wire['identity'],wire['label'],binding.normalized(parameter_value(parameter) if mode != 'pulse' else 0),
-                wire['formatter'],mode,wire['button_type'])
-            template.enabled = template.connected = template.plugin = template.learning = True
+            template = LearnParameter(index, wire['identity'], wire['label'], (kind,1),
+                mode, wire['button_type'], wire['menu_labels'])
             if (template.index,digest(template.target_id,6)) not in self._offers and len(self._offers) >= 128:
                 raise ValueError('Too many pending LEARN offers; wait for hardware acknowledgement')
-            if not template.offer_parameter():
-                return False
+            e._host._send(learn_parameter_message(template,
+                binding.normalized(parameter_value(parameter) if mode != 'pulse' else 0)))
             self.pending = dict(parameter=parameter,binding=binding,template=template,time=time.monotonic())
             self.last_parameter = self.key(parameter)
             self.status('Offered '+parameter.owner.name+'.'+parameter.name+'; waiting for hardware slot')

@@ -690,7 +690,7 @@ class RotoPythonExt:
         wire = list(candidate.specs())[0]
         replacement = self.ownerComp.op('collection_protocol').module.Control(
             target.send, key, target.index, wire['identity'], wire['label'], wire['value'],
-            wire['formatter'], wire['mode'], wire['button_type'])
+            wire['formatter'], wire['mode'], wire['button_type'], menu_labels=wire['menu_labels'])
         # Do not leave old hardware semantics driving a newly configured target.
         if target.mapped:
             self._host.clear_learn(key)
@@ -878,7 +878,8 @@ class RotoPythonExt:
             wire = next(wire for wire in candidate.specs() if (wire['kind'],wire['slot']) == key)
             replacement = self.ownerComp.op('collection_protocol').module.Control(
                 self._host._send, key, wire['index'],
-                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter)
+                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter,
+                menu_labels=wire['menu_labels'])
             if target is not None and target.mapped and not self._host.learning and not _hardware_mapped:
                 self._host.clear_learn(key)
             watcher.par.active = False

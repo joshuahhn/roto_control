@@ -1184,5 +1184,48 @@ candidate snapshot was refreshed.
 One-off native evidence and original recovery remain local, not in this PR:
 system temporary roto-page-feedback-m_1qjypu and
 projects/archive/page-caption-20261017-recovery. No hardware learned-storage
-readback or full main-project restart is claimed. The separate LEARN metadata
-refactor is excluded from this PR.
+readback or full main-project restart is claimed. These caption observations do
+not establish physical LEARN/ACK acceptance for the metadata refactor below.
+
+## LEARN metadata integration — 2026-10-17
+
+Integrated the scoped LEARN refactor over caption source `e6a5c2f` in the same
+PR, preserving current ownership/transaction code and page-caption behavior.
+Immutable `LearnParameter` and the pure `learn_parameter_message` encoder serve
+registered controls, Free LEARN and the legacy Host. Menu labels pass explicitly
+through Controls specs and replacement-Control paths. Formatter introspection
+and the temporary session-enabled Control are removed; index/hash/Menu
+signatures, multiple pending offers, matching ACK handling, routing and target
+writes keep their established paths.
+
+The combined source passes 481 tests through `python3 -m unittest discover -q`
+from `src/touchdesigner`. Three added regressions cover formatter-independent
+Menu metadata, the 16-label boundary and Free LEARN/registered packet parity
+without parameter or Pulse writes. A previously captured corpus of 163 complete
+LEARN messages matches before/after byte for byte.
+
+Earlier native TD integration captured packets from four actual registered
+controls and four isolated FreeLearner offers against the same native parameters.
+All eight packets match before/after; callbacks were restored immediately and
+the isolated learner made no real Inspector/status or session writes. Imports
+share the same LearnParameter class. Native reload preserved all four original
+definitions/IDs, registry revision 221, controller parameters, linked-COMP
+values/modes and Snapshots; scoped errors were zero. Generic tox reloaded empty
+and disconnected with no user mappings, Focus/ownership links or Snapshots,
+embedded helper/docs and Python=python3. This is native encoding/import/reload
+evidence, not a new physical LEARN/ACK or full project-restart acceptance.
+
+Local project/tox were saved through TD, with recovery retained in
+`projects/archive/learn-metadata-20261017-recovery`. The local receipt records
+caption source e6a5c2f plus the reproducible LEARN patch and the eight principal
+runtime hashes, which match this combined PR source. Checked-in binaries and
+their older receipt remain unchanged; this PR publishes the source/tests/docs
+for both changes. No TD/controller operation was needed to package the PR.
+
+One-off packet captures, native probes and save/export results remain in the
+system temporary directory `roto-learn-integration-r84fm_j_`, including
+`packets-before.json`, `packets-after.json`, `native-packets-before.json`,
+`native-packets-after.json`, `candidate-native.json`,
+`generic-export-validation.json` and `save-result.json`. No MIDI connection,
+hardware LEARN, parameter/Pulse write or new hardware acceptance was invoked
+by the metadata integration.

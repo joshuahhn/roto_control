@@ -8,7 +8,11 @@ This current overview was reconciled against source `2de08c9` (2026-10-12). Sour
 
 ## Main-screen page feedback
 
-Parameter mapping briefly shows the common TD custom page of acknowledged controls on the main screen, then restores the Track name after two seconds on a safe Tick. Ambiguous or unavailable pages use the Track name. See [Layouts](docs/functions/layouts.md#main-screen-context) and the dated acceptance in [HANDOFF.md](HANDOFF.md#automatic-parameter-page-hint--2026-10-17). This is a source-only change. The locally saved/physically tested candidate includes it, while checked-in artifacts retain their prior receipt; a separate artifact sync is needed to distribute the new embedded runtime.
+Parameter mapping briefly shows the common TD custom page of acknowledged controls on the main screen, then restores the Track name after two seconds on a safe Tick. Ambiguous or unavailable pages use the Track name. See [Layouts](docs/functions/layouts.md#main-screen-context) and the dated acceptance in [HANDOFF.md](HANDOFF.md#automatic-parameter-page-hint--2026-10-17). The caption and LEARN metadata changes are source-only in this PR. The local saved project/export include both, while checked-in artifacts retain their prior receipt; a separate artifact sync is needed to distribute the new embedded runtime.
+
+## LEARN metadata
+
+Immutable `protocol.LearnParameter` describes an offer independently of session state. Registered controls, Free LEARN and the legacy Host use the pure `learn_parameter_message(parameter, value)` encoder; `Controls.specs` passes Menu labels explicitly. Free LEARN retains metadata for pending offers without constructing a temporary session-enabled Control or inspecting `formatter.__self__`. Existing index/hash/Menu signatures, session guards, matching ACK commits, routing and target writes keep their established paths. Native encoding/reload evidence and the limit on physical LEARN acceptance are recorded in [HANDOFF.md](HANDOFF.md#learn-metadata-integration--2026-10-17).
 
 ## Architecture
 

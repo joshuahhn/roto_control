@@ -18,6 +18,27 @@ def menu():
 
 
 class MenuTests(unittest.TestCase):
+    def test_learn_metadata_is_independent_of_value_formatter(self):
+        p=menu();c=Controls([dict(kind='knob',slot=2,id='menu',parameter=p)])
+        spec=dict(next(c.specs()),formatter=lambda value:'Display only')
+        sent=[];h=CollectionHost(sent.append,lambda *args:None,[spec],'menu')
+        h.controls['knob',2]._parameter_details()
+        self.assertEqual(sent[-1],sysex(11,10,(0,1,*digest(spec['identity'],6),
+            0,0,3,64,0,*text13(p.label),*text13('Alpha'),*text13('Beta'),*text13('Gamma'))))
+
+    def test_menu_step_labels_stop_after_sixteen_choices(self):
+        for count in (2,16,17,24):
+            with self.subTest(count=count):
+                p=menu();p.menuNames=[str(i) for i in range(count)]
+                p.menuLabels=['Choice '+str(i) for i in range(count)];p.val='0'
+                c=Controls([dict(kind='knob',slot=8,id='steps',parameter=p,index=129)])
+                spec=next(c.specs());sent=[]
+                h=CollectionHost(sent.append,lambda *args:None,[spec],'steps')
+                h.controls['knob',8]._parameter_details()
+                labels=tuple(byte for label in p.menuLabels for byte in text13(label)) if count<=16 else ()
+                self.assertEqual(sent[-1],sysex(11,10,(1,1,*digest(spec['identity'],6),
+                    0,0,count,0,0,*text13(p.label),*labels)))
+
     def test_knob_index_rounding_names_and_label_metadata(self):
         p=menu();c=Controls([dict(kind='knob',slot=2,id='menu',parameter=p)])
         b=c.bindings['knob',2]

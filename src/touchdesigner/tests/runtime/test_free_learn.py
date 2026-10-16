@@ -1,6 +1,7 @@
 """Unregistered slider -> offer -> actual hardware slot -> persistent mapping."""
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 import test_assignment
 import collection_protocol
 import controls
@@ -185,6 +186,33 @@ class FreeLearnTests(unittest.TestCase):
         self.assertTrue(state['mapped']);self.assertEqual(state['parameter'],'Speed')
         self.assertEqual(ext._host.controls['knob',3].index,128)
         self.assertEqual(ext.ownerComp.fetch('parameter_assignments')[0]['index'],128)
+
+    def test_free_offer_matches_registered_metadata_without_target_writes(self):
+        for style,kind in (('Float','knob'),('Toggle','button'),('Pulse','button'),
+                           ('Menu','knob'),('Menu','button')):
+            with self.subTest(style=style,kind=kind):
+                ext,learner,sent=self.fixture()
+                parameter=test_assignment.AssignmentTests().parameter(style,'Offered')
+                parameter.owner.name='master'
+                if style=='Menu':
+                    parameter.menuNames=['alpha','beta','gamma']
+                    parameter.menuLabels=['Alpha','Beta','Gamma'];parameter.val='beta'
+                learner.selected_kind=kind
+                before=parameter.eval();pulses=getattr(parameter,'pulses',0)
+                read=type(parameter).val.fget
+                with patch.object(type(parameter),'val',property(read,
+                        lambda *args:self.fail('LEARN offer wrote a target parameter'))):
+                    self.assertTrue(learner.offer(parameter))
+                template=learner.pending['template'];binding=learner.pending['binding']
+                c=controls.Controls([dict(kind=kind,slot=1,id=binding.id,parameter=parameter,
+                    mode=template.mode,button_type=template.button_type,index=template.index)])
+                registered=[]
+                h=collection_protocol.CollectionHost(registered.append,lambda *args:None,
+                    list(c.specs()),'comparison')
+                h.controls[kind,1]._parameter_details()
+                self.assertEqual(sent,registered)
+                self.assertEqual(parameter.eval(),before)
+                self.assertEqual(getattr(parameter,'pulses',0),pulses)
 
     def test_slider_drag_does_not_offer_repeatedly_and_wrong_ack_cannot_commit(self):
         ext,learner,sent=self.fixture();p=self.parameter();p.val=6
