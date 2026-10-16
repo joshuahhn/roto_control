@@ -1263,3 +1263,150 @@ Recovery of the prior local tox/project receipt is retained locally under
 one-off native script and validation result remain in system temporary
 `roto-generic-sync-4hp7mefd`. Local working-project receipt now points to the
 updated generic export receipt without changing the demo toe bytes.
+
+## Track group palette colors — 2026-10-17
+
+Implemented on `feat/td-track-colors`, based on `acc7a5c`, separately from
+PR #23. Changes are uncommitted. `layouts.py` persists optional Track palette
+indices 0..82 and includes them in existing Track details/selection messages.
+`RotoPythonExt.py` exposes `SetTrackColor` and `GetTracks().color`; `setup.py`
+adds the Layout-page Track color menu. Omitted colors retain palette 0 without
+registry migration. No arbitrary RGB, transport rewrite or queue adapter was
+added. Official SysEx v1.6 Appendix A identifies the palette; index 47 has a
+non-hex component in that table, so its menu entry retains only its identity.
+
+The final source passes 486 tests through `python3 -m unittest discover -q`
+from `src/touchdesigner`; the scoped Layout suite passes 26. Five new tests
+cover persistence, API/UI edits, packet colors, offline replay, connected edits
+to another Track without selecting it, reset-to-default, invalid inputs and
+LOCK/LEARN/touch/routing guards. Existing wrong-target, stale-ACK, persistence
+and exactly-once coverage remains. `git diff --check` passes.
+
+Native TD 2025.33230 checks exercised the actual menu and Track selection
+callbacks across frames, rejected a locked color edit and restored its UI,
+then saved/reloaded configured colors 71/82. The generic candidate reloaded
+empty/disconnected, with 83 menu choices, Layout 11 fields, Device 6 fields,
+default color 0, Follow off, Python=python3, no user mappings, Focus/ownership
+links or Snapshots, 19 matching runtime/helper DATs and zero scoped errors.
+The isolated fixture was quiesced and removed.
+
+Installed only the three changed DATs in the receipt-designated live controller
+`/roto_clean_demo/roto_python`, after retaining its configured tox, all 19
+original sources and registry/parameter/value evidence. The separate old
+controller was not upgraded. Physical PLUGIN acceptance used temporary EFFECT
+palette 71 red and COLOR TEST palette 82 purple. The user confirmed both have
+white text in FUNC; selecting the second hardware button showed
+`CUSTOM / COLOR TEST` in purple, and returning showed `demo_A / EFFECT` in red
+with the original Knob 1–3 screens normal. No knob rotation or LEARN was
+requested. Arbitrary RGB and all 83 physical colors remain untested.
+
+Restoration removed the temporary Track/colors and disconnected the MIDI child.
+Original registry definitions, four control IDs, controller parameters, Follow,
+LOCK and Snapshots are preserved; revision advances from 221 to 236. Before
+restoration, demo_A.Amount differed from 0.4 to 0.44924616981016907. The user
+confirmed manually changing it during testing. Preserved that value and modes;
+the restored catalog's value/normalized cache reflects it. Do not claim unchanged parameter values for
+the whole physical session. The normal connection also reported the existing
+stale/Menu reconciliation warning; hardware learned-storage was not read back.
+
+The active project remains unsaved with the candidate runtime. Canonical demo
+toe, generic tox/receipts, PR #23 and original dirty-checkout sources are
+unchanged by this feature. No commit, push or PR publication was performed.
+The restored configured candidate was saved through TD as
+`restored-track-color-candidate.tox` in system temporary
+`roto-track-color-sgtyqd5s`; generic `roto_python.track-colors.tox` there has
+SHA-256 `d56ea7cea4b721012c8ef4bcf159c4783661f2d3046b922e1b6b5067c7948cb1`.
+These are candidate/recovery files, not the canonical export. One-off evidence
+includes `native-validation.json`, `physical-test.json`, `restoration.json`,
+`target-value-differences.json` and the pre-test configured tox/source snapshots.
+
+## Track color save and export — 2026-10-17
+
+Saved the accepted Track palette feature through live TD after the user requested
+the next step. The active project and 19 runtime/helper source hashes matched
+`acc7a5c` plus the uncommitted feature. Original four control IDs, registry,
+controller parameters, Follow, LOCK, Snapshots and current linked-COMP values/modes
+are preserved. Amount remains the user's manually edited 0.44924616981016907.
+The separate old controller was fingerprinted and remains unchanged.
+
+Refreshed ten Markdown snapshots from the feature worktree, exported the generic
+tox through TD, then reloaded it. It has 83 color choices with default 0, Layout
+11 fields and Device 6 fields, empty mappings/Focus/ownership/Snapshots, Follow
+off, Python=python3, embedded helper, no DAT file dependencies and zero scoped
+errors. All 19 runtime/helper and ten documentation hashes match the feature
+source. The temporary export fixture was quiesced and removed before saving.
+No new hardware operation or full main-project restart was performed. Reuse the
+same-candidate 486 source tests and prior physical red/purple A/B/A acceptance.
+
+TD saved `ROTO-CONTROL.track-colors.20261018.toe` in the original project's current
+folder; the numeric suffix is TD's incrementing save counter. Promoted its bytes
+to local canonical `ROTO-CONTROL.toe`, SHA-256
+`030e2fee006ea9b3e77a8c00fecf65f0cb9ff4625386884f6e3c372476b46ade`.
+Updated the local project receipt and both local/feature-worktree generic tox
+and receipts. Generic SHA-256 is
+`b28b0f3ba3d045d7c6f58d286052dc92e303bd3c44aaea869ab9b538d56d1fe0`.
+Receipts identify source base `acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99` plus
+`upgrade/track_colors_acc7a5c.patch`, SHA-256
+`aa3ede4893dee6ead9809ef6d9cb7708f7419bc216ecae92b13839fd9dd55133`.
+The reproducible patch includes three runtime files, Layout docs, regression
+tests and the affected existing native verifier count. It excludes artifact and
+receipt bookkeeping; content hashes identify the actual embedded runtime/docs.
+
+Recovery is retained in the original checkout under
+`projects/archive/track-colors-20261017-iiqv8cgr`, including prior canonical
+artifacts/receipts and the configured live controller before doc refresh.
+One-off scripts/results are in system temporary `roto-track-color-save-a5_opi_s`,
+including `live-baseline.json`, `save-result.json` and `promoted.json`.
+The open TD project remains saved/disconnected with no MIDI child. This save
+supersedes the earlier unsaved-candidate note. This feature remains uncommitted;
+PR #23 and its clean worktree were not changed. The feature worktree's checked-in
+demo toe/receipt retain their independent older version; only its generic export
+was synchronized. The original dirty checkout's runtime sources remain intact.
+
+## Track color BG preview — 2026-10-17
+
+Added a native read-only RGB custom parameter, `Track BG preview`, beside
+`Track color` on Layout. Three reactive expressions derive normalized RGB from
+the existing palette labels through a pure setup helper. No preview callback,
+queue or MIDI message was added. The menu remains the sole color-setting input;
+preview components cannot be edited in TD's UI. Index 47's invalid `81 BO 4A`
+appears in both official SysEx v1.6 Appendix A page 33 and Serial v1.3 Appendix A
+page 27. Its preview is explicitly unavailable/disabled, with correction tracked
+in https://github.com/joshuahhn/roto_control/issues/24. It remains selectable as
+a hardware palette index.
+
+Source passes 487 tests, including a palette-to-normalized-RGB regression for
+default/red/purple, invalid indices and unavailable 47. Native TD checks pass
+for actual menu callbacks, red/purple Track switching, read-only/expression flags,
+unavailable 47, repeated setup and configured tox reload. Layout now has 14
+component fields, including the RGB triplet; Device remains 6. Original registry
+definitions, source DATs and demo values were preserved during isolated checks;
+only the monotonic registry revision advanced from 236 to 238. The fixture was
+quiesced and removed. Physical color acceptance from the unchanged packet path
+is reused; preview checks did not open MIDI.
+
+Installed only the updated setup DAT in the intended live controller, preserving
+all four control IDs, original controller parameter values, registry definitions,
+Snapshots and target values/modes. Saved through TD as
+`ROTO-CONTROL.track-preview.2.toe`, then synchronized local canonical toe and
+root/feature-worktree generic tox with receipts. Generic reload is empty and
+disconnected, default palette 0 and its read-only preview, Follow off, embedded
+helper, Python=python3, no external DAT files or mappings/ownership/Focus/Snapshots,
+19 matching runtime/helper hashes, ten Markdown hashes and zero scoped errors.
+No full main-project restart is claimed.
+
+Local project SHA-256:
+`68420323eeddd934027da07794c9d603acaffe68af4a8ce8176798861df73bdd`.
+Generic tox SHA-256:
+`97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50`.
+The updated reproducible patch over `acc7a5c` includes runtime, Layout docs, both
+regression files and the affected verifier; SHA-256:
+`4ca208affd1267560221023f202d0f3027b12b1cc7c6573fb378c39b846d38f6`.
+Recovery is retained in original checkout
+`projects/archive/track-color-preview-20261017-kihi1uoh`; one-off native/install/
+save/promotion evidence is in system temporary `roto-color-preview-da2187d6`.
+The open TD project remains saved/disconnected, current Amount is preserved,
+and the old controller is unchanged. This supersedes the earlier artifact hashes.
+The feature worktree's generic export is updated; its checked-in demo toe and
+receipt retain their independent older version. PR #23 was already merged on
+GitHub when checked; it was not merged by this work.

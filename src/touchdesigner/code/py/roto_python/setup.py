@@ -2,6 +2,105 @@
 import copy
 
 
+# SysEx API v1.6 Appendix A. Index 47 prints a non-hex G component, BO;
+# retain its palette identity instead of inventing an RGB value.
+TRACK_COLOR_LABELS = (
+    "00 / #FF94A0 / dark text",
+    "01 / #FFA527 / dark text",
+    "02 / #D39925 / dark text",
+    "03 / #FFF477 / dark text",
+    "04 / #C6FB00 / dark text",
+    "05 / #1BFF2D / dark text",
+    "06 / #26FFA2 / dark text",
+    "07 / #5FFFDF / dark text",
+    "08 / #90C5F6 / dark text",
+    "09 / #5780DB / dark text",
+    "10 / #97A7F6 / dark text",
+    "11 / #E06CDB / dark text",
+    "12 / #ED539A / dark text",
+    "13 / #FFFFF6 / dark text",
+    "14 / #FF3634 / dark text",
+    "15 / #FF6C02 / dark text",
+    "16 / #9E6248 / dark text",
+    "17 / #FFF032 / dark text",
+    "18 / #8CFF63 / dark text",
+    "19 / #3FC300 / dark text",
+    "20 / #00BFA8 / dark text",
+    "21 / #19E9F6 / dark text",
+    "22 / #10A4E5 / dark text",
+    "23 / #007DB9 / dark text",
+    "24 / #8D6CDB / dark text",
+    "25 / #BD77BF / dark text",
+    "26 / #FF39CC / dark text",
+    "27 / #D8D0C8 / dark text",
+    "28 / #EC6856 / dark text",
+    "29 / #FFA36F / dark text",
+    "30 / #DBAD6D / dark text",
+    "31 / #F6FFA7 / dark text",
+    "32 / #DAE492 / dark text",
+    "33 / #C1D06F / dark text",
+    "34 / #A1C488 / dark text",
+    "35 / #DCFDD9 / dark text",
+    "36 / #D4F1EF / dark text",
+    "37 / #C0C1DA / dark text",
+    "38 / #D4BBDB / dark text",
+    "39 / #B498DC / dark text",
+    "40 / #EDDCD9 / dark text",
+    "41 / #AFA9A3 / dark text",
+    "42 / #EE9286 / dark text",
+    "43 / #BE8252 / dark text",
+    "44 / #9E8366 / dark text",
+    "45 / #C6BA65 / dark text",
+    "46 / #ACBE00 / dark text",
+    "47 / RGB unavailable / dark text",
+    "48 / #8DC2B3 / dark text",
+    "49 / #A1B3BD / dark text",
+    "50 / #8AA5BF / dark text",
+    "51 / #8893C4 / dark text",
+    "52 / #AB95AE / dark text",
+    "53 / #C69FB7 / dark text",
+    "54 / #C37190 / dark text",
+    "55 / #7F7B76 / dark text",
+    "56 / #B53331 / light text",
+    "57 / #AF512F / light text",
+    "58 / #764F3E / light text",
+    "59 / #E3C300 / light text",
+    "60 / #8A961D / light text",
+    "61 / #569F2F / light text",
+    "62 / #0A9C88 / light text",
+    "63 / #24637F / light text",
+    "64 / #1B2F90 / light text",
+    "65 / #30529C / light text",
+    "66 / #654BA6 / light text",
+    "67 / #A94BA6 / light text",
+    "68 / #D32E6A / light text",
+    "69 / #3E3C39 / light text",
+    "70 / #101010 / light text",
+    "71 / #FF0000 / light text",
+    "72 / #00FF00 / dark text",
+    "73 / #FFFF00 / dark text",
+    "74 / #0000F6 / light text",
+    "75 / #FF00F6 / light text",
+    "76 / #00FFF6 / dark text",
+    "77 / #840000 / light text",
+    "78 / #848000 / dark text",
+    "79 / #008000 / light text",
+    "80 / #00807B / dark text",
+    "81 / #00007B / light text",
+    "82 / #84007B / light text",
+)
+
+
+def track_color_rgb(index):
+    """Normalized palette background, or None where the official RGB is invalid."""
+    if type(index) is not int or not 0 <= index < len(TRACK_COLOR_LABELS):
+        raise ValueError('Track color must be a palette index from 0 to 82')
+    color = TRACK_COLOR_LABELS[index].split(' / ')[1]
+    if not color.startswith('#'):
+        return None
+    return tuple(int(color[offset:offset + 2], 16) / 255.0 for offset in (1, 3, 5))
+
+
 def install_follow_ui(controller):
     """Create opt-in Follow and the active Device's optional COMP reference."""
     binding = next(p for p in controller.customPages if p.name == 'Binding')
@@ -48,10 +147,31 @@ def combine_context_pages(controller):
         page = next((p for p in controller.customPages if p.name == 'Layouts'), None) or controller.appendCustomPage('Layout')
         page.name = 'Layout'
     device = next((p for p in controller.customPages if p.name == 'Device'), None) or controller.appendCustomPage('Device')
+    color=getattr(controller.par,'Trackcolor',None)
+    new_color=color is None
+    if color is None:
+        color=page.appendMenu('Trackcolor',label='Track color')[0]
+    color.menuNames=[str(index) for index in range(len(TRACK_COLOR_LABELS))]
+    color.menuLabels=list(TRACK_COLOR_LABELS)
+    if new_color:color.default=color.val='0'
+    color.enableExpr="me.par.Setupmode == 'collection'"
+    preview_names=('Trackcolorpreviewr','Trackcolorpreviewg','Trackcolorpreviewb')
+    if getattr(controller.par,preview_names[0],None) is None:
+        page.appendRGB('Trackcolorpreview',label='Track BG preview')
+    for channel,name in enumerate(preview_names):
+        parameter=getattr(controller.par,name)
+        parameter.default=track_color_rgb(0)[channel]
+        parameter.expr="(me.op('setup').module.track_color_rgb(int(me.par.Trackcolor)) or (0, 0, 0))["+str(channel)+"]"
+        parameter.readOnly=True
+        parameter.enableExpr="me.par.Setupmode == 'collection' and me.par.Trackcolor != '47'"
+        parameter.help='Read-only palette background preview. Palette 47 has an invalid RGB component in the official tables; its disabled preview is unavailable.'
+    callbacks=controller.op('parameter_callbacks');watched=callbacks.par.pars.eval().split()
+    callbacks.par.pars=' '.join(watched+['Trackcolor'] if 'Trackcolor' not in watched else watched)
+    names=names[:7]+('Trackcolor',)+preview_names+names[7:]
     for order, name in enumerate(names):
         parameter = getattr(controller.par, name)
-        parameter.page = page if order<10 else device
-        parameter.order = order if order<10 else order-10
+        parameter.page = page if order<14 else device
+        parameter.order = order if order<14 else order-14
         parameter.startSection = name == 'Track'
     controller.par.Layout.label = 'Active Layout (mapping set)'
     controller.par.Track.label = 'Active Track group (FUNC)'
