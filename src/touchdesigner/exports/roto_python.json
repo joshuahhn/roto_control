@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "roto_python.tox",
-  "sha256": "1b3910f1e75364436eae1124165f0eec921163b83f3c1f226a6fe633e033edb3",
+  "sha256": "fe879347c22b2a00e18a28a277d99abd6cec22eb3784975199505a724e3f1b84",
   "export_date": "2026-10-17",
   "touchdesigner_build": "2025.33230",
   "profile": {
@@ -18,7 +18,8 @@
     "operation_presets": "empty",
     "operation_custom_slots": 6,
     "mix_analysis_bands_draft": "Low Mid High Kick Snare Rhythm",
-    "mix_custom_analysis_slots": "empty: slots 7 and 8; 32 draft fields reset"
+    "mix_custom_analysis_slots": "empty: slots 7 and 8; 34 draft fields reset",
+    "mix_threshold_comparison_draft": false
   },
   "runtime_source_sha256": {
     "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
@@ -31,7 +32,7 @@
     "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
     "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
     "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
-    "setup": "8e923db46b99c5c219ac7c2734b5d2374975d539664719e7926cf37d2804edfa",
+    "setup": "f75302af2ef446e08091e929ca98dcafe1ef1ba44575d42fa0425a4b5e3d1421",
     "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
     "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
     "layouts": "e987fe479b6b0249cce6ca0bf18d29f6e793fb34a6a638f3a6d1768067feaa2f",
@@ -41,17 +42,17 @@
     "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
     "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
     "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
-    "mix_descriptor": "210cd38cb80bdaaf17d1e71e8c068caef0e983419f1e2dcbdf3b7b7a515408ff",
-    "mix_runtime": "78e85987d9f1e12896e5edeca780f1e5dcddd9b10484e392480bb7a2046f5e59"
+    "mix_descriptor": "e4c8dd364d91e4655e9e9ae2e15f290fcdada83bd6f0f1d6a50061f462587bad",
+    "mix_runtime": "3cb7d06d9d36f91e204af922948177d3f4c47c4ac90a10cb836cd52eb7afe2be"
   },
   "embedded_documentation_sha256": {
     "readme_md": "71804a9e872f22309e00345e3d4aaac018fa8ebf8ebf51069f11041fde76ac95",
     "docs/overview_md": "493698318faef8c770506e27d2e642ae574568f7371346799fcadab3eee71f9b",
     "docs/fn_lifecycle_md": "f375ab171ee00a8c712dde6468eec9f9830dd2265691013293643c31f283fe43",
-    "docs/fn_mix_analysis_md": "5c529dd73472d629731fa4e3e5b12a52a741ef2ffe0e0ef0dbffcf6a00632197",
+    "docs/fn_mix_analysis_md": "8cb14f6853d1679137fb2b0e4808b86dcb6cf9e4d118dd67b1127ac6fd2a27f2",
     "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
     "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
-    "docs/fn_mix_md": "44f8600a0007688cc7785241f266ce638d85e834c8fbc06ad2b766b39492701a",
+    "docs/fn_mix_md": "950b6a7512e26e8844785d5186b145a1535f6de3c7cc4fb1b055b48fcb3b725f",
     "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
     "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
     "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
@@ -62,20 +63,20 @@
     "native_export_reload": "passed",
     "runtime_source_count": 22,
     "documentation_snapshot_count": 12,
-    "source_tests": 574,
+    "source_tests": 585,
     "scoped_errors": 0,
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
     "palette_47_follow_up": "https://github.com/joshuahhn/roto_control/issues/24",
-    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored.",
+    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747.",
     "arbitrary_rgb_acceptance": false,
     "full_project_restart_acceptance": false,
-    "source_tests_commit": "be656cd892daf9e7eeb52e293c2db2a070bdec0d",
+    "source_tests_commit": "f7c53ab10b1cbf7a2997baab2b2255d60cc5e6e9",
     "native_mix_float_targets": 12,
     "native_mix_configuration_reload": "passed without value recall",
     "native_mix_scoped_upgrade": "passed: existing profile, mappings and values preserved",
-    "mix_generic_reload": "passed: no profile/presets/selected preset/name/custom slots/source, default Analysis bands Low Mid",
-    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send and arbitrary preset combinations lack physical acceptance. Preset CRUD/selection and the foreign-analyzer guide have source/native acceptance with zero MIDI. Triggers, CI=8+, mixed-style/per-item slots and audio processing remain deferred. High Active input and changing High meter levels were not separately physically accepted.",
+    "mix_generic_reload": "passed: no profile/presets/draft source/custom assignments, 34 custom draft fields reset, default Analysis bands Low Mid High Kick Snare Rhythm; comparison toggles off",
+    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send and arbitrary preset combinations lack physical acceptance. Snare/Rhythm, custom slots and unassigned-knob input remain unverified. CI=8+, mixed-style/per-item slots and audio processing remain deferred.",
     "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
     "native_documentation_layout": "Existing twelve snapshot positions preserved; no new documentation nodes",
     "native_mix_toggle_writes": 3,
@@ -152,13 +153,40 @@
     },
     "native_mix_custom_generic_reset": {
       "default_bands": "Low Mid High Kick Snare Rhythm",
-      "custom_draft_fields_cleared": 32,
+      "custom_draft_fields_cleared": 34,
+      "comparison_toggles": false,
       "triggers_empty": true,
-      "disconnected": true,
+      "midi_connected": false,
       "preserved": true
     },
-    "new_detector_custom_slot_hardware": "pending: user away; no MIDI opened; see docs/plans/mix-analysis-acceptance.md"
+    "new_detector_custom_slot_hardware": "High Active/meter, Kick Active/actual trigger/Threshold and production overview/Focus comparison accepted; Snare/Rhythm, custom slots and unassigned-knob input pending",
+    "native_mix_focus_reference": {
+      "native_pairs": "passed",
+      "known_detector_scales": "passed",
+      "custom_toggle_apply_and_reload": "passed",
+      "software_reference_updates": "passed",
+      "comparison_writes": 0,
+      "midi_connected": false
+    },
+    "threshold_comparison_prototype": "Accepted at 0.490, upper Threshold CC66/lower Level CC65 horizontal. Temporary probe removed. Subsequent production overview, first-Focus transition and PLUGIN return passed with no send/receive override and zero writes.",
+    "native_mix_overview_reference": {
+      "overview_pairs": "passed",
+      "focus_roundtrip": "passed",
+      "custom_toggle_apply_and_reload": "passed",
+      "software_reference_updates": "passed",
+      "reference_writes": 0,
+      "midi_connected": false
+    },
+    "mix_threshold_comparison_hardware": {
+      "overview": "passed",
+      "focus_transition": "passed",
+      "plugin_return": "passed",
+      "parameter_writes": 0,
+      "differences": [],
+      "preserved": true,
+      "baseline_button1_local_reconciliation_restored": true
+    }
   },
-  "runtime_source_commit": "3840ec67f200f3fa5f9c6f47893ddc311f92338b",
-  "embedded_documentation_source_commit": "3840ec67f200f3fa5f9c6f47893ddc311f92338b"
+  "runtime_source_commit": "f7c53ab10b1cbf7a2997baab2b2255d60cc5e6e9",
+  "embedded_documentation_source_commit": "f7c53ab10b1cbf7a2997baab2b2255d60cc5e6e9"
 }

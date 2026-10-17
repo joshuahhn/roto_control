@@ -2402,3 +2402,20 @@ this acceptance for Kick comparison only. Snare/Rhythm, custom-slot and
 unassigned-knob physical input remain unverified. Audio processing #26 and Apply
 simplification #28 remain deferred. Save/export receipts identify subsequent
 artifact publication; canonical and earlier saved projects are preserved.
+
+
+### Overview reference publication
+
+Final runtime/documentation source `f7c53ab10b1cbf7a2997baab2b2255d60cc5e6e9`.
+The live-TD generic export/reload verifies 22 runtime/helper and 12 Markdown
+hashes, six-band draft defaults, all 34 custom-slot fields reset, comparison
+False, empty assignments/presets/source references, Follow off, Python python3,
+no external DATs or MIDI process, and zero scoped errors. The export SHA-256 is
+`fe879347c22b2a00e18a28a277d99abd6cec22eb3784975199505a724e3f1b84`;
+its checked-in adjacent receipt pins source and hardware evidence.
+
+A separate live save produced local `ROTO-CONTROL.mix-analysis.16.toe`, SHA-256
+`58f103722e7bdb3e94b0854bb1ee26bba3c39400faafafdded36372df0050ad8`,
+with its adjacent local receipt. Canonical and earlier .8/.10/.12/.14 project
+hashes remain unchanged. The live working controller retains its original
+Low/Mid profile/draft and all user nodes/values; TD remains open/disconnected.
