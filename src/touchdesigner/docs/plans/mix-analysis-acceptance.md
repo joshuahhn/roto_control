@@ -5,8 +5,9 @@ Active/actual trigger/Threshold input plus motor/PLUGIN restoration pass. A
 temporary upper-Threshold/lower-Level Kick comparison was accepted for now. Its
 installed production Focus display has passed. The user then requested the same
 comparison in overview. Installed production overview, first-Focus transition
-and normal PLUGIN return then passed with zero parameter writes. Snare/Rhythm,
-custom slots and an unassigned-knob hardware input check remain unverified. Reuse completed cases below rather than
+and normal PLUGIN return then passed with zero parameter writes. Snare/Rhythm
+Active/trigger/Threshold/motor return now pass too. Custom slots and an
+unassigned-knob hardware input check remain unverified. Reuse completed cases rather than
 running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
 
 ## Installed reference feedback
@@ -87,6 +88,21 @@ this checklist. Full item inventory and assignment requirements are in the
    FUNC/readback state; stale `Trig 1` must not survive a boundary.
 
 ## Snare and Rhythm
+
+Completed on 2026-10-17 using production source `f7c53ab`: both overview captions
+and upper reference scales, initial/off and on LEDs, actual Trig 0/1, first Focus,
+Threshold gestures and motor return, then normal PLUGIN return. Snare reached
+0.4107672587438198 through 46 changed writes; Rhythm reached 61.70725752304218
+through 72. Four Active presses added four writes. The clean round therefore
+made exactly 122 changed writes and restored 0.311515 / 49.4591 and both Active
+False. All unrelated values/profile/draft remained unchanged.
+
+Rhythm's `Thresh 49.459` exceeded the 12-character field and showed `Thresh 49.45`.
+A separate Float caption fix shortens the label before encoding, keeping the
+numeric digits; its scoped native/source checks and physical follow-up are
+recorded in the latest handoff.
+
+Reproduction procedure:
 
 Repeat the affected Kick checks for items 5 and 6, one at a time: overview
 Button 5/6 Active, touch that item then FUNC, Threshold on Focus Knob 1,

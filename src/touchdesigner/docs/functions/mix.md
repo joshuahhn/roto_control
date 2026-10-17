@@ -13,8 +13,9 @@ retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lo
 High also has physical overview/Focus caption, persistent-selection, Gain
 input/motor-return and Active/changing-meter acceptance. The six-item overview,
 Kick Active/actual trigger, Threshold input and final motor/PLUGIN restoration
-have scoped hardware acceptance. Snare/Rhythm and custom-slot hardware checks
-remain in the [physical batch](../plans/mix-analysis-acceptance.md).
+have scoped hardware acceptance. Snare/Rhythm Active/trigger/Threshold/motor
+return also pass. Custom-slot and unassigned-knob hardware checks remain in the
+[physical batch](../plans/mix-analysis-acceptance.md).
 
 ## Configure an existing source
 
@@ -220,7 +221,9 @@ FUNC Focus buttons select items. The read-only hardware check found Button 2
 selects Mid through Track selection, without a CC21 press/release. These buttons
 keep that firmware function; Active is operated from overview.
 
-Readable combined name/value feedback uses SHOW CONTROL VALUE. Native Volume/Pan
+Readable combined name/value feedback uses SHOW CONTROL VALUE. Float captions
+reserve space for the three-decimal value before shortening the label to the
+12-character field, such as `Thres 49.459`; target values are unchanged. Native Volume/Pan
 headings are firmware UI, not renamed TD pages. Each band retains its own meter
 source when SEL changes the control function. Focus uses the selected band's
 meter on screen 1; other meters are cleared. Unsupported channel families, Focus

@@ -140,7 +140,9 @@ class Target:
             return f'{label} {position} {self.binding.menu_labels[int(value)]}'
         if self.description['kind'] == 'toggle':
             return f'{label} {"On" if value else "Off"}'
-        return f'{label} {value:.3f}'
+        number = f'{value:.3f}'
+        label = label[:max(0, 11 - len(number))].rstrip()
+        return f'{label} {number}'.lstrip()
 
     def normalized(self, value):
         if self.choice_indices is None:

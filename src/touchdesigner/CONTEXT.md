@@ -29,8 +29,8 @@ sharing the original Apply. Missing fields remain unassigned;
 Apply and routing guards retain their existing behavior. Kick has only
 Threshold/Active, as do Snare/Rhythm, with verified pre-threshold meters and independent read-only
 trigger text in first Focus screen 5. Trigger feedback uses normal Tick
-observations and a bounded display hold. High Active/meters and Kick
-Active/trigger/Threshold now have scoped hardware acceptance; Snare/Rhythm and
+observations and a bounded display hold. High Active/meters and all three
+detectors' Active/trigger/Threshold/motor return have scoped hardware acceptance;
 custom-slot hardware checks remain pending. Optional overview/first-Focus
 references supply upper Threshold/lower Level on a common meter scale for the
 known detectors. Custom slots can opt into both; existing profiles without the

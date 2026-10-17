@@ -119,7 +119,9 @@ or `None` for no overview control. Missing controls leave their positions empty;
 they do not shift later controls or use a PLUGIN assignment. Analysis Menu,
 Pulse, callback/expression strings and arbitrary extra control keys are not
 supported. The native Volume/Pan/Send headings remain firmware UI; combined TD
-name/value captions show the actual target. In the analysis overview, the selected
+name/value captions show the actual target. Float captions shorten the label
+first to preserve a three-decimal value within 12 characters, such as
+`Thres 49.459`. This affects display only. In the analysis overview, the selected
 item instead keeps its band name/value with a `>` marker until selection changes.
 FUNC details retain their control captions.
 
@@ -249,9 +251,9 @@ nonfinite/empty samples clear stale detections and report an error. Screen 5 is
 read-only; Knob 5 has no target. Focus knobs 1–4 retain any real controls, so
 Kick/Snare/Rhythm use Knob 1 only. Native headings remain firmware UI. Unassigned
 Pan/Send positions can retain those native headings; no TD target is implied.
-Kick's Active, actual trigger and Threshold route now have scoped hardware
-acceptance; Snare/Rhythm and custom slots still need the
-[batched physical check](../plans/mix-analysis-acceptance.md).
+Kick/Snare/Rhythm Active, actual trigger, Threshold input and motor return have
+scoped hardware acceptance. Custom slots and unassigned-knob input still need
+the [batched physical check](../plans/mix-analysis-acceptance.md).
 
 ## Threshold comparison
 

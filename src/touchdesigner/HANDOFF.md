@@ -27,8 +27,9 @@ source tests and synthetic native messages do not establish physical acceptance.
   Mixed-style slots and audio Gain/Mute processing remain deferred;
   audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
 - Six-item overview, High Active/changing meter and Kick Active/actual trigger/
-  Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm,
-  custom slots and an unassigned-knob input check remain pending. A bounded
+  Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm
+  Active/trigger/Threshold/motor return now pass too. Custom slots and an
+  unassigned-knob input check remain pending. A bounded
   upper-Threshold/lower-Level prototype was accepted; its explicit production
   Focus integration has passed an installed-runtime hardware check. The user's
   requested overview extension and first-Focus/PLUGIN transition have also passed
@@ -2419,3 +2420,53 @@ A separate live save produced local `ROTO-CONTROL.mix-analysis.16.toe`, SHA-256
 with its adjacent local receipt. Canonical and earlier .8/.10/.12/.14 project
 hashes remain unchanged. The live working controller retains its original
 Low/Mid profile/draft and all user nodes/values; TD remains open/disconnected.
+
+
+## Snare/Rhythm acceptance and Float caption width — 2026-10-17
+
+Baseline checkout `6e4b9d8`, runtime source `f7c53ab`, working project `.16.toe`.
+No graph/audio construction or detector defaults changed. Fresh recovery and
+snapshots precede temporary six-item profiles, using production input/output
+without receive/send overrides. The user confirmed Snare overview 0.312 / upper
+31%, Rhythm 49.459 / upper 49% and both initial Active LEDs off.
+
+Snare Active turns on once, first Focus selects Snare, actual Trig 0/1 changes
+with public snare output, and Knob 1 reaches 0.4107672587438198 through 46 changed
+Snarethresh writes. Restore 0.311515 returns the motor to about 52%; overview
+Button 5 turns Active off once. Rhythm similarly passes Active/first Focus/actual
+Trig 0/1, reaches 61.70725752304218 through 72 Rythmthresh writes, and restores
+49.4591 / about 49% motor. Button 6 turns Active off once; normal demo_A PLUGIN
+return passes. This clean round contains exactly 122 changed writes: 118 Float
+updates plus four Active presses. No other parameter changes or extra motor
+writes occur. The earlier interrupted round had one Snare Active press and was
+fully restored. Its apparent view mismatch was explained by the user's later
+FUNC/touch operations, so no routing defect or transport change is claimed.
+
+Disconnect reaps the child with return 0 and clears pending output. The same
+known Button 1 local registry reconciliation is restored through Layout manager;
+normalized full snapshots then match all original profiles/drafts, values,
+registry/four control IDs, Snapshots, nine demo children and old controller DATs.
+No canonical or numbered project save occurs during these probes.
+
+The user spotted Rhythm text `Thresh 49.45`: the three-decimal value plus label
+exceeded the 12-character payload. A failing regression reproduces the actual
+encoded overview message. Float caption formatting now reserves numeric space
+before shortening the label, yielding `Thres 49.459` in unselected overview and
+Focus. Existing selected captions already reserve the numeric value; Menu,
+Toggle, meters, input conversion and target values are unchanged.
+
+586 discovery tests pass, including the new overview/Focus wire-caption test.
+Native TD checks both captions and the selected `>Rhyt 49.459` caption with zero
+writes, no MIDI process, unchanged Low text, zero scoped errors and full live
+preservation. Scoped install verifies all 22 source/helper hashes and original
+Low/Mid profile/draft. Temporary evidence is in system temp
+`roto-snare-rhythm.xLVJDmmQth`, with separate first-round, clean round2 and caption
+folders. Custom slots and unassigned-knob physical input remain pending.
+
+
+The subsequent production caption hardware check passes in overview and first
+Focus: the full `Thres 49.459` appears, including the final 9, and PLUGIN returns
+normally. It uses no send/receive override and makes zero parameter writes.
+All original values/profile/draft/local control IDs are restored and the child
+is closed/reaped with empty pending output. Publication receipts below pin the
+final source/artifact versions; earlier saved project files remain unchanged.
