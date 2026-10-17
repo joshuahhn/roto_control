@@ -1,4 +1,4 @@
-"""Focus comparison uses one declared level and the real threshold in its units."""
+"""Each view compares a declared level with the real threshold in its units."""
 import copy
 import json
 import unittest
@@ -16,9 +16,9 @@ class MixMeterReferenceTests(unittest.TestCase):
         helper.enter(e,mix);helper.focus(e,mix)
         return helper,e,mix,source,channels,operators
 
-    def pair(self,helper,e):
+    def pair(self,helper,e,lane=0):
         messages=helper.messages(e)
-        return [next(m[2] for m in reversed(messages) if m[:2]==[191,cc]) for cc in (65,66)]
+        return [next(m[2] for m in reversed(messages) if m[:2]==[191,cc]) for cc in (65+2*lane,66+2*lane)]
 
     def test_kick_focus_outputs_lower_level_and_upper_threshold_without_writes(self):
         helper,e,mix,source,_,_=self.fixture()
@@ -39,19 +39,40 @@ class MixMeterReferenceTests(unittest.TestCase):
         self.assertFalse(source.par.Kickactive.eval())
         self.assertEqual(mix.triggers[0].state,'disabled')
 
-    def test_overview_and_nonreference_band_keep_original_scalar_meter(self):
+    def test_overview_uses_each_detector_threshold_and_preserves_nonreference_band(self):
         helper,e,mix,source,_,_=self.fixture()
-        e._pending=b'';helper.enter(e,mix);mix.tick(now=3)
-        self.assertEqual(self.pair(helper,e),[102,102])
-        e.ConfigureMixAnalysis(mix.scope,'analysis',('Kick','Low'))
-        helper.focus(e,mix,1)
+        e.ConfigureMixAnalysis(mix.scope,'analysis',('Kick','Snare','Rhythm','Low'))
+        helper.enter(e,mix);mix.tick(now=3)
+        self.assertEqual(self.pair(helper,e),[102,33])
+        self.assertEqual(self.pair(helper,e,1),[51,33])
+        self.assertEqual(self.pair(helper,e,2),[89,62])
+        self.assertEqual(self.pair(helper,e,3),[32,32])
+        helper.focus(e,mix,2)
+        self.assertEqual(self.pair(helper,e),[89,62])
+        helper.enter(e,mix);source.par.Snarethresh.val=.5;mix.tick(now=4)
+        self.assertEqual(self.pair(helper,e,1),[51,64])
+        self.assertEqual(self.pair(helper,e,2),[89,62])
+        helper.focus(e,mix,3)
         self.assertEqual(self.pair(helper,e),[32,32])
         self.assertEqual(mix.writes,0)
+
+    def test_saved_focus_only_reference_does_not_change_overview(self):
+        helper,e,mix,_,_,_=self.fixture()
+        profile=e.GetMixProfile()['descriptor']
+        profile['items'][0]['meter'].pop('overview_reference')
+        e.SetMixProfile(mix.scope,profile)
+        restored=MixRuntime(e);e._mix=restored
+        helper.enter(e,restored);restored.tick(now=3)
+        self.assertEqual(self.pair(helper,e),[102,102])
+        helper.focus(e,restored)
+        self.assertEqual(self.pair(helper,e),[102,33])
+        self.assertEqual(restored.profile,profile)
 
     def test_legacy_profile_without_reference_reload_stays_unchanged(self):
         helper,e,mix,source,_,_=self.fixture()
         profile=e.GetMixProfile()['descriptor']
         profile['items'][0]['meter'].pop('focus_reference',None)
+        profile['items'][0]['meter'].pop('overview_reference',None)
         e.SetMixProfile(mix.scope,profile)
         restored=MixRuntime(e);e._mix=restored
         helper.enter(e,restored);helper.focus(e,restored)
@@ -63,18 +84,20 @@ class MixMeterReferenceTests(unittest.TestCase):
     def test_reference_requires_analysis_mono_scalar_and_existing_float_threshold(self):
         helper,e,mix,_,_,_=self.fixture()
         original=e.GetMixProfile()
-        for kind in ('key','missing_control','toggle','stereo','rms','layers'):
-            with self.subTest(kind=kind):
-                profile=copy.deepcopy(original['descriptor']);item=profile['items'][0]
-                item['meter']['focus_reference']='threshold'
-                if kind=='key':item['meter']['focus_reference']='gain'
-                elif kind=='missing_control':del item['controls']['threshold'];item['primary']=None
-                elif kind=='toggle':item['controls']['threshold']['kind']='toggle'
-                elif kind=='stereo':item['meter']['source']['channels']=['low','high']
-                elif kind=='rms':item['meter']['measure']='rms_dbfs'
-                else:profile['style']='layers';item['input']='analysis';item.pop('trigger')
-                with self.assertRaises(ValueError):e.SetMixProfile(mix.scope,profile)
-                self.assertEqual(e.GetMixProfile(),original)
+        for reference in ('overview_reference','focus_reference'):
+            for kind in ('key','missing_control','toggle','stereo','rms','layers'):
+                with self.subTest(reference=reference,kind=kind):
+                    profile=copy.deepcopy(original['descriptor']);item=profile['items'][0]
+                    item['meter'].pop('focus_reference',None);item['meter'].pop('overview_reference',None)
+                    item['meter'][reference]='threshold'
+                    if kind=='key':item['meter'][reference]='gain'
+                    elif kind=='missing_control':del item['controls']['threshold'];item['primary']=None
+                    elif kind=='toggle':item['controls']['threshold']['kind']='toggle'
+                    elif kind=='stereo':item['meter']['source']['channels']=['low','high']
+                    elif kind=='rms':item['meter']['measure']='rms_dbfs'
+                    else:profile['style']='layers';item['input']='analysis';item.pop('trigger')
+                    with self.assertRaises(ValueError):e.SetMixProfile(mix.scope,profile)
+                    self.assertEqual(e.GetMixProfile(),original)
 
     def test_reference_coalesces_to_latest_value_and_preserves_inflight_tail(self):
         _,e,mix,source,_,_=self.fixture()
@@ -124,7 +147,10 @@ class MixMeterReferenceTests(unittest.TestCase):
         self.assertFalse(c.par.Mixslot7compare.eval())
         c.par.Mixslot7compare.val=True;setup.apply_mix_ui(c)
         self.assertEqual(e.GetMixProfile()['descriptor']['items'][6]['meter']['focus_reference'],'threshold')
-        helper=test_mix.MixTests();helper.enter(e,mix);helper.focus(e,mix,6)
+        self.assertEqual(e.GetMixProfile()['descriptor']['items'][6]['meter']['overview_reference'],'threshold')
+        helper=test_mix.MixTests();helper.enter(e,mix);mix.tick(now=3)
+        self.assertEqual(self.pair(helper,e,6),[89,38])
+        helper.focus(e,mix,6)
         self.assertEqual(self.pair(helper,e),[89,38])
         self.assertEqual(custom.par.Limit.eval(),.3)
         self.assertEqual(mix.writes,0)

@@ -150,18 +150,20 @@ def validate(profile):
                     limits(control['range'])
             meter = item.get('meter')
             if meter:
-                _fields(meter, ('source', 'measure', 'range', 'stage'), ('focus_reference',))
+                _fields(meter, ('source', 'measure', 'range', 'stage'), ('overview_reference', 'focus_reference'))
                 _signal(meter['source']); limits(meter['range']); _name(meter['stage'])
                 if meter['measure'] not in ('scalar', 'rms_dbfs'):
                     raise ValueError('Unsupported MIX measurement')
                 if meter['measure'] == 'rms_dbfs' and meter['source']['kind'] != 'chop':
                     raise ValueError('RMS needs CHOP samples')
-                if 'focus_reference' in meter:
-                    if (style != 'analysis' or meter['focus_reference'] != 'threshold'
+                for reference_key in ('overview_reference', 'focus_reference'):
+                    if reference_key not in meter:
+                        continue
+                    if (style != 'analysis' or meter[reference_key] != 'threshold'
                             or controls.get('threshold', {}).get('kind') != 'float'
                             or meter['measure'] != 'scalar'
                             or meter['source']['kind'] == 'chop' and len(meter['source']['channels']) != 1):
-                        raise ValueError('Focus reference needs an analysis mono scalar level and Float threshold')
+                        raise ValueError('Meter reference needs an analysis mono scalar level and Float threshold')
             trigger = item.get('trigger')
             if trigger:
                 if style != 'analysis':
@@ -204,7 +206,7 @@ def analysis_profile(source, bands=('Low', 'Mid'), *, id='analysis.main'):
             prefix, level_op, level_channel, pulse_channel, maximum = ANALYSIS_DETECTORS[band]
             item['meter'] = dict(source=dict(kind='chop', op=source + '/' + level_op, channels=[level_channel]),
                                  measure='scalar', range=[0, maximum], stage=band + ' level before threshold',
-                                 focus_reference='threshold')
+                                 overview_reference='threshold',focus_reference='threshold')
             item['trigger'] = dict(source=dict(kind='chop', op=source + '/out1', channels=[pulse_channel]),
                                    enabled=dict(op=source, parameter=prefix + 'active'), hold_ms=200)
         items.append(item)

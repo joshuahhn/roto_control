@@ -3,17 +3,29 @@
 Current results: six-item overview, High Active/changing meter and Kick
 Active/actual trigger/Threshold input plus motor/PLUGIN restoration pass. A
 temporary upper-Threshold/lower-Level Kick comparison was accepted for now. Its
-explicit production integration now has source/native coverage; the installed
-runtime still needs the focused check below. Snare/Rhythm, custom slots and an unassigned-knob
-hardware input check remain unverified. Reuse completed cases below rather than
+installed production Focus display has passed. The user then requested the same
+comparison in overview. Installed production overview, first-Focus transition
+and normal PLUGIN return then passed with zero parameter writes. Snare/Rhythm,
+custom slots and an unassigned-knob hardware input check remain unverified. Reuse completed cases below rather than
 running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
 
 ## Installed reference feedback
 
+Completed for Kick on 2026-10-17: overview upper Threshold near 26% / lower
+dynamic Level, first Focus with the same pairing, normal demo_A PLUGIN return.
+Zero parameter writes; original profile, values and local control IDs restored.
+The earlier Focus-only round had three accidental Kickthresh writes to 0.274675;
+the user identified the accidental turn and 0.261747 was restored before this
+zero-write follow-up. Other detectors/custom slots are not accepted by this case.
+
+Reproduction procedure:
+
 Use the final source without any output/receive probe override. Agent configures
 a bounded, disconnected-first Kick profile after a fresh snapshot, then user
-enters first FUNC Focus. With hands off, confirm upper Threshold near 26% and
-lower pre-threshold Level varying over the common 0..1 scale. Existing detection
+remains in MIX-TRACKS / FUNC off. With hands off, confirm upper Threshold near
+26% and lower pre-threshold Level varying over the common 0..1 scale. Enter first
+FUNC Focus and confirm the same pairing; the previous Focus display pass is
+reused, with only the transition checked here. Existing detection
 state remains unchanged. Make one small Threshold gesture, confirming only the
 upper reference tracks its actual value while the lower remains the signal.
 Restore 0.261747 or the freshly captured value, confirm motor/reference return,

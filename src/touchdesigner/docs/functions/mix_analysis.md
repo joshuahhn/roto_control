@@ -77,7 +77,7 @@ define new controls or a new protocol.
 | Active parameter | Exact existing writable Toggle name; blank omits it |
 | Meter CHOP / channel names | Existing CHOP and one or two named channels |
 | Meter measurement / minimum / maximum / stage | Scalar or audio RMS dBFS, actual source units and signal location |
-| Focus threshold comparison | Optional, off by default; mono scalar Level and the assigned Float Threshold must share units |
+| Threshold comparison | Optional, off by default; mono scalar Level and the assigned Float Threshold must share units |
 | Actual trigger CHOP / channel name | Optional real pulse output; display hold is 200 ms |
 
 Assign only fields that exist. Controls use validated native parameter ranges;
@@ -198,7 +198,7 @@ A meter is read-only feedback and does not require a writable control:
 
 - CHOP source: `{'kind': 'chop', 'op': 'levels', 'channels': ['left', 'right']}`.
   Use one or two actual channel names. One channel fills both native bars unless
-  the explicit first-Focus threshold comparison below is enabled.
+  the explicit threshold comparison below is enabled for that view.
 - Parameter source: `{'kind': 'parameter', 'op': '.', 'parameter': 'Outputlevel'}`.
   A numeric read-only/expression-driven parameter can be feedback; it is never
   written by the meter. Use `measure='scalar'`.
@@ -253,17 +253,19 @@ Kick's Active, actual trigger and Threshold route now have scoped hardware
 acceptance; Snare/Rhythm and custom slots still need the
 [batched physical check](../plans/mix-analysis-acceptance.md).
 
-## Focus threshold comparison
+## Threshold comparison
 
-An analysis item's meter may declare `focus_reference: 'threshold'`. This is
-optional and references that item's existing Float `controls.threshold`; it
-does not create another target. It requires `measure: 'scalar'` with one CHOP
+An analysis item's meter may declare `overview_reference: 'threshold'` and/or
+`focus_reference: 'threshold'`. Each optional field enables the comparison only
+in its named view and references the item's existing Float `controls.threshold`.
+It does not create another target. It requires `measure: 'scalar'` with one CHOP
 channel or a scalar parameter source. Caller-supplied level and threshold must
 have the same units and a verified signal stage. Stereo and RMS comparisons,
 other control keys and missing/non-Float Threshold targets are rejected.
 
-First Focus screen 1 then uses CC65 for the measured level and CC66 for the
-actual current threshold, both scaled/clipped by the meter's single `range`.
+Each overview screen uses its normal CC pair for the measured level followed
+by the actual current threshold. First Focus uses screen 1, CC65/66. Both
+values are scaled/clipped by the meter's single `range`.
 The reference reads target units directly after the existing identity/mode/range
 check; it does not use the normalized motor position or coerce the target value.
 The tested firmware 3.3.0 renders these as a lower Level and upper Threshold
@@ -273,22 +275,23 @@ green/yellow/red rules, not per-data-source colors. Actual trigger feedback
 still comes from the detector, independently of the comparison.
 
 After verifying the example analyzer's `band_energy` and Triggerlimit units,
-set `descriptor['items'][0]['meter']['focus_reference'] = 'threshold'` and
-register through the same `controller.SetMixProfile(scope, descriptor)` call.
-Custom slots expose this as the optional Focus threshold comparison toggle.
+set the meter's `overview_reference` and `focus_reference` to `'threshold'`,
+then register through the same `controller.SetMixProfile(scope, descriptor)`
+call. Custom slots expose both through one optional Threshold comparison toggle.
 
-The known Kick/Snare/Rhythm adapter supplies this field automatically for its
+The known Kick/Snare/Rhythm adapter supplies both fields automatically for its
 verified pre-threshold sources. Low/Mid/High do not: their processed outputs are
-not assumed to be threshold-comparison inputs. Overview keeps its normal meters;
-only first Focus uses the reference. Invalid level/reference feedback clears both
-bars. Existing coalescing, in-flight tails and backlog guards apply, without
-extra observers or timers. Old saved profiles without the field retain their
-original meter behavior; explicitly reconfigure to adopt the new adapter data.
+not assumed to be threshold-comparison inputs. Invalid level/reference feedback
+clears both bars. Existing coalescing, in-flight tails and backlog guards apply, without
+extra observers or timers. Old saved profiles without either field retain their
+original meter behavior. Existing Focus-only profiles keep their original
+overview; explicitly reconfigure to adopt the new adapter data.
 No detection, audio or target values change merely from configuration/reload.
 
 The earlier bounded Kick prototype established the physical rendering and was
-accepted at 0.490. Production integration has source/native coverage; a scoped
-hardware check of the installed runtime remains separate from that prototype.
+accepted at 0.490. The installed production Focus display has since passed its
+scoped hardware check. Overview, first-Focus transition and normal PLUGIN
+return then passed together without parameter writes.
 
 ## Lifecycle and diagnostics
 

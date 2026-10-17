@@ -30,8 +30,9 @@ source tests and synthetic native messages do not establish physical acceptance.
   Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm,
   custom slots and an unassigned-knob input check remain pending. A bounded
   upper-Threshold/lower-Level prototype was accepted; its explicit production
-  integration now has source/native coverage, awaiting an installed-runtime
-  hardware check. See [the batch](docs/plans/mix-analysis-acceptance.md).
+  Focus integration has passed an installed-runtime hardware check. The user's
+  requested overview extension and first-Focus/PLUGIN transition have also passed
+  with zero writes. See [the batch](docs/plans/mix-analysis-acceptance.md).
 
 ## Historical milestones
 
@@ -2358,3 +2359,46 @@ for that scope. [The batch](docs/plans/mix-analysis-acceptance.md#installed-refe
 now specifies a production Kick comparison/input/restore check without an output
 probe override. Snare/Rhythm, custom slots and unassigned-knob hardware input
 remain separately pending. Publication follows; TD stays open/disconnected.
+
+
+## Overview and Focus threshold comparison — 2026-10-17
+
+Baseline source `02aa786`, working project `.14.toe`. The user confirmed production
+Focus rendering, then requested the same upper-Threshold/lower-Level comparison
+before entering Focus. Their accidental turn changed only Kickthresh through
+three changed writes, reaching 0.27467496795458707. It was restored to the fresh
+baseline 0.26174693279619116 before disconnecting that round.
+
+Optional `meter.overview_reference: 'threshold'` now enables the same comparison
+in each overview item's own CC pair. `focus_reference` remains independent, so
+saved Focus-only and field-free profiles retain their existing behavior. Known
+Kick/Snare/Rhythm adapters declare both fields; Low/Mid/High processed-output
+meters remain unchanged. Custom slots keep one default-off Threshold comparison
+toggle for both views and use the existing Apply. Upgrade refreshes its label
+and help while preserving staged values. Both views reuse the same target
+validation, real-unit readback, meter scale and bounded output path.
+
+585 discovery tests pass. The extended reference regressions cover independent
+overview item/scales, software updates and Focus switching, legacy Focus-only
+reload, both optional fields' validation and custom opt-in for both views.
+Native TD verifies the actual Apply callback, comparison label/help upgrade,
+known/custom overview CC pairs, software reference changes, Focus roundtrip and
+configured reload with zero writes and no MIDI process. Scoped live installation
+matches all 22 runtime/helper source hashes and preserves the original Low/Mid
+profile/draft, registry, Snapshots, values and nine demo children.
+
+The bounded production hardware follow-up uses no send/receive override. The
+user confirms Kick overview upper Threshold near 26% and dynamic lower Level,
+then the same pairing after FUNC and normal demo_A PLUGIN return. Runtime reports
+zero parameter writes. Disconnect closes/reaps the child with return 0, clears
+pending output and restores the original profile. Full normalized snapshots
+match after restoring the same previously documented Button 1 local registry
+reconciliation through the existing Layout manager; no target values changed.
+All four original local control IDs and old controller DATs remain intact.
+
+Temporary scripts, recovery and results are in system temp
+`roto-overview-reference.I2BPYvvVcF`; no probe is imported into production. Reuse
+this acceptance for Kick comparison only. Snare/Rhythm, custom-slot and
+unassigned-knob physical input remain unverified. Audio processing #26 and Apply
+simplification #28 remain deferred. Save/export receipts identify subsequent
+artifact publication; canonical and earlier saved projects are preserved.

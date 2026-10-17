@@ -680,13 +680,14 @@ class MixRuntime:
                     meter = self.profile['items'][item_index]['meter']
                     low, high = meter['range']
                     samples = self.meters[item_index].sample(meter['measure'])
-                    if self.view[0] == 'focus' and meter.get('focus_reference'):
-                        target = self.targets.get((item_index, meter['focus_reference']))
+                    reference = meter.get('focus_reference' if self.view[0] == 'focus' else 'overview_reference')
+                    if reference:
+                        target = self.targets.get((item_index, reference))
                         target.check()  # Keep the existing target identity/range/mode fence.
                         reference_value = parameter_value(target.parameter)
                         if not math.isfinite(reference_value):
                             raise ValueError('Invalid MIX reference value')
-                        # Firmware 3.3.0 Focus: CC65 lower Level, CC66 upper
+                        # Firmware 3.3.0: first CC lower Level, second CC upper
                         # Threshold. API Left/Right names are channel addresses.
                         samples = (samples[0], reference_value)
                     values = tuple(round(127 * min(1, max(0, (v - low) / (high - low)))) for v in samples)

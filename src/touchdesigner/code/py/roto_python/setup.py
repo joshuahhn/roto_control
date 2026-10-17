@@ -22,7 +22,7 @@ MIX_ANALYSIS_SLOT_FIELDS = (
     ('minimum', 'Float', 'Meter minimum', 0),
     ('maximum', 'Float', 'Meter maximum', 1),
     ('stage', 'Str', 'Meter signal stage', ''),
-    ('compare', 'Toggle', 'Focus threshold comparison', False),
+    ('compare', 'Toggle', 'Threshold comparison', False),
     ('trigger', 'OP', 'Actual trigger CHOP', ''),
     ('pulse', 'Str', 'Trigger channel name', ''),
 )
@@ -46,13 +46,14 @@ def install_mix_analysis_slots(controller):
                     parameter.menuNames = ['scalar', 'rms_dbfs']
                     parameter.menuLabels = ['Scalar level', 'Audio RMS dBFS']
                 parameter.default = parameter.val = default
+            parameter.label = label
             parameter.order = order
             parameter.enableExpr = "me.par.Mixstyle == 'analysis'"
             parameter.startSection = suffix in ('threshold', 'meter', 'trigger')
             parameter.help = 'Optional analysis slot draft. Assign real parameters/CHOPs; use the existing Apply MIX draft. Blank Item name leaves this slot unassigned.'
             if suffix == 'compare':
                 parameter.enableExpr += " and me.par." + prefix + "threshold != '' and me.par." + prefix + "measure == 'scalar'"
-                parameter.help = 'First FUNC Focus: upper Threshold, lower mono level on the same meter scale. Use only when level and threshold have the same units and the signal stage is verified. Draft only until Apply.'
+                parameter.help = 'Overview and first FUNC Focus: upper Threshold, lower mono level on the same meter scale. Use only when level and threshold have the same units and the signal stage is verified. Draft only until Apply.'
 
 
 def analysis_draft(controller, source, bands):
@@ -94,6 +95,7 @@ def analysis_draft(controller, source, bands):
             item['meter'] = dict(source=dict(kind='chop',op=posixpath.relpath(values['meter'].path,scope.path),channels=values['channels'].replace(',',' ').split()),
                                  measure=values['measure'],range=[values['minimum'],values['maximum']],stage=values['stage'].strip())
             if values['compare']:
+                item['meter']['overview_reference'] = 'threshold'
                 item['meter']['focus_reference'] = 'threshold'
         elif values['channels'].strip() or values['stage'].strip() or values['compare']:
             raise ValueError('Custom meter details need a Meter CHOP')

@@ -12,10 +12,11 @@ analysis overview Active buttons, motor feedback and native meters. Two optional
 custom analysis slots assign another analyzer's parameter names and CHOP feedback
 through the same Apply. Detectors use independent pre-threshold meters and actual
 read-only trigger feedback; Kick has scoped hardware acceptance while Snare/Rhythm
-and custom slots remain pending. Explicit first-Focus reference meters supply
+and custom slots remain pending. Explicit overview/first-Focus references supply
 upper Threshold/lower Level for known detectors; custom assignments can opt in.
-Old profiles and overview retain their original meters. Prototype acceptance
-and installed production hardware acceptance are tracked separately. The
+Old profiles keep their original behavior for each view without its optional
+reference field. Production Kick overview, first-Focus transition and normal
+PLUGIN return passed without parameter writes. The
 overview keeps the selected analysis band name/value visible after release,
 without resending unchanged motor positions when selecting another band. One MIX
 source/style profile is active at a time. Configure existing sources through the

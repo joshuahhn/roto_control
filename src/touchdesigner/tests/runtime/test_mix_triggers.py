@@ -135,6 +135,7 @@ class MixTriggerTests(unittest.TestCase):
         profile['style']='layers';profile['items'][0]['input']='analysis'
         profile['items'][0]['controls']={};profile['items'][0]['primary']=None
         profile['items'][0]['meter'].pop('focus_reference',None)
+        profile['items'][0]['meter'].pop('overview_reference',None)
         with self.assertRaisesRegex(ValueError,'analysis items'):validate(profile)
         profile=copy.deepcopy(before['descriptor'])
         profile['items'][0]['trigger']['enabled']['parameter']='Kickthresh'
