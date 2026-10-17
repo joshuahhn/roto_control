@@ -1,0 +1,162 @@
+"""Saved MIX descriptions and the existing audioAnalysis Low/Mid adapter.
+
+Only data lives here. Loading or describing a source never writes a TD parameter.
+"""
+import math
+from pathlib import PurePosixPath
+
+
+CONTROL_KEYS = {
+    'layers': ('opacity', 'brightness', 'black_level', 'gamma', 'operation', 'swap'),
+    'analysis': ('threshold', 'gain', 'add', 'smooth', 'active'),
+    'audio': ('gain', 'mute'),
+}
+
+
+def reference(value):
+    if (not isinstance(value, str) or not value or '\\' in value
+            or value.startswith('/') or '..' in PurePosixPath(value).parts):
+        raise ValueError('MIX references must stay within the explicit scope')
+    return value
+
+
+def limits(value):
+    if (not isinstance(value, (list, tuple)) or len(value) != 2
+            or any(type(x) not in (int, float) or not math.isfinite(x) for x in value)
+            or value[0] >= value[1] or not math.isfinite(value[1] - value[0])):
+        raise ValueError('MIX range needs two finite increasing numbers')
+    return tuple(value)
+
+
+def _name(value):
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError('MIX id/label/parameter must be nonempty text')
+
+
+def _fields(value, required, optional=()):
+    if not isinstance(value, dict) or set(required) - set(value) or set(value) - set(required) - set(optional):
+        raise ValueError('Unknown or missing MIX descriptor fields')
+
+
+def _target(value):
+    _fields(value, ('op', 'parameter'))
+    reference(value['op'])
+    _name(value['parameter'])
+
+
+def _signal(value):
+    _fields(value, ('kind', 'op'), ('parameter', 'channels'))
+    reference(value['op'])
+    if value['kind'] == 'parameter':
+        _name(value['parameter'])
+    elif value['kind'] == 'chop':
+        channels = value['channels']
+        if not isinstance(channels, list) or not 1 <= len(channels) <= 2:
+            raise ValueError('MIX signal needs one or two named channels')
+        for name in channels:
+            _name(name)
+    else:
+        raise ValueError('Unsupported MIX signal kind')
+
+
+def validate(profile):
+    """Validate versioned JSON data; return an isolated persistence snapshot."""
+    try:
+        _fields(profile, ('version', 'style', 'id', 'source', 'items'))
+        if type(profile['version']) is not int or profile['version'] != 1:
+            raise ValueError('Unsupported MIX descriptor version')
+        style = profile['style']
+        if style not in CONTROL_KEYS:
+            raise ValueError('MIX style must be layers, analysis or audio')
+        _name(profile['id'])
+        reference(profile['source'])
+        items = profile['items']
+        if not isinstance(items, list) or len(items) > 8:
+            raise ValueError('This MIX page has at most eight items')
+        ids = set()
+        for item in items:
+            _fields(item, ('id', 'label', 'primary', 'controls'), ('meter', 'trigger'))
+            _name(item['id']); _name(item['label'])
+            if item['id'] in ids:
+                raise ValueError('Duplicate MIX item id')
+            ids.add(item['id'])
+            controls = item['controls']
+            if not isinstance(controls, dict) or set(controls) - set(CONTROL_KEYS[style]):
+                raise ValueError('Unknown control for this MIX style')
+            if item['primary'] is not None and item['primary'] not in controls:
+                raise ValueError('MIX primary must reference an available control')
+            for control in controls.values():
+                _fields(control, ('label', 'kind', 'target'), ('range',))
+                _name(control['label'])
+                if control['kind'] not in ('float', 'menu', 'toggle'):
+                    raise ValueError('Unsupported MIX control kind')
+                _target(control['target'])
+                if 'range' in control:
+                    limits(control['range'])
+            meter = item.get('meter')
+            if meter:
+                _fields(meter, ('source', 'measure', 'range', 'stage'))
+                _signal(meter['source']); limits(meter['range']); _name(meter['stage'])
+                if meter['measure'] not in ('scalar', 'rms_dbfs'):
+                    raise ValueError('Unsupported MIX measurement')
+                if meter['measure'] == 'rms_dbfs' and meter['source']['kind'] != 'chop':
+                    raise ValueError('RMS needs CHOP samples')
+            trigger = item.get('trigger')
+            if trigger:
+                _fields(trigger, ('source', 'hold_ms'), ('enabled',))
+                _signal(trigger['source'])
+                if trigger.get('enabled'):
+                    _target(trigger['enabled'])
+                if type(trigger['hold_ms']) is not int or not 0 <= trigger['hold_ms'] <= 1000:
+                    raise ValueError('MIX trigger hold must be 0..1000 ms')
+        # Reject callables, OP/Par objects, NaNs and other runtime state.
+        import json
+        return json.loads(json.dumps(profile, allow_nan=False))
+    except (KeyError, TypeError, OverflowError) as exc:
+        raise ValueError('Incomplete MIX descriptor') from exc
+
+
+def analysis_profile(source, bands=('Low', 'Mid'), *, id='analysis.main'):
+    """Describe known palette parameters, without enabling detection or audio."""
+    reference(source)
+    if not bands or len(set(bands)) != len(bands) or any(b not in ('Low', 'Mid') for b in bands):
+        raise ValueError('This analysis slice supports Low and Mid')
+    items = []
+    for band in bands:
+        controls = {}
+        for key, suffix, label, kind in (
+                ('threshold', 'thresh', 'Thresh', 'float'),
+                ('gain', 'gain', 'Gain', 'float'), ('add', 'add', 'Add', 'float'),
+                ('smooth', 'smooth', 'Smooth', 'float'), ('active', 'active', 'Active', 'toggle')):
+            controls[key] = dict(label=label, kind=kind,
+                                 target=dict(op=source, parameter=band + suffix))
+        items.append(dict(id=band.lower(), label=band, primary='threshold', controls=controls,
+                          meter=dict(source=dict(kind='chop', op=source + '/out1', channels=[band.lower()]),
+                                     measure='scalar', range=[0, 1], stage='analysis output')))
+    return validate(dict(version=1, style='analysis', id=id, source=source, items=items))
+
+
+def projection(profile, view, selected):
+    """Eight (item index, control key) addresses. Unsupported views stay empty.
+
+    Focus CI is an offset, not a page number. Only physically accepted CI=0 is
+    enabled here; a later page must not alias Send A or a previous control.
+    """
+    result = [None] * 8
+    if view is None:
+        return result
+    items = profile['items']
+    kind, data = view
+    if kind == 'all':
+        family, knob, button, send = data
+        if family != 0:
+            return result
+        for index, item in enumerate(items):
+            key = item['primary'] if knob == 0 else 'gain' if knob == 1 else ('add' if send == 0 else 'smooth' if send == 1 else None)
+            if key in item['controls']:
+                result[index] = index, key
+    elif kind == 'focus' and data == 0 and 0 <= selected < len(items):
+        for lane, key in enumerate(('threshold', 'gain', 'add', 'smooth')):
+            if key in items[selected]['controls']:
+                result[lane] = selected, key
+    return result

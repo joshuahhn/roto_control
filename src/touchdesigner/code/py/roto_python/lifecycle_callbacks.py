@@ -8,6 +8,10 @@ def onExit():
 
 def onProjectPreSave():
     # Save must refresh live handles even when the follower is paused.
-    follower = getattr(parent.RotoPython.ext.RotoPythonExt, '_follow', None)
+    extension = parent.RotoPython.ext.RotoPythonExt
+    follower = getattr(extension, '_follow', None)
     if follower is not None:
         follower.refresh_links()
+    mix = getattr(extension, '_mix', None)
+    if mix is not None:
+        mix.refresh_scope()

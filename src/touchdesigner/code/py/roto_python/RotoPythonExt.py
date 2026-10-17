@@ -11,6 +11,9 @@ import time
 from binding import parameter_value, same_parameter
 from protocol import text13
 from snapshots import Snapshots
+from midi_queue import discard, business_output
+from mix_runtime import MixRuntime
+from mix_descriptor import analysis_profile
 
 
 def resolve_python(value, folder):
@@ -57,6 +60,7 @@ class RotoPythonExt:
         self._receive_epoch = None
         self._page_caption = None
         self._inspector_refresh_run = None
+        self._mix = None
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
@@ -65,6 +69,55 @@ class RotoPythonExt:
         if helper is not None:
             self._follow = helper.module.CompFollower(self)
         self._publish()
+
+    def _mix_manager(self):
+        if getattr(self, '_mix', None) is None:
+            self._mix = MixRuntime(self)
+        return self._mix
+
+    def SetMixProfile(self, scope, descriptor):
+        """Save independent MIX targets; never connect or restore target values."""
+        self._mix_manager().configure(scope, descriptor)
+        return self.GetMixProfile()
+
+    def ConfigureMixAnalysis(self, scope, source='audioAnalysis', bands=('Low', 'Mid')):
+        """Describe an existing Low/Mid source. Audio/detection settings stay as-is."""
+        return self.SetMixProfile(scope, analysis_profile(source, bands))
+
+    def GetMixProfile(self):
+        self._mix_manager()
+        return copy.deepcopy(self.ownerComp.fetch('mix_profile', None, search=False))
+
+    def GetMixState(self):
+        return self._mix_manager().state()
+
+    def ClearMixProfile(self):
+        mix = self._mix_manager()
+        if mix.touched:
+            raise ValueError('Release MIX knobs before clearing configuration')
+        self.ownerComp.store('mix_profile', None)
+        mix.profile = None; mix.targets.clear(); mix.meters.clear(); mix.errors.clear()
+        mix.invalidate()
+
+    def _mix_mode_boundary(self):
+        """Cancel queued business work while retaining session and frame tails."""
+        self._pending = discard(self._pending, business_output)
+        self._page_caption = None
+        follower = getattr(self, '_follow', None)
+        if follower is not None:
+            follower.routing_epoch += 1
+            follower.invalidate()
+            follower.gated = False
+            follower.clear_controls()
+        manager = getattr(self, '_layouts', None)
+        if manager is not None:
+            manager.touched.clear(); manager.locked = False
+
+    def _ingress_token(self):
+        follower = getattr(self, '_follow', None)
+        base = follower.token if follower is not None else (0, 0)
+        mix = getattr(self, '_mix', None)
+        return (*base, mix.epoch) if mix is not None else base
 
     def _action_registry(self):
         if getattr(self, '_actions', None) is None:
@@ -214,16 +267,9 @@ class RotoPythonExt:
         return self._follow.context() if self._follow else dict(enabled=False, status='unavailable')
 
     def _discard_context_output(self):
-        kept = []
-        for line in self._pending.splitlines(keepends=True):
-            try:
-                message = json.loads(line)['midi']
-            except (ValueError, KeyError):
-                kept.append(line)  # preserve a partially transmitted frame
-                continue
-            if not self._follow.context_output(message):
-                kept.append(line)
-        self._pending = b''.join(kept)
+        mix = getattr(self, '_mix', None)
+        if mix is None or not mix.active:
+            self._pending = discard(self._pending, self._follow.context_output)
 
     def _receive_midi(self, message, token=None):
         follower = getattr(self, '_follow', None)
@@ -231,9 +277,17 @@ class RotoPythonExt:
         learner = getattr(self, '_free_learner', None)
         if follower is not None and token is not None and token[0] != follower.connection_generation:
             return
-        stale = follower is not None and token is not None and token != follower.token
+        mix = getattr(self, '_mix', None)
+        was_mix = bool(mix and mix.active)
+        if mix is not None and mix.receive(message, token):
+            return
+        plugin_start = tuple(message[:7]) == (240, 0, 34, 3, 2, 11, 1)
+        returning = bool(was_mix and mix.returning and plugin_start)
+        stale = follower is not None and token is not None and token[:2] != follower.token
         unavailable = manager is not None and (not manager.owner_ready() or manager.quarantined and not manager.legacy)
-        fenced = unavailable or (follower is not None and (follower.gated or stale)) or self._dispatching or bool(manager and manager.mutating)
+        fenced = (unavailable or self._dispatching or bool(manager and manager.mutating)
+                  or follower is not None and (follower.gated or stale and not returning)
+                  or bool(mix and mix.returning and not returning))
         if not fenced and self._collection is not None:
             self._validate_control_ownership()
         consumed = manager.receive(message, control_only=fenced) if manager is not None else False
@@ -245,6 +299,11 @@ class RotoPythonExt:
             manager.acknowledge()
         if learner is not None:
             learner.sync()
+        if mix is not None and mix.returning and plugin_start and self._host.plugin:
+            if manager is not None:
+                manager.announce_tracks()
+            else:
+                self._host._tracks()
 
 
     @property
@@ -1130,9 +1189,14 @@ class RotoPythonExt:
         except Exception as exc:
             self._fault(exc)
 
-    def _send(self, message):
+    def _send(self, message, *, mix=False):
+        runtime = getattr(self, '_mix', None)
+        if runtime is not None and runtime.active and not mix and business_output(message):
+            return False
+        if mix and (runtime is None or not runtime.active):
+            return False
         follower = getattr(self, '_follow', None)
-        if follower is not None and follower.gated and follower.context_output(message):
+        if not mix and follower is not None and follower.gated and follower.context_output(message):
             return False
         if (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2)
                 and tuple(message[5:7]) in ((10, 0x16), (11, 8), (12, 4))):
@@ -1324,25 +1388,22 @@ class RotoPythonExt:
 
     def _discard_control_output(self, keys):
         """Keep session/unrelated output while dropping unsent suspended feedback."""
+        mix = getattr(self, '_mix', None)
+        if mix is not None and mix.active:
+            return
         cc = {number for kind, slot in keys for number in
               ((11+slot, 43+slot) if kind == 'knob' else (19+slot,))}
         addresses = {(int(kind == 'button'), slot-1) for kind, slot in keys}
         indices = {self._host.controls[key].index for key in keys}
-        kept = []
-        for line in getattr(self, '_pending', b'').splitlines(keepends=True):
-            try:
-                message = json.loads(line)['midi']
-            except (ValueError, KeyError, TypeError):
-                kept.append(line); continue  # a partially written line cannot be withdrawn
+        def obsolete(message):
             drop = len(message) == 3 and message[0] == 191 and message[1] in cc
             if len(message) >= 10 and tuple(message[:5]) == (240,0,34,3,2):
                 if message[5:7] == [10,24]:
                     drop |= tuple(message[7:9]) in addresses
                 elif message[5:7] == [11,10]:
                     drop |= (message[7]<<7 | message[8]) in indices
-            if not drop:
-                kept.append(line)
-        self._pending = b''.join(kept)
+            return drop
+        self._pending = discard(getattr(self, '_pending', b''), obsolete)
 
     def _validate_control_ownership(self, key=None):
         """Suspend overlapping runtime claims before input, writes or feedback."""
@@ -1500,7 +1561,9 @@ class RotoPythonExt:
         if self._restore_pending:
             self.Applybinding()
         if not self._host.enabled:
-            raise ValueError("Apply a valid binding before connecting")
+            mix = self._mix_manager()
+            if not (mix.source_valid() and mix.profile['items']):
+                raise ValueError("Apply a valid binding before connecting")
         self.Disconnect()
         folder = Path(project.folder)
         python = resolve_python(self.ownerComp.par.Python.eval(), folder)
@@ -1530,6 +1593,9 @@ class RotoPythonExt:
         if follower is not None:
             follower.session_boundary()
         self._receive_epoch = None
+        mix = getattr(self, '_mix', None)
+        if mix is not None:
+            mix.stop()
         manager=getattr(self,"_layouts",None)
         if manager is not None and not manager.mutating:
             try: manager.capture(force=True)
@@ -1839,6 +1905,7 @@ class RotoPythonExt:
 
 
     def _tick(self):
+        mix = self._mix_manager()
         if self._collection is not None:
             self._check_controls()
         if self._binding is not None and self._binding.valid:
@@ -1857,15 +1924,15 @@ class RotoPythonExt:
             learner.sync()
         process = self._process
         follower = getattr(self, '_follow', None)
-        if follower is not None:
+        if follower is not None and not mix.active:
             # Observe the TD selection boundary before dispatching this batch.
             follower.observe()
         if process is None:
             if follower is not None:
                 follower.flush(); self._publish()
             return
-        if not self._receive and follower is not None:
-            self._receive_epoch = follower.token
+        if not self._receive:
+            self._receive_epoch = self._ingress_token()
         try:
             for _ in range(8):
                 try:
@@ -1893,11 +1960,10 @@ class RotoPythonExt:
                 elif "midi" in event:
                     self._trace_control_midi(event["midi"])
                     self._receive_midi(event['midi'], self._receive_epoch)
-                if follower is not None:
-                    # Buffered bytes retain their ingress epoch, including a
-                    # partial final line completed after context activation.
-                    if not self._receive:
-                        self._receive_epoch = follower.token
+                # Buffered bytes retain their ingress epoch, including a
+                # partial final line completed after context activation.
+                if not self._receive:
+                    self._receive_epoch = self._ingress_token()
             if process.poll() is not None:
                 raise RuntimeError(f"MIDI process exited ({process.returncode})")
             if not self._transport_ready and time.monotonic() - self._started_at > 8:
@@ -1907,12 +1973,13 @@ class RotoPythonExt:
             self._host.last_event = str(exc)
             self._publish()
             raise
-        if follower is not None:
+        if follower is not None and not mix.active:
             try:
                 follower.flush(backlog=b'\n' in self._receive)
             except (OSError, TimeoutError):
                 self.Disconnect(); raise
         try:
+            mix.tick(backlog=bool(self._receive))
             self._flush_page_caption(time.monotonic())
             self._host.flush_display(time.monotonic())
             if self._pending:

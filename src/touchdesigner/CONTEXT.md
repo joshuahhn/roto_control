@@ -20,6 +20,14 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 ## Architecture
 
+The independent [MIX analysis source slice](docs/functions/mix.md) adds versioned
+descriptions and Low/Mid float routing with 10 Hz native meters. `mix_runtime`
+owns MIX mode/view/touch state; the extension keeps the existing external MIDI
+owner and mutually exclusive MIX/PLUGIN business dispatch. PLUGIN Layouts,
+Follow and LEARN remain separate. See the latest HANDOFF for native versus
+physical evidence. The generic export adopts this slice with empty MIX data;
+the checked-in demo project retains its separate older receipt.
+
 `protocol.Host` owns protocol and session state behind complete-message send/receive and normalized parameter callbacks and configurable target identity/label/display. binding.Binding converts target units and handles target writes/callback dispatch. `RotoPythonExt` adapts that interface to TD parameters and a managed external MIDI process. The child owns mido/rtmidi ports; nonblocking pipes keep MIDI I/O out of TD's native MIDI library. Internal base_state owns readonly diagnostics. The generic controller has no CHOP input/output connectors; public State and APIs expose runtime data. Saved Binding page configuration is reapplied after extension initialization; callback mode runs the user-editable registration DAT.
 
 Binding UI now exposes only Parameter mapping (`collection`: Free LEARN, Inspector, Layouts/Tracks) and Python registration (`callback`: saved reconstruction hook). Legacy single-target APIs remain callable; their outer configuration fields are removed after disconnected migration. `setup.configure_ui` is the shared builder/export upgrade. Native input-only receive retesting and its reproducible runner are documented in `diagnostics/native_midi/README.md`; production continues to use the external backend.

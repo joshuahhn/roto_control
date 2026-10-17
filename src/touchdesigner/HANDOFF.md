@@ -1425,3 +1425,268 @@ its saved bytes and current values were not changed while packaging publication.
 Checked-in demo project/receipt retain their separate earlier baseline.
 The 487 source tests and scoped preview/native/export/physical evidence above
 are reused, because publication does not alter runtime or UI behavior.
+
+
+## Actual Kick output acceptance and MIX configuration decision — 2026-10-17
+
+On user instruction, extended the bounded one-knob probe to temporarily enable
+`audioAnalysis.Kickactive`. Its bound child `kick.Active` selected
+`null_kickSignal` through `switch1` into `Kickdrum`; the public output was
+`out1['kick']`. Trigger peak length was 0.1 seconds. Hardware K1 was derived
+only from observed real output, with a 0.2-second display hold; it was not
+inferred from a level/threshold comparison. Eight temporary input/indicator
+tests passed. User confirmed K0/K1 alternation, T.262 and normal native meters.
+
+The high-threshold control set Kickthresh to 0.600 temporarily. User still saw
+K1. Native records explain this correctly: pre-threshold level reached
+0.61..0.70, with positive `math8` difference, gate=1 and actual kick output=1.
+There were 63 observed pulse rises in that high phase after settling, and
+367 in the full bounded probe. This was not a valid no-trigger condition.
+Meter scaling at 0..0.6 clipped these peaks; production meter range must be
+independent of the control range. Threshold subtraction matched level minus
+threshold within 5.37e-8. One comparison of upstream Kickdrum versus public
+out1 differed within the first 187 samples after enable, with no further
+mismatch through the final 6552 samples; display authority remained out1.
+This records an initialization/read-timing limit, not a palette defect claim.
+
+The bounded timeout restored both the agent's temporary threshold and Kickactive.
+User confirmed normal PLUGIN return, then Disconnect closed/reaped the child.
+Final audit preserves Kickthresh=0.26174693279619116, Kickactive=False,
+Audioout=False, all parent writable audioAnalysis parameters and child binding
+modes/expressions, controller parameters, demo_A/B values, Snapshots, four
+original local control IDs and 19 source/helper hashes. Registry definitions
+match baseline except revision 271 to 283. Temporary receiver/probe and pending
+output are gone. Scoped native checks for the controller, Kickdrum, trigger1
+and out1 returned no errors/warnings. No saved toe/tox or production source
+changed. Scripts, recovery and detailed results are in system temporary
+`roto-kick-trigger-_axhupqr`; this is a one-off acceptance probe.
+
+User explicitly selected the production design: an independent MIX page with
+eight slots, each configured with its own control target and meter source.
+It must not reuse/switch with the current Device's PLUGIN assignments.
+Implement MIX All Tracks/Level first; preserve PLUGIN routing/LEARN, existing
+transport, session/epoch fences and value/motor ownership. AudioAnalysis and
+later Layer Mix opacity are the concrete uses. Meter range is separate from
+control range, and native yellow/red thresholds are global across MIX meters.
+The production adapter, saved configuration/UI, source/native/physical checks,
+generic tox/receipts and PR remain work to do. Root checkout stays dirty and
+its existing edits must be preserved; PR #25 was found already merged on GitHub
+at 2026-10-16T18:55:15Z, not merged by this work.
+
+
+## Low MIX Focus prototype and deferred audio issue — 2026-10-17
+
+User explicitly deferred audio refinement and authorized a future issue:
+[issue #26](https://github.com/joshuahhn/roto_control/issues/26), labelled
+enhancement/needs-triage, records explicit Gain/Mute destinations, meter stage and
+retained Gain on unmute. No audio processing stage was built. Analysis remains
+the first production style.
+
+Active project remained `ROTO-CONTROL.track-preview.2.toe` and the correct
+controller `/roto_clean_demo/roto_python`. A temporary receiver and the existing
+external MIDI owner provided one MIX item, Low, with two named Sends for Add and
+Smooth. Actual All Tracks readback was `0C 01 00 00 00 00`; FUNC reported
+`0C 02 00`. Target ranges came from native normalization: Threshold 0..0.6,
+Gain 0..7, Add -1..1, Smooth 0..1. The meter used public `out1['low']` at 10 Hz
+over 0..1, labelled as processed output rather than threshold input.
+
+The initial display-only phase made zero parameter writes. User observed
+`MIX-FOCUS / Low`, `Thresh 0.100`, `Gain 2.000`, `Add 0.000`, `Smooth 0.000`,
+an underscore/lower-line display and continuing first-screen meters. This
+establishes readable combined name/value text via SHOW CONTROL VALUE; it does
+not establish arbitrary replacement of every firmware heading.
+
+Only a new Knob 2 touch could then write Lowgain. CC13/45 pairing accepted both
+orders, rejected stale halves and cleared on release. User reached displayed
+Gain 2.841, native value 2.84093267411341. There were 66 changed writes during
+the gesture, with Threshold/Add/Smooth unchanged. Input was then removed again,
+Gain was explicitly restored to its original 2.000, and no additional input
+writes occurred during hands-off feedback.
+
+The 60-second reset observation expired before the user's text report. The
+original probe cleanup republished PLUGIN Track metadata while hardware remained
+MIX Focus, producing native VOLUME/PAN/SEND A/SEND B and EFFECT. This was a
+test-method cleanup defect. A temporary regression at the actual finish method
+failed, then passed after deferring metadata restoration until actual PLUGIN
+return. A second test covers ordering that restoration after the PLUGIN message.
+A fresh three-minute read-only phase passed physical four-text, Knob 2 at about
+29%, and continuing-meter checks. User then confirmed normal PLUGIN. No production
+framing defect or general firmware-label defect is claimed.
+
+Final cleanup closed/reaped the child with return code 0, removed the receiver
+override/probe and left zero pending bytes. Disconnected restore reinstated local
+definitions, not a readback claim about hardware learned storage. Registry data
+match baseline except revision 283 to 290. Controller parameters, all parent
+writable analysis parameters, child Kick bindings/modes, demo_A/B values,
+Snapshots, four original IDs and all 19 runtime/helper hashes match baseline.
+Kickthresh remains 0.26174693279619116; Kickactive and Audioout remain off.
+
+Twelve temporary decoder/projection/cleanup tests passed; they are one-off probe
+tests, not a production runtime suite. Scoped native checks for the controller
+and analysis out1 returned zero errors/warnings. Recovery tox, scripts and separate
+display/input/final results remain only in system temporary `roto-low-details-xmewaxym`.
+No canonical toe/tox, embedded DAT source or runtime module changed; no commit or
+PR was created. The project stays open and disconnected. Source integration of
+the shared descriptor and Low/Mid analysis routing is the next authorized step,
+preserving the dirty checkout in an isolated worktree.
+
+## Independent MIX analysis source slice — 2026-10-17
+
+Implemented in isolated branch `feat/td-mix-analysis`, based on fork main
+`faf3bad54ca1fc800ea777ec50326fbbb03fc271`. The original dirty root checkout was
+not reset, cleaned or used as runtime source. Preserved only the three approved
+new design documents and the two relevant prototype-evidence sections above.
+Official integration guidance already matches this checkout.
+
+`mix_descriptor` validates versioned data for exactly layers/analysis/audio and
+describes existing Low/Mid parameters. `mix_runtime` enables the analysis float
+slice independently of PLUGIN, with overview and first Focus-page projection,
+fresh-touch/pair/session fences, explicit target identity/range/mode checks,
+deferred motor feedback and independent 10 Hz coalesced meters. The small
+`midi_queue` filter preserves in-flight frame tails. Extension dispatch isolates
+shared Track metadata/selection as well as CC/ACK business traffic, and restores
+PLUGIN metadata only after its actual mode message. No fake PLUGIN mapping, new
+MIDI owner or wire protocol was added. Configuration, APIs and current limits
+are documented in [MIX analysis](docs/functions/mix.md).
+
+The final runtime source passes `python3 -m unittest discover -q`: 509 tests,
+including 22 new MIX tests. Existing wrong-target, stale-ACK, persistence,
+ownership, Follow and exactly-once coverage remains. Native TD 2025.33230 fixture
+passes eight actual Low/Mid float writes with unrelated targets unchanged,
+scalar CHOP metering, saved configuration reload without value recall, repeated
+disconnected upgrade, and zero scoped errors. Temporary generic export/reload
+from the complete live controller passes empty MIX configuration, no external
+DAT files, embedded helpers, disconnected state and zero errors.
+
+The attempted full fresh builder reaches an existing ASCII-locale failure in
+Inspector source reads, first `inspector_data.py`, then `parity.py` through nested
+builders. A partial UTF-8 repair was withdrawn to avoid expanding this slice.
+The scoped `scripts/upgrade_mix.py` is natively accepted and does not rebuild
+Inspector. Do not describe the full fresh builder as passing in this environment.
+Builder/cleanup source now classifies the three helpers and the new function doc.
+The native upgrader also verifies one owned MIX annotation after repeat installs;
+Annotate's initializer overrides its requested name, so naming occurs afterward.
+
+Installed only the five affected/new DAT sources in
+`/roto_clean_demo/roto_python`, after verifying all 19 baseline hashes against the
+existing receipt. Its 22 runtime/helper hashes now match this worktree plus the
+unchanged saved baseline. Configured the existing `audioAnalysis` scope for Low
+and Mid. All writable analysis values, four original mappings, registry
+definitions and Snapshots remain equal, allowing the monotonic registry revision
+and serialization-equivalent tuple/list forms. Read-only level/trigger samples
+are live measurements, not configuration equality checks. Midactive remains
+False, Lowactive True, Kickactive/Audioout False, and the user's Kickthresh remains
+0.26174693279619116. The old controller and unsaved audio nodes remain untouched.
+
+One-off recovery, scripts and separate native/install/generic results are in
+system temporary `roto-mix-source-34paqmy5`. The temporary fixture was removed.
+TD remains open/disconnected, no receiver override, zero pending output and zero
+scoped controller errors. No hardware ports were opened by this source slice.
+No canonical toe/tox or receipt changed; no commit, PR or merge exists for MIX.
+
+Next is affected physical acceptance of Low/Mid selection, FUNC details, float
+input/motor and normal PLUGIN restoration. Active/menu/button/trigger routes,
+second-page Focus, Layer Mix, the slot editor and audio #26 remain later slices.
+The earlier bounded Low/Gain proof is not acceptance of these new multi-item
+routes. Canonical save/export and PR publication follow the scoped hardware check.
+
+## Retained FUNC across MIX and PLUGIN — 2026-10-17
+
+User observed that FUNC remains on across MIX → PLUGIN → MIX. A fresh bounded
+connection first reported `0C 01 00 00 00 00`; the user saw MIX-TRACKS, Low/Mid,
+KNOBS-VOL, screen-1 metering and FUNC off. Record this separately from a mode
+round trip; do not infer retained FUNC behavior from a new DAW session.
+
+Kept the same external MIDI child while renewing the bounded observation window.
+User pressed FUNC, PLUGIN, then MIX without pressing FUNC again. The trace records
+Focus `0C 02 00`, PLUGIN `0B 01 00`, then direct Focus `0C 02 00`, without an
+intervening All Tracks report. Runtime projected Low's first details page and
+made zero parameter writes. User confirmed MIX-FOCUS / Low, FUNC on, with native
+Volume/Pan/Send A/Send B and four color labels. This accepts retained Focus and
+main-screen context; it does not yet accept the four small control screens'
+combined text/value rendering after the mode round trip.
+
+Added a real-extension regression for direct Focus return without an overview
+message, preserving selected item, values and fresh-touch fencing. It passes on
+the existing implementation; no runtime change was needed for FUNC retention.
+Full runtime discovery now passes 510 tests; `git diff --check` also passes.
+One-off trace, snapshots and observation are in system temporary
+`roto-mix-func-retained-6he9wazp`, with the round-trip stage in its `roundtrip`
+subdirectory. The 180-second timeout disconnected/reaped the child and removed
+the diagnostic trace wrapper; it did not publish PLUGIN metadata over MIX.
+
+The existing hardware/local Button-1 reconciliation difference recurred during
+PLUGIN recall. Disconnected restoration reinstated the four original local
+control IDs and registry definitions, allowing revision advance. This preserves
+local definitions, not a claim about learned storage readback. Analysis/demo
+values, MIX profile and Snapshots match baseline. No pending bytes, trace or
+receiver override remain; scoped controller errors are zero. No canonical save,
+export promotion, commit or PR was made. Next read the small control screens,
+then continue affected multi-item routing acceptance.
+
+## MIX control-text expiry correction — 2026-10-17
+
+After the bounded FUNC test had stopped, user read the small screens as
+VOLUME/PAN/SEND A/SEND B. Re-read official SysEx API v1.6 section 2.23: SHOW CONTROL
+VALUE uses a timeout and returns to the control name without further messages.
+The accepted temporary Low probe renewed text every 250 ms. The source slice
+instead cached unchanged text indefinitely, which cannot sustain that display.
+The request to read the screens after disconnect was also an invalid method for
+accepting live combined text. FUNC persistence itself remains accepted.
+
+Added a real-extension output regression for unchanged Focus text renewal,
+existing 10 Hz throttling, no repeated motor messages, bounded/coalesced unsent
+captions, zero parameter writes and no MIX renewal after PLUGIN return. It failed
+with no renewed captions, then passed after renewing assigned text on the bounded
+feedback tick. Unassigned blank text still clears only when needed. Full runtime
+discovery passes 511 tests.
+
+Installed this correction through the scoped upgrader while disconnected, with
+a fresh recovery tox and unchanged registry definitions, writable analysis/demo
+values, MIX profile and Snapshots. Native scoped errors are zero. One-off
+recovery/install/active-feedback results belong under temporary
+`roto-mix-func-retained-6he9wazp/text-renewal`. Active hardware text acceptance is
+the next check; no physical success is claimed by this source correction alone.
+
+## MIX Low/Mid hardware acceptance — 2026-10-17
+
+Accepted the production source with the text-renewal correction, on firmware
+3.3.0/API 1.6 and TD 2025.33230. User confirmed all four Low captions remain
+readable for ten seconds with FUNC on. Touching overview Knob 2 and then FUNC
+selects Mid, displaying MIX-FOCUS / Mid and Thresh 0.100, Gain 4.000, Add 0.000,
+Smooth 0.100. Selection/viewing made zero parameter writes. Midactive remained
+False; its processed-output meter can correctly be zero.
+
+A fresh Knob 2 gesture changed only Midgain from 4.0 to 4.396630653726423,
+displayed 4.397, with 21 changed input writes. TD restored 4.000, and the user
+confirmed the motor return and all four captions. The return observation was
+repeated after the user missed its first movement; no additional input writes
+occurred during either hands-off motor move. Original writable analysis values
+were restored, including Midgain 4.0, Lowgain 2.0 and the user's Kickthresh
+0.26174693279619116. Detection/audio toggles were not enabled.
+
+User then confirmed normal demo_A PLUGIN parameter/value screens. The bounded
+diagnostic trace/send wrappers were removed and the single child was closed and
+reaped with return code 0. No receiver override or pending output remains.
+Disconnected restoration reinstated the four original local IDs after the
+existing Button-1 hardware/local recall discrepancy. Registry definitions,
+analysis/demo values, MIX profile and Snapshots match baseline, allowing registry
+revision advance and unordered needs_relearn serialization. This is local
+configuration preservation, not hardware learned-storage readback acceptance.
+Scoped controller errors are zero.
+
+Final relevant source discovery passes 511 tests, including 24 MIX tests. Native
+eight-float target/conversion, configured reload, repeated scoped upgrade and
+generic sanitization evidence above remains applicable. Physical acceptance is
+limited to overview metering, touch selection, first FUNC details, Mid Gain
+input/motor, retained FUNC and PLUGIN return. Pan/Send overview input, other
+physical detail inputs, buttons/menus/triggers and CI=8+ remain unverified or
+disabled as documented. Full fresh Inspector construction still has the
+separate ASCII-locale limitation; the scoped updater passes.
+
+One-off results remain in system temporary
+`roto-mix-func-retained-6he9wazp/text-renewal`, including mid-selection, mid-gain,
+mid-gain-final-return, final-plugin-return and final-restoration.json. TD remains
+open and disconnected with user audio nodes preserved. The generic save/export
+receipt will identify the exact committed source and embedded hashes; the
+checked-in demo project/receipt retain their prior independent baseline.

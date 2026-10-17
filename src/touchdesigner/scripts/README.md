@@ -7,6 +7,11 @@ source text is copied into DATs without bidirectional source-file writes. `build
 exports a disconnected generic component. `midi_process.py` owns external MIDI.
 `td_project_docs.py` embeds authoritative Markdown snapshots.
 
+`upgrade_mix.py` installs only the independent Low/Mid MIX source slice on an
+otherwise current disconnected controller. Make a recovery through live TD,
+then call `install(controller, source)`; it preserves PLUGIN assignments and
+does not rebuild Inspector or connect MIDI. See [MIX](../docs/functions/mix.md).
+
 Example inside live TD:
 
 ```python
