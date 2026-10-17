@@ -54,9 +54,10 @@ control and a detail control reference the same target. Do not persist target
 values, connected state, touches, decoded MIDI pairs or active hardware views.
 
 `float` is continuous. `menu` retains the complete TD menu identity, while an
-explicit choice list limits what the controller can select. Preset libraries and
-up to four custom existing blend modes implement the user's refined Operation
-request. Values outside the list are preserved and marked, without false motor
+explicit choice list limits what the controller can select. User-named Operation
+presets contain two to six custom blend choices; unused editor slots stay None.
+Legacy library API calls preserve their existing expanded lists. Values outside
+the list are preserved and marked, without false motor
 feedback. `toggle` represents the target's boolean state. Menu reordering or
 parameter replacement must invalidate stale routing before a write. This does not
 promise configurable MIX detents or native button behavior.
@@ -65,6 +66,10 @@ Read-only Level/trigger signals live in feedback fields, not `controls`. Missing
 controls are unavailable, with no fallback to another parameter. An item without
 a gain stage can expose a meter while clearly reporting that Gain/Mute are not
 configured. It must not advertise working audio control.
+
+The [Analysis integration API](../functions/mix_analysis.md) documents how a
+different analyzer maps its own parameter/channel names into this contract,
+including a tested example. Only the convenience adapter uses Low/Mid names.
 
 ## Feedback fields
 

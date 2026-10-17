@@ -14,7 +14,8 @@ def reset_mapping_storage(clone):
               'assignment_device_id':None,'parameter_assignments':[],
               'page_targets':[],'control_catalog':[],'removed_controls':[],
               'pending_unmaps':[],'control_overrides':{},'needs_relearn':(),
-              'snapshot_presets':dict(version=2,records=[],deleted=[]), 'mix_profile':None}
+              'snapshot_presets':dict(version=2,records=[],deleted=[]), 'mix_profile':None,
+              'mix_operation_presets':dict(version=1,records=[])}
     for key,value in defaults.items():clone.store(key,value)
 
 

@@ -27,11 +27,13 @@ The outer Control page has been removed. Use mapped target parameters or SetValu
 
 The [independent MIX controls](docs/functions/mix.md) add Low/Mid
 Threshold/Gain/Add/Smooth and wired Layer Mix Opacity/Brightness/Black Level/Gamma,
-curated Operation libraries and conditional Swap,
+user-named Operation presets with six optional blend slots and conditional Swap,
 with read-only native meters. One source/style profile is active at a time. The generic export includes
 the MIX draft/Apply custom parameter page and the matching Python APIs. Touch selects Low/Mid and FUNC opens details; the
 overview On/Off buttons toggle each band's Active. Focus buttons retain item
 selection. The saved demo project and Quick Start above retain their PLUGIN setup.
+Other analyzers can use the [Analysis integration API](docs/functions/mix_analysis.md)
+with their own parameter/channel names.
 
 No external wires are required. Hardware input writes mapped custom parameters or invokes callbacks. Target edits send feedback to hardware. The portable component has no CHOP connectors; use the target parameters or controller.State.
 

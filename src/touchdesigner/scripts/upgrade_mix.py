@@ -13,6 +13,10 @@ def install(controller, source_dir):
     source = Path(source_dir) / 'code/py/roto_python'
     names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'setup', 'RotoPythonExt', 'lifecycle_callbacks')
     texts = {name: (source / (name + '.py')).read_text(encoding='utf-8') for name in names}
+    preflight = {}
+    exec(texts['setup'], preflight)
+    if getattr(controller.par, 'Mixoperationlibrary', None) is not None:
+        preflight['legacy_mix_choices'](controller, controller.op('mix_runtime').module.OPERATION_LIBRARIES)
     if getattr(extension, '_layouts', None) is not None:
         extension._layouts.capture(force=True)
     if getattr(extension, '_follow', None) is not None:

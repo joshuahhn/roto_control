@@ -5,6 +5,8 @@ from types import SimpleNamespace
 import unittest
 import test_mix
 import setup
+import mix_descriptor
+import mix_runtime
 from export_component import reset_mapping_storage, reset_registration
 
 
@@ -16,6 +18,9 @@ class Par:
 
     def eval(self):
         return self.owner.op(self.val) if self.kind == 'OP' and isinstance(self.val, str) else self.val
+
+    def destroy(self):
+        delattr(self.owner.par, self.name)
 
 
 class Page:
@@ -65,6 +70,8 @@ class MixUiTests(unittest.TestCase):
         registration = SimpleNamespace(text='user hook')
         c.op = lambda name: (None if name in ('', 'missing') else
                              SimpleNamespace(module=setup) if name == 'setup' else
+                             SimpleNamespace(module=mix_descriptor) if name == 'mix_descriptor' else
+                             SimpleNamespace(module=mix_runtime) if name == 'mix_runtime' else
                              callbacks if name == 'parameter_callbacks' else
                              registration if name == 'registration' else
                              source if name == posixpath.relpath(source.path, c.parent().path) else old_op(name))
@@ -116,15 +123,87 @@ class MixUiTests(unittest.TestCase):
 
     def test_layer_editor_loads_custom_names_and_retains_full_source_menu(self):
         e, mix, c, source = self.fixture(layers=True)
-        self.assertEqual(c.par.Mixcustom1.eval(), 'choice_45')
+        self.assertEqual(c.par.Mixcustom1.eval(), 'over')
+        self.assertEqual(c.par.Mixcustom5.eval(), 'choice_45')
         self.assertEqual(len(c.par.Mixcustom1.menuNames), 47)  # None plus all 46 blend modes.
         self.assertNotIn('opperlayer', c.par.Mixcustom1.menuNames)
-        c.par.Mixoperationlibrary.val = 'math'
+        setup.set_mix_operation_draft(c, ['add', 'choice_45'])
         e.onParPulse(c.par.Applymix)
         self.assertEqual(e.GetMixProfile()['descriptor']['items'][0]['controls']['operation']['choices'],
-                         ['add', 'subtract', 'multiply', 'divide', 'difference', 'average', 'choice_45'])
+                         ['add', 'choice_45'])
         self.assertEqual(source.par.lay0operation.eval(), 'add')
         self.assertEqual(mix.writes, 0)
+
+    def test_named_presets_with_two_or_six_choices_load_only_a_draft(self):
+        e, mix, c, source = self.fixture(layers=True)
+        before = e.GetMixProfile()
+        setup.set_mix_operation_draft(c, ['add', 'over'])
+        c.par.Mixpresetname.val = 'Two modes'
+        e.onParPulse(c.par.Newmixpreset)
+        two = c.par.Mixoperationpreset.eval()
+        self.assertEqual(e.GetMixOperationPresets()[0]['operations'], ['add', 'over'])
+        setup.set_mix_operation_draft(c, ['over', 'multiply', 'screen', 'overlay', 'hardlight', 'difference'])
+        c.par.Mixpresetname.val = 'Six modes'
+        e.onParPulse(c.par.Newmixpreset)
+        self.assertEqual(len(e.GetMixOperationPresets()), 2)
+        c.par.Mixoperationpreset.val = two
+        e.onParValueChange(c.par.Mixoperationpreset, None)
+        self.assertEqual(setup.mix_draft_operations(c), ['add', 'over'])
+        self.assertTrue(all(getattr(c.par, n).eval() == setup.MIX_NO_OPERATION for n in setup.MIX_CUSTOM_PARAMETERS[2:]))
+        self.assertEqual(c.par.Mixpresetname.eval(), 'Two modes')
+        self.assertEqual(e.GetMixProfile(), before)
+        self.assertEqual(mix.writes, 0)
+
+    def test_preset_save_rename_delete_do_not_change_applied_choices(self):
+        e, mix, c, source = self.fixture(layers=True)
+        before = e.GetMixProfile()
+        setup.set_mix_operation_draft(c, ['add', 'over'])
+        c.par.Mixpresetname.val = 'Original'; e.onParPulse(c.par.Newmixpreset)
+        identity = c.par.Mixoperationpreset.eval()
+        setup.set_mix_operation_draft(c, ['screen', 'multiply'])
+        c.par.Mixpresetname.val = 'Renamed'; e.onParPulse(c.par.Savemixpreset)
+        self.assertEqual(e.GetMixOperationPresets(), [dict(id=identity, name='Renamed', operations=['screen', 'multiply'])])
+        e.onParPulse(c.par.Deletemixpreset)
+        self.assertEqual(e.GetMixOperationPresets(), [])
+        self.assertEqual(c.par.Mixoperationpreset.eval(), setup.MIX_DRAFT_PRESET)
+        self.assertEqual(setup.mix_draft_operations(c), ['screen', 'multiply'])
+        self.assertEqual(e.GetMixProfile(), before)
+
+    def test_invalid_presets_preserve_saved_data_and_active_profile(self):
+        e, mix, c, source = self.fixture(layers=True)
+        identity = e.SaveMixOperationPreset('Existing', ['over', 'add'])
+        before = e.GetMixOperationPresets(); profile = e.GetMixProfile()
+        for name, choices, preset_id in [('existing', ['add','screen'],None), ('', ['over','add'],None),
+                ('One',['over'],None), ('Too many',['over']*7,None), ('Missing',['over','add'],'missing')]:
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                e.SaveMixOperationPreset(name, choices, preset_id)
+            self.assertEqual(e.GetMixOperationPresets(), before)
+            self.assertEqual(e.GetMixProfile(), profile)
+        detached = e.GetMixOperationPresets(); detached[0]['operations'].clear()
+        self.assertEqual(e.GetMixOperationPresets(), before)
+
+    def test_legacy_library_draft_migrates_without_changing_active_profile(self):
+        e, mix, c, source = self.fixture(layers=True)
+        before = e.GetMixProfile()
+        c.par.Mixoperationlibrary = Par(c, 'Mixoperationlibrary', 'Menu')
+        c.par.Mixoperationlibrary.val = 'common'
+        setup.set_mix_operation_draft(c, ['choice_45'])
+        setup.install_mix_ui(c)
+        self.assertIsNone(getattr(c.par, 'Mixoperationlibrary', None))
+        self.assertEqual(setup.mix_draft_operations(c), ['over','add','multiply','screen','choice_45'])
+        self.assertEqual(e.GetMixProfile(), before)
+
+    def test_oversized_legacy_draft_is_not_truncated_by_upgrade(self):
+        e, mix, c, source = self.fixture(layers=True)
+        before = e.GetMixProfile()
+        c.par.Mixoperationlibrary = Par(c, 'Mixoperationlibrary', 'Menu')
+        c.par.Mixoperationlibrary.val = 'math'
+        setup.set_mix_operation_draft(c, ['choice_45'])
+        with self.assertRaisesRegex(ValueError, 'more than six'):
+            setup.install_mix_ui(c)
+        self.assertEqual(c.par.Mixoperationlibrary.eval(), 'math')
+        self.assertEqual(c.par.Mixcustom1.eval(), 'choice_45')
+        self.assertEqual(e.GetMixProfile(), before)
 
     def test_unavailable_custom_choice_is_visible_and_cannot_silently_replace_profile(self):
         e, mix, c, source = self.fixture(layers=True)
@@ -174,6 +253,7 @@ class MixUiTests(unittest.TestCase):
     def test_generic_reset_removes_draft_paths_and_custom_choices_without_source_writes(self):
         e, mix, c, source = self.fixture(layers=True)
         before = {name: p.eval() for name, p in source.par.items()}
+        e.SaveMixOperationPreset('User blend set', ['over', 'add'])
         reset_mapping_storage(c); reset_registration(c)
         self.assertIsNone(c.par.Mixsource.eval())
         self.assertEqual(c.par.Mixstyle.eval(), 'analysis')
@@ -181,6 +261,7 @@ class MixUiTests(unittest.TestCase):
         self.assertEqual(c.par.Mixcustom1.eval(), setup.MIX_NO_OPERATION)
         self.assertEqual(c.par.Mixcustom1.menuNames, [setup.MIX_NO_OPERATION])
         self.assertIsNone(e.GetMixProfile())
+        self.assertEqual(e.GetMixOperationPresets(), [])
         self.assertEqual({name: p.eval() for name, p in source.par.items()}, before)
 
 

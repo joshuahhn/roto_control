@@ -33,6 +33,38 @@ def limits(value):
     return tuple(value)
 
 
+def operation_choices(value, maximum=24):
+    """Ordered existing-menu names. Empty omits Operation; one choice is invalid."""
+    if (not isinstance(value, (list, tuple)) or len(value) > maximum
+            or any(not isinstance(name, str) or not name for name in value)):
+        raise ValueError('Operation choices need at most ' + str(maximum) + ' nonempty names')
+    result = list(dict.fromkeys(value))
+    if len(result) == 1:
+        raise ValueError('Choose at least two different Operation modes, or leave all slots None')
+    return result
+
+
+def operation_presets(value):
+    """Validate saved named choice lists independently of an applied MIX profile."""
+    if value is None:
+        return dict(version=1, records=[])
+    _fields(value, ('version', 'records'))
+    if type(value['version']) is not int or value['version'] != 1 or not isinstance(value['records'], list):
+        raise ValueError('Unsupported Operation preset storage')
+    ids, names = set(), set()
+    records = []
+    for record in value['records']:
+        _fields(record, ('id', 'name', 'operations'))
+        _name(record['id']); _name(record['name'])
+        name = record['name'].strip()
+        choices = operation_choices(record['operations'], 6)
+        if (not choices or record['id'] in ids or name.casefold() in names):
+            raise ValueError('Operation presets need unique ids/names and at least two modes')
+        ids.add(record['id']); names.add(name.casefold())
+        records.append(dict(id=record['id'], name=name, operations=choices))
+    return dict(version=1, records=records)
+
+
 def _name(value):
     if not isinstance(value, str) or not value.strip():
         raise ValueError('MIX id/label/parameter must be nonempty text')

@@ -3,8 +3,76 @@ import copy
 import posixpath
 
 
-MIX_CUSTOM_PARAMETERS = tuple('Mixcustom' + str(i) for i in range(1, 5))
+MIX_CUSTOM_PARAMETERS = tuple('Mixcustom' + str(i) for i in range(1, 7))
 MIX_NO_OPERATION = '__none__'
+MIX_DRAFT_PRESET = '__draft__'
+
+
+def legacy_mix_choices(controller, libraries=None):
+    """Preflight the old uncommitted draft before replacing any source/UI."""
+    parameter = getattr(controller.par, 'Mixoperationlibrary', None)
+    if parameter is None:
+        return None
+    if libraries is None:
+        libraries = controller.op('mix_runtime').module.OPERATION_LIBRARIES
+    library = parameter.eval()
+    if library not in libraries:
+        raise ValueError('Unknown legacy Operation library')
+    choices = list(libraries[library]) + [getattr(controller.par, 'Mixcustom' + str(i)).eval()
+        for i in range(1, 5) if getattr(controller.par, 'Mixcustom' + str(i)).eval() != MIX_NO_OPERATION]
+    choices = list(dict.fromkeys(choices))
+    if len(choices) > 6:
+        raise ValueError('Legacy Operation draft has more than six choices; reduce it before upgrading. Applied MIX is unchanged.')
+    return choices
+
+
+def refresh_mix_presets_ui(controller):
+    parameter = controller.par.Mixoperationpreset
+    selected = parameter.eval()
+    records = controller.ext.RotoPythonExt.GetMixOperationPresets()
+    parameter.menuNames = [MIX_DRAFT_PRESET] + [r['id'] for r in records]
+    parameter.menuLabels = ['Custom draft'] + [r['name'] for r in records]
+    parameter.val = selected if selected in parameter.menuNames else MIX_DRAFT_PRESET
+
+
+def set_mix_operation_draft(controller, choices):
+    if len(choices) > 6:
+        raise ValueError('This preset editor has six slots; the applied API profile is unchanged')
+    refresh_mix_ui(controller)
+    for index, name in enumerate(MIX_CUSTOM_PARAMETERS):
+        parameter = getattr(controller.par, name)
+        value = choices[index] if index < len(choices) else MIX_NO_OPERATION
+        if value not in parameter.menuNames:
+            parameter.menuNames = parameter.menuNames + [value]
+            parameter.menuLabels = parameter.menuLabels + ['Unavailable: ' + value]
+        parameter.val = value
+
+
+def mix_draft_operations(controller):
+    return controller.op('mix_descriptor').module.operation_choices(
+        [getattr(controller.par, name).eval() for name in MIX_CUSTOM_PARAMETERS
+         if getattr(controller.par, name).eval() != MIX_NO_OPERATION], 6)
+
+
+def load_mix_preset_ui(controller):
+    identity = controller.par.Mixoperationpreset.eval()
+    if identity == MIX_DRAFT_PRESET:
+        return
+    record = next((r for r in controller.ext.RotoPythonExt.GetMixOperationPresets() if r['id'] == identity), None)
+    if record is not None:
+        set_mix_operation_draft(controller, record['operations'])
+        controller.par.Mixpresetname.val = record['name']
+
+
+def edit_mix_preset_ui(controller, action):
+    extension = controller.ext.RotoPythonExt
+    identity = controller.par.Mixoperationpreset.eval()
+    if action == 'Deletemixpreset':
+        extension.RemoveMixOperationPreset(identity)
+    else:
+        identity = extension.SaveMixOperationPreset(controller.par.Mixpresetname.eval(), mix_draft_operations(controller),
+            preset_id=identity if action == 'Savemixpreset' else None)
+        controller.par.Mixoperationpreset.val = identity
 
 
 def refresh_mix_ui(controller):
@@ -26,15 +94,21 @@ def refresh_mix_ui(controller):
 
 def install_mix_ui(controller):
     """Install an explicit-Apply draft editor without changing MIX assignments."""
+    legacy_choices = legacy_mix_choices(controller)
+    new_editor = getattr(controller.par, 'Mixoperationpreset', None) is None
     page = next((p for p in controller.customPages if p.name == 'MIX'), None)
     page = page if page is not None else controller.appendCustomPage('MIX')
     new_source = getattr(controller.par, 'Mixsource', None) is None
     definitions = [('Mixstyle', 'Menu', 'Draft style', 'analysis'),
                    ('Mixsource', 'OP', 'Draft source', ''),
-                   ('Mixoperationlibrary', 'Menu', 'Operation library', 'common')]
+                   ('Mixoperationpreset', 'Menu', 'Operation preset', MIX_DRAFT_PRESET)]
     definitions += [(name, 'Menu', 'Custom blend ' + str(i), MIX_NO_OPERATION)
                     for i, name in enumerate(MIX_CUSTOM_PARAMETERS, 1)]
-    definitions += [('Applymix', 'Pulse', 'Apply MIX draft', None),
+    definitions += [('Mixpresetname', 'Str', 'Preset name', ''),
+                    ('Newmixpreset', 'Pulse', 'Add Operation preset', None),
+                    ('Savemixpreset', 'Pulse', 'Save preset edits / name', None),
+                    ('Deletemixpreset', 'Pulse', 'Delete preset', None),
+                    ('Applymix', 'Pulse', 'Apply MIX draft', None),
                     ('Clearmix', 'Pulse', 'Clear MIX assignments', None),
                     ('Mixsummary', 'Str', 'Applied MIX', 'Unassigned')]
     for order, (name, kind, label, default) in enumerate(definitions):
@@ -45,9 +119,9 @@ def install_mix_ui(controller):
         if name == 'Mixstyle':
             parameter.menuNames = ['analysis', 'layers']
             parameter.menuLabels = ['Analysis (Low / Mid)', 'Layer Mix inputs']
-        elif name == 'Mixoperationlibrary':
-            parameter.menuNames = ['common', 'contrast', 'math']
-            parameter.menuLabels = ['Common', 'Contrast', 'Math']
+        elif name == 'Mixoperationpreset' and new_parameter:
+            parameter.menuNames = [MIX_DRAFT_PRESET]
+            parameter.menuLabels = ['Custom draft']
         elif kind == 'Menu' and new_parameter:
             parameter.menuNames = [MIX_NO_OPERATION]
             parameter.menuLabels = ['None']
@@ -56,37 +130,37 @@ def install_mix_ui(controller):
                 parameter.default = parameter.val = default
         parameter.order = order
         parameter.help = 'Draft only. Apply MIX draft replaces the current MIX profile without changing target values or PLUGIN mappings.'
-    for name in ('Mixoperationlibrary', *MIX_CUSTOM_PARAMETERS):
+    for name in ('Mixoperationpreset', *MIX_CUSTOM_PARAMETERS, 'Mixpresetname', 'Newmixpreset', 'Savemixpreset', 'Deletemixpreset'):
         getattr(controller.par, name).enableExpr = "me.par.Mixstyle == 'layers'"
-    controller.par.Mixoperationlibrary.startSection = True
+    controller.par.Mixoperationpreset.startSection = True
     controller.par.Applymix.startSection = True
     controller.par.Mixsummary.readOnly = True
     controller.par.Mixsummary.help = 'Currently applied profile. Draft edits take effect only after Apply. Audio Gain/Mute is not available yet.'
-    if new_source:
+    if legacy_choices is not None:
+        set_mix_operation_draft(controller, legacy_choices)
+        controller.par.Mixoperationlibrary.destroy()
+    elif new_editor:
         saved = controller.fetch('mix_profile', None, search=False)
         if saved:
             descriptor = saved['descriptor']
             scope = controller.op(saved['scope'])
             source = scope.op(descriptor['source']) if scope is not None else None
             controller.par.Mixstyle.val = descriptor['style']
-            if source is not None:
+            if source is not None and new_source:
                 # Custom OP parameters resolve from the containing network.
                 controller.par.Mixsource.val = posixpath.relpath(source.path, controller.parent().path)
             refresh_mix_ui(controller)
             if descriptor['style'] == 'layers':
-                from mix_runtime import OPERATION_LIBRARIES
                 choices = next((item['controls']['operation']['choices'] for item in descriptor['items']
                                 if 'operation' in item['controls']), [])
-                for library, prefix in OPERATION_LIBRARIES.items():
-                    if choices[:len(prefix)] == list(prefix):
-                        controller.par.Mixoperationlibrary.val = library
-                        for name, choice in zip(MIX_CUSTOM_PARAMETERS, choices[len(prefix):]):
-                            getattr(controller.par, name).val = choice
-                        break
+                if len(choices) <= 6:
+                    set_mix_operation_draft(controller, choices)
     refresh_mix_ui(controller)
+    refresh_mix_presets_ui(controller)
     callbacks = controller.op('parameter_callbacks')
     watched = callbacks.par.pars.eval().split()
-    callbacks.par.pars = ' '.join(watched + [name for name in ('Mixsource', 'Mixstyle', 'Applymix', 'Clearmix') if name not in watched])
+    callbacks.par.pars = ' '.join(watched + [name for name in ('Mixsource', 'Mixstyle', 'Mixoperationpreset', 'Newmixpreset',
+        'Savemixpreset', 'Deletemixpreset', 'Applymix', 'Clearmix') if name not in watched])
     controller.ext.RotoPythonExt._sync_mix_summary()
 
 
@@ -102,9 +176,7 @@ def apply_mix_ui(controller):
         return controller.ConfigureMixAnalysis(source.parent(), source.name)
     if style == 'layers':
         return controller.ConfigureMixLayers(source.parent(), source.name,
-            operation_library=controller.par.Mixoperationlibrary.eval(),
-            custom_operations=[getattr(controller.par, name).eval() for name in MIX_CUSTOM_PARAMETERS
-                               if getattr(controller.par, name).eval() != MIX_NO_OPERATION])
+            operation_choices=mix_draft_operations(controller))
     raise ValueError('Choose Analysis or Layer Mix; audio processing remains planned')
 
 
@@ -112,10 +184,12 @@ def reset_mix_ui(controller):
     """Remove user source references from a generic export clone's draft."""
     controller.par.Mixstyle.val = 'analysis'
     controller.par.Mixsource.val = ''
-    controller.par.Mixoperationlibrary.val = 'common'
+    controller.par.Mixpresetname.val = ''
+    controller.par.Mixoperationpreset.val = MIX_DRAFT_PRESET
     for name in MIX_CUSTOM_PARAMETERS:
         getattr(controller.par, name).val = MIX_NO_OPERATION
     refresh_mix_ui(controller)
+    refresh_mix_presets_ui(controller)
     controller.ext.RotoPythonExt._sync_mix_summary()
 
 

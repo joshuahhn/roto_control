@@ -25,9 +25,12 @@ Low/Mid analysis and wired Layer Mix float routing with 10 Hz native meters.
 One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons retain
-input selection. The MIX custom parameter page stages a source/style, Operation
-library and four custom blend choices until Apply. Clear removes only MIX;
-generic export clears applied data and draft source references. Audio stays
+input selection. The MIX custom parameter page stages a source/style and a
+user-named Operation preset with six custom slots until Apply; two filled slots
+are sufficient. Preset save/name/delete changes data without routing. Clear removes
+only MIX; generic export clears applied data, user Operation presets and draft
+source references. Other analyzers use the documented descriptor API rather than
+the Low/Mid convenience adapter. Audio stays
 deferred. `mix_runtime`
 also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
 retain native item selection. It

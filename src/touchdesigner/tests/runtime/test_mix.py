@@ -81,6 +81,22 @@ class MixTests(unittest.TestCase):
             self.assertEqual(e.GetMixProfile(),before)
         self.assertEqual(source.par.lay0operation.eval(),'add');self.assertEqual(mix.writes,0)
 
+    def test_explicit_operation_choices_have_no_implicit_library_and_empty_omits_control(self):
+        e,mix,source=self.operation_fixture()
+        e.ConfigureMixLayers(mix.scope,'layer_mix',operation_choices=['choice_45','add'])
+        item=e.GetMixProfile()['descriptor']['items'][0]
+        self.assertEqual(item['controls']['operation']['choices'],['choice_45','add'])
+        before=e.GetMixProfile()
+        for choices in (['over'], ['missing','add'], ['over']*25):
+            with self.assertRaises(ValueError):e.ConfigureMixLayers(mix.scope,'layer_mix',operation_choices=choices)
+            self.assertEqual(e.GetMixProfile(),before)
+        with self.assertRaises(ValueError):
+            e.ConfigureMixLayers(mix.scope,'layer_mix',operation_choices=['over','add'],operation_library='common')
+        e.ConfigureMixLayers(mix.scope,'layer_mix',operation_choices=[])
+        item=e.GetMixProfile()['descriptor']['items'][0]
+        self.assertNotIn('operation',item['controls']);self.assertIn('swap',item['controls'])
+        self.assertEqual(source.par.lay0operation.eval(),'add');self.assertEqual(mix.writes,0)
+
     def test_layer_per_layer_fields_must_exist_before_registration(self):
         e,mix,source=self.operation_fixture();before=e.GetMixProfile()
         source.par['lay0operation']=None
@@ -617,6 +633,36 @@ class MixTests(unittest.TestCase):
         self.assertEqual(len(restored.targets), 10)
         self.assertEqual(restored.writes, 0)
         self.assertEqual(source.par.Lowgain.eval(), 2)
+
+    def test_documented_custom_analyzer_example_controls_foreign_names_and_independent_level(self):
+        from pathlib import Path
+        e, mix, _, _, analysis, *_ = self.fixture()
+        before = {n:p.eval() for n,p in analysis.par.items()}
+        custom = SimpleNamespace(valid=True,isCOMP=True,id=1800,path='/demo/my_analyzer',par=Pars())
+        for name,style,value in [('Triggerlimit','Float',.2),('Enabled','Toggle',True)]:
+            p=BoundParameter(style);p.name=name;p.owner=custom;p.val=value;p.enable=True
+            p.normMin=p.min=0;p.normMax=p.max=1;custom.par[name]=p
+        class Level:
+            valid=True;id=1801;path='/demo/my_analyzer/levels'
+            def __getitem__(self,name):return Channel([.35]) if name=='band_energy' else None
+        levels=Level()
+        custom.op=lambda name:custom if name=='.' else levels if name=='levels' else None
+        old=e.ownerComp.op
+        e.ownerComp.op=lambda name:custom if name=='../demo/my_analyzer' else old(name)
+        proxy=SimpleNamespace(SetMixProfile=e.SetMixProfile,GetMixState=e.GetMixState)
+        doc=(Path(__file__).parents[2]/'docs/functions/mix_analysis.md').read_text()
+        example=doc.split('```python\n',1)[1].split('```',1)[0]
+        exec(example,{'op':lambda name:proxy if name=='roto_python' else custom if name=='my_analyzer' else None,
+                      'print':lambda *args:None})
+        self.assertEqual(mix.writes,0);self.assertEqual(mix.errors,{})
+        self.enter(e,mix)
+        self.cc(e,52,127);self.turn(e,0,8192);self.cc(e,52,0)
+        self.assertAlmostEqual(custom.par.Triggerlimit.eval(),.6*8192/16383)
+        self.cc(e,20,127);self.cc(e,20,0)
+        self.assertFalse(custom.par.Enabled.eval());self.assertEqual(mix.writes,2)
+        mix.tick(now=2)
+        self.assertIn([191,65,44],self.messages(e))
+        self.assertEqual({n:p.eval() for n,p in analysis.par.items()},before)
 
     def test_rms_and_scalar_feedback_have_explicit_separate_ranges(self):
         e, mix, _, _, _, channels, _ = self.fixture()

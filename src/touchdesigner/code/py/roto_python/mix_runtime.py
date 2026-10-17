@@ -4,7 +4,7 @@ import math
 import posixpath
 import time
 from binding import Binding, parameter_chain, parameter_value, same_parameter
-from mix_descriptor import validate, projection, button_projection, limits, reference, FLOAT_KEYS
+from mix_descriptor import validate, projection, button_projection, limits, reference, operation_choices as validate_operation_choices, FLOAT_KEYS
 from midi_queue import discard
 from protocol import HEADER, sysex, text13, raw_value
 
@@ -40,23 +40,31 @@ def layer_state(operator):
             operator.par.operand.eval())
 
 
-def layer_profile(scope, source, *, operation_library='common', custom_operations=()):
+def layer_profile(scope, source, *, operation_choices=None, operation_library=None, custom_operations=()):
     """Describe existing wired layers; no Setup flags, values or graph writes."""
     if scope is None or not scope.valid or not scope.isCOMP:
         raise ValueError('MIX needs an existing COMP scope')
     source = reference(source)
     operator = scope.op(source)
     layer_state(operator)
-    if not isinstance(operation_library, str) or operation_library not in OPERATION_LIBRARIES:
-        raise ValueError('Unknown MIX Operation library')
-    if (not isinstance(custom_operations, (list, tuple)) or len(custom_operations) > 4
-            or any(not isinstance(name, str) or not name for name in custom_operations)):
-        raise ValueError('MIX accepts at most four custom Operation names')
-    choices = list(dict.fromkeys(OPERATION_LIBRARIES[operation_library] + tuple(custom_operations)))
+    if operation_choices is None:
+        library = 'common' if operation_library is None else operation_library
+        if not isinstance(library, str) or library not in OPERATION_LIBRARIES:
+            raise ValueError('Unknown MIX Operation library')
+        if (not isinstance(custom_operations, (list, tuple)) or len(custom_operations) > 4
+                or any(not isinstance(name, str) or not name for name in custom_operations)):
+            raise ValueError('Legacy MIX accepts at most four custom Operation names')
+        choices = list(dict.fromkeys(OPERATION_LIBRARIES[library] + tuple(custom_operations)))
+    else:
+        if operation_library is not None or custom_operations:
+            raise ValueError('Use Operation choices or legacy library arguments, not both')
+        choices = validate_operation_choices(operation_choices)
     items = []
     for index, image in enumerate(operator.inputs):
         controls = {}
         for key, suffix, label, kind, flag in LAYER_FIELDS:
+            if key == 'operation' and not choices:
+                continue
             enabled = operator.par[flag].eval() if flag else operator.par.operand.eval() == 'opperlayer'
             if not enabled:
                 continue

@@ -16,8 +16,9 @@ Use the controller's **MIX** custom parameter page:
 
 1. Choose Draft style: Analysis (Low / Mid) or Layer Mix inputs.
 2. Drag the existing audioAnalysis COMP or Layer Mix TOP onto Draft source.
-3. For Layer Mix, choose Common/Contrast/Math and up to four optional Custom
-   blend menus. These show the source's complete TD blend list plus None.
+3. For Layer Mix, use the six Custom blend slots. Fill any two to six different
+   modes and leave unused slots None. Each slot offers the source's complete TD
+   blend list. All None omits the Operation control.
 4. Release knobs, exit LEARN, then press Apply MIX draft. Applied MIX shows the
    accepted profile. Invalid configuration leaves the previous profile active.
 
@@ -30,7 +31,19 @@ Per Layer Operation; configure those intentionally on the source first.
 An unavailable saved custom choice remains labelled Unavailable until replaced;
 Apply rejects it instead of silently choosing a different mode.
 
+Operation preset contains user-named choice lists, without fixed built-in
+categories. Enter Preset name and press Add Operation preset to save the draft;
+Save preset edits / name updates the selected record. Selecting a preset only
+loads the six draft slots. Saving, renaming or deleting a preset does not change
+an already applied profile. Press Apply MIX draft to use the current slots.
+Two filled slots are sufficient; six is the editor's capacity, not a minimum.
+Normal configured saves preserve these presets; generic exports clear them.
+
 The same configuration remains available from Python:
+
+For another analyzer with different parameter/channel names, use the
+[Analysis integration API](mix_analysis.md). It documents the TD descriptor v1,
+control types/positions, meter units/stage, lifecycle and a complete example.
 
 Execute in TD against an upgraded controller:
 
@@ -58,7 +71,7 @@ PLUGIN assignments. Mixed-style slots and a profile-switching UI remain planned.
 ## Layer Mix floats
 
 ```python
-controller.ConfigureMixLayers(existing_scope, 'layermix_layers')
+controller.ConfigureMixLayers(existing_scope, 'layermix_layers', operation_choices=[])
 ```
 
 Use an existing Layer Mix TOP with 1..8 wired inputs only. The adapter records
@@ -86,7 +99,7 @@ the profile before further writes. Restoring old wiring does not resume it:
 release the knobs and explicitly configure again. Target identity and parameter
 guards also apply to every write. Operation/Swap source status follows below.
 
-## Operation libraries and Swap
+## Operation presets and Swap
 
 First-Focus Operation is on knob 5 and Swap on knob 6. Hardware acceptance covers
 Common plus custom Xor/Z Film, reaching Z Film, Add/Over motor feedback, Swap
@@ -98,20 +111,34 @@ enables it itself.
 ```python
 controller.ConfigureMixLayers(
     existing_scope, 'layermix_layers',
-    operation_library='common', custom_operations=['xor', 'zfilm'])
+    operation_choices=['over', 'add', 'xor', 'zfilm'])
 ```
 
-| Library | Ordered controller choices |
-| --- | --- |
-| `common` | Over, Add, Multiply, Screen |
-| `contrast` | Overlay, Soft Light, Hard Light, Difference |
-| `math` | Add, Subtract, Multiply, Divide, Difference, Average |
+Explicit `operation_choices` has no implicit library entries. Names are TD menu
+names, not display labels/indices. Duplicates keep their first occurrence; use
+at least two distinct choices, or an empty list to omit Operation. The descriptor
+API retains its 24-choice capacity. The preset editor stores two to six choices.
 
-Append up to four custom existing TD menu names; duplicates are omitted while
-retaining the first occurrence. Saved choices are names, never renamed TD menu
-indices. Invalid names/library settings reject registration without replacing
-the previous profile. The MIX custom parameter page exposes these library and
-custom choices as an explicit-Apply draft.
+```python
+preset_id = controller.SaveMixOperationPreset('My two modes', ['over', 'add'])
+records = controller.GetMixOperationPresets()  # detached id/name/operations records
+controller.SaveMixOperationPreset('Renamed', ['screen', 'multiply'], preset_id)
+controller.RemoveMixOperationPreset(preset_id)  # applied profile remains intact
+```
+
+Preset names are nonempty and unique without case differences. Stable preset
+IDs survive name edits. Presets contain choice lists only, not target values,
+source paths, touches or a connected session. Loading/applying a list does not
+coerce the TD Operation value into that list.
+
+Legacy `operation_library` / `custom_operations` Python calls retain their old
+behavior, including the original default, for existing integrations. These
+arguments cannot be combined with explicit `operation_choices`. Existing applied
+descriptors are not truncated. Upgrade converts an old library-plus-custom UI
+draft into explicit slots; if it has more than six choices, upgrade stops before
+source/UI writes and asks that draft be reduced first. New UI has no fixed
+Common/Contrast/Math menu. A larger API-applied list stays active, but is not
+automatically copied into the six-slot editor.
 
 The real TD menu retains all options and labels for identity validation. The
 controller only steps through its chosen list. `Op 2 Add` means the second choice
@@ -213,7 +240,8 @@ audio Gain/Mute processing is deferred to
 For a current disconnected controller, make a recovery `.tox` through TD, then
 execute `scripts/upgrade_mix.py` and call `install(controller, source_dir)`. It
 embeds three helpers and refreshes Binding, setup and the extension/lifecycle source, preserving
-existing mappings and target values. Generic export clears the MIX profile and
+existing mappings and target values. Generic export clears the MIX profile, user
+Operation presets and draft, and
 starts disconnected with no user paths. The older full Inspector builder has a separate
 ASCII-locale source-loading limitation in this TD process; this upgrader does
 not rebuild Inspector.

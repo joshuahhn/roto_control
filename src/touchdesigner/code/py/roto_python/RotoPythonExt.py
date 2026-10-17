@@ -8,12 +8,13 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
+import uuid
 from binding import parameter_value, same_parameter
 from protocol import text13
 from snapshots import Snapshots
 from midi_queue import discard, business_output
 from mix_runtime import MixRuntime, layer_profile
-from mix_descriptor import analysis_profile
+from mix_descriptor import analysis_profile, operation_presets
 
 
 def resolve_python(value, folder):
@@ -100,10 +101,37 @@ class RotoPythonExt:
         """Describe an existing Low/Mid source. Audio/detection settings stay as-is."""
         return self.SetMixProfile(scope, analysis_profile(source, bands))
 
-    def ConfigureMixLayers(self, scope, source='layermix_layers', *, operation_library='common', custom_operations=()):
+    def ConfigureMixLayers(self, scope, source='layermix_layers', *, operation_choices=None, operation_library=None, custom_operations=()):
         """Describe existing wired Layer Mix inputs without enabling Setup fields."""
-        return self.SetMixProfile(scope, layer_profile(scope, source, operation_library=operation_library,
+        return self.SetMixProfile(scope, layer_profile(scope, source, operation_choices=operation_choices, operation_library=operation_library,
                                                        custom_operations=custom_operations))
+
+    def GetMixOperationPresets(self):
+        return copy.deepcopy(operation_presets(self.ownerComp.fetch('mix_operation_presets', None, search=False))['records'])
+
+    def SaveMixOperationPreset(self, name, operations, preset_id=None):
+        """Save choice-list data only; never apply routing or write target values."""
+        records = self.GetMixOperationPresets()
+        if preset_id is not None and not any(r['id'] == preset_id for r in records):
+            raise ValueError('Unknown Operation preset')
+        identity = preset_id if preset_id is not None else 'operation.' + uuid.uuid4().hex
+        replacement = dict(id=identity, name=name, operations=operations)
+        records = [replacement if r['id'] == identity else r for r in records]
+        if preset_id is None:
+            records.append(replacement)
+        data = operation_presets(dict(version=1, records=records))
+        self.ownerComp.store('mix_operation_presets', data)
+        if getattr(self.ownerComp.par, 'Mixoperationpreset', None) is not None:
+            self.ownerComp.op('setup').module.refresh_mix_presets_ui(self.ownerComp)
+        return identity
+
+    def RemoveMixOperationPreset(self, preset_id):
+        records = self.GetMixOperationPresets()
+        if not any(r['id'] == preset_id for r in records):
+            raise ValueError('Choose a saved Operation preset')
+        self.ownerComp.store('mix_operation_presets', dict(version=1, records=[r for r in records if r['id'] != preset_id]))
+        if getattr(self.ownerComp.par, 'Mixoperationpreset', None) is not None:
+            self.ownerComp.op('setup').module.refresh_mix_presets_ui(self.ownerComp)
 
     def GetMixProfile(self):
         self._mix_manager()
@@ -1667,6 +1695,9 @@ class RotoPythonExt:
         if par.name in ('Mixsource', 'Mixstyle'):
             self.ownerComp.op('setup').module.refresh_mix_ui(self.ownerComp)
             return
+        if par.name == 'Mixoperationpreset':
+            self.ownerComp.op('setup').module.load_mix_preset_ui(self.ownerComp)
+            return
         follower = getattr(self, '_follow', None)
         if follower is not None and par.name in ('Followcomp', 'Focuscomp'):
             try:
@@ -1785,6 +1816,13 @@ class RotoPythonExt:
         return self.ownerComp.op('inspector/owned_runtime').module.open_inspector(self.ownerComp)
 
     def onParPulse(self, par):
+        if par.name in ('Newmixpreset', 'Savemixpreset', 'Deletemixpreset'):
+            try:
+                self.ownerComp.op('setup').module.edit_mix_preset_ui(self.ownerComp, par.name)
+                self._sync_mix_summary()
+            except ValueError as exc:
+                self._sync_mix_summary(str(exc))
+            return
         if par.name in ('Applymix', 'Clearmix'):
             try:
                 if par.name == 'Applymix':

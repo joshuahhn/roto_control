@@ -2053,3 +2053,39 @@ TD automatically incremented the requested numbered save to
 with adjacent source/hash receipt. Canonical toe and older saved copies remain
 unchanged. TD stays open/disconnected without pending bytes or probe overrides.
 No hardware routing was changed; reuse the earlier scoped physical acceptance.
+
+## User Operation presets and other analysis sources — 2026-10-17
+
+Baseline `95c060e`. User replaced fixed Operation libraries with user-named
+presets and clarified that six is the default editor capacity; two filled slots
+are enough. The MIX page now has six custom menus plus Add, Save edits/name and
+Delete. Selecting or modifying a preset only changes draft/configuration data;
+Apply alone replaces the active profile. Preset records are stable id/name and
+two-to-six menu-name choices. Unused None slots are omitted. All None omits
+Operation; one distinct choice is rejected. Existing PLUGIN behavior is unchanged.
+
+Explicit `operation_choices` has no built-in prefix. Legacy library Python
+arguments/default and full applied descriptors retain their existing behavior.
+The old UI draft migrates losslessly when it fits six slots. An oversized old
+draft stops upgrade preflight before source/UI writes rather than truncating it.
+TD DAT helpers use explicit sibling module references at function boundaries;
+native tests exposed the import-context restriction in the initial preflight.
+
+The new [Analysis integration API](docs/functions/mix_analysis.md) distinguishes
+descriptor v1 from hardware SysEx/CC, documents fields/types/projection, arbitrary
+parameter/channel names, ranges, meter units/stage, lifecycle and diagnostics.
+The convenience picker remains specific to Low/Mid audioAnalysis. A source test
+executes the documentation example through the real runtime with Triggerlimit,
+Enabled and band_energy names, checking input/toggle isolation and independent
+meter output. Native TD executes the same example on an isolated COMP/CHOP with
+zero configuration writes and no MIDI connection.
+
+Final source passes 548 discovery tests, including 47 MIX and 14 editor tests;
+focused checks pass 61 tests. Native real callbacks accept two/six-choice Add,
+selection, Apply, Save/name edit and Delete without changing target values.
+Configured reload retains the applied two-choice profile and an unapplied
+six-choice draft/preset separately. Generic export/reload removes the saved
+user preset records, selected id/name, six draft slots and source. Temporary
+fixtures were removed; evidence/recovery is system temporary
+`roto-operation-presets.4QUSytukc8`. This is configuration/API acceptance, with
+earlier physical routing/feedback acceptance reused. Live publication follows.
