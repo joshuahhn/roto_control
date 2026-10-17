@@ -90,6 +90,8 @@ class InspectorView:
         self._popup_geometry_settle=None
         self._popup_geometry_generation=0
         self._follow_routing=True
+        self._mix_choice='auto'
+        self._mix_visible=False
         self._configuring=False
         self._rows=ownerComp.op('container_scroll/container_content')
         self._viewport=ownerComp.op('container_scroll')
@@ -163,6 +165,7 @@ class InspectorView:
         self.ownerComp.op('text_status').par.text=message if hover else (self._main_message or '')
 
     def ToggleFollowComp(self):
+        if self.IsMix():return False
         if not self.IsLive():return False
         token=getattr(self,'_follow_comp_token',None)
         if token is None:return False
@@ -173,6 +176,7 @@ class InspectorView:
         return True
 
     def ActivateDevice(self):
+        if self.IsMix():return False
         if not self.IsLive() or self.Key()!=self._context:return False
         context=self._context;token=self._activation_token
         try:self._model.Activate(context,token)
@@ -192,6 +196,7 @@ class InspectorView:
         op.TDResources.op('popMenu').Open(items=items,callback=self.SelectFilter,callbackDetails=details,autoClose=1)
         return True
     def SelectFilter(self,info):
+        if self.IsMix():return False
         if self.Key()!=self._context:self.Refresh();return False
         d=info.get('details',{});choice=d.get('choices',{}).get(info.get('item'))
         if d.get('context')!=self._context or d.get('generation')!=self._menu_generation:return False
@@ -224,6 +229,7 @@ class InspectorView:
         except (ValueError,RuntimeError) as exc:self._set_error(str(exc));return False
 
     def SelectSnapshot(self, info):
+        if self.IsMix():return False
         details=info.get('details',{});intent=details.get('intent',{})
         if details.get('generation')!=self._snapshot_generation or self.Key()!=intent.get('context'):return False
         operation=details.get('choices',{}).get(info.get('item'))
@@ -258,6 +264,7 @@ class InspectorView:
         except (ValueError,RuntimeError) as exc:self._set_error(str(exc));return False
 
     def ConfirmSnapshot(self, info):
+        if self.IsMix():return False
         details=info.get('details',{})
         if info.get('buttonNum')!=2 or details.get('generation')!=self._snapshot_generation:return False
         if self.Key()!=details['intent']['context']:return False
@@ -281,6 +288,7 @@ class InspectorView:
             return True
         except (ValueError,RuntimeError) as error:self._device_message=str(error);self._update_main_status();return False
     def ConfirmClearDevice(self,info):
+        if self.IsMix():return False
         if self.Key()!=self._context:self.Refresh();return False
         d=info.get('details',{});request=getattr(self,'_clear_device_request',None)
         if request is None or d.get('request') is not request or d.get('generation')!=self._menu_generation:return False
@@ -443,6 +451,7 @@ class InspectorView:
             if field and field is not source and field.par.text.eval()!=self._hardware_port:field.par.text=self._hardware_port
 
     def ReadHardware(self):
+        if self.IsMix():return False
         if self.selected is None or not self.IsLive():return False
         try:
             self._model.ReadHardwareSnapshot(self._context,self.selected,port=getattr(self,'_hardware_port',''))
@@ -474,6 +483,69 @@ class InspectorView:
 
     def IsLive(self):return bool(self._model and getattr(self._model,'IsLive',False))
 
+    def IsMix(self):
+        if getattr(self,'_mix_choice',None) is None:return False
+        if not self.IsLive():return False
+        choice=getattr(self,'_mix_choice','auto')
+        observe=getattr(self._model,'MixObservation',None)
+        mix=observe() if observe else None
+        return choice=='mix' or choice=='auto' and bool(mix and mix.get('hardware')=='MIX')
+
+    def SelectInspection(self,info):
+        choice={'Auto':'auto','PLUGIN':'plugin','MIX':'mix'}.get(info['item'])
+        if choice not in ('auto','plugin','mix'):return False
+        self._mix_choice=choice
+        self._render_inspection()
+        return True
+
+    def _render_inspection(self):
+        if getattr(self,'_mix_choice',None) is None:return
+        panel=self.ownerComp.op('container_mix')
+        if panel is None:return
+        showing=self.IsMix();changed=showing!=getattr(self,'_mix_visible',False)
+        self._mix_visible=showing
+        if changed and showing:
+            self.CloseContextMenu()
+            self._popup.par.winclose.pulse()
+        if changed and not showing:
+            self._editor_layout();self._theme()
+        panel.par.display=showing
+        for name in ('container_scroll','context_Layout','context_Track','context_Device','text_style','learn','text_status','text_footer','follow_comp','text_brand'):
+            node=self.ownerComp.op(name)
+            if node is not None:node.par.display=not showing
+        for name in ('clear_device','activate_device'):
+            node=self.ownerComp.op(name)
+            if showing and node is not None:node.par.display=False
+        choice=getattr(self,'_mix_choice','auto')
+        label=('Auto: '+('MIX' if showing else 'PLUGIN')) if choice=='auto' else choice.upper()
+        self.ownerComp.op('inspection_mode/text_label').par.text=label+' ▾'
+        if not showing:return
+        mix=self._model.MixObservation() or {}
+        lines=['Applied MIX · read only','Hardware: '+mix.get('hardware','unknown')+(' · disconnected' if not mix.get('connected') else '')]
+        if mix.get('profile'):
+            lines += [mix.get('style','')+' · '+mix['profile'], 'Scope: '+mix.get('scope',''), 'Source: '+mix.get('source','')]
+            view=mix.get('view');selected=mix.get('selected')
+            if view:lines.append('Runtime view: '+str(view))
+            items=mix.get('items',[])
+            if type(selected) is int and 0<=selected<len(items):lines.append('Selected: '+items[selected]['label'])
+        if mix.get('reason'):lines.append(mix['reason'])
+        if mix.get('profile') and not mix.get('items'):lines.append('No items in applied profile')
+        if not mix:lines.append('MIX observation unavailable')
+        for item in mix.get('items',[]):
+            lines += ['',item['label']+' ['+item['id']+']']
+            if not item['controls']:lines.append('No assigned controls')
+            for control in item['controls']:
+                lines.append(control['label']+': '+(control['caption'] if control['available'] else 'Unavailable'))
+                target=control['target'];lines.append('  '+target['op']+'.'+target['parameter'])
+                if control['reason']:lines.append('  '+control['reason'])
+        text='\n'.join(lines)
+        document=panel.op('text_mix_document')
+        changed_text=document.par.text.eval()!=text
+        if changed_text:self._write(document,text)
+        if changed_text or document.width!=getattr(self,'_mix_document_width',None):
+            document.par.h=24+ceil(document.evalTextSize()[1])
+            self._mix_document_width=document.width
+
     def ConfigureMenus(self,preferred=None):
         if not self.IsLive():return
         self._configuring=True
@@ -501,7 +573,8 @@ class InspectorView:
             if main and main.isOpen:main.par.winclose.pulse()
 
     def Show(self):
-        self.HideOtherViews();self.CloseContextMenu();self.CloseEditor()
+        self.HideOtherViews();self.CloseContextMenu()
+        if not self.IsMix():self.CloseEditor()
         if not self._main.isOpen:self._main.par.winopen.pulse()
         self.Refresh()
 
@@ -629,6 +702,7 @@ class InspectorView:
         panel.op('base_footer/next').par.enable=state.first+state.capacity<len(state.items)
 
     def SelectContextMenu(self,info):
+        if self.IsMix():return False
         details=info.get('details',{});value=details.get('choices',{}).get(info.get('item'))
         self.CloseContextMenu()
         if not self._model or details.get('generation')!=self._menu_generation or details.get('context')!=self.Key() or details.get('model_generation')!=self._model.Stats()['generation']:return False
@@ -667,6 +741,7 @@ class InspectorView:
             e.op('field_Destination').par.enable=bool(caps['assign']['enabled'] and not stale)
 
     def TypedValue(self,value):
+        if self.IsMix():return False
         if self.selected is None or not self.IsLive() or self.Key()!=self._context:return False
         values=dict(self._model.GetCatalog(self._context)[self.selected]);values['Value']=value
         try:
@@ -685,6 +760,7 @@ class InspectorView:
         return self.SelectValueType(dict(item='Float' if current=='int' else 'Int',details=details))
 
     def SelectValueType(self,info):
+        if self.IsMix():return False
         d=info.get('details',{});choice=str(info.get('item','')).lower()
         if choice not in ('float','int') or not self._model:return False
         if (d.get('context'),d.get('slot'),d.get('token'),d.get('generation'))!=(self._context,self.selected,self._token,self._menu_generation):return False
@@ -792,6 +868,7 @@ class InspectorView:
                 ink(button.op('text_label'),MUTED if row['reason'] else TEXT)
 
     def AssignTarget(self):
+        if self.IsMix():return False
         if not self._picker or not self._picker['chosen']:return False
         try:
             result=self._model.Assign(self._context,self.selected,self._picker['chosen']['handle'],self._token)
@@ -818,6 +895,7 @@ class InspectorView:
         return self.OpenEditorMenu(labels,self.SelectMappingChoice,details,[current.upper()] if current else [],'container_mapping/choice_'+('mode' if field=='mode' else 'input'))
 
     def SelectMappingChoice(self,info):
+        if self.IsMix():return False
         details=info.get('details',{});value=str(info.get('item','')).lower()
         if not self._mapping.open or details.get('context')!=self._context or details.get('slot')!=self.selected or details.get('token')!=self._mapping.token:return False
         if details.get('generation')!=self._menu_generation:return False
@@ -859,7 +937,7 @@ class InspectorView:
             slot=('K' if i<8 else 'B')+str(i%8+1)+(health['marker'] if health else '')
             if previous is None or previous[3]!=health_code:
                 self._write(refs['slot'],slot);health_changed=True
-            self._display[i]=(label,mapped,value,health_code)
+            self._display[i]=(label,mapped,value,health_code,record['Value'])
         self._dirty&=~slots;self._metadata_dirty&=~metadata
         if metadata:self._normalize_filter()
         return health_changed
@@ -870,6 +948,8 @@ class InspectorView:
             if self.Key()!=self._context:
                 self.Refresh();return
         if context!=self._context:return
+        previous=getattr(self,'_display',{}).get(self.selected) if self.selected is not None else None
+        value_changed=(previous is None or self._model.GetCatalog(self._context)[self.selected]['Value']!=previous[4]) if self.selected is not None else False
         self._notifications+=1;self._dirty|=slots;self._metadata_dirty|=metadata
         if self._visible():
             if self._refresh_rows(self._dirty,self._metadata_dirty):self._update_main_status()
@@ -886,9 +966,10 @@ class InspectorView:
             # target token above still rejects replacement/definition drift.
             info=self._model.Info(self._context,self.selected)
             if info.get('mapped') and not info.get('requires_relearn'):self._error=''
-        if self.selected is not None and slots&(1<<self.selected) and not self._value_scope:
+        if self.selected is not None and slots&(1<<self.selected) and not self._value_scope and value_changed:
             self._draft.par.Value=self._model.GetCatalog(self._context)[self.selected]['Value']
         if self._visible() and self.selected is not None and (slots&(1<<self.selected) or learn_changed):self._update_editor()
+        self._render_inspection()
 
     def _disarm_clear(self):
         self._clear_pending=None
@@ -946,6 +1027,9 @@ class InspectorView:
         if getattr(self,'_device_message','') and not self._model.Learn:message=self._device_message
         if self.IsLive() and self._model.Status.get('InspectorError'):
             message += ' · Inspector unavailable: '+self._model.Status['InspectorError']
+        observe=getattr(self._model,'MixObservation',None)
+        mix=observe() if observe else None
+        if mix and mix.get('hardware')=='unknown':message+=' · Hardware unknown'
         if message!=self._main_message:
             self._main_message=message;self._write(self.ownerComp.op('text_status'),message)
 
@@ -1142,10 +1226,11 @@ class InspectorView:
         self.ownerComp.op('text_style').par.text=('FOLD' if self.style=='below' else 'POPUP')+'  ↔'
         self._refresh_rows(65535,65535)
         self._editor_layout();self._theme()
+        self._render_inspection()
         return True
 
     def OnContext(self):
-        if self._configuring:return
+        if self._configuring or self.IsMix():return
         if self.Key()!=self._context:
             if self.IsLive():self._follow_routing=False
             self.Refresh()
@@ -1155,6 +1240,7 @@ class InspectorView:
         if self._model:self.Refresh()
 
     def OpenPopup(self):
+        if self.IsMix():return
         if not self._main.isOpen:return
         self.HideOtherViews()
         # Selection and Inspector resizing must not resize/reposition an open editor.
@@ -1252,6 +1338,7 @@ class InspectorView:
         return self.OpenInlineMenu(['Float','Int'],self.SelectDefinitionStyle,details,[self._draft.par.Nativestyle.eval()],editor,button)
 
     def SelectDefinitionStyle(self,info):
+        if self.IsMix():return False
         value=info.get('item');details=info.get('details',{})
         if (not self._definition_draft or details.get('generation')!=self._menu_generation or
             details.get('model_generation')!=self._model.Stats()['generation'] or
@@ -1283,11 +1370,13 @@ class InspectorView:
                     for name in ('min','max'):form.op('clamp_'+name+'/text_label').par.text=name.capitalize()+' OFF'
 
     def BeginValueEdit(self):
+        if self.IsMix():return False
         if self.selected is None or not self.IsLive():return False
         self._disarm_clear();self._value_scope=(self._context,self.selected,self._token)
         return True
 
     def LiveValue(self,text):
+        if self.IsMix():return False
         if not self._value_scope or self._value_scope!=(self._context,self.selected,self._token):return False
         # Incomplete numeric text is a local editing state, never a target write.
         if str(text).strip() in ('','-','+','.','-.','+.'):return False
@@ -1300,6 +1389,7 @@ class InspectorView:
         except (ValueError,RuntimeError) as error:self._set_error(str(error));return False
 
     def EndValueEdit(self):
+        if self.IsMix():return False
         self._value_scope=None
         if self.selected is not None:self._draft.par.Value=self._model.GetCatalog(self._context)[self.selected]['Value']
 
@@ -1309,6 +1399,10 @@ class InspectorView:
     def Action(self,name):
         if not self._model and not self.Connect():return False
         if not isinstance(name,str):return False
+        if name=='inspection_mode':
+            checked={'auto':'Auto','plugin':'PLUGIN','mix':'MIX'}[getattr(self,'_mix_choice','auto')]
+            return self.OpenInlineMenu(['Auto','PLUGIN','MIX'],self.SelectInspection,{},[checked],self.ownerComp,self.ownerComp.op('inspection_mode'))
+        if self.IsMix() and name!='show':return False
         if not name.startswith('context_'):self.CloseContextMenu()
         if name.startswith('context_'):
             n=name.split('_',1)[1]
@@ -1512,6 +1606,12 @@ class InspectorView:
     def PopupScrollWheel(self,delta):
         travel=max(0,self._editors[1].height-self._popup_host.height)
         if delta and travel:self._popup_host.panel.scrollv=max(0.,min(1.,self._popup_host.panel.scrollv.val-float(delta)*32./travel))
+
+    def MixScrollWheel(self,delta):
+        viewport=self.ownerComp.op('container_mix')
+        if viewport is None or not self.IsMix():return
+        travel=max(0,viewport.op('text_mix_document').height-viewport.height)
+        if delta and travel:viewport.panel.scrollv=max(0.,min(1.,viewport.panel.scrollv.val-float(delta)*32./travel))
 
     def DetailsScrollWheel(self,delta):
         editor=self._editors[1 if self.style=='popup' else 0]

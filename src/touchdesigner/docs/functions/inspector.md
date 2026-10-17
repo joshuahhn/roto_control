@@ -1,11 +1,11 @@
-# Mapping Inspector
+# Inspector
 
 Use **Connection → Open Inspector** (`Openinspector`) on the controller. It opens
 the controller-owned Fold view; selecting a row reveals its editor, and the new
 Popup presentation remains available. Both presentations share the internal
 model and keep browse context independent of active hardware routing.
 
-The compact Inspector replaces the old Palette Lister. Click a slot to inspect
+In PLUGIN, the compact Inspector replaces the old Palette Lister. Click a slot to inspect
 its target, use the Target picker to assign, Ping during hardware LEARN, and the
 Mapping section to edit supported configuration. Clear requires confirmation;
 parameter values are retained. Follow COMP ON/OFF changes the backend preference;
@@ -25,6 +25,25 @@ and standalone export contracts.
 Fresh builds include the Inspector through build/build_inspector.py. Embedded exports retain the UI and Inspector Python source; MIDI environment dependencies remain as described in portability.md.
 
 If the optional UI refresh fails, its title shows Inspector unavailable and internal refresh_error storage records the reason; hardware transport and target dispatch remain active.
+
+## Applied MIX inspection
+
+The display selector offers **Auto**, **PLUGIN** and **MIX**. Auto follows a
+connected, observed hardware mode. A disconnected or unknown mode falls back to
+the PLUGIN presentation and is labelled unknown. Explicit MIX remains available
+offline. This choice affects only the current view; it never sends a mode change.
+
+MIX shows the applied profile, style, source and every assigned control, grouped
+by item. It shows current TD values, native Toggle/Menu captions and availability
+reasons. Values remain actual TD values even outside the assigned motor range.
+A profile that cannot restore retains its identity and unavailable rows; no
+profile and a configured profile with no items have distinct empty messages.
+Unapplied source/style/custom-field drafts do not change this readout.
+
+This panel is read only. It has no Apply, LEARN, Ping, Clear or assignment action.
+Opening or changing the display does not connect, change routing or write values.
+The existing PLUGIN Browse choice and editor drafts remain when returning to
+PLUGIN. A genuine PLUGIN mapping change still invalidates its stale draft.
 
 ## Direct hardware LEARN
 

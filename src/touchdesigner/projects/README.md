@@ -10,6 +10,12 @@ and dated HANDOFF save/export entries for artifact identity; source merges alone
 do not update embedded DATs or prove a saved artifact matches the checkout.
 Connect uses the existing external Python environment, with an embedded MIDI helper.
 
+The latest working snapshot is [ROTO-CONTROL.mix-inspector.1.toe](current/ROTO-CONTROL.mix-inspector.1.toe),
+with an identical unnumbered alias and [receipt](current/ROTO-CONTROL.mix-inspector.1.json).
+It includes the named-command migration and read-only applied MIX Inspector.
+The older canonical entry above retains its dated identity.
+
+
 - `current/`: current working project and identity receipt.
 - `archive/legacy/`: all former root .toe snapshots, including the old Lister
   roto_control_python.toe; these are historical, not the current Inspector.

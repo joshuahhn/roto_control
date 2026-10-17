@@ -180,7 +180,7 @@ class ApiTests(unittest.TestCase):
         ext = self.single()
         records = {}
         title = SimpleNamespace(par=SimpleNamespace(text=''))
-        def fail(*args):
+        def fail(*args,**kwargs):
             raise ValueError('Invalid Inspector config')
         module = SimpleNamespace(module=SimpleNamespace(refresh=fail))
         inspector = SimpleNamespace(op=lambda name: module if name=='inspector_data' else title,

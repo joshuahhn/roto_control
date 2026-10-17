@@ -239,11 +239,67 @@ class Trigger:
             self.state, self.error = 'unavailable', str(exc)
 
 
+def inspection(runtime, applied, *, connected, plugin):
+    profile = (applied or {}).get('descriptor')
+    hardware = ('MIX' if runtime is not None and runtime.active else 'PLUGIN' if plugin else 'unknown') if connected else 'unknown'
+    result = dict(status='empty', available=False, reason='No MIX profile applied',
+                  hardware=hardware, connected=bool(connected), profile='', style='',
+                  scope=(applied or {}).get('scope', ''), source='', view=None,
+                  selected=None, items=[])
+    if runtime is not None:
+        result.update(view=copy.deepcopy(runtime.view), selected=runtime.selected)
+    if profile is None:
+        return result
+    scope = runtime.e.ownerComp.op(applied['scope']) if runtime is not None else None
+    matches = (runtime is not None and runtime.profile == profile and scope is not None
+               and runtime.scope is not None and _identity(scope) == _identity(runtime.scope))
+    valid = (matches and runtime.source_matches() and not runtime.layer_invalid
+             and runtime.inspection_identity == (_identity(scope), _identity(scope.op(profile['source']))))
+    reason = '' if valid else (runtime.error if runtime is not None and runtime.error else
+                              'MIX source identity or Layer Setup changed; reconfigure to resume' if matches else
+                              'Applied MIX profile is unavailable until runtime restoration succeeds')
+    result.update(status='applied' if valid else 'unavailable', available=bool(valid),
+                  reason=reason, profile=profile['id'], style=profile['style'], source=profile['source'])
+    for index, item in enumerate(profile['items']):
+        row = dict(id=item['id'], label=item['label'], controls=[])
+        for key, control in item['controls'].items():
+            value, caption, available, error = None, '', False, reason
+            target = runtime.targets.get((index, key)) if matches else None
+            if valid and target is None:
+                error = runtime.errors.get((index, key), 'MIX target unavailable')
+            elif valid:
+                try:
+                    checked = target.check()
+                    if checked is None:
+                        error = 'Swap unavailable for the current Operation'
+                    else:
+                        value = parameter_value(target.parameter)
+                        if not math.isfinite(value):
+                            raise ValueError('MIX target value is not finite')
+                        available, error = True, ''
+                        if control['kind'] == 'menu':
+                            caption = target.binding.menu_labels[int(value)]
+                            if int(value) not in target.choice_indices:
+                                error = 'Current Operation is outside applied choices'
+                        elif control['kind'] == 'toggle':
+                            caption = 'On' if value else 'Off'
+                        else:
+                            caption = format(value, '.6g')
+                except (ValueError, AttributeError, TypeError, KeyError, IndexError) as exc:
+                    value, caption, available, error = None, '', False, str(exc)
+            row['controls'].append(dict(key=key, label=control['label'], kind=control['kind'],
+                                        target=copy.deepcopy(control['target']), value=value,
+                                        caption=caption, available=available, reason=error))
+        result['items'].append(row)
+    return result
+
+
 class MixRuntime:
     def __init__(self, extension):
         self.e = extension
         self.profile = None
         self.scope = self.source = None
+        self.inspection_identity = None
         self.layer_state = None
         self.layer_invalid = False
         self.targets, self.errors, self.meters = {}, {}, {}
@@ -323,6 +379,7 @@ class MixRuntime:
         if strict_targets and scope is self.scope and profile == self.profile and source_state == self.layer_state:
             return
         self.scope, self.source, self.profile = scope, source, profile
+        self.inspection_identity = (_identity(scope), _identity(source))
         self.layer_state = source_state
         self.layer_invalid = False
         self.targets, self.errors, self.meters = targets, errors, meters
@@ -538,7 +595,7 @@ class MixRuntime:
             # or lose an update that has not reached the device yet.
             self.invalidate(keep_motors=bool(self.view and self.view[0] == 'all'))
 
-    def source_valid(self):
+    def source_matches(self):
         if self.profile is None or self.scope is None or not self.scope.valid:
             return False
         current = self.scope.op(self.profile['source'])
@@ -551,6 +608,13 @@ class MixRuntime:
                     for item, image in zip(self.profile['items'], current.inputs))
             except (ValueError, AttributeError, TypeError):
                 valid = False
+        return valid
+
+    def source_valid(self):
+        if self.profile is None or self.scope is None or not self.scope.valid:
+            return False
+        valid = self.source_matches()
+        if self.profile is not None and self.profile['style'] == 'layers':
             self.layer_invalid |= not valid
             return valid and not self.layer_invalid
         return valid
@@ -714,7 +778,10 @@ class MixRuntime:
         return dict(active=self.active, ready=self.ready, view=copy.deepcopy(self.view),
                     selected=self.selected, epoch=self.epoch, writes=self.writes,
                     error=self.error, controls=[dict(item=i, control=k, error=v) for (i, k), v in self.errors.items()],
-                    triggers=[dict(item=i, state=trigger.state, error=trigger.error) for i, trigger in self.triggers.items()])
+                    triggers=[dict(item=i, state=trigger.state, error=trigger.error) for i, trigger in self.triggers.items()],
+                    inspection=inspection(self, self.e.ownerComp.fetch('mix_profile', None, search=False),
+                                          connected=self.e._process is not None and self.e._host.connected,
+                                          plugin=self.e._host.plugin))
 
     def refresh_scope(self):
         """Retain an explicitly configured scope through a live rename/save."""

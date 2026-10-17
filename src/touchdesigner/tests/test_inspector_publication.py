@@ -31,7 +31,7 @@ class InspectorPublicationTests(unittest.TestCase):
             store=lambda key,value:self.storage.update({key:value}),
             op=lambda name:SimpleNamespace(module=self.module) if name=='inspector_data' else SimpleNamespace(par=SimpleNamespace(text='')))
         self.ext.ownerComp.op=lambda name:self.inspector
-    def refresh(self,inspector,states):self.calls.append(copy.deepcopy(states))
+    def refresh(self,inspector,states,**kwargs):self.calls.append(copy.deepcopy(states))
     def test_identical_publications_render_once_but_changed_value_and_ack_render(self):
         for _ in range(20):self.ext._publish_inspector()
         self.assertEqual(len(self.calls),1)
@@ -50,13 +50,13 @@ class InspectorPublicationTests(unittest.TestCase):
         self.assertEqual(len(self.calls),7)
     def test_failed_render_retries_and_module_or_operator_replacement_invalidates(self):
         original=self.module.refresh
-        def broken(*args):raise ValueError('broken')
+        def broken(*args,**kwargs):raise ValueError('broken')
         self.module.refresh=broken;self.ext._publish_inspector()
         self.assertEqual(self.storage['refresh_error'],'broken')
         self.module.refresh=original;self.ext._publish_inspector();self.ext._publish_inspector()
         self.assertEqual(len(self.calls),1)
         self.inspector.id=8;self.ext._publish_inspector();self.assertEqual(len(self.calls),2)
-        self.module.refresh=lambda *args:original(*args)
+        self.module.refresh=lambda *args,**kwargs:original(*args,**kwargs)
         self.ext._publish_inspector();self.assertEqual(len(self.calls),3)
     def test_manual_refresh_forces_render_and_getter_returns_fresh_detached_catalog(self):
         self.ext._publish_inspector();self.ext._publish_inspector(force=True);self.assertEqual(len(self.calls),2)
@@ -73,7 +73,7 @@ class InspectorPublicationTests(unittest.TestCase):
     def test_burst_queues_one_owned_callback_and_projects_latest_authoritative_state(self):
         queued=[]
         signatures=[];original=self.module.projection_signature
-        def signature(*args):signatures.append(None);return original(*args)
+        def signature(*args,**kwargs):signatures.append(None);return original(*args,**kwargs)
         self.module.projection_signature=signature
         def schedule(script,owner,**kwargs):
             pending=Scheduled(owner);queued.append(pending);return pending
@@ -93,6 +93,55 @@ class InspectorPublicationTests(unittest.TestCase):
             self.ext._publish_inspector();self.ext._publish_inspector(force=True)
             self.assertTrue(queued[-1].killed);queued[-1].fire()
             self.assertEqual(len(self.calls),2)
+
+    def test_mix_only_change_publishes_one_same_detached_observation(self):
+        import test_mix
+        extension,mix,_,_,source,_,operators=test_mix.MixTests().fixture()
+        oldop=extension.ownerComp.op
+        extension.ownerComp.op=lambda name:self.inspector if name=='inspector' else oldop(name)
+        observations=[]
+        signature=self.module.projection_signature
+        def capture_signature(*args,**kwargs):
+            observations.append(('signature',kwargs['mix']))
+            return signature(*args,**kwargs)
+        def capture_refresh(*args,**kwargs):observations.append(('refresh',kwargs['mix']))
+        self.module.projection_signature=capture_signature;self.module.refresh=capture_refresh
+        extension._publish_inspector(force=True)
+        self.assertIs(observations[-2][1],observations[-1][1])
+        original=observations[-1][1]
+        source.par.Lowgain.val=6;extension._publish_inspector()
+        self.assertEqual(len(observations),4)
+        controls={c['key']:c for c in observations[-1][1]['items'][0]['controls']}
+        self.assertEqual(controls['gain']['value'],6)
+        self.assertIs(observations[-2][1],observations[-1][1])
+        extension._publish_inspector();self.assertEqual(len(observations),5)
+        operators.pop('analysis');extension._publish_inspector()
+        self.assertFalse(observations[-1][1]['available'])
+        self.assertTrue(original['available'])
+
+    def test_publication_does_not_initialize_an_unrestored_mix_runtime(self):
+        import test_mix
+        from unittest.mock import Mock
+        extension,*_=test_mix.MixTests().fixture()
+        oldop=extension.ownerComp.op
+        extension.ownerComp.op=lambda name:self.inspector if name=='inspector' else oldop(name)
+        extension._mix=None;extension._mix_manager=Mock(side_effect=AssertionError('observation initialized runtime'))
+        captured=[];self.module.refresh=lambda *args,**kwargs:captured.append(kwargs['mix'])
+        saved=copy.deepcopy(extension.ownerComp.fetch('mix_profile',None,search=False))
+        extension._publish_inspector(force=True)
+        self.assertEqual(captured[0]['status'],'unavailable')
+        self.assertEqual(captured[0]['profile'],saved['descriptor']['id'])
+        extension._mix_manager.assert_not_called();self.assertIsNone(extension._mix)
+        self.assertEqual(extension.ownerComp.fetch('mix_profile',None,search=False),saved)
+
+    def test_disconnected_tick_publishes_without_a_follower(self):
+        import test_mix
+        extension,*_=test_mix.MixTests().fixture()
+        extension._follow=None;extension._binding=None;extension._collection=None
+        extension._free_learner=None
+        calls=[];extension._publish=lambda:calls.append(True)
+        extension._tick()
+        self.assertEqual(calls,[True])
 
     def test_cancelled_or_replaced_extension_cannot_project_late(self):
         queued=[]

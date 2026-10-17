@@ -62,6 +62,13 @@ See [Serial Details](docs/functions/serial.md#inspector-details) for operation a
 the dated HANDOFF entry for native versus physical evidence. Audio remains
 deferred, and this slice does not require a project restart.
 
+The owned Inspector adds a separate read-only applied MIX presentation with
+Auto / PLUGIN / MIX display selection. Its runtime-owned observation preserves
+source/target identity checks and actual TD values. Existing publication carries
+one snapshot into the shared model; zero-slot display notifications preserve
+PLUGIN Browse and drafts. See [MIX Inspector](docs/plans/mix-inspector.md) for the
+chosen boundary and [Inspector operation](docs/functions/inspector.md#applied-mix-inspection).
+
 The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
 Low/Mid/High/Kick/Snare/Rhythm analysis and wired Layer Mix float routing with 10 Hz native meters.
 New/generic Analysis drafts default to those six; saved drafts and the Python

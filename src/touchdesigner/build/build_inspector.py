@@ -34,7 +34,7 @@ def _manifest(wrapper):
 
 def _fingerprint(source):
     directory = source / 'prototypes/inspector'
-    paths = sorted(directory.glob('*.py')) + [source/'build/build_inspector.py',
+    paths = sorted(directory.glob('*.py')) + [source/'build/build_inspector.py',source/'build/build_mix_inspector.py',
             source/'code/py/roto_python/inspector/inspector_data.py',
             source/'code/py/roto_python/inspector/owned_runtime.py',
             source/'scripts/cleanup_network.py',source/'scripts/td_project_docs.py',
@@ -197,6 +197,9 @@ def build(controller, source_dir, legacy_archive=None, legacy_receipt=None):
                  target_views=views, context_views=views, activation_views=views)
     _execute(directory/'build_definition_edit.py', scope)
     _execute(directory/'build_activation.py', scope)
+    mix_scope=dict(globals())
+    _execute(source/'build/build_mix_inspector.py',mix_scope)
+    for view in views:mix_scope['install'](view)
     # These are the same event-driven observers as the accepted live builder.
     definitions = (
         ('controller_catalog', datexecuteDAT, 'dat', 'parent.InspectorModel.ControllerData()',

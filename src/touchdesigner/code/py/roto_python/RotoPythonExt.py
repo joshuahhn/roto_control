@@ -15,7 +15,7 @@ from protocol import SysExCommand, SysExGroup, text13, digest
 from hardware_config import HardwareConfig, ReadContext
 from snapshots import Snapshots
 from midi_queue import discard, business_output
-from mix_runtime import MixRuntime, layer_profile, layer_state, _identity
+from mix_runtime import MixRuntime, layer_profile, layer_state, _identity, inspection
 from mix_descriptor import analysis_profile, operation_presets
 
 
@@ -1542,8 +1542,10 @@ class RotoPythonExt:
         try:
             data=inspector.op("inspector_data").module
             states=self.GetControlCatalog() if states is None else self._catalog_from_states(states)
+            mix=inspection(getattr(self,'_mix',None), self.ownerComp.fetch('mix_profile',None,search=False),
+                           connected=getattr(self,'_process',None) is not None and self._host.connected, plugin=self._host.plugin)
             signature=getattr(data,'projection_signature',None)
-            key=(getattr(inspector,'id',id(inspector)),data.refresh,signature(inspector,states)) if signature else None
+            key=(getattr(inspector,'id',id(inspector)),data.refresh,signature(inspector,states,mix=mix)) if signature else None
             if not force and key is not None and key==getattr(self,'_inspector_projection',None) and not inspector.fetch('refresh_error',''):
                 return
             if not force and key is not None:
@@ -1553,7 +1555,7 @@ class RotoPythonExt:
                 except NameError:
                     pass  # Pure Python callers have no TD event scheduler.
             if force:self._cancel_inspector_refresh()
-            data.refresh(inspector,states)
+            data.refresh(inspector,states,mix=mix)
             self._inspector_projection=key
             inspector.store("refresh_error", "")
         except Exception as exc:
@@ -2263,7 +2265,8 @@ class RotoPythonExt:
             follower.observe()
         if process is None:
             if follower is not None:
-                follower.flush(); self._publish()
+                follower.flush()
+            self._publish()
             return
         if not self._receive:
             self._receive_epoch = self._ingress_token()

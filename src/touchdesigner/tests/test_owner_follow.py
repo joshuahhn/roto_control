@@ -398,6 +398,7 @@ class OwnerFollowTests(unittest.TestCase):
             path = e.ownerComp.path
             def op(self,path):
                 if path=='inspector':return SimpleNamespace(fetch=lambda key,default=None:default,store=lambda key,value:None)
+                if path=='inspector/context_state':return SimpleNamespace(text='')
                 return e.ownerComp.op(path)
             def __getattr__(self,name): return getattr(e,name)
             @property

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "artifact": "ROTO-CONTROL.mix-inspector.1.toe",
+  "aliases": [
+    "ROTO-CONTROL.mix-inspector.toe"
+  ],
+  "sha256": "cd4f1136314a28495e170d266c317fcabc895ecb4dbd19431c2605e9fc56e347",
+  "save_date": "2026-10-18",
+  "touchdesigner_build": "2025.33230",
+  "runtime_source_commit": null,
+  "embedded_documentation_source_commit": null,
+  "source_working_tree": {
+    "base_commit": "4ec801656ac1f49f08d27913a6a0dfd48a7d74f4",
+    "uncommitted": true,
+    "identity": "Hashes identify embedded working source; saved from the dirty root checkout"
+  },
+  "runtime_source_sha256": {
+    "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
+    "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
+    "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
+    "free_learn": "1237d00f501ff03d5d15235f53468f121d234d979a6587efd60b332e90be843f",
+    "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
+    "RotoPythonExt": "be94aef276f89a63994cbd1d87f9b54974f78163f359202d1e8b2b0d7ad9332a",
+    "text_comp_follow": "b1327532d15587baf80367811b9e8d183bd8f7d6fa1c3f5267680619d2f11e01",
+    "collection_protocol": "4d71a39b52efd5244dc73b5a03307f20a940a5f9fd6be42844f34addcb1a8cc2",
+    "protocol": "ec595e46e0c7e4777b5b984e949052ae85da0ad64518b4b41cd60753a1980983",
+    "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
+    "setup": "b61f48ff7a8ebbada39d985212336dd8f222f633f3402c2e7766ef6f66f83629",
+    "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
+    "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
+    "layouts": "cbabd2f8754ada6ee6e1c8e8558c956d4b3171ef6a56feb47392b5381ec47c7a",
+    "target_callbacks": "862dccae82d72b65c0d5849b5346a0e9dfa3d6b5c536334aadf8452b48136bdb",
+    "inspector/inspector_data": "1829e667446191b9d997f0cdf810a513ff6c7b6526e011f7d0ea287155fd297d",
+    "inspector/owned_runtime": "7d57646b2d131434d5ed63cbb650af9e3edd7a2f0f3a9b9100d896e3772ae8a0",
+    "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
+    "midi_queue": "f6764da9005daa61bc34c5e9523759748b4ac38adc73c15f535c0a9a202cddcc",
+    "mix_descriptor": "66ef47a06afd19147f32a86bc3910425f5577691e9dd8a133c19ac856cc12869",
+    "mix_runtime": "408db7d3659840342889de8461a3970b4ea263cafc80e458901d6b2cbf4c333a",
+    "hardware_config": "7028e9f2bec75ed645fbcaa85882e3f7d54637886438bec2eb7e13abd8c54143",
+    "serial_read_process": "08680c7db636d9b0e7d31579ae4575970b989e83779f5dd1469626c9bec50b6e",
+    "inspector/inspector_model/live_model": "33f6c59317d87056a3966b5ef82139a7cc0060eff3e9dda37f2c1a4fd1f11177",
+    "inspector/inspector_model/base_commands/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f",
+    "inspector/inspector_below/ui": "94807f46ac0212b383e07e4281bb124c7cd95b1b3b57ff108dcc255399186b73",
+    "inspector/inspector_below/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f",
+    "inspector/inspector_popup/ui": "94807f46ac0212b383e07e4281bb124c7cd95b1b3b57ff108dcc255399186b73",
+    "inspector/inspector_popup/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f"
+  },
+  "embedded_documentation_sha256": {
+    "readme_md": "9310514be5cbf7c2a67178e0f40092cdfb16f19ed5fac4939e859338b541fda6",
+    "docs/overview_md": "22a80fee542fab579caa8b4190f3695f5ea36924492966a32daf8c75c2a79bd0",
+    "docs/fn_lifecycle_md": "c623cf33828e1485073396265a4ed5e241e52e12ef9c73693a2f5452738cfc92",
+    "docs/fn_serial_md": "972f1afcf93a2d6756101468d4a733a985aa91a671b4b8ba86353d1376cd49c7",
+    "docs/fn_mix_analysis_md": "94be526c28228a0248bfffd908c67e4477f1bcb579ff69a90d422752b9869dce",
+    "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
+    "docs/fn_layouts_md": "1b4cf2dc836669757ab57ce505c28708777ab0e7589e2527f01dba370f9dbd65",
+    "docs/fn_mix_md": "708defdcd308b17bc4ca1490db1b5ab394d55f3e62220f2c01baf22aa70e8397",
+    "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
+    "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
+    "docs/fn_inspector_md": "b96ca411e885bc68719e6ae8bf06ee59ba2664b86a094bf98a9a23629fb84717",
+    "docs/fn_actions_md": "368cf7bd47c2897383176b4c32d09c9df7fd9336a6481941a3432679709123fc",
+    "docs/fn_portability_md": "127def34799e6d3c2e30bf9a060904e16e905aa6dba8c62ee19f04d10eccaec6"
+  },
+  "generic_export_sha256": "0d7a873e3c9c94721ae5a9d44934af8b921c4ae50e3488299f7dcfb685f940d1",
+  "validation": {
+    "source_tests": 725,
+    "migration_gate": {
+      "files": 258,
+      "literal_snippets": 69,
+      "categories_zero": 8,
+      "unresolved_dynamic_expressions": 191
+    },
+    "native_styles": [
+      "Analysis 10 controls",
+      "Layer 12 controls including conditional Swap"
+    ],
+    "native_selector_callbacks": true,
+    "draft_token_clear_preserved": true,
+    "normal_value_and_unavailable_publication": true,
+    "actual_value_beyond_motor_range": true,
+    "same_path_replacement_withheld": true,
+    "repeat_node_ids_preserved": 3659,
+    "configured_generic_reload": {
+      "runtime_hashes": 30,
+      "documentation_hashes": 13,
+      "controls": [
+        4,
+        0
+      ],
+      "windows_closed": true,
+      "disconnected": true,
+      "serial": "never_read",
+      "external_dat_files": false
+    },
+    "actual_midi_plugin": {
+      "mapped_controls": 4,
+      "display_switches_no_tx_or_queue_or_value_changes": true
+    },
+    "auto_mode_observations": "synthetic native publication; no physical MIX transition",
+    "prototype_suite": "252 tests; same26 pre-existing Serial fake-adapter errors as PR34; no new errors",
+    "full_project_restart": false,
+    "physical_haptic_feel": false,
+    "evidence_directory": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-30-k3gw906t",
+    "saved_profile": "original Analysis Low/Mid;4 original PLUGIN controls",
+    "preservation": {
+      "nodes_before": 4897,
+      "nodes_after": 4913,
+      "node_ids_preserved": true,
+      "root_nodes_equal": true,
+      "storage_equal": true,
+      "old_storage_equal": true,
+      "custom_equal": true,
+      "custom_changes": {},
+      "errors": "",
+      "evaluated_live_values_excluded": [
+        "audioAnalysis.Low",
+        "audioAnalysis/low.Output",
+        "audioAnalysis/low/output.Value1"
+      ]
+    },
+    "windows_platform_tested": false
+  },
+  "previous_snapshot": "ROTO-CONTROL.recall-fixed.1.toe; preserved unchanged"
+}
