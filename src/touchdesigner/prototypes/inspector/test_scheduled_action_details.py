@@ -318,8 +318,9 @@ class ScheduledActionDetailsTests(TestCase):
         ext._actions.register('preset.clean', 'Clean', network.recalls.append)
         ext._actions.results['preset.clean'] = records[0]['action_result']
         controller.GetActions = ext.GetActions
-        ext.ownerComp = S(valid=True, op=lambda name: inspector,
+        ext.ownerComp = S(valid=True, op=lambda name: inspector, fetch=lambda name,default=None,**kwargs:default,
                           ext=S(RotoPythonExt=ext))
+        ext._host=S(connected=False,plugin=False)
         ext._layouts = S(owner_observation=observation)
         ext.GetControlCatalog = lambda: deepcopy(records)
         adapter = Adapter(); adapter.controller = controller

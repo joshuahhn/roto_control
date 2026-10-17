@@ -15,7 +15,7 @@ See the [file map](docs/index.md) for source, current contracts, historical repo
 
 Float/Int parameters use knobs. Toggle/Pulse parameters use buttons; hardware PUSH/TOGGLE is a separate setting and must match the Inspector Mapping section HW Type. Use PUSH for press/release Pulse feedback.
 
-Connection **Open Inspector** opens the controller-owned Fold view (with its popup editor). The alternate new presentation shares the internal model; no root sibling UI or Palette Lister is required. Inspector displays all 16 slots, mapped COMP/parameter, values, ranges and button modes. It supports optional explicit assignment, Re-learn, edits and confirmed Clear/Clear Device. Disconnect retains records. Save the containing TD project to retain mappings after reopen. Mapped target COMPs receive a tag and color.
+Connection **Open Inspector** opens the controller-owned Fold view (with its popup editor). The alternate new presentation shares the internal model; no root sibling UI or Palette Lister is required. The PLUGIN presentation displays all 16 slots, mapped COMP/parameter, values, ranges and button modes. It supports optional explicit assignment, Re-learn, edits and confirmed Clear/Clear Device. Disconnect retains records. Save the containing TD project to retain mappings after reopen. Mapped target COMPs receive a tag and color.
 
 ## Controls
 
@@ -24,6 +24,11 @@ Connect / Disconnect own the MIDI session. Device selects the exact port; Python
 The outer Control page has been removed. Use mapped target parameters or SetValue for value changes, and hardware LEARN/Inspector for learning. Offerparameter remains a Python method.
 
 ## Inputs and Outputs
+
+Inspector offers Auto / PLUGIN / MIX display selection. Its read-only MIX panel
+shows the applied profile/source and all assigned controls with current values
+and availability. Auto follows the connected observed mode; explicit MIX also
+works offline. Display changes preserve PLUGIN Browse and editor drafts.
 
 The [independent MIX controls](docs/functions/mix.md) add Low/Mid
 Threshold/Gain/Add/Smooth and wired Layer Mix Opacity/Brightness/Black Level/Gamma,

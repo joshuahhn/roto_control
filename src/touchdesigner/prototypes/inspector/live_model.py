@@ -43,7 +43,7 @@ class ControllerCatalog(CatalogModel):
     def __init__(self,adapter,schedule=None,commands_factory=None):
         super().__init__(schedule=schedule,capacity=4)
         self.adapter=adapter;self._source=OrderedDict();self._revisions={};self._info={}
-        self._serial=count(1);self._session=adapter.Session();self._status=adapter.Status();self._sync_count=0;self._hardware=None
+        self._serial=count(1);self._session=adapter.Session();self._status=adapter.Status();self._sync_count=0;self._hardware=None;self._mix=None
         if commands_factory is None:
             from commands import CommandService
             commands_factory=CommandService
@@ -134,12 +134,24 @@ class ControllerCatalog(CatalogModel):
         if hardware!=self._hardware:
             self._hardware=deepcopy(hardware)
             for context in {key for key,_ in self._subscribers.values()}:self._queue(context,65535,0)
+        observe=getattr(self.adapter,'MixObservation',None)
+        mix=observe() if observe else None
+        mix_changed=mix!=self._mix
+        if mix_changed:
+            self._mix=deepcopy(mix)
+            for context in {key for key,_ in self._subscribers.values()}:self._queue(context,0,0)
         status=self.adapter.Status();learn=bool(status.get('Learning'))
         if status!=self._status or learn!=self._learn or session_changed:
-            self._status=status;self._learn=learn;self._learn_dirty=True;self._request_flush()
+            display_only=(mix_changed and learn==self._learn and not session_changed and
+                          {k:v for k,v in status.items() if k!='ActivationReason'}==
+                          {k:v for k,v in self._status.items() if k!='ActivationReason'})
+            self._status=status;self._learn=learn
+            if not display_only:self._learn_dirty=True;self._request_flush()
         # Routing/registry changes also need to reach pinned and following views.
         for identity,(key,_) in list(self._subscribers.items()):
             if not self.adapter.Exists(key):self._queue(key,65535,65535)
+
+    def MixObservation(self):return deepcopy(self._mix)
 
     def HardwareSnapshot(self,context,slot):
         context=self._context(context);slot=self._slot(slot)
@@ -200,7 +212,7 @@ class ControllerCatalog(CatalogModel):
         return self.adapter.Reveal(info)
 
     def Shutdown(self):
-        self._hardware=None
+        self._hardware=None;self._mix=None
         super().Shutdown()
 
     def Stats(self):return dict(super().Stats(),data_mode='controller',sync_calls=self._sync_count)
@@ -267,6 +279,12 @@ class TDControllerAdapter:
         owner=getattr(extension,'_hardware_config',None)
         return dict(result=deepcopy(result),public=deepcopy(current.public),manifest=deepcopy(current.manifest),
                     available=available,quarantined=bool(c.GetLayoutContext().get('quarantined')),worker_active=bool(owner and owner.active))
+
+    def MixObservation(self):
+        import json
+        controller=self.controller
+        metadata=controller.op('inspector/context_state') if controller else None
+        return deepcopy(json.loads(metadata.text).get('mix')) if metadata is not None and metadata.text.strip() else None
 
     @staticmethod
     def _hardware_matches(observation):

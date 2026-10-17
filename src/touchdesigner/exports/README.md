@@ -1,11 +1,17 @@
 # Generic controller export
 
-The current export includes [Hardware snapshot Details](../docs/functions/serial.md#inspector-details)
-with explicit Read/Refresh and historical detected settings. Configured/generic
-component reloads match 30 runtime/Inspector and 13 document hashes. Source
-discovery passes 681 tests; the adjacent receipt separates this slice from older
-acceptance. Generic reload has no endpoint draft, detected readouts or saved
-observation and starts disconnected at `never_read`. No project restart was run.
+The current export includes read-only applied MIX inspection with Auto, PLUGIN,
+and MIX display selection. Its configured and sanitized generic reloads match
+30 runtime and 13 documentation hashes. Source discovery passes 725 tests;
+the named-command gate reports zero in all eight categories. The generic export
+has no applied profile, user mappings or retained MIX readouts, starts disconnected
+at never_read, and opens no windows. No project restart was run.
+
+The [receipt](roto_python.json) separates current MIX inspection evidence from
+prior Serial Details and physical control acceptance. Auto mode presentation was
+checked with synthetic native observations. Actual connected PLUGIN display
+switches preserved TX, queues, values, profile and registry. Physical MIX mode
+transitions remain unforced this round.
 
 Use [roto_python.tox](roto_python.tox) for the reusable controller. Its adjacent
 [receipt](roto_python.json) records the artifact SHA-256, source commit,

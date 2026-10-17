@@ -3354,3 +3354,61 @@ DAT texts changed. No TD/project restart occurred. The live project was saved as
 `exports/roto_python.tox` was refreshed from the verified generic export. Recovery
 copies were retained before replacement. Historical project snapshots remain.
 Full restart, expanded editor geometry, Windows and physical feel were not tested.
+
+
+## 2026-10-18 issue30 applied MIX Inspector
+
+The Inspector now has Auto, PLUGIN and MIX display choices. MIX is a separate
+read-only document over the applied descriptor and current runtime observations.
+It shows every assigned semantic control, actual values and unavailable reasons.
+Unapplied source/style drafts stay separate. Auto follows the connected observed
+mode; disconnected/unknown falls back to PLUGIN. Display-only notifications and
+choices retain PLUGIN Browse, Value/Mapping drafts, tokens and pending Clear.
+Existing genuine session/routing changes still invalidate stale tokens.
+
+Source discovery passes 725 tests. The finite named-command checker remains
+ZERO across eight categories over 258 Python files and 69 literal snippets; 191
+unresolved dynamic expressions remain explicitly listed. The broad prototype
+suite has exactly the same 26 pre-existing Serial fake-adapter errors as PR34,
+with no new failures. Independent same-model source review found and closed
+Device-deletion unsubscription, rounded-value precision loss, stale hidden menu
+callbacks and missing owned-window type preflight. The Show draft-loss case was
+also fixed. Source regressions prove those behaviors, not just callback wiring.
+
+Native TD acceptance used isolated Analysis and Layer sources. Both views
+received Gain12 through normal publication without manual Sync, kept the applied
+source despite a different draft, and showed source replacement unavailable with
+all ten values withheld. Empty/no-profile messages differ. The Layer readout
+shows all twelve assigned controls, native Add/Over captions and conditional
+Swap availability. Wrapped text uses native evalTextSize height and scrolls.
+Actual selector and scroll callbacks work. Both views retain drafts/tokens/Clear
+through explicit switches and repeated MIX opening, with identical target values,
+registry, profile, runtime counters and queues. Auto MIX/PLUGIN/unknown transitions
+were synthetic published observations; they are not physical mode acceptance.
+Actual MIDI PLUGIN connects with all four controls mapped. Display switches in
+that session add no TX or target writes and preserve queues/profile/registry.
+
+The additive updater preserves every existing node. Native TD creates sixteen
+new nodes: twelve explicit widgets/callbacks and four automatic text callback
+DATs. Repeated install preserves all 3659 configured-controller node IDs, storage,
+profile and target values/modes. Configured and generic tox reloads verify all
+30 runtime hashes, 13 current Markdown snapshots, clone-local imports, four/zero
+controls, closed windows, disconnected state, never_read and no external DATs.
+A deliberate invalid draft initially produced a native OP-parameter warning;
+using an existing alternate draft source removed that fixture warning before
+final configured reload. It was not a runtime defect.
+
+After fixtures were removed, the original controller was upgraded. All 4897 old
+node/type/ID entries remain, with sixteen additions. Static custom values/modes,
+expressions, user storage, old-controller storage and root nodes match. Only the
+three evaluated live Low/output samples are excluded from value comparison;
+their modes/expressions remain exact. Recovery precedes mutation and the old
+full-build marker is cleared only after success.
+
+Saved project: `projects/current/ROTO-CONTROL.mix-inspector.1.toe`, identical alias
+and receipt. It retains original Analysis Low/Mid and four PLUGIN controls.
+The verified sanitized generic export replaces only the canonical generic pair;
+73 other previous artifact entries retain their bytes. No TD/project restart,
+Windows, physical MIX transition or physical feel test was performed. TD remains
+open and disconnected. Audio26 remains deferred. Decision evidence is indexed
+in the canonical repository TSV.

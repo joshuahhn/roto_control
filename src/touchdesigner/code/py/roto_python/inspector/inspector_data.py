@@ -40,7 +40,7 @@ def hardware_revision(inspector):
     return revision if type(revision) is int else 0
 
 
-def projection_signature(inspector, states):
+def projection_signature(inspector, states, *, mix=None):
     """Inputs read by refresh; states is the caller's detached catalog snapshot.
 
     The controller holds at most one signature in transient extension state.
@@ -51,14 +51,14 @@ def projection_signature(inspector, states):
     focus=get_focus().get('status') if get_focus is not None else None
     return (states,context(inspector),action_diagnostics(inspector),inspector.fetch('selected_page','All COMPs'),
             copy.deepcopy(inspector.fetch('pending_clear',None)),hardware_revision(inspector),
-            inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value'),focus)
+            inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value'),focus,mix)
 
 
 def _page(state):
     return state['comp'] or ('Action presets' if state['binding_type']=='action' else 'Python callbacks')
 
 
-def refresh(inspector, states):
+def refresh(inspector, states, *, mix=None):
     current=context(inspector)
     metadata=inspector.op('context_state')
     if metadata is not None:
@@ -66,7 +66,7 @@ def refresh(inspector, states):
         controller=inspector.parent()
         snapshot=dict(hardware_revision=hardware_revision(inspector),routing={k:v for k,v in current.items() if k!='revision'},
                       layouts=controller.GetLayouts() if current.get('key') is not None and not current.get('legacy') else [],
-                      actions=action_diagnostics(inspector))
+                      actions=action_diagnostics(inspector),mix=copy.deepcopy(mix))
         content=json.dumps(snapshot,ensure_ascii=True,sort_keys=True)+'\n'
         if metadata.text.replace('\r\n','\n')!=content:metadata.text=content
     pending = inspector.fetch('pending_clear', None)

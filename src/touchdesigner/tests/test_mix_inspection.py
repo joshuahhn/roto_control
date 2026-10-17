@@ -57,6 +57,63 @@ class MixInspectionTests(unittest.TestCase):
         self.assertEqual(saved, before)
         self.assertEqual(mix_runtime.inspection(None, None, connected=False, plugin=False)['status'], 'empty')
 
+    def test_saved_scope_change_does_not_reuse_previous_runtime_targets(self):
+        e,mix,*_=test_mix.MixTests().fixture()
+        saved=copy.deepcopy(e.ownerComp.fetch('mix_profile',None,search=False));saved['scope']='missing_scope'
+        resolve=e.ownerComp.op;e.ownerComp.op=lambda name:None if name=='missing_scope' else resolve(name)
+        view=mix_runtime.inspection(mix,saved,connected=False,plugin=False)
+        self.assertEqual(view['scope'],'missing_scope');self.assertFalse(view['available'])
+        self.assertTrue(all(control['value'] is None for item in view['items'] for control in item['controls']))
+
+    def test_retargeted_td_proxy_does_not_make_a_replacement_source_available(self):
+        e,mix,_,_,source,*_=test_mix.MixTests().fixture()
+        source.id+=1
+        self.assertFalse(self.observe(e,mix)['available'])
+
+    def test_all_six_analysis_items_and_every_layer_control_are_inspected(self):
+        from mix_descriptor import analysis_profile
+        e,mix,*_=test_mix.MixTests().fixture()
+        mix.configure(mix.scope,analysis_profile('analysis',bands=['Low','Mid','High','Kick','Snare','Rhythm']))
+        view=self.observe(e,mix)
+        self.assertEqual([item['label'] for item in view['items']],['Low','Mid','High','Kick','Snare','Rhythm'])
+        self.assertEqual([len(item['controls']) for item in view['items']],[5,5,5,2,2,2])
+        self.assertTrue(all(control['available'] for item in view['items'] for control in item['controls']))
+        e,mix,source=test_mix.MixTests().operation_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+        view=self.observe(e,mix)
+        self.assertEqual([len(item['controls']) for item in view['items']],[6,6])
+        self.assertTrue(all(control['available'] for item in view['items'] for control in item['controls']))
+
+    def test_empty_configured_profile_and_drafts_do_not_change_applied_observation(self):
+        e,mix,_,_,source,*_=test_mix.MixTests().fixture()
+        profile=copy.deepcopy(mix.profile);profile['items']=[]
+        mix.configure(mix.scope,profile)
+        before=self.observe(e,mix)
+        self.assertEqual(before['status'],'applied');self.assertEqual(before['items'],[])
+        e.ownerComp.store('mix_draft',dict(source='different',style='layers'))
+        self.assertEqual(self.observe(e,mix),before)
+        self.assertEqual(mix.state()['inspection'],before)
+
+    def test_runtime_restore_failure_keeps_saved_profile_and_observation_does_not_initialize(self):
+        e,mix,*_=test_mix.MixTests().fixture()
+        saved=copy.deepcopy(e.ownerComp.fetch('mix_profile',None,search=False))
+        mix.profile=None;mix.error='Missing source'
+        before=(dict(mix.targets),dict(mix.errors),mix.error,mix.epoch,mix.layer_invalid)
+        view=self.observe(e,mix)
+        self.assertEqual(view['reason'],'Missing source');self.assertEqual(view['profile'],saved['descriptor']['id'])
+        self.assertEqual((dict(mix.targets),dict(mix.errors),mix.error,mix.epoch,mix.layer_invalid),before)
+        self.assertEqual(e.ownerComp.fetch('mix_profile',None,search=False),saved)
+
+    def test_disconnected_retained_mode_is_unknown_and_business_scope_guard_is_unchanged(self):
+        e,mix,source=test_mix.MixTests().operation_fixture()
+        e.ConfigureMixLayers(mix.scope,'layer_mix');mix.active=True
+        saved=e.ownerComp.fetch('mix_profile',None,search=False)
+        self.assertEqual(self.observe(e,mix)['hardware'],'unknown')
+        self.assertEqual(mix_runtime.inspection(mix,saved,connected=True,plugin=False)['hardware'],'MIX')
+        mix.active=False
+        self.assertEqual(mix_runtime.inspection(mix,saved,connected=True,plugin=True)['hardware'],'PLUGIN')
+        mix.scope.valid=False
+        self.assertFalse(mix.source_valid());self.assertFalse(mix.layer_invalid)
+
     def test_missing_target_and_source_keep_applied_assignment_rows(self):
         e, mix, _, _, source, _, operators = test_mix.MixTests().fixture()
         source.par['Lowgain'] = None

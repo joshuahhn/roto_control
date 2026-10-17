@@ -163,7 +163,7 @@ def sanitize(controller):
         for node in view.findChildren():
             if node.OPType == 'textCOMP' and (node.name in (
                     'text_name', 'text_value', 'text_status', 'text_details',
-                    'text_count', 'text_check', 'field_endpoint') or
+                    'text_count', 'text_check', 'field_endpoint', 'text_mix_document') or
                     node.name.startswith('value') or node.name.startswith('menu_name')):
                 node.par.text.expr = ''
                 node.par.text.val = ''
