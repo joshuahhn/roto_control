@@ -24,6 +24,8 @@ def reset_registration(clone):
     clone.ext.RotoPythonExt._snapshots = None
     clone.ext.RotoPythonExt._snapshot_error = ''
     clone.ext.RotoPythonExt._mix = None
+    if getattr(getattr(clone, 'par', None), 'Mixsource', None) is not None:
+        clone.op('setup').module.reset_mix_ui(clone)
     clone.op('registration').text = (
         'def onRegister(controller):\n'
         '    # Register your parameters/callbacks here, then select Python registration.\n'

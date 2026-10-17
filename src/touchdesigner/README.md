@@ -29,7 +29,7 @@ The [independent MIX controls](docs/functions/mix.md) add Low/Mid
 Threshold/Gain/Add/Smooth and wired Layer Mix Opacity/Brightness/Black Level/Gamma,
 curated Operation libraries and conditional Swap,
 with read-only native meters. One source/style profile is active at a time. The generic export includes
-this API-configured slice. Touch selects Low/Mid and FUNC opens details; the
+the MIX draft/Apply custom parameter page and the matching Python APIs. Touch selects Low/Mid and FUNC opens details; the
 overview On/Off buttons toggle each band's Active. Focus buttons retain item
 selection. The saved demo project and Quick Start above retain their PLUGIN setup.
 

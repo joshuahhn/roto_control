@@ -1,6 +1,7 @@
 """Independent analysis and Layer Mix routing on the existing MIDI connection."""
 import copy
 import math
+import posixpath
 import time
 from binding import Binding, parameter_chain, parameter_value, same_parameter
 from mix_descriptor import validate, projection, button_projection, limits, reference, FLOAT_KEYS
@@ -69,7 +70,7 @@ def layer_profile(scope, source, *, operation_library='common', custom_operation
                         raise ValueError('MIX Operation choice is not in the current TD menu')
                     controls[key]['choices'] = list(choices)
         item = dict(id='input.' + str(index), label='Input ' + str(index + 1),
-                    input=reference(scope.relativePath(image)), primary='opacity' if 'opacity' in controls else None,
+                    input=reference(posixpath.relpath(image.path, scope.path)), primary='opacity' if 'opacity' in controls else None,
                     controls=controls)
         if 'opacity' in controls:
             item['meter'] = dict(source=dict(kind='parameter', op=source, parameter=controls['opacity']['target']['parameter']),
@@ -269,7 +270,7 @@ class MixRuntime:
         self.select_pending = True
         self.invalidate()
         if save:
-            self.e.ownerComp.store('mix_profile', dict(scope=self.e.ownerComp.relativePath(scope), descriptor=copy.deepcopy(profile)))
+            self.e.ownerComp.store('mix_profile', dict(scope=posixpath.relpath(scope.path, self.e.ownerComp.path), descriptor=copy.deepcopy(profile)))
 
     def invalidate(self):
         self.epoch += 1
@@ -614,5 +615,5 @@ class MixRuntime:
     def refresh_scope(self):
         """Retain an explicitly configured scope through a live rename/save."""
         if self.source_valid():
-            self.e.ownerComp.store('mix_profile', dict(scope=self.e.ownerComp.relativePath(self.scope),
+            self.e.ownerComp.store('mix_profile', dict(scope=posixpath.relpath(self.scope.path, self.e.ownerComp.path),
                                                        descriptor=copy.deepcopy(self.profile)))

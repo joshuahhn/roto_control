@@ -11,7 +11,7 @@ def install(controller, source_dir):
     if extension._process is not None:
         raise ValueError('Disconnect before MIX upgrade')
     source = Path(source_dir) / 'code/py/roto_python'
-    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'RotoPythonExt', 'lifecycle_callbacks')
+    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'setup', 'RotoPythonExt', 'lifecycle_callbacks')
     texts = {name: (source / (name + '.py')).read_text(encoding='utf-8') for name in names}
     if getattr(extension, '_layouts', None) is not None:
         extension._layouts.capture(force=True)
@@ -46,4 +46,5 @@ def install(controller, source_dir):
     controller.initializeExtensions(0)
     if controller.Applybinding() is False:
         raise RuntimeError('MIX upgrade binding restore failed')
+    controller.op('setup').module.install_mix_ui(controller)
     return controller

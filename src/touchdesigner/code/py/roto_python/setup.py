@@ -1,5 +1,121 @@
 """Apply persisted TD configuration through the public binding interface."""
 import copy
+import posixpath
+
+
+MIX_CUSTOM_PARAMETERS = tuple('Mixcustom' + str(i) for i in range(1, 5))
+MIX_NO_OPERATION = '__none__'
+
+
+def refresh_mix_ui(controller):
+    """Refresh draft choices only; preserve an unavailable choice until Apply."""
+    source = controller.par.Mixsource.eval()
+    names, labels = [MIX_NO_OPERATION], ['None']
+    if source is not None and source.valid and source.OPType == 'layermixTOP':
+        menu = source.par.operand
+        for name, label in zip(menu.menuNames, menu.menuLabels):
+            if name != 'opperlayer':
+                names.append(name); labels.append(label)
+    for name in MIX_CUSTOM_PARAMETERS:
+        parameter = getattr(controller.par, name)
+        value = parameter.eval()
+        parameter.menuNames = names + ([value] if value not in names else [])
+        parameter.menuLabels = labels + (['Unavailable: ' + value] if value not in names else [])
+        parameter.val = value
+
+
+def install_mix_ui(controller):
+    """Install an explicit-Apply draft editor without changing MIX assignments."""
+    page = next((p for p in controller.customPages if p.name == 'MIX'), None)
+    page = page if page is not None else controller.appendCustomPage('MIX')
+    new_source = getattr(controller.par, 'Mixsource', None) is None
+    definitions = [('Mixstyle', 'Menu', 'Draft style', 'analysis'),
+                   ('Mixsource', 'OP', 'Draft source', ''),
+                   ('Mixoperationlibrary', 'Menu', 'Operation library', 'common')]
+    definitions += [(name, 'Menu', 'Custom blend ' + str(i), MIX_NO_OPERATION)
+                    for i, name in enumerate(MIX_CUSTOM_PARAMETERS, 1)]
+    definitions += [('Applymix', 'Pulse', 'Apply MIX draft', None),
+                    ('Clearmix', 'Pulse', 'Clear MIX assignments', None),
+                    ('Mixsummary', 'Str', 'Applied MIX', 'Unassigned')]
+    for order, (name, kind, label, default) in enumerate(definitions):
+        parameter = getattr(controller.par, name, None)
+        new_parameter = parameter is None
+        if new_parameter:
+            parameter = getattr(page, 'append' + kind)(name, label=label)[0]
+        if name == 'Mixstyle':
+            parameter.menuNames = ['analysis', 'layers']
+            parameter.menuLabels = ['Analysis (Low / Mid)', 'Layer Mix inputs']
+        elif name == 'Mixoperationlibrary':
+            parameter.menuNames = ['common', 'contrast', 'math']
+            parameter.menuLabels = ['Common', 'Contrast', 'Math']
+        elif kind == 'Menu' and new_parameter:
+            parameter.menuNames = [MIX_NO_OPERATION]
+            parameter.menuLabels = ['None']
+        if new_parameter:
+            if default is not None:
+                parameter.default = parameter.val = default
+        parameter.order = order
+        parameter.help = 'Draft only. Apply MIX draft replaces the current MIX profile without changing target values or PLUGIN mappings.'
+    for name in ('Mixoperationlibrary', *MIX_CUSTOM_PARAMETERS):
+        getattr(controller.par, name).enableExpr = "me.par.Mixstyle == 'layers'"
+    controller.par.Mixoperationlibrary.startSection = True
+    controller.par.Applymix.startSection = True
+    controller.par.Mixsummary.readOnly = True
+    controller.par.Mixsummary.help = 'Currently applied profile. Draft edits take effect only after Apply. Audio Gain/Mute is not available yet.'
+    if new_source:
+        saved = controller.fetch('mix_profile', None, search=False)
+        if saved:
+            descriptor = saved['descriptor']
+            scope = controller.op(saved['scope'])
+            source = scope.op(descriptor['source']) if scope is not None else None
+            controller.par.Mixstyle.val = descriptor['style']
+            if source is not None:
+                controller.par.Mixsource.val = posixpath.relpath(source.path, controller.path)
+            refresh_mix_ui(controller)
+            if descriptor['style'] == 'layers':
+                from mix_runtime import OPERATION_LIBRARIES
+                choices = next((item['controls']['operation']['choices'] for item in descriptor['items']
+                                if 'operation' in item['controls']), [])
+                for library, prefix in OPERATION_LIBRARIES.items():
+                    if choices[:len(prefix)] == list(prefix):
+                        controller.par.Mixoperationlibrary.val = library
+                        for name, choice in zip(MIX_CUSTOM_PARAMETERS, choices[len(prefix):]):
+                            getattr(controller.par, name).val = choice
+                        break
+    refresh_mix_ui(controller)
+    callbacks = controller.op('parameter_callbacks')
+    watched = callbacks.par.pars.eval().split()
+    callbacks.par.pars = ' '.join(watched + [name for name in ('Mixsource', 'Mixstyle', 'Applymix', 'Clearmix') if name not in watched])
+    controller.ext.RotoPythonExt._sync_mix_summary()
+
+
+def apply_mix_ui(controller):
+    source = controller.par.Mixsource.eval()
+    if source is None or not source.valid:
+        raise ValueError('Choose an existing MIX source')
+    style = controller.par.Mixstyle.eval()
+    if style == 'analysis':
+        if not source.isCOMP or any(getattr(source.par, band + suffix, None) is None
+                                    for band in ('Low', 'Mid') for suffix in ('thresh', 'gain', 'add', 'smooth', 'active')):
+            raise ValueError('Choose an audioAnalysis COMP with Low/Mid controls')
+        return controller.ConfigureMixAnalysis(source.parent(), source.name)
+    if style == 'layers':
+        return controller.ConfigureMixLayers(source.parent(), source.name,
+            operation_library=controller.par.Mixoperationlibrary.eval(),
+            custom_operations=[getattr(controller.par, name).eval() for name in MIX_CUSTOM_PARAMETERS
+                               if getattr(controller.par, name).eval() != MIX_NO_OPERATION])
+    raise ValueError('Choose Analysis or Layer Mix; audio processing remains planned')
+
+
+def reset_mix_ui(controller):
+    """Remove user source references from a generic export clone's draft."""
+    controller.par.Mixstyle.val = 'analysis'
+    controller.par.Mixsource.val = ''
+    controller.par.Mixoperationlibrary.val = 'common'
+    for name in MIX_CUSTOM_PARAMETERS:
+        getattr(controller.par, name).val = MIX_NO_OPERATION
+    refresh_mix_ui(controller)
+    controller.ext.RotoPythonExt._sync_mix_summary()
 
 
 # SysEx API v1.6 Appendix A. Index 47 prints a non-hex G component, BO;
@@ -269,6 +385,7 @@ def configure_ui(controller):
     install_follow_ui(controller)
     install_device_ui(controller)
     combine_context_pages(controller)
+    install_mix_ui(controller)
     manager=getattr(controller.ext.RotoPythonExt,'_layouts',None)
     if manager is not None:manager.menu()
     return mode

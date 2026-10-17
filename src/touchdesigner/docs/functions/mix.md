@@ -12,6 +12,26 @@ retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lo
 
 ## Configure an existing source
 
+Use the controller's **MIX** custom parameter page:
+
+1. Choose Draft style: Analysis (Low / Mid) or Layer Mix inputs.
+2. Drag the existing audioAnalysis COMP or Layer Mix TOP onto Draft source.
+3. For Layer Mix, choose Common/Contrast/Math and up to four optional Custom
+   blend menus. These show the source's complete TD blend list plus None.
+4. Release knobs, exit LEARN, then press Apply MIX draft. Applied MIX shows the
+   accepted profile. Invalid configuration leaves the previous profile active.
+
+Draft edits do not change routing or target values. Draft and applied settings
+persist separately; loading never applies an unfinished draft. Clear MIX
+assignments removes only the active MIX profile and keeps the draft for reuse.
+It also requires released knobs, exit from LEARN and no parameter dispatch.
+Neither pulse connects hardware. The editor never enables Layer Mix Setup or
+Per Layer Operation; configure those intentionally on the source first.
+An unavailable saved custom choice remains labelled Unavailable until replaced;
+Apply rejects it instead of silently choosing a different mode.
+
+The same configuration remains available from Python:
+
 Execute in TD against an upgraded controller:
 
 ```python
@@ -90,7 +110,8 @@ controller.ConfigureMixLayers(
 Append up to four custom existing TD menu names; duplicates are omitted while
 retaining the first occurrence. Saved choices are names, never renamed TD menu
 indices. Invalid names/library settings reject registration without replacing
-the previous profile. This is an API, without a library editor UI.
+the previous profile. The MIX custom parameter page exposes these library and
+custom choices as an explicit-Apply draft.
 
 The real TD menu retains all options and labels for identity validation. The
 controller only steps through its chosen list. `Op 2 Add` means the second choice
@@ -184,13 +205,14 @@ Overview Pan/Send input has source coverage; it has not had physical acceptance
 in this slice. Trigger indicators, High/Kick adapters, second-page Focus and the slot
 editor are later slices. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
-they were not individually checked on hardware. A library editor and mixed-style
-slots remain planned; audio Gain/Mute processing is deferred to
+they were not individually checked on hardware. The editor configures one
+source/style profile, without per-item libraries or mixed-style slots;
+audio Gain/Mute processing is deferred to
 [issue #26](https://github.com/joshuahhn/roto_control/issues/26).
 
 For a current disconnected controller, make a recovery `.tox` through TD, then
 execute `scripts/upgrade_mix.py` and call `install(controller, source_dir)`. It
-embeds three helpers and refreshes Binding and the extension/lifecycle source, preserving
+embeds three helpers and refreshes Binding, setup and the extension/lifecycle source, preserving
 existing mappings and target values. Generic export clears the MIX profile and
 starts disconnected with no user paths. The older full Inspector builder has a separate
 ASCII-locale source-loading limitation in this TD process; this upgrader does

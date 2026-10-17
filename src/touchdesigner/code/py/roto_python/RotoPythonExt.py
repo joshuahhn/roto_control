@@ -69,6 +69,21 @@ class RotoPythonExt:
         if helper is not None:
             self._follow = helper.module.CompFollower(self)
         self._publish()
+        self._sync_mix_summary()
+
+    def _sync_mix_summary(self, error=''):
+        parameter = getattr(self.ownerComp.par, 'Mixsummary', None)
+        if parameter is None:
+            return
+        saved = self.ownerComp.fetch('mix_profile', None, search=False)
+        summary = 'Unassigned'
+        if saved:
+            profile = saved['descriptor']
+            scope = self.ownerComp.op(saved['scope'])
+            source = scope.op(profile['source']) if scope is not None else None
+            path = source.path if source is not None else saved['scope'] + '/' + profile['source']
+            summary = profile['style'] + ': ' + path + ' | ' + ', '.join(item['label'] for item in profile['items'])
+        parameter.val = ('MIX change failed: ' + error + ' | Active: ' if error else '') + summary
 
     def _mix_manager(self):
         if getattr(self, '_mix', None) is None:
@@ -78,6 +93,7 @@ class RotoPythonExt:
     def SetMixProfile(self, scope, descriptor):
         """Save independent MIX targets; never connect or restore target values."""
         self._mix_manager().configure(scope, descriptor)
+        self._sync_mix_summary()
         return self.GetMixProfile()
 
     def ConfigureMixAnalysis(self, scope, source='audioAnalysis', bands=('Low', 'Mid')):
@@ -98,11 +114,12 @@ class RotoPythonExt:
 
     def ClearMixProfile(self):
         mix = self._mix_manager()
-        if mix.touched:
-            raise ValueError('Release MIX knobs before clearing configuration')
+        if self._dispatching or mix.touched or self._host.touched or self._host.learning:
+            raise ValueError('Exit LEARN and release knobs before clearing MIX configuration')
         self.ownerComp.store('mix_profile', None)
         mix.profile = None; mix.targets.clear(); mix.meters.clear(); mix.errors.clear()
         mix.invalidate()
+        self._sync_mix_summary()
 
     def _mix_mode_boundary(self):
         """Cancel queued business work while retaining session and frame tails."""
@@ -1647,6 +1664,9 @@ class RotoPythonExt:
         return result
 
     def onParValueChange(self, par, prev):
+        if par.name in ('Mixsource', 'Mixstyle'):
+            self.ownerComp.op('setup').module.refresh_mix_ui(self.ownerComp)
+            return
         follower = getattr(self, '_follow', None)
         if follower is not None and par.name in ('Followcomp', 'Focuscomp'):
             try:
@@ -1765,6 +1785,15 @@ class RotoPythonExt:
         return self.ownerComp.op('inspector/owned_runtime').module.open_inspector(self.ownerComp)
 
     def onParPulse(self, par):
+        if par.name in ('Applymix', 'Clearmix'):
+            try:
+                if par.name == 'Applymix':
+                    self.ownerComp.op('setup').module.apply_mix_ui(self.ownerComp)
+                else:
+                    self.ClearMixProfile()
+            except ValueError as exc:
+                self._sync_mix_summary(str(exc))
+            return
         if par.name in ('Newplugin','Deleteplugin'):
             manager=self._layout_manager();layout_id=manager.data['active'];track_id=manager.track()['id']
             try:

@@ -1998,3 +1998,31 @@ serial or binary changes. No runtime implementation or Float-step feature was
 added. Documentation links/consistency and diff check are the applicable checks;
 the prior 531 runtime tests remain the evidence for unchanged source. No
 save/export or receipt refresh is needed for this Markdown-only update.
+
+## MIX draft editor — 2026-10-17
+
+Source baseline `d97b7fa`. The controller gains a MIX custom parameter page for
+Analysis Low/Mid or Layer Mix source, an Operation library and four custom blend
+menus. Draft changes do not configure routing; Apply uses the existing guarded
+API, and Clear removes only MIX assignments. Saved draft and applied descriptor
+remain independent. Generic export removes both profile and draft source paths.
+Audio and mixed-style/per-item slot editing remain deferred.
+
+Native checks caught TD's initial Menu placeholder replacing a default assigned
+before its choices. Installation now sets choices first. A cross-COMP test also
+found `relativePath` yielding an unresolvable saved scope in this TD process;
+MIX now computes relative paths from actual POSIX OP paths, with a save/reload
+regression. Existing same-parent assignments keep their paths and routing.
+
+Final relevant source passes 541 discovery tests, including nine editor cases
+and the added cross-COMP persistence case. Focused development checks passed
+66 tests. A disconnected native fixture accepted Analysis and Layer Mix through
+real parameter pulses, rejected a missing source without replacing the active
+profile, exposed all 46 blend modes, selected Math + Xor/Z Film, retained an
+unapplied Screen draft across configured tox reload and cleared MIX through its
+pulse. Target writes stayed zero. This is UI/configuration acceptance, not new
+hardware acceptance; earlier accepted MIDI routes are reused. Fixture/evidence
+is system temporary `roto-mix-editor.uBd5Rj1xBh`.
+An additional native saved-tox reload resolves the Analysis scope across root
+COMPs, rebuilding all ten targets without value recall. All temporary fixture
+operators were removed. Live installation and generic publication follow below.

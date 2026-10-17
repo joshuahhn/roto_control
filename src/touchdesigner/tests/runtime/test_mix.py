@@ -602,6 +602,22 @@ class MixTests(unittest.TestCase):
         self.assertIsNone(e.ownerComp.fetch('mix_profile')); self.assertIsNone(e._mix)
         self.assertEqual(source.par.Lowgain.eval(), 2)
 
+    def test_cross_comp_scope_is_resolvable_after_save_and_reload(self):
+        e, mix, _, _, source, *_ = self.fixture()
+        scope = mix.scope
+        e.ownerComp.path = '/other/controller'
+        old_op = e.ownerComp.op
+        e.ownerComp.op = lambda name: scope if name == '../../demo' else old_op(name)
+        e.ConfigureMixAnalysis(scope, 'analysis')
+        self.assertEqual(e.GetMixProfile()['scope'], '../../demo')
+        mix.refresh_scope()
+        self.assertEqual(e.GetMixProfile()['scope'], '../../demo')
+        restored = MixRuntime(e)
+        self.assertIs(restored.scope, scope)
+        self.assertEqual(len(restored.targets), 10)
+        self.assertEqual(restored.writes, 0)
+        self.assertEqual(source.par.Lowgain.eval(), 2)
+
     def test_rms_and_scalar_feedback_have_explicit_separate_ranges(self):
         e, mix, _, _, _, channels, _ = self.fixture()
         channels['low'].vals = [.5, -.5]
