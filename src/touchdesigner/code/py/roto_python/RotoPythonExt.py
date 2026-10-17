@@ -5,6 +5,7 @@ from contextlib import nullcontext, contextmanager
 import json
 import os
 from pathlib import Path
+import posixpath
 import shutil
 import subprocess
 import time
@@ -13,7 +14,7 @@ from binding import parameter_value, same_parameter
 from protocol import text13
 from snapshots import Snapshots
 from midi_queue import discard, business_output
-from mix_runtime import MixRuntime, layer_profile
+from mix_runtime import MixRuntime, layer_profile, layer_state, _identity
 from mix_descriptor import analysis_profile, operation_presets
 
 
@@ -62,6 +63,10 @@ class RotoPythonExt:
         self._page_caption = None
         self._inspector_refresh_run = None
         self._mix = None
+        self._mix_preset_drain = False
+        self._mix_ui_depth = 0
+        selector = getattr(ownerComp.par, 'Mixoperationpreset', None)
+        self._mix_ui_selection = selector.eval() if selector is not None else '__draft__'
         learner = ownerComp.op("free_learn")
         self._free_learner = learner.module.FreeLearner(self) if learner is not None else None
         self._host = ownerComp.op("protocol").module.Host(
@@ -82,9 +87,28 @@ class RotoPythonExt:
             profile = saved['descriptor']
             scope = self.ownerComp.op(saved['scope'])
             source = scope.op(profile['source']) if scope is not None else None
-            path = source.path if source is not None else saved['scope'] + '/' + profile['source']
+            path = source.path if source is not None else posixpath.normpath(
+                posixpath.join(self.ownerComp.path, saved['scope'], profile['source']))
             summary = profile['style'] + ': ' + path + ' | ' + ', '.join(item['label'] for item in profile['items'])
+            if profile['style'] == 'layers':
+                choices = [item['controls'].get('operation', {}).get('choices', []) for item in profile['items']]
+                if choices and all(value == choices[0] for value in choices):
+                    summary += ' | Operation: ' + (', '.join(choices[0]) or 'None')
+                else:
+                    summary += ' | ' + '; '.join(item['label'] + ' Operation: ' + (', '.join(value) or 'None')
+                                                for item, value in zip(profile['items'], choices))
         parameter.val = ('MIX change failed: ' + error + ' | Active: ' if error else '') + summary
+
+    @contextmanager
+    def _mix_ui_update(self):
+        self._mix_ui_depth = getattr(self, '_mix_ui_depth', 0) + 1
+        try:
+            yield
+        finally:
+            self._mix_ui_depth -= 1
+            if not self._mix_ui_depth:
+                selector = getattr(self.ownerComp.par, 'Mixoperationpreset', None)
+                self._mix_ui_selection = selector.eval() if selector is not None else '__draft__'
 
     def _mix_manager(self):
         if getattr(self, '_mix', None) is None:
@@ -132,6 +156,93 @@ class RotoPythonExt:
         self.ownerComp.store('mix_operation_presets', dict(version=1, records=[r for r in records if r['id'] != preset_id]))
         if getattr(self.ownerComp.par, 'Mixoperationpreset', None) is not None:
             self.ownerComp.op('setup').module.refresh_mix_presets_ui(self.ownerComp)
+
+    def _require_mix_preset_idle(self, *, probe=False):
+        if self._dispatching or self._restoring or self._restore_pending:
+            raise ValueError('MIX configuration is busy dispatching or restoring; retry after it completes')
+        if self._host.touched or self._host.learning:
+            raise ValueError('PLUGIN input is busy; finish the current input before selecting a MIX preset')
+        mix = getattr(self, '_mix', None)
+        if mix is not None and (mix.touched or mix.returning):
+            raise ValueError('MIX input or mode transition is busy; finish the gesture and select the preset again')
+        if getattr(self, '_mix_preset_drain', False) or self._receive:
+            raise ValueError('MIX input is draining; select the preset again after input settles')
+        process = self._process
+        if process is None:
+            return
+        if process.poll() is not None or not self._transport_ready:
+            raise ValueError('MIDI process is unavailable or still connecting; select the preset again when ready')
+        if not probe:
+            return
+        token = self._ingress_token()
+        try:
+            chunk = os.read(process.stdout.fileno(), 65536)
+        except BlockingIOError:
+            return
+        except (OSError, ValueError) as exc:
+            raise ValueError('MIDI input unavailable: ' + str(exc)) from exc
+        if not chunk:
+            raise ValueError('MIDI input closed; preset was not activated')
+        self._receive_epoch = token
+        self._receive += chunk
+        raise ValueError('MIX input is waiting; select the preset again after input settles')
+
+    def ActivateMixOperationPreset(self, preset_id, *, source):
+        """Replace only active layer Operation choices from a saved preset record."""
+        record = next((r for r in self.GetMixOperationPresets() if r['id'] == preset_id), None)
+        if record is None:
+            raise ValueError('Choose an existing saved Operation preset')
+        self._require_mix_preset_idle()
+        mix = self._mix_manager()
+        try:
+            if not mix.profile or mix.profile['style'] != 'layers' or mix.layer_invalid:
+                raise ValueError('Apply a valid Layer Mix source before activating a preset')
+            scope = mix.scope
+            if scope is None or not scope.valid or not scope.isCOMP:
+                raise ValueError('Applied MIX scope is unavailable; Apply the source again')
+            active_source = scope.op(mix.profile['source'])
+            if (source is None or not source.valid or source.OPType != 'layermixTOP'
+                    or active_source is None or not active_source.valid or mix.source is None or not mix.source.valid
+                    or _identity(source) != _identity(mix.source) or _identity(active_source) != _identity(mix.source)):
+                raise ValueError('Preset needs the same applied Layer Mix source; use Apply to change source')
+            if layer_state(source) != mix.layer_state:
+                raise ValueError('Layer Mix inputs or Setup changed; Apply the source again')
+            items = mix.profile['items']
+            if (len(items) != len(source.inputs) or any(
+                    scope.op(item['input']) is None or not scope.op(item['input']).valid
+                    or _identity(scope.op(item['input'])) != _identity(image)
+                    for item, image in zip(items, source.inputs))):
+                raise ValueError('Layer Mix input references changed; Apply the source again')
+            expected = {(index, key) for index, item in enumerate(items) for key in item['controls']}
+            if mix.errors or set(mix.targets) != expected:
+                raise ValueError('Applied MIX targets are unavailable; repair and Apply the source again')
+            for target in mix.targets.values():
+                target.check()
+            candidate = copy.deepcopy(mix.profile)
+            for index, item in enumerate(candidate['items']):
+                parameter = source.par['lay' + str(index) + 'operation']
+                if (source.par.operand.eval() != 'opperlayer' or parameter is None
+                        or parameter.style != 'Menu' or not parameter.enable):
+                    raise ValueError('Each layer needs an enabled Per Layer Operation menu; repair the source and Apply')
+                control = item['controls'].get('operation')
+                if control is None:
+                    control = item['controls']['operation'] = dict(label='Op', kind='menu',
+                        target=dict(op=candidate['source'], parameter=parameter.name))
+                if control['kind'] != 'menu':
+                    raise ValueError('Applied Operation target must be a Menu')
+                control['choices'] = list(record['operations'])
+            self._require_mix_preset_idle(probe=True)
+            epoch = mix.epoch
+            mix.configure(scope, candidate, strict_targets=True)
+        except (AttributeError, KeyError, TypeError) as exc:
+            raise ValueError('MIX preset source or target unavailable: ' + str(exc)) from exc
+        if mix.epoch != epoch:
+            self._mix_preset_drain = self._process is not None
+        try:
+            self._sync_mix_summary()
+        except Exception as exc:
+            self._last_error = 'MIX preset activated; UI refresh failed: ' + str(exc)
+        return self.GetMixProfile()
 
     def GetMixProfile(self):
         self._mix_manager()
@@ -1643,6 +1754,7 @@ class RotoPythonExt:
         if follower is not None:
             follower.session_boundary()
         self._receive_epoch = None
+        self._mix_preset_drain = False
         mix = getattr(self, '_mix', None)
         if mix is not None:
             mix.stop()
@@ -1696,7 +1808,18 @@ class RotoPythonExt:
             self.ownerComp.op('setup').module.refresh_mix_ui(self.ownerComp)
             return
         if par.name == 'Mixoperationpreset':
-            self.ownerComp.op('setup').module.load_mix_preset_ui(self.ownerComp)
+            current = par.eval()
+            previous = getattr(self, '_mix_ui_selection', '__draft__')
+            if getattr(self, '_mix_ui_depth', 0) or current == previous:
+                return
+            self._mix_ui_selection = current
+            try:
+                self.ownerComp.op('setup').module.load_mix_preset_ui(self.ownerComp)
+            except ValueError as exc:
+                with self._mix_ui_update():
+                    par.val = previous
+                self._last_error = str(exc)
+                self._sync_mix_summary(str(exc))
             return
         follower = getattr(self, '_follow', None)
         if follower is not None and par.name in ('Followcomp', 'Focuscomp'):
@@ -2005,11 +2128,13 @@ class RotoPythonExt:
             return
         if not self._receive:
             self._receive_epoch = self._ingress_token()
+        pipe_drained = False
         try:
             for _ in range(8):
                 try:
                     chunk = os.read(process.stdout.fileno(), 65536)
                 except BlockingIOError:
+                    pipe_drained = True
                     break
                 if not chunk:
                     break
@@ -2051,7 +2176,9 @@ class RotoPythonExt:
             except (OSError, TimeoutError):
                 self.Disconnect(); raise
         try:
-            mix.tick(backlog=bool(self._receive))
+            mix.tick(backlog=bool(self._receive) or getattr(self, '_mix_preset_drain', False))
+            if pipe_drained and not self._receive:
+                self._mix_preset_drain = False
             self._flush_page_caption(time.monotonic())
             self._host.flush_display(time.monotonic())
             if self._pending:

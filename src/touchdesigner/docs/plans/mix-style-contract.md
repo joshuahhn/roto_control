@@ -22,6 +22,9 @@ do not need an injected extension.
 The user deferred audio refinement to [issue #26](https://github.com/joshuahhn/roto_control/issues/26).
 Keep `audio` in the contract, but implement/verify analysis details first. Existing
 audio metering acceptance does not mean Gain/Mute processing is installed.
+The [audio adapter decision](mix-audio-adapter.md) records the later isolated
+Gain/Mute stage experiment and the proposed first runtime slice. That prototype
+does not enable audio routing in the controller.
 
 ## Common descriptor
 

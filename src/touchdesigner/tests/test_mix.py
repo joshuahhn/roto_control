@@ -56,6 +56,235 @@ class MixTests(unittest.TestCase):
         e._receive_midi(sysex(10,9,(0,index)),e._ingress_token())
         e._receive_midi(sysex(12,2,(0,)),e._ingress_token());mix.tick(now=2)
 
+    def preset_fixture(self, choices=None):
+        e, mix, source = self.operation_fixture()
+        e.ConfigureMixLayers(mix.scope, 'layer_mix', operation_choices=['over', 'add'] if choices is None else choices)
+        identity = e.SaveMixOperationPreset('Selected', ['screen', 'multiply'])
+        return e, mix, source, identity
+
+    def activation_snapshot(self, e, mix, source):
+        state = {key: copy.deepcopy(value) for key, value in vars(mix).items()
+                 if key not in ('e', 'scope', 'source', 'targets', 'meters', 'triggers')}
+        return (e.GetMixProfile(), state, dict(mix.targets), dict(mix.meters), dict(mix.triggers),
+                e._pending, {n: p.eval() for n, p in source.par.items() if p is not None},
+                {key: (copy.deepcopy(target.description), target.chain, target.binding.value,
+                       target.binding.expected, target.binding.valid) for key, target in mix.targets.items()},
+                e.GetMixOperationPresets())
+
+    def test_preset_activation_uses_saved_record_and_preserves_values_and_other_controls(self):
+        for choices in (['screen', 'multiply'], ['screen','multiply','over','add','hardlight','difference']):
+            with self.subTest(choices=choices):
+                e, mix, source, identity = self.preset_fixture()
+                e.SaveMixOperationPreset('Selected', choices, identity)
+                source.par.lay0operation.val = 'choice_45'
+                source.par.lay0swapord.enable = False
+                before = copy.deepcopy(mix.profile)
+                values = {n: p.eval() for n, p in source.par.items()}
+                mix.selected = 1
+                result = e.ActivateMixOperationPreset(identity, source=source)
+                for item in before['items']: item['controls']['operation']['choices'] = choices
+                self.assertEqual(mix.profile, before)
+                self.assertEqual(result['descriptor'], before)
+                self.assertEqual({n: p.eval() for n, p in source.par.items()}, values)
+                self.assertEqual(mix.selected, 0); self.assertTrue(mix.select_pending)
+                self.assertEqual(mix.writes, 0); self.assertIsNone(e._process)
+                result['descriptor']['items'].clear()
+                self.assertEqual(mix.profile, before)
+                epoch = mix.epoch
+                e.ActivateMixOperationPreset(identity, source=source)
+                self.assertEqual(mix.epoch, epoch)
+
+    def test_preset_activation_adds_only_omitted_operation_controls(self):
+        e, mix, source, identity = self.preset_fixture(choices=[])
+        before = copy.deepcopy(mix.profile)
+        e.ActivateMixOperationPreset(identity, source=source)
+        for index, item in enumerate(before['items']):
+            item['controls']['operation'] = dict(label='Op', kind='menu',
+                target=dict(op='layer_mix', parameter='lay' + str(index) + 'operation'),
+                choices=['screen', 'multiply'])
+        self.assertEqual(mix.profile, before)
+        self.assertEqual(mix.writes, 0)
+
+    def test_omitted_operation_preflight_rejects_each_invalid_layer_before_commit(self):
+        for change in ('choice', 'style', 'disabled', 'missing', 'readonly', 'labels'):
+            with self.subTest(change=change):
+                e, mix, source, identity = self.preset_fixture(choices=[])
+                p = source.par.lay1operation
+                if change == 'choice': p.menuNames.remove('screen'); p.menuLabels.pop()
+                elif change == 'style': p.style = 'Float'
+                elif change == 'disabled': p.enable = False
+                elif change == 'missing': source.par['lay1operation'] = None
+                elif change == 'readonly': p.readOnly = True
+                else: p.menuLabels.pop()
+                before = self.activation_snapshot(e, mix, source)
+                with self.assertRaises(ValueError): e.ActivateMixOperationPreset(identity, source=source)
+                self.assertEqual(self.activation_snapshot(e, mix, source), before)
+
+    def test_existing_operation_labels_ranges_and_nonfatal_meter_failure_are_preserved(self):
+        e, mix, source, identity = self.preset_fixture()
+        candidate = copy.deepcopy(mix.profile)
+        candidate['items'][0]['controls']['operation'].update(label='Blend', range=[0,45])
+        candidate['items'][0]['meter']['source']['op'] = 'missing'
+        e.SetMixProfile(mix.scope, candidate)
+        e.ActivateMixOperationPreset(identity, source=source)
+        expected = copy.deepcopy(candidate)
+        for item in expected['items']: item['controls']['operation']['choices'] = ['screen','multiply']
+        self.assertEqual(mix.profile, expected)
+        self.assertEqual(mix.errors, {})
+
+    def test_existing_bind_master_identity_change_is_rejected_without_rebinding(self):
+        e, mix, source, identity = self.preset_fixture()
+        parameter = source.par.lay1bright
+        master = BoundParameter(); master.owner.id = 999; master.enable = True; master.val = 1
+        parameter.mode.name = 'BIND'; parameter.bindMaster = master
+        e.ConfigureMixLayers(mix.scope, 'layer_mix', operation_choices=['over','add'])
+        replacement = BoundParameter(); replacement.owner.id = 1000; replacement.enable = True; replacement.val = 1
+        parameter.bindMaster = replacement
+        before = self.activation_snapshot(e, mix, source)
+        with self.assertRaises(ValueError): e.ActivateMixOperationPreset(identity, source=source)
+        self.assertEqual(self.activation_snapshot(e, mix, source), before)
+        self.assertIs(parameter.bindMaster, replacement)
+        self.assertEqual((master.eval(), replacement.eval()), (1,1))
+
+    def test_preset_rejection_keeps_complete_runtime_profile_queue_and_values(self):
+        cases = ('wrong', 'replacement', 'rewire', 'setup', 'sequence', 'missing', 'disabled',
+                 'menu', 'readonly', 'range', 'bind', 'target_set', 'errors', 'layer_invalid',
+                 'dispatch', 'restore', 'restore_pending', 'touch', 'host_touch', 'learning',
+                 'returning', 'drain', 'unknown', 'buffer', 'partial')
+        for case in cases:
+            with self.subTest(case=case):
+                e, mix, source, identity = self.preset_fixture()
+                requested = source
+                if case == 'wrong': requested = SimpleNamespace(valid=True, id=777, OPType='layermixTOP')
+                elif case == 'replacement':
+                    source.id += 1
+                    requested = copy.copy(source); requested.id += 1
+                    oldop = mix.scope.op
+                    mix.scope.op = lambda name: requested if name == 'layer_mix' else oldop(name)
+                elif case == 'rewire': source.inputs.reverse()
+                elif case == 'setup': source.par.enablebright.val = False
+                elif case == 'sequence': source.seq.lay.numBlocks = 3
+                elif case == 'missing': source.par['lay1operation'] = None
+                elif case == 'disabled': source.par.lay1operation.enable = False
+                elif case == 'menu': source.par.lay1operation.menuNames.remove('screen')
+                elif case == 'readonly': source.par.lay1bright.readOnly = True
+                elif case == 'range': source.par.lay1gamma.normMax = 9
+                elif case == 'bind':
+                    source.par.lay1bright.mode.name = 'BIND'
+                    source.par.lay1bright.bindMaster = BoundParameter()
+                elif case == 'target_set': mix.targets.pop((1, 'gamma'))
+                elif case == 'errors': mix.errors[1, 'gamma'] = 'old error'
+                elif case == 'layer_invalid': mix.layer_invalid = True
+                elif case == 'dispatch': e._dispatching = True
+                elif case == 'restore': e._restoring = True
+                elif case == 'restore_pending': e._restore_pending = True
+                elif case == 'touch': mix.touched.add(0)
+                elif case == 'host_touch': e._host.touched = True
+                elif case == 'learning': e._host.learning = True
+                elif case == 'returning': mix.returning = True
+                elif case == 'drain': e._mix_preset_drain = True
+                elif case == 'unknown': identity = 'missing'
+                elif case == 'buffer': e._receive = b'{"ready":true}\n'
+                elif case == 'partial': e._receive = b'{"midi":'
+                before = self.activation_snapshot(e, mix, source)
+                with self.assertRaises(ValueError): e.ActivateMixOperationPreset(identity, source=requested)
+                self.assertEqual(self.activation_snapshot(e, mix, source), before)
+
+    def test_strict_configure_rejects_new_target_errors_before_any_commit(self):
+        e, mix, source, _ = self.preset_fixture()
+        candidate = copy.deepcopy(mix.profile)
+        candidate['items'][1]['controls']['brightness']['target']['parameter'] = 'lay0bright'
+        before = self.activation_snapshot(e, mix, source)
+        with self.assertRaises(ValueError): mix.configure(mix.scope, candidate, strict_targets=True)
+        self.assertEqual(self.activation_snapshot(e, mix, source), before)
+        mix.configure(mix.scope, candidate)
+        self.assertIn((1, 'brightness'), mix.errors)
+
+    def test_preset_probe_retains_read_bytes_with_old_token_and_rejects_unavailable_process(self):
+        for observation in (b'{"midi":', b'', OSError('pipe unavailable'), 'connecting', 'failed'):
+            with self.subTest(observation=observation):
+                e, mix, source, identity = self.preset_fixture()
+                child = Mock(); child.poll.return_value = 1 if observation == 'failed' else None
+                e._process = child; e._transport_ready = observation != 'connecting'
+                token = e._ingress_token(); before = self.activation_snapshot(e, mix, source)
+                with patch('RotoPythonExt.os.read', side_effect=[observation]) as read:
+                    with self.assertRaises(ValueError): e.ActivateMixOperationPreset(identity, source=source)
+                self.assertEqual(self.activation_snapshot(e, mix, source), before)
+                if isinstance(observation, bytes) and observation:
+                    self.assertEqual(e._receive, observation); self.assertEqual(e._receive_epoch, token)
+                else: self.assertEqual(e._receive, b'')
+                self.assertLessEqual(read.call_count, 1)
+
+    def test_probe_retained_complete_input_runs_only_against_old_profile_on_normal_tick(self):
+        e, mix, source, identity = self.preset_fixture()
+        self.enter(e, mix); self.focus(e, mix)
+        child = Mock(); child.poll.return_value = None
+        e._process = child; e._transport_ready = True; e._trace_control_midi = Mock()
+        packet = b''.join((json.dumps({'midi': m}) + '\n').encode() for m in
+                          ((191,56,127), (191,16,0), (191,48,0), (191,56,0)))
+        token = e._ingress_token(); before = self.activation_snapshot(e, mix, source)
+        with patch('RotoPythonExt.os.read', return_value=packet) as read:
+            with self.assertRaises(ValueError): e.ActivateMixOperationPreset(identity, source=source)
+        read.assert_called_once_with(child.stdout.fileno(), 65536)
+        self.assertEqual(self.activation_snapshot(e, mix, source), before)
+        self.assertEqual(e._receive_epoch, token)
+        with patch('RotoPythonExt.os.read', side_effect=BlockingIOError), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
+            e.Tick()
+        self.assertEqual(source.par.lay0operation.eval(), 'over'); self.assertEqual(mix.writes, 1)
+        self.assertEqual(mix.profile['items'][0]['controls']['operation']['choices'], ['over','add'])
+
+    def test_drain_survives_eof_general_configuration_and_clear_until_eagain_or_disconnect(self):
+        e, mix, source, identity = self.preset_fixture()
+        self.enter(e, mix)
+        child = Mock(); child.poll.return_value = None
+        e._process = child; e._transport_ready = True; e._trace_control_midi = Mock()
+        with patch('RotoPythonExt.os.read', side_effect=BlockingIOError):
+            e.ActivateMixOperationPreset(identity, source=source)
+        e.ConfigureMixLayers(mix.scope, 'layer_mix')
+        with patch('RotoPythonExt.os.read', return_value=b''), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
+            e.Tick()
+        self.assertTrue(e._mix_preset_drain); self.assertFalse(mix.ready)
+        e.ClearMixProfile(); self.assertTrue(e._mix_preset_drain)
+        e.Disconnect(); self.assertFalse(e._mix_preset_drain)
+
+    def test_preset_live_tick_fences_caps_partial_tail_and_fresh_gesture(self):
+        for backlog in ('read_cap', 'event_cap', 'partial'):
+            with self.subTest(backlog=backlog):
+                e, mix, source, identity = self.preset_fixture()
+                self.enter(e, mix); self.focus(e, mix)
+                child = Mock(); child.poll.return_value = None
+                e._process = child; e._transport_ready = True; e._trace_control_midi = Mock()
+                old_token = e._ingress_token()
+                with patch('RotoPythonExt.os.read', side_effect=BlockingIOError):
+                    e.ActivateMixOperationPreset(identity, source=source)
+                self.assertTrue(e._mix_preset_drain); self.assertFalse(mix.ready)
+                def line(m): return (json.dumps({'midi': m}) + '\n').encode()
+                gesture = line((191,56,127)) + line((191,16,127)) + line((191,48,127))
+                def tick(chunks):
+                    with patch('RotoPythonExt.os.read', side_effect=chunks), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
+                        e.Tick()
+                if backlog == 'read_cap':
+                    tick([line((191,16,127))] * 8)
+                    self.assertFalse(mix.ready); self.assertTrue(e._mix_preset_drain)
+                    tick([gesture, BlockingIOError])
+                elif backlog == 'event_cap':
+                    tick([line((191,16,127)) * 257 + gesture, BlockingIOError])
+                    self.assertTrue(e._mix_preset_drain); self.assertFalse(mix.ready)
+                    tick([BlockingIOError])
+                else:
+                    tick([gesture[:-4], BlockingIOError])
+                    self.assertTrue(e._mix_preset_drain); self.assertFalse(mix.ready)
+                    tick([gesture[-4:], BlockingIOError])
+                self.assertFalse(e._mix_preset_drain); self.assertFalse(mix.ready)
+                self.assertEqual(mix.writes, 0)
+                tick([BlockingIOError]); self.assertTrue(mix.ready)
+                self.cc(e,56,0); self.cc(e,56,127,old_token); self.turn(e,4,16383)
+                self.assertEqual(mix.writes,0)
+                self.cc(e,56,0); self.cc(e,56,127); self.cc(e,48,127)
+                self.assertEqual(mix.writes,0)
+                self.turn(e,4,16383); self.cc(e,56,0)
+                self.assertEqual(source.par.lay0operation.eval(),'multiply'); self.assertEqual(mix.writes,1)
+
     def test_layer_curated_operation_uses_real_names_and_writes_only_selected_input(self):
         e,mix,source=self.operation_fixture()
         before={n:p.eval() for n,p in source.par.items()}

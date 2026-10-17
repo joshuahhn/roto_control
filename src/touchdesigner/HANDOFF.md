@@ -2840,3 +2840,175 @@ controller, project saves or canonical artifact exports. TD remains open.
 One-off recovery, failed/fixed calls, snapshots and results remain in system temp
 `roto-org-integration-70dmk2ue`. Source tests, native packaging and historical
 physical acceptance remain separate evidence.
+
+
+## MIX preset direct activation #28 — 2026-10-18
+
+Baseline checkout `4ec8016`, with a clean source tree before this task. The
+extension now activates a saved Operation preset for the same valid applied Layer
+Mix source without another Apply. It derives a detached candidate from the active
+descriptor and the saved record, validates all targets before commit, and leaves
+controlled values unchanged. Existing all-None profiles can gain the standard
+Operation controls. General configuration retains its existing failure policy.
+
+Source/style and custom multi-field edits still require Apply. A preset selected
+against a different draft source/style only loads the draft. Add, Save, rename
+and Delete persist records without activation, including deferred menu callbacks.
+Applied MIX reports the actual source and choices. The new bounded pipe probe
+retains input under the old token and rejects a busy selection; after a live
+commit, readiness waits for an actual EAGAIN and an empty parsed buffer. Existing
+event/arming/partial-pair/session guards remain. Touch is not presented as a
+reliable held-contact state. EAGAIN is not a device capture-time barrier.
+
+The implementation extends `test_mix.py` and `test_mix_ui.py` before changing
+runtime behavior. Final root discovery passes 611 tests, including 66 MIX and 29
+MIX UI tests. Scope includes atomic target rejection, same-source identity,
+all-None, unchanged values, data-only callbacks, stale input, read/event caps,
+partial JSON, drain completion and fresh-gesture input. A later two-line comment
+cleanup changes no executable behavior. Diff and local-link checks pass.
+
+TD 2025.33230/MCP 1.1.55 remains on `ROTO-CONTROL.mix-analysis.18.toe`. A separate
+disconnected fixture uses two native two-input Layer Mix TOPs. Real parameter
+callbacks confirm preset activation, Save/rename, Add/Delete, source mismatch
+staging and explicit Apply. Invalid choices preserve the old profile and values;
+all-None activation succeeds. A configured temporary tox reload preserves both
+the applied profile and a different unfinished draft without replay. Temporary
+generic export/reload clears profile, presets, source and six choice slots,
+retains the final three changed runtime hashes, and has no external DATs or MIDI
+process. Native scoped errors are empty. No new physical acceptance is claimed.
+
+The fixture is removed. Fresh preservation compares all 4,602 original nodes,
+1,281 DAT hashes, storage, original controller configuration and static parameter
+values. Three readbacks of the same live Low audio signal naturally change; their
+EXPRESSION/EXPORT modes and expressions stay intact, and a separate observation
+confirms their values track one another. Only those evaluated samples are excluded
+from the normalized comparison. No values are written back to the original.
+
+The original controller stays disconnected with empty buffers. Canonical project,
+generic export and both receipts retain their prior SHA-256 values. This delivery
+changes disk source and Markdown; it does not install into the original controller
+or publish a canonical export. No project save, MIDI/serial connection, commit or
+PR occurs. The unrelated root `.DS_Store` modification is preserved. Design,
+regression notes, native scripts/results and temporary tox files remain under
+system temp `roto-28-implementation-2dPLV6`.
+
+### Installed-runtime hardware follow-up
+
+The user's subsequent `test in roto` authorizes the original-controller install
+and scoped physical check. The active project remains
+`ROTO-CONTROL.mix-analysis.18.toe` on TD 2025.33230/MCP 1.1.55. A fresh full
+snapshot, disconnected recovery tox and the three previous live DAT sources are
+retained before installing only `RotoPythonExt`, `mix_runtime` and `setup` from
+the final tested source. Their installed SHA-256 values match disk. No canonical
+save/export occurs.
+
+A temporary root clone supplies an independent two-input Layer Mix in per-layer
+mode. The original Layer Mix and Analysis values are not changed. User-confirmed
+touch Knob 1 then FUNC opens Input 1 details with Knob 5 `Op 2 Add`. Selecting
+the temporary four-choice preset through the real native selector, without Apply,
+changes the applied choices from `over, add` to `over, add, xor, zfilm`. The active
+view remains Input 1, Add stays unchanged and MIX records zero target writes.
+The user confirms `Op 2 Add` with the motor at approximately one third.
+
+A subsequent fresh physical Knob 5 gesture reaches `Op 4 Z Film`. Observed touch
+CC and complete value pairs produce two changed Operation writes during the
+gesture; the temporary Input 1 ends at `zfilm` and Input 2 stays `over`. There is
+no send/receive override. The observer calls the original MIDI trace and filters
+only its recorded evidence. The user confirms normal original controls on
+PLUGIN return; the host reports PLUGIN and MIX becomes inactive with no further
+MIX writes. This does not physically force delayed precommit device events or
+establish held-contact detection.
+
+The existing Button 1 learned/local identity discrepancy recurs during PLUGIN
+recall, together with a Menu re-LEARN diagnostic. Disconnected restoration through
+the existing Layout manager reinstates all four original local definitions and
+their metadata without target-value recall. This is configuration preservation,
+not acceptance of hardware learned-storage consistency. The original Low/Mid
+profile, every MIX draft field and absent preset storage are restored. The
+temporary source/observer is removed; the owned child exits with return code 0.
+TD remains open/disconnected with empty buffers and no scoped errors.
+
+Fresh preservation matches all 4,602 original nodes, original configuration,
+storage and static values after accounting for the three installed source DATs,
+two derived RX/Inspector tables, monotonic registry revision 409 to 417, and the
+same three live Low-signal readbacks documented above. The remaining DAT hashes
+match. Canonical project/export and both receipts retain their
+previous hashes. The updated runtime remains installed in the open project but
+is not saved to a toe/tox artifact. Recovery, RX evidence, observations and
+preservation results remain under system temp `roto-28-hardware-lmedPr`.
+The prior 611-test final-source result is reused; this follow-up changes only
+Markdown and records the scoped native/hardware evidence.
+
+### Working save and generic packaging
+
+The user's subsequent `next` continues #28 delivery with a working save and
+generic export. A fresh full original snapshot and disconnected recovery tox
+precede embedding the current source Markdown. Of the 22 runtime/helper DATs,
+only `mix_descriptor` differs from disk, by the already-corrected Focus-button
+docstring. Stripping function docstrings yields identical executable ASTs before
+and after this sync. Six existing documentation DATs refresh to current Markdown;
+no nodes or user configuration are added or removed.
+
+Live TD exports a sanitized clone to system temp, then reloads it in an isolated
+holder. All 22 runtime/helper and 12 documentation hashes match disk. Mappings,
+Actions, Snapshots, MIX profile/presets and source references are empty; all 34
+custom fields and six Operation slots have their generic defaults. Follow is off,
+Python is `python3`, with no external DAT files, MIDI process or scoped errors.
+The holder is removed. Full original snapshots match after normalizing only the
+intended documentation/docstring DATs and the three live Low-signal readbacks;
+storage, all 4,602 original nodes and static values are unchanged.
+
+TD's numbered-save behavior writes `ROTO-CONTROL.mix-analysis.20.toe` and updates
+the unnumbered MIX working alias to identical bytes, despite the requested `.19`
+path in the save tool response. Receipts use the actual files, not that reported
+path. The `.18` snapshot/receipt and canonical `ROTO-CONTROL.toe`/`project.json`
+remain unchanged. Working `.20` SHA-256:
+`0691a4d49f8bac31c3f6cbe5448be3fc1ffe60245b65d3235d5ee81b644d9dc2`.
+
+The reload-verified candidate replaces the generic export after retaining its
+previous tox/receipt. Export SHA-256:
+`76247e78f0600cb1e78770767a9bf2f8063b4141f25d773c43d42038a03ee0ce`.
+Both new receipts identify uncommitted source by exact hashes against `4ec8016`,
+without attributing those bytes to a nonexistent commit. They reuse the final
+611-test source result and separate prior native/physical evidence from this
+packaging check. A full project restart is not claimed. TD stays open/disconnected;
+there is no new hardware session, commit, push or PR. Recovery and probes remain
+under system temp `roto-28-package-0inym7fx`.
+
+## MIX audio adapter #26 prototype — 2026-10-18
+
+After #28 delivery, the user chooses #26 to clarify Gain/Mute/Level while
+preserving current audio routing. Baseline is checkout `4ec8016` plus the existing
+#28 dirty source and saved `.20` package. A read-only how explainer traces current
+audio admission/projection gaps. The parent checks those source paths and runs
+the isolated native experiment; no production runtime is changed for #26.
+
+The [adapter decision](docs/plans/mix-audio-adapter.md) recommends an explicitly
+wired downstream native Gain/Mute stage, or equivalent existing public targets,
+with post-stage RMS Level. Two variants share one native switcher. Twenty cases
+compare file Volume and downstream Math against stereo file and mono fixture
+inputs through unity/half/Mute/Gain-edit/unmute states. Source Volume only controls
+the file path. The separate stage controls both, retains Gain while muted and
+keeps source Volume/Play unchanged. A temporary tox save/reload retains Gain 1.5
+and Mute true with zero output; unmute restores 1.5-scaled output. Scoped errors
+are empty. Mono is a deterministic constant fixture, not a new device-capture
+acceptance. RMS values are observed through the existing Signal class; no ROTO
+bars, Mute LED or motor behavior is physically accepted by this prototype.
+
+The temporary root fixture is removed after serialization/reload. Fresh full
+snapshots match all 4,602 original nodes, 1,281 DAT hashes, storage and static
+values, allowing only the same three live Low-signal samples to vary. Original
+file Volume/Play, device Active and meter wires remain as observed before the
+experiment. #28 working-project/export hashes are unchanged. TD remains open
+and disconnected with empty buffers; no original source install, project save,
+canonical export replacement, commit, PR or GitHub mutation occurs for #26.
+Only this design Markdown and its contract pointer are added. Probes, waveform,
+measurements, temporary tox and preservation evidence remain under system temp
+`roto-26-audio-chs9j0w9`. Runtime audio remains schema-only until the proposed
+Feature slice and its separate source/native/hardware checks are implemented.
+
+The user subsequently drops audio from the current work and asks to save it in
+the issue. [Issue #26 comment](https://github.com/joshuahhn/roto_control/issues/26#issuecomment-6237791526)
+now contains the deferral, prototype results, limitations and proposed future
+slice. The issue remains open; audio implementation is paused until requested
+again. Current work moves to the read-only Serial feasibility issue #7.
