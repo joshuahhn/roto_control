@@ -887,8 +887,9 @@ class Layouts:
             ext._layout_dirty=True;self.capture(force=True)
             return
         parameter=spec['parameter']
-        if (list(getattr(parameter,'menuNames',None) or [])!=record.get('menu_names',[]) or
-                list(getattr(parameter,'menuLabels',None) or [])!=record.get('menu_labels',[])):
+        menu_names=list(getattr(parameter,'menuNames',None) or []) if getattr(parameter,'style','')=='Menu' else []
+        menu_labels=list(getattr(parameter,'menuLabels',None) or []) if menu_names else []
+        if menu_names!=record.get('menu_names',[]) or menu_labels!=record.get('menu_labels',[]):
             ext._last_error='Control page Menu choices changed; re-LEARN required';return
         ext.AssignParameter(kind,slot,parameter,_id=record['id'],_wire_index=index,
                             _hardware_mapped=True,_saved_spec=spec)

@@ -5,6 +5,8 @@ import unittest
 from types import SimpleNamespace
 import test_layouts
 import test_assignment
+import test_menu
+from test_bound_parameter import BoundParameter
 from protocol import sysex,digest
 
 class ControlPageTests(unittest.TestCase):
@@ -76,6 +78,85 @@ class ControlPageTests(unittest.TestCase):
         self.receive(e,m,sysex(11,1,(0,)))
         self.assertEqual(e.GetControlStates(),[])
         self.receive(e,m,self.ack(first));self.assertEqual(e.GetControlState()['id'],first['id'])
+
+    def test_reconnect_recalls_toggle_with_native_menu_fields_without_writing(self):
+        class RecordingToggle(BoundParameter):
+            @BoundParameter.val.setter
+            def val(self,value):
+                self.writes.append(value)
+                BoundParameter.val.fset(self,value)
+        e,m,a,b=self.fixture();p=RecordingToggle('Toggle');p.name='Enabled'
+        p.normMax=p.max=1;p._value=0;p.writes=[]
+        p.menuNames=['off','on'];p.menuLabels=['Off','On']
+        oldop=e.ownerComp.op
+        e.ownerComp.op=lambda name:SimpleNamespace(par=SimpleNamespace(Speed=a,Amount=b,Enabled=p),valid=True) if name=='../master' else oldop(name)
+        state=e.AssignParameter('button',1,p,_wire_index=130,_hardware_mapped=True);m.capture(force=True)
+        saved=copy.deepcopy(e.ownerComp.fetch('page_targets'))
+        target=next(t for t in saved if t['id']==state['id'])
+        self.assertEqual((target['menu_names'],target['menu_labels']),([],[]))
+        sent=[];e._host.send=sent.append;p._value=1
+        self.receive(e,m,sysex(11,1,(0,)))
+        self.assertEqual(e.GetControlStates(),[])
+        bad=list(self.ack(target));bad[9]^=1;self.receive(e,m,bad)
+        self.assertEqual(e.GetControlStates(),[])
+        self.receive(e,m,self.ack(target))
+        recalled=e.GetControlStates()
+        self.assertEqual(len(recalled),1,e._last_error)
+        self.assertEqual((recalled[0]['id'],recalled[0]['kind'],recalled[0]['slot'],recalled[0]['mode']),
+                         (target['id'],'button',1,'toggle'))
+        self.assertTrue(recalled[0]['mapped']);self.assertTrue(recalled[0]['valid'])
+        self.assertEqual(recalled[0]['value'],1)
+        wire=e._host.controls['button',1]
+        self.assertEqual((wire.index,wire.target_id),(target['index'],target['identity']))
+        self.assertEqual(e.ownerComp.fetch('page_targets'),saved)
+        self.assertEqual(p.writes,[]);self.assertEqual(p.eval(),1)
+        self.assertFalse(any(packet[5:7]==(11,14) for packet in sent))
+
+    def test_reconnect_rejects_changed_menu_names_or_labels(self):
+        for field in ('menuNames','menuLabels'):
+            with self.subTest(field=field):
+                e,m,a,b=self.fixture();p=test_menu.menu();p.name='Mode'
+                oldop=e.ownerComp.op
+                e.ownerComp.op=lambda name:SimpleNamespace(par=SimpleNamespace(Speed=a,Amount=b,Mode=p),valid=True) if name=='../master' else oldop(name)
+                state=e.AssignParameter('knob',2,p,_wire_index=130,_hardware_mapped=True);m.capture(force=True)
+                saved=copy.deepcopy(e.ownerComp.fetch('page_targets'))
+                target=next(t for t in saved if t['id']==state['id'])
+                self.receive(e,m,sysex(11,1,(0,)))
+                getattr(p,field)[-1]='Changed'
+                self.receive(e,m,self.ack(target))
+                self.assertEqual(e.GetControlStates(),[])
+                self.assertEqual(e._last_error,'Control page Menu choices changed; re-LEARN required')
+                self.assertEqual(e.ownerComp.fetch('page_targets'),saved)
+                self.assertEqual(p.eval(),'beta')
+
+    def test_reconnect_rejects_menu_replaced_by_numeric_until_relearn(self):
+        e,m,a,b=self.fixture();p=test_menu.menu();p.name='Mode'
+        parameters=SimpleNamespace(Speed=a,Amount=b,Mode=p)
+        oldop=e.ownerComp.op
+        e.ownerComp.op=lambda name:SimpleNamespace(par=parameters,valid=True) if name=='../master' else oldop(name)
+        state=e.AssignParameter('knob',2,p,_wire_index=130,_hardware_mapped=True);m.capture(force=True)
+        saved=copy.deepcopy(e.ownerComp.fetch('page_targets'))
+        target=next(t for t in saved if t['id']==state['id'])
+        self.assertTrue(target['menu_names']);self.assertTrue(target['menu_labels'])
+        self.receive(e,m,sysex(11,1,(0,)))
+        replacement=test_assignment.AssignmentTests().parameter('Float','Mode')
+        parameters.Mode=replacement
+        value=replacement.eval()
+        self.receive(e,m,self.ack(target))
+        self.assertEqual(e.GetControlStates(),[])
+        self.assertEqual(e._last_error,'Control page Menu choices changed; re-LEARN required')
+        self.assertEqual(e.ownerComp.fetch('page_targets'),saved)
+        self.assertEqual(replacement.eval(),value)
+        state=e.AssignParameter('knob',2,replacement)
+        wire=e._host.controls['knob',2]
+        self.assertNotEqual(wire.target_id,target['identity'])
+        self.receive(e,m,self.ack(target))
+        self.assertFalse(e.GetControlState(state['id'])['mapped'])
+        self.receive(e,m,sysex(11,9,(1,)))
+        self.assertTrue(e.Offerparameter(state['id']))
+        self.receive(e,m,sysex(11,11,(wire.index>>7,wire.index&127,*digest(wire.target_id,6),0,1,0)))
+        self.assertTrue(e.GetControlState(state['id'])['mapped'])
+        self.assertEqual(replacement.eval(),value)
 
     def test_new_mapping_same_slot_without_arrow_retains_old_definition(self):
         e,m,a,b=self.fixture();first=copy.deepcopy(m.record()['targets'][0])

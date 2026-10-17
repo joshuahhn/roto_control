@@ -98,6 +98,11 @@ Inspector includes Follow status. Domain failures retain the MIDI session, clear
 
 ## Plugin control pages
 
+Mapping recall compares saved choices with the current parameter's normalized
+Menu choices. Non-Menu parameters have no choices, even when a Toggle exposes
+native Off/On fields. Changed Menu choices or replacement of a saved Menu with
+a numeric parameter still require re-LEARN.
+
 Control pages within a Plugin are separate from Track-list pages. The host retains a Plugin-scoped parameter library (`page_targets`) independently of the current 16 physical slots. Learning Page 2 Knob 1 retains Page 1's parameter definition. Hardware CONTROL MAPPED reports identify the current slot's target by parameter index/hash; the host restores the matching definition and its watcher. Parameter indices are allocated across the entire Plugin library, including inactive pages.
 
 Normal Plugins do not report an absolute control-page number. Observed left/right notifications (GENERAL 14/15) suspend old slot routing immediately; subsequent mapping reports rebuild the active slots. Empty pages remain input-disabled. TD does not guess a page number by counting arrow presses. Eight pages / 128 distinct targets have automated coverage; physical control-page acceptance is separate from previously accepted Track-list paging.
