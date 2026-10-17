@@ -134,8 +134,9 @@ Only validated General Track selection messages change the selected MIX item,
 in received order even within one buffered batch. Raw touch CC tracks contact
 and arms a fresh gesture; it never synthesizes selection. The actual LOCK-on
 trace still contains touch CC but suppresses Track selection, so inferring an
-item change from touch bypassed hardware LOCK. The correction is covered by
-source/native checks; corrected-runtime physical LOCK acceptance is pending.
+item change from touch bypassed hardware LOCK. The correction passes
+source/native checks and physical LOCK-on/off touch selection: Low stays selected
+with LOCK on, then touch selects Mid after unlock, with zero parameter writes.
 Overview knobs retain their independent targets while selection stays locked.
 MIX selected slot and PLUGIN selected/routing contexts remain separate.
 

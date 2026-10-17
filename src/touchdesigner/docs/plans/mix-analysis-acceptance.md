@@ -160,6 +160,20 @@ and selection into the same ingress batch; same-batch timing and MIX LOCK retain
 their existing limits. No runtime change or new source-test run is needed for
 this evidence/documentation update.
 
+## MIX LOCK selection
+
+Completed on 2026-10-17 at runtime `b6d2cc3`, original Low/Mid profile. LOCK-on
+overview Knob 2 touch emits CC53 ON/OFF without General Track selection. Low's
+selection/caption and epoch stay unchanged. After unlock, the same touch emits
+General Track selection for Mid followed by CC53; Mid becomes selected normally.
+The user confirms >Low while locked, >Mid after unlock and normal demo_A PLUGIN
+return. New writes stay zero and every original value/profile/draft is restored.
+
+This supersedes the earlier MIX LOCK limitation for this overview touch case.
+Writing another overview target while locked retains source coverage, and
+same-batch view/selection timing remains a source/native case. No new LOCK state
+or wire command is inferred; the adapter follows actual hardware selection.
+
 ## Restore and finish
 
 Restore captured values/profile/draft and verify only expected test writes

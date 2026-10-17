@@ -308,9 +308,12 @@ Overview Pan/Send input has source coverage; it has not had physical acceptance
 in this slice. Second-page Focus and a mixed-style slot editor are later slices.
 The pre-fix hardware LOCK check found touch CC still arriving without Track
 selection; software incorrectly inferred a new item. The correction now follows
-only hardware selection messages and has source/native coverage. Its physical
-LOCK-on/off check is pending. LOCK affects item selection, while each overview
-knob retains its own configured target.
+only hardware selection messages. Source/native checks and physical LOCK-on/off
+touch selection pass: Low stays selected while locked, then touch selects Mid
+after unlock, with zero writes and normal PLUGIN return. LOCK affects item
+selection, while each overview knob retains its own configured target. Writing a
+nonselected overview target while locked has source coverage; this physical
+check uses touch only.
 Analysis-only custom slots 7/8 are configured as above. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
 they were not individually checked on hardware. The editor configures one

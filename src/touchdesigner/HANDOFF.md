@@ -2712,3 +2712,30 @@ preserved. Temporary recovery/results/scripts stay in system temp
 `roto-mix-lock-3vmi21lc`, correction checks under `fix`. Production hardware
 verification of the corrected LOCK-on/off behavior follows separately; it is
 not claimed by the regression/native results.
+
+### Corrected MIX LOCK hardware acceptance
+
+Runtime `b6d2cc30573a1ccec74cb91984a34bfc01120cac`, all 22 source/helper hashes
+verified against a temporary source manifest before connection. Original Low/Mid
+profile and user values/draft remain unchanged. In overview, LOCK on plus Knob 2
+touch sends CC53 ON/OFF and no General selection. Both trace before/after states
+keep selected Low, epoch 3 and ready True; the user sees >Low. Unlock plus the
+same touch sends `0A09 00 01` then CC53, selecting Mid at epoch 4; the user sees
+>Mid. The stale accompanying touch remains fenced as before. The user confirms
+normal demo_A PLUGIN return, with actual mode/ACK traffic recorded.
+
+Zero new parameter writes throughout; Lowgain 2.000, Midgain 4.000 and every
+other analyzer/demo/layer value stay at fresh baseline. Disconnect closes/reaps
+return 0, clears pending output and removes the observer. The known local Button
+1 reconciliation is restored through the guarded existing Layout manager; full
+normalized snapshots then match registry/four IDs, Snapshots, profile/draft/
+presets, user values/nine demo children and old-controller DATs. There are zero
+scoped errors and no send/receive override. Temporary recovery, trace and final
+restoration live in `roto-mix-lock-3vmi21lc/fixed-hardware`.
+
+This accepts overview touch selection with LOCK on/off and normal PLUGIN return
+on the corrected production runtime. It does not force same-batch view/selection
+timing or physically test a nonselected knob gesture while locked. Reuse the
+589 source tests from `b6d2cc3` and the native correction check; no source behavior
+changed after those tests. TD remains open/disconnected, with no project save.
+Generic export/reload and its receipt follow in the publication entry below.

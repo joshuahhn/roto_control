@@ -31,9 +31,11 @@ interpreter with `mido` and `python-rtmidi` remains required. Runtime DATs, the
 MIDI helper, owned Inspector and documentation are embedded.
 
 The latest export also preserves hardware view/item selection order within one
-input batch while retaining stale-CC and fresh-touch fences. Source/native checks
-cover that correction and missing-meter recovery; physical batch timing and MIX
-LOCK behavior remain unverified. The adjacent receipt separates these results
+input batch while retaining stale-CC and fresh-touch fences. Only hardware Track
+selection changes the selected item; raw touch CC cannot bypass MIX LOCK.
+Source/native checks cover those corrections and missing-meter recovery. Physical
+LOCK-on/off touch selection and PLUGIN return pass with zero writes; same-batch
+view/selection timing remains unforced. The adjacent receipt separates these results
 from the earlier scoped hardware acceptance.
 
 The demo `.toe` has its own [project receipt](../projects/current/project.json).

@@ -48,8 +48,9 @@ restoration. Missing meter channels clear/recover independently
 of valid targets; empty scalar samples also have source regression coverage.
 The pre-fix MIX LOCK check reproduces a software selection bypass: hardware
 suppresses General selection but still emits raw touch CC. Selection now follows
-only the hardware message; source/native checks pass and corrected-runtime
-physical LOCK acceptance is pending. Overview targets remain independent of
+only the hardware message; source/native checks and corrected-runtime physical
+LOCK-on/off touch selection pass with zero writes and normal PLUGIN return.
+Overview targets remain independent of
 selection. One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons stay
