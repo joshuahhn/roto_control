@@ -1,6 +1,6 @@
 # Independent MIX view mappings
 
-Status: design with an initial [analysis source slice](../functions/mix.md),
+Status: design with [analysis and Layer Mix float slices](../functions/mix.md),
 2026-10-17. The user selected independent MIX assignments,
 then clarified the intended flow through Layer Mix, analysis and audio examples.
 Selection means choosing an object, not requiring the physical SEL key:
@@ -30,7 +30,8 @@ The user confirmed touch + FUNC. Audio Level is currently interpreted as a
 measurement, with Gain writable and Mute a toggle, rather than a second gain
 control. That interpretation remains open to correction.
 
-Eight visible MIX slots can reference different item types. For example, two
+The full design allows eight visible MIX slots to reference different item types.
+The current runtime activates one source/style profile at a time. For example, two
 Layer Mix inputs, Low/Mid/High/Kick, file audio and input audio fit one overview.
 These are illustrative entries, not assignments or a requirement to fill all
 slots. The examples do not authorize a new group-selector framework, network
@@ -272,9 +273,12 @@ disconnected with eight unassigned slots and no user paths.
    before enabling those routes; unsupported cases remain visibly unavailable.
 5. Complete the eight-slot editor, repeat only newly affected checks, then save /
    export through live TD with recovery copies, generic tox/receipt and a scoped
-   PR. Layer opacity remains a separate concrete configuration/acceptance slice.
+   PR. The wired Layer Mix float slice now implements Opacity/Brightness/Black
+   Level/Gamma and scalar Opacity metering, with explicit input-order and Setup
+   invalidation. Operation/Swap and mixed-style slots remain planned.
 
 Runtime implementation follows the repository's scoped-test policy and final
 runtime discovery run. This documentation-only design needs link/consistency
 review and `git diff --check`, with no TD connection, hardware action or artifact
-re-embedding. No implementation or PR was created by this design step.
+re-embedding. The original design step created no implementation or PR; later
+source/native/physical results are recorded in [HANDOFF](../../HANDOFF.md).

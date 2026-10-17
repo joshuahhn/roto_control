@@ -23,6 +23,9 @@ source tests and synthetic native messages do not establish physical acceptance.
   accepted. Only claim the environments and interactions actually recorded.
 - Historical manual gates without a later matching result remain unproven in that
   scope. Investigate them only when the requested change depends on that behavior.
+- Current MIX runtime activates one source/style profile at a time. Layer Mix
+  Operation/Swap, mixed-style slots and audio Gain/Mute processing remain deferred;
+  audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
 
 ## Historical milestones
 
@@ -1792,3 +1795,58 @@ untouched. Final preservation checks include all eight demo children and the old
 controller's 246 DAT fingerprints. Save/export recovery and results are under
 the same temporary folder's `publish` directory. Reuse the final 517 tests;
 publication changes no runtime behavior. This update stays in the same PR #27.
+
+## MIX wired Layer Mix floats — 2026-10-17
+
+Extended the same unmerged PR #27 from `a98cafc`. `ConfigureMixLayers` describes
+an existing Layer Mix TOP with 1..8 wired inputs only. The shared descriptor adds
+an explicit item input reference, and projects the layer's Opacity, Brightness,
+Black Level and Gamma instead of analysis keys. Setup flags and graph/target
+values are never changed by registration. Operation/Swap, reference-only layers,
+mixed-style slots and audio processing are not implemented. One MIX source/style
+profile is active at a time; configuring layers replaces its analysis profile,
+not PLUGIN assignments.
+
+Layer input identities/order, sequence count and Setup flags are pinned. An
+observed change blocks further writes even if the original wiring is restored;
+explicit reconfiguration and fresh touch are required. Existing parameter,
+mode/session/ingress/touch guards, the MIDI owner and PLUGIN LEARN/ACK paths are
+retained. Read-only bars use that layer's Opacity parameter over 0..1, not image
+intensity. Compact captions are Opac/Bright/Black/Gamma. Layer overview buttons
+have no business assignment; Focus buttons retain item selection.
+
+Final relevant runtime source passes 522 discovery tests, including 35 MIX tests.
+Five new behavior cases cover read-only configuration, independent target/meter
+routing, Focus projection, input/Setup/sequence fences, disabled fields, atomic
+profile validation and explicit recovery after a rewire. Native TD 2025.33230
+checks exercise all eight actual Float targets of two wired inputs, independent
+meters, sticky rewire rejection, unchanged disabled Setup flags and configured
+save/reload without target-value recall. The scoped live upgrade matches all 22
+runtime/helper hashes and has zero errors.
+
+The user authorized an isolated two-input demo at
+`/roto_clean_demo/base_layer_mix_demo`: red/blue 64x64 constants, Layer Mix and
+output null. Its initial Opacities are 0.250/0.750. A measured annotation contains
+the four nodes without overlaps. Hardware firmware 3.3.0/API 1.6 accepted both
+captions, 25%/75% motor positions and static scalar bars. Turning only overview
+Knob 1 reached 0.3466398095586889, displayed 0.347, with its bars following.
+Forty-four changed writes affected only lay0opacity. Output samples showed red
+about 0.3451 and blue unchanged about 0.749 in the 8-bit TOP. Software restored
+0.250; the user confirmed motor/text/meter return. FUNC then Button 2 selected
+Input 2 and showed Opac 0.750, Bright 1.000, Black 0.000, Gamma 1.000 with no extra
+input writes. Normal demo_A PLUGIN return was accepted. Other layer float input
+routes have source/native coverage, not physical acceptance.
+
+The bounded diagnostic then disconnected/reaped the child, removed its tracing
+wrappers and restored the original Low/Mid profile and all eight layer float
+values. Analysis parameters, including Kickthresh 0.26174693279619116 and disabled
+Kick/audio output, and Snapshots remain unchanged. User confirmed independently
+changing demo_A.Steps 3 to 4; 4 and Amount 0.44924616981016907 are preserved.
+The pre-existing PLUGIN Button 1 stored-identity reconciliation difference was
+handled as before by restoring the four original local definitions while
+disconnected, without target-value recall. This does not claim a fix or hardware
+learn-storage acceptance for that older difference.
+
+Recovery/scripts/results are under system temporary `roto-mix-layers.FSF5D0jzzv`.
+The original dirty-root runtime sources and old controller remain untouched.
+Save/export and source receipt details follow after publication below.

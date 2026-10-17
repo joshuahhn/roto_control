@@ -12,7 +12,7 @@ from binding import parameter_value, same_parameter
 from protocol import text13
 from snapshots import Snapshots
 from midi_queue import discard, business_output
-from mix_runtime import MixRuntime
+from mix_runtime import MixRuntime, layer_profile
 from mix_descriptor import analysis_profile
 
 
@@ -83,6 +83,10 @@ class RotoPythonExt:
     def ConfigureMixAnalysis(self, scope, source='audioAnalysis', bands=('Low', 'Mid')):
         """Describe an existing Low/Mid source. Audio/detection settings stay as-is."""
         return self.SetMixProfile(scope, analysis_profile(source, bands))
+
+    def ConfigureMixLayers(self, scope, source='layermix_layers'):
+        """Describe existing wired Layer Mix inputs without enabling Setup fields."""
+        return self.SetMixProfile(scope, layer_profile(scope, source))
 
     def GetMixProfile(self):
         self._mix_manager()

@@ -20,8 +20,10 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 ## Architecture
 
-The independent [MIX analysis source slice](docs/functions/mix.md) adds versioned
-descriptions and Low/Mid float routing with 10 Hz native meters. `mix_runtime`
+The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
+Low/Mid analysis and wired Layer Mix float routing with 10 Hz native meters.
+One MIX source/style profile is active at a time. Layer input-order/Setup changes
+require explicit reconfiguration; Layer Operation/Swap and audio remain planned. `mix_runtime`
 also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
 retain native item selection. It
 owns MIX mode/view/touch state; the extension keeps the existing external MIDI

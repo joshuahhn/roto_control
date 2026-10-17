@@ -11,6 +11,10 @@ CONTROL_KEYS = {
     'analysis': ('threshold', 'gain', 'add', 'smooth', 'active'),
     'audio': ('gain', 'mute'),
 }
+FLOAT_KEYS = {
+    'analysis': ('threshold', 'gain', 'add', 'smooth'),
+    'layers': ('opacity', 'brightness', 'black_level', 'gamma'),
+}
 
 
 def reference(value):
@@ -75,7 +79,11 @@ def validate(profile):
             raise ValueError('This MIX page has at most eight items')
         ids = set()
         for item in items:
-            _fields(item, ('id', 'label', 'primary', 'controls'), ('meter', 'trigger'))
+            _fields(item, ('id', 'label', 'primary', 'controls'), ('meter', 'trigger', 'input'))
+            if style == 'layers':
+                reference(item['input'])
+            elif 'input' in item:
+                raise ValueError('Only Layer Mix items have an input reference')
             _name(item['id']); _name(item['label'])
             if item['id'] in ids:
                 raise ValueError('Duplicate MIX item id')
@@ -146,17 +154,20 @@ def projection(profile, view, selected):
     if view is None:
         return result
     items = profile['items']
+    keys = FLOAT_KEYS.get(profile['style'])
+    if keys is None:
+        return result
     kind, data = view
     if kind == 'all':
         family, knob, button, send = data
         if family != 0:
             return result
         for index, item in enumerate(items):
-            key = item['primary'] if knob == 0 else 'gain' if knob == 1 else ('add' if send == 0 else 'smooth' if send == 1 else None)
+            key = item['primary'] if knob == 0 else keys[1] if knob == 1 else (keys[2] if send == 0 else keys[3] if send == 1 else None)
             if key in item['controls'] and item['controls'][key]['kind'] == 'float':
                 result[index] = index, key
     elif kind == 'focus' and data == 0 and 0 <= selected < len(items):
-        for lane, key in enumerate(('threshold', 'gain', 'add', 'smooth')):
+        for lane, key in enumerate(keys):
             if key in items[selected]['controls'] and items[selected]['controls'][key]['kind'] == 'float':
                 result[lane] = selected, key
     return result

@@ -1,6 +1,6 @@
 # TD → ROTO MIX contract v1
 
-Status: data contract with an initial [analysis source slice](../functions/mix.md),
+Status: data contract with [analysis and Layer Mix float slices](../functions/mix.md),
 2026-10-17. The user requested three initial
 styles after describing tool → selected item → detail controls. This is not an
 complete three-style implementation or a new MIDI wire protocol. Hardware uses the
@@ -38,6 +38,7 @@ The exact persistence integration is implementation work, not a new path grammar
 | `source` | Explicit existing source OP reference within the caller's scope |
 | `items` | Ordered item descriptions; the initial MIX overview has eight configured slots |
 | Item `id`, `label` | Stable item identity and readable name |
+| Item `input` | Required for `layers`: existing wired input OP reference within the scope, in source input order; absent for other styles |
 | Item `primary` | Key of its overview control; `null` means no writable overview control |
 | Item `controls` | Optional controls under the style's defined keys; each has `label`, `kind`, `target` and optional `range` |
 | Control `kind` | `float`, `menu` or `toggle`, checked against the real TD parameter |
@@ -151,5 +152,7 @@ producing native VOLUME/PAN/SEND A/SEND B and EFFECT while still in MIX Focus.
 Deferring that metadata restoration until actual PLUGIN return fixed the test
 method; a fresh read-only check and normal PLUGIN return passed. Do not carry the
 prototype's bounded-stream lifecycle into normal continuous runtime feedback.
-Next implement the shared descriptor and analysis style for Low/Mid, preserving
-the scoped checks described in the [view plan](mix-view-mappings.md).
+The shared descriptor, Low/Mid analysis and wired Layer Mix float adapters now
+use the scoped checks described in the [view plan](mix-view-mappings.md). The
+current runtime activates one source/style profile at a time; mixed-style slots,
+Layer Mix Operation/Swap and audio processing remain planned.

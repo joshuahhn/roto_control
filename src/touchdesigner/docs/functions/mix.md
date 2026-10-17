@@ -1,9 +1,11 @@
-# Independent MIX analysis
+# Independent MIX controls
 
-This slice implements saved Low/Mid descriptions on an independent eight-slot
-MIX page, float input, Active buttons and native meter feedback. Source tests, native TD checks
+This slice implements saved Low/Mid analysis and wired Layer Mix descriptions on
+an independent eight-slot MIX page, float input, analysis Active buttons and native
+meter feedback. Source tests, native TD checks
 and scoped hardware acceptance cover touch selection, FUNC details, sustained
-captions, Mid Gain input/motor return, overview Active toggles and normal PLUGIN restoration. The generic
+captions, Mid Gain input/motor return, overview Active toggles, Layer Mix overview
+Opacity input/motor return, Input 2 Focus captions and normal PLUGIN restoration. The generic
 tox includes this slice with no MIX assignments; the checked-in demo project
 retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lowmid-hardware-acceptance--2026-10-17).
 
@@ -28,7 +30,40 @@ invalid target; it must not silently attach to a new operator at the old path.
 saved record; `GetMixState()` exposes mode/view readiness, selected item, changed
 write count and unavailable controls. `ClearMixProfile()` removes MIX assignments
 without removing PLUGIN mappings. Configuration requires released knobs and exit
-from LEARN. Only the analysis style is enabled in this slice.
+from LEARN. Analysis and layers are enabled; one profile/style is active at a
+time. Configuring another source replaces MIX assignments, without changing
+PLUGIN assignments. Mixed-style slots and a profile-switching UI remain planned.
+
+## Layer Mix floats
+
+```python
+controller.ConfigureMixLayers(existing_scope, 'layermix_layers')
+```
+
+Use an existing Layer Mix TOP with 1..8 wired inputs only. The adapter records
+their order and identities, and describes fields already enabled by Setup.
+It never enables Opacity/Brightness/Levels or changes wiring, operation, values
+or extensions on the TOP. Reference-only or mixed wired/reference layers are
+not supported by this slice.
+
+| View | Layer projection |
+| --- | --- |
+| MIX overview, native Level | Each input's Opacity |
+| Native Pan | Each input's Brightness |
+| Native Send A / B | Each input's Black Level / Gamma |
+| Touch item, then FUNC | Selected input's Opacity, Brightness, Black Level, Gamma on knobs 1–4 |
+
+Combined captions use `Opac`, `Bright`, `Black` and `Gamma` to fit the hardware
+text field. Normalized ranges come from the actual TD parameter metadata.
+Disabled fields stay unavailable. Overview buttons have no Layer Mix business
+action; Focus buttons keep native input selection.
+
+The meter is scalar readback of that layer's Opacity over 0..1, duplicated into
+both native bars. It does not measure image intensity or an audio signal.
+Changing the input identities/order, sequence count or Setup flags invalidates
+the profile before further writes. Restoring old wiring does not resume it:
+release the knobs and explicitly configure again. Target identity and parameter
+guards also apply to every write. Operation menus and Swap are not routed yet.
 
 ## Hardware views
 
@@ -100,7 +135,7 @@ No second MIDI owner or new wire protocol is introduced.
 Overview Pan/Send input has source coverage; it has not had physical acceptance
 in this slice. Menus, trigger indicators, High/Kick adapters, second-page Focus and the slot
 editor are later slices. No detent or freely replaceable native-heading promise
-is made. Layers remain planned; audio Gain/Mute processing is deferred to
+is made. Layer Mix Operation/Swap remain planned; audio Gain/Mute processing is deferred to
 [issue #26](https://github.com/joshuahhn/roto_control/issues/26).
 
 For a current disconnected controller, make a recovery `.tox` through TD, then

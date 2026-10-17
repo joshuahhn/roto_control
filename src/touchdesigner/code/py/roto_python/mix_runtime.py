@@ -1,15 +1,58 @@
-"""Independent analysis MIX routing on the existing external MIDI connection."""
+"""Independent analysis and Layer Mix routing on the existing MIDI connection."""
 import copy
 import math
 import time
 from binding import Binding, parameter_chain, parameter_value, same_parameter
-from mix_descriptor import validate, projection, button_projection, limits
+from mix_descriptor import validate, projection, button_projection, limits, reference, FLOAT_KEYS
 from midi_queue import discard
 from protocol import HEADER, sysex, text13, raw_value
 
 
 def _identity(operator):
     return getattr(operator, 'id', operator.path)
+
+
+LAYER_FIELDS = (
+    ('opacity', 'opacity', 'Opac', 'enableopac'),
+    ('brightness', 'bright', 'Bright', 'enablebright'),
+    ('black_level', 'black', 'Black', 'enablelevels'),
+    ('gamma', 'gamma', 'Gamma', 'enablelevels'),
+)
+
+
+def layer_state(operator):
+    """Pin wired input order and dynamic-field Setup, without editing the TOP."""
+    if operator is None or not operator.valid or operator.OPType != 'layermixTOP':
+        raise ValueError('MIX layers needs an existing Layer Mix TOP')
+    inputs = operator.inputs
+    if not 1 <= len(inputs) <= 8 or operator.seq.lay.numBlocks != len(inputs):
+        raise ValueError('This Layer Mix slice needs 1..8 wired inputs only')
+    return (tuple(_identity(n) for n in inputs),
+            tuple(bool(operator.par[n].eval()) for n in ('enableopac', 'enablebright', 'enablelevels')))
+
+
+def layer_profile(scope, source):
+    """Describe existing wired layers; no Setup flags, values or graph writes."""
+    if scope is None or not scope.valid or not scope.isCOMP:
+        raise ValueError('MIX needs an existing COMP scope')
+    source = reference(source)
+    operator = scope.op(source)
+    layer_state(operator)
+    items = []
+    for index, image in enumerate(operator.inputs):
+        controls = {}
+        for key, suffix, label, flag in LAYER_FIELDS:
+            parameter = operator.par['lay' + str(index) + suffix]
+            if operator.par[flag].eval() and parameter is not None and parameter.enable:
+                controls[key] = dict(label=label, kind='float', target=dict(op=source, parameter=parameter.name))
+        item = dict(id='input.' + str(index), label='Input ' + str(index + 1),
+                    input=reference(scope.relativePath(image)), primary='opacity' if 'opacity' in controls else None,
+                    controls=controls)
+        if 'opacity' in controls:
+            item['meter'] = dict(source=dict(kind='parameter', op=source, parameter=controls['opacity']['target']['parameter']),
+                                 measure='scalar', range=[0, 1], stage='layer opacity parameter')
+        items.append(item)
+    return validate(dict(version=1, style='layers', id='layers.main', source=source, items=items))
 
 
 class Target:
@@ -92,6 +135,8 @@ class MixRuntime:
         self.e = extension
         self.profile = None
         self.scope = self.source = None
+        self.layer_state = None
+        self.layer_invalid = False
         self.targets, self.errors, self.meters = {}, {}, {}
         self.active = self.returning = False
         self.epoch = 0
@@ -120,21 +165,36 @@ class MixRuntime:
         if self.touched or self.e._host.touched or self.e._host.learning:
             raise ValueError('Exit LEARN and release knobs before MIX configuration')
         profile = validate(profile)
-        if profile['style'] != 'analysis':
-            raise ValueError('Only analysis is implemented; layers/audio remain planned')
+        if profile['style'] not in FLOAT_KEYS:
+            raise ValueError('Audio processing remains planned')
         if any(item.get('trigger') for item in profile['items']):
-            raise ValueError('Trigger feedback is not enabled in the Low/Mid slice')
+            raise ValueError('Trigger feedback is not enabled in this MIX slice')
         if scope is None or not scope.valid or not scope.isCOMP:
             raise ValueError('MIX needs an existing COMP scope')
         source = scope.op(profile['source'])
         if source is None or not source.valid:
             raise ValueError('MIX source is unavailable')
+        source_state = None
+        if profile['style'] == 'layers':
+            source_state = layer_state(source)
+            if (len(profile['items']) != len(source.inputs)
+                    or any(scope.op(item['input']) is None or _identity(scope.op(item['input'])) != _identity(image)
+                           for item, image in zip(profile['items'], source.inputs))):
+                raise ValueError('Layer Mix inputs changed; configure the current wired order')
         targets, errors, meters = {}, {}, {}
         for index, item in enumerate(profile['items']):
             for key, control in item['controls'].items():
                 try:
-                    if control['kind'] != ('toggle' if key == 'active' else 'float'):
-                        raise ValueError('Analysis Active needs Toggle; its knob controls need Float')
+                    expected = 'toggle' if profile['style'] == 'analysis' and key == 'active' else 'float' if key in FLOAT_KEYS[profile['style']] else None
+                    if control['kind'] != expected:
+                        raise ValueError('This slice routes Float controls and analysis Active Toggle only')
+                    if profile['style'] == 'layers':
+                        _, suffix, _, flag = next(field for field in LAYER_FIELDS if field[0] == key)
+                        if (scope.op(control['target']['op']) is None
+                                or _identity(scope.op(control['target']['op'])) != _identity(source)
+                                or control['target']['parameter'] != 'lay' + str(index) + suffix
+                                or not source.par[flag].eval()):
+                            raise ValueError('Layer field unavailable or does not match its wired input')
                     targets[index, key] = Target(scope, control, profile['id'] + ':' + item['id'] + ':' + key)
                 except (ValueError, AttributeError, TypeError, KeyError) as exc:
                     errors[index, key] = str(exc)
@@ -144,6 +204,8 @@ class MixRuntime:
                 except (ValueError, AttributeError, TypeError, KeyError):
                     pass  # invalid feedback clears bars; other controls remain usable
         self.scope, self.source, self.profile = scope, source, profile
+        self.layer_state = source_state
+        self.layer_invalid = False
         self.targets, self.errors, self.meters = targets, errors, meters
         self.error = ''
         self.selected = 0
@@ -332,7 +394,18 @@ class MixRuntime:
         if self.profile is None or self.scope is None or not self.scope.valid:
             return False
         current = self.scope.op(self.profile['source'])
-        return current is not None and current.valid and _identity(current) == _identity(self.source)
+        valid = current is not None and current.valid and _identity(current) == _identity(self.source)
+        if self.profile['style'] == 'layers':
+            try:
+                valid = valid and layer_state(current) == self.layer_state and all(
+                    self.scope.op(item['input']) is not None
+                    and _identity(self.scope.op(item['input'])) == _identity(image)
+                    for item, image in zip(self.profile['items'], current.inputs))
+            except (ValueError, AttributeError, TypeError):
+                valid = False
+            self.layer_invalid |= not valid
+            return valid and not self.layer_invalid
+        return valid
 
     def addresses(self):
         return projection(self.profile, self.view, self.selected) if self.profile else [None] * 8
@@ -365,7 +438,7 @@ class MixRuntime:
         self.dirty = False
 
     def send_names(self, start=0):
-        names = ('Add', 'Smooth')
+        names = ('Black', 'Gamma') if self.profile and self.profile['style'] == 'layers' else ('Add', 'Smooth')
         self.command(12, 8, (start, *(byte for index in range(start, start + 8)
                                     for byte in text13(names[index] if index < len(names) else ''))))
 

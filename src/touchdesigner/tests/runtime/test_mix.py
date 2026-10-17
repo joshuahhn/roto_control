@@ -24,6 +24,80 @@ class Channel:
 
 
 class MixTests(unittest.TestCase):
+    def layer_fixture(self):
+        e,mix,manager,follower,analysis,channels,operators=self.fixture()
+        images=[SimpleNamespace(valid=True,id=901+i,path='/demo/image_'+str(i)) for i in range(2)]
+        source=SimpleNamespace(valid=True,OPType='layermixTOP',id=900,path='/demo/layer_mix',inputs=images,par=Pars(),seq=SimpleNamespace(lay=SimpleNamespace(numBlocks=2)))
+        for flag in ('enableopac','enablebright','enablelevels'):
+            p=BoundParameter('Toggle');p.name=flag;p.owner=source;p.val=True;source.par[flag]=p
+        for index in range(2):
+            for suffix,value,high in (('opacity',.25+.5*index,1),('bright',1,2),('black',0,2),('gamma',1,3)):
+                p=BoundParameter();p.name='lay'+str(index)+suffix;p.owner=source;p.enable=True
+                p.normMin=p.min=0;p.normMax=p.max=high;p.val=value;source.par[p.name]=p
+        operators['layer_mix']=source
+        for image in images:operators[image.path.rsplit('/',1)[1]]=image
+        mix.scope.relativePath=lambda n:n.path.removeprefix('/demo/')
+        return e,mix,source,images,analysis
+
+    def test_layer_adapter_is_readonly_and_opacity_drives_independent_meter_and_input(self):
+        e,mix,source,images,analysis=self.layer_fixture()
+        before={n:p.eval() for n,p in source.par.items()};old_analysis={n:p.eval() for n,p in analysis.par.items()}
+        profile=e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.assertEqual(profile['descriptor']['style'],'layers')
+        self.assertEqual(profile['descriptor']['items'][0]['input'],'image_0')
+        self.assertEqual({n:p.eval() for n,p in source.par.items()},before)
+        self.enter(e,mix);mix.tick(now=2)
+        self.assertIn([191,65,32],self.messages(e));self.assertIn([191,67,95],self.messages(e))
+        self.cc(e,52,127);self.turn(e,0,8192);self.cc(e,52,0)
+        self.assertAlmostEqual(source.par.lay0opacity.eval(),8192/16383)
+        self.assertEqual(source.par.lay1opacity.eval(),.75)
+        self.assertEqual({n:p.eval() for n,p in analysis.par.items()},old_analysis)
+        self.cc(e,20,127);self.cc(e,20,0);self.assertEqual(mix.writes,1)
+
+    def test_layer_focus_has_own_four_fields_and_reuses_target_guards(self):
+        e,mix,source,*_=self.layer_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.enter(e,mix);e._receive_midi(sysex(10,9,(0,1)),e._ingress_token())
+        e._receive_midi(sysex(12,2,(0,)),e._ingress_token());mix.tick(now=2)
+        self.assertEqual(mix.addresses()[:4],[(1,k) for k in ('opacity','brightness','black_level','gamma')])
+        self.cc(e,53,127);self.turn(e,1,8192);self.cc(e,53,0)
+        self.assertAlmostEqual(source.par.lay1bright.eval(),2*8192/16383)
+        self.assertEqual(source.par.lay0bright.eval(),1)
+
+    def test_layer_rewire_setup_or_sequence_changes_fence_input_until_reconfigured(self):
+        for change in ('rewire','setup','sequence'):
+            with self.subTest(change=change):
+                e,mix,source,images,_=self.layer_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix)
+                self.cc(e,52,127)
+                if change=='rewire':source.inputs.reverse()
+                elif change=='setup':source.par.enablebright.val=False
+                else:source.seq.lay.numBlocks=3
+                self.turn(e,0,16383);mix.tick(now=2)
+                self.assertEqual(source.par.lay0opacity.eval(),.25);self.assertEqual(mix.writes,0)
+                self.assertFalse(mix.ready)
+
+    def test_layer_disabled_fields_are_unavailable_without_changing_setup(self):
+        e,mix,source,*_=self.layer_fixture()
+        source.par.enableopac.val=False;source.par.enablelevels.val=False
+        e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix)
+        item=e.GetMixProfile()['descriptor']['items'][0]
+        self.assertIsNone(item['primary']);self.assertNotIn('meter',item)
+        self.assertEqual(set(item['controls']),{'brightness'})
+        self.cc(e,52,127);self.turn(e,0,16383);self.cc(e,52,0)
+        self.assertFalse(source.par.enableopac.eval());self.assertFalse(source.par.enablelevels.eval())
+        self.assertEqual(source.par.lay0opacity.eval(),.25);self.assertEqual(mix.writes,0)
+
+    def test_saved_layer_profile_rejects_new_input_order_and_requires_explicit_reconfigure(self):
+        e,mix,source,*_=self.layer_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+        saved=e.GetMixProfile();self.enter(e,mix)
+        source.inputs.reverse();mix.tick(now=2);self.assertFalse(mix.ready)
+        with self.assertRaises(ValueError):e.SetMixProfile(mix.scope,saved['descriptor'])
+        self.assertEqual(e.GetMixProfile(),saved)
+        source.inputs.reverse();mix.tick(now=3);self.assertFalse(mix.ready)
+        e.ConfigureMixLayers(mix.scope,'layer_mix');mix.tick(now=4)
+        self.assertTrue(mix.ready);self.turn(e,0,16383);self.assertEqual(mix.writes,0)
+        self.cc(e,52,127);self.turn(e,0,16383);self.cc(e,52,0)
+        self.assertEqual(source.par.lay0opacity.eval(),1);self.assertEqual(mix.writes,1)
+
     def fixture(self):
         e, m, f, a, b, *_ = test_comp_follow.FollowTests().fixture()
         source = SimpleNamespace(valid=True, isCOMP=True, id=800, path='/demo/analysis', par=Pars())
