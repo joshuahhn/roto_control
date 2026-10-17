@@ -1,5 +1,6 @@
 import datetime
 import errno
+from enum import Enum, unique
 import hashlib
 import json
 import os
@@ -14,8 +15,27 @@ import time
 
 MAX_INPUT = 16384
 MAX_OUTPUT = 65536
-COMMANDS = {'firmware': (1, 1, 12), 'mode': (1, 2, 4),
-            'knob': (3, 9, 250), 'button': (3, 10, 247)}
+@unique
+class SerialGet(Enum):
+    FW_VERSION = (1, 1, 12)
+    MODE = (1, 2, 4)
+    PLUGIN_KNOB_CONFIG = (3, 9, 250)
+    PLUGIN_SWITCH_CONFIG = (3, 10, 247)
+
+    @property
+    def response_size(self):
+        return self.value[2]
+
+    def packet(self, payload=b''):
+        if (self in (SerialGet.FW_VERSION, SerialGet.MODE) and payload != b'') or (self in
+                (SerialGet.PLUGIN_KNOB_CONFIG, SerialGet.PLUGIN_SWITCH_CONFIG) and
+                (len(payload) != 9 or any(x > 127 for x in payload[:8]) or payload[8] > 7)):
+            raise ReadError('invalid_request', 'Invalid GET payload')
+        group, subtype, _ = self.value
+        return bytes((0x5a, group, subtype, 0, len(payload))) + payload
+
+
+MIDI_CONTROL_LEARNED = b'\x02\x0b'
 
 
 class ReadError(Exception):
@@ -65,14 +85,6 @@ def request(value):
     return value
 
 
-def _packet(command, payload):
-    group, subtype, _ = COMMANDS[command]
-    if (command in ('firmware', 'mode') and payload != b'') or (command in ('knob', 'button') and
-            (len(payload) != 9 or any(x > 127 for x in payload[:8]) or payload[8] > 7)):
-        raise ReadError('invalid_request', 'Invalid GET payload')
-    return bytes((0x5a, group, subtype, 0, len(payload))) + payload
-
-
 def _text(data):
     if len(data) != 13 or 0 not in data:
         raise ReadError('protocol_error', 'Expected a NULL-terminated 13-byte hardware string')
@@ -84,7 +96,8 @@ def _text(data):
 
 def decode_control(frame, expected, plugin_hash):
     kind = expected['kind']
-    if len(frame) != COMMANDS[kind][2] or frame[:2] != b'\xa5\x00':
+    command = SerialGet.PLUGIN_KNOB_CONFIG if kind == 'knob' else SerialGet.PLUGIN_SWITCH_CONFIG
+    if len(frame) != command.response_size or frame[:2] != b'\xa5\x00':
         raise ReadError('protocol_error', 'Incorrect control response length/status')
     if (frame[2:10] != bytes(plugin_hash) or frame[10] != expected['slot'] - 1 or
             int.from_bytes(frame[11:13], 'big') != expected['parameter_index'] or
@@ -274,7 +287,7 @@ class ReadSession:
         if self.events > 64:
             raise ReadError('protocol_error', 'Async event limit exceeded')
         # MIDI setup learn is unrelated to the requested PLUGIN records.
-        if (frame[1:3] != b'\x02\x0b' or len(frame) != 8 or frame[5] > 63 or frame[6] not in (0, 1) or frame[7] > 31):
+        if (frame[1:3] != MIDI_CONTROL_LEARNED or len(frame) != 8 or frame[5] > 63 or frame[6] not in (0, 1) or frame[7] > 31):
             raise ReadError('context_changed', 'Serial context/config notification interrupted an outstanding GET. Physically unplug and reconnect Roto before retrying')
         return True
 
@@ -301,7 +314,9 @@ class ReadSession:
             self._receive(remaining)
 
     def get(self, command, payload=b''):
-        packet = _packet(command, payload)
+        if not isinstance(command, SerialGet):
+            raise TypeError('Expected a SerialGet command')
+        packet = command.packet(payload)
         self._drain_notifications()
         self.retirement.arm()
         deadline = min(self.deadline, self.clock() + 1)
@@ -317,7 +332,7 @@ class ReadSession:
                             if len(self.buffer) == 2:
                                 self.retirement.complete()
                             raise ReadError('device_error', 'Roto rejected GET with response code %02x' % self.buffer[1])
-                        size = COMMANDS[command][2]
+                        size = command.response_size
                         if len(self.buffer) >= size:
                             frame, self.buffer = self.buffer[:size], self.buffer[size:]
                             self.retirement.complete()
@@ -342,16 +357,16 @@ def capture(value, *, inventory=physical_device, open_port=PosixPort, retirement
     try:
         transport = open_port(value['port'], physical)
         session = ReadSession(transport, retired)
-        fw = session.get('firmware')
+        fw = session.get(SerialGet.FW_VERSION)
         git = fw[5:12].decode('ascii')
         if any(c not in '0123456789abcdefABCDEF' for c in git):
             raise ReadError('protocol_error', 'Invalid firmware revision')
-        mode = session.get('mode')
+        mode = session.get(SerialGet.MODE)
         if mode[2:] != b'\x01\x00':
             raise ReadError('unsupported_page', 'Select PLUGIN first page on Roto. This read-only API never changes hardware mode/page.')
-        controls = [decode_control(session.get(c['kind'], bytes(value['plugin_hash']) + bytes((c['slot'] - 1,))),
+        controls = [decode_control(session.get(SerialGet.PLUGIN_KNOB_CONFIG if c['kind'] == 'knob' else SerialGet.PLUGIN_SWITCH_CONFIG, bytes(value['plugin_hash']) + bytes((c['slot'] - 1,))),
                                    c, value['plugin_hash']) for c in value['controls']]
-        if session.get('mode')[2:] != mode[2:]:
+        if session.get(SerialGet.MODE)[2:] != mode[2:]:
             raise ReadError('context_changed', 'Hardware mode/page changed during capture')
         session.finish()
         if inventory(value['port']) != physical:

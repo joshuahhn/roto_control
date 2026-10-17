@@ -3,7 +3,7 @@ import tests  # Shared paths for direct unittest discovery.
 import unittest
 
 import test_owner_follow
-from protocol import digest, sysex
+from protocol import digest, SysExCommand
 
 
 class FollowTouchPolicyTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class FollowTouchPolicyTests(unittest.TestCase):
         fixture,track,variant,events=self.fixture()
         e,m,f,a,b,la,lb,sample,reset,_=fixture
         target=e._host.controls['knob',1]
-        old_ack=sysex(11,11,(target.index>>7,target.index&127,*digest(target.target_id,6),0,0,0))
+        old_ack=SysExCommand.CONTROL_MAPPED.message((target.index>>7,target.index&127,*digest(target.target_id,6),0,0,0))
         self.touch(e,m);self.select(f,sample,b.owner)
         self.assertTrue(f.gated)
         e._receive_midi(old_ack)

@@ -11,7 +11,7 @@ from test_bound_parameter import BoundParameter
 from midi_queue import discard, business_output
 from mix_descriptor import analysis_profile, validate, projection
 from mix_runtime import MixRuntime, Signal
-from protocol import sysex, digest, text13, raw_value
+from protocol import SysExCommand, digest, text13, raw_value
 
 
 class Pars(dict):
@@ -53,8 +53,8 @@ class MixTests(unittest.TestCase):
         return e,mix,source
 
     def focus(self,e,mix,index=0):
-        e._receive_midi(sysex(10,9,(0,index)),e._ingress_token())
-        e._receive_midi(sysex(12,2,(0,)),e._ingress_token());mix.tick(now=2)
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,index)),e._ingress_token())
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)),e._ingress_token());mix.tick(now=2)
 
     def preset_fixture(self, choices=None):
         e, mix, source = self.operation_fixture()
@@ -298,7 +298,7 @@ class MixTests(unittest.TestCase):
         self.assertEqual(len(mix.targets[1,'operation'].binding.menu_names),46)
         self.assertEqual(mix.writes,1)
         mix.tick(now=3)
-        self.assertIn(sysex(10,24,(0,4,*text13('Op 5 Choice 46'))),[tuple(m) for m in self.messages(e)])
+        self.assertIn(SysExCommand.PARAM_VALUES.message((0,4,*text13('Op 5 Choice 46'))),[tuple(m) for m in self.messages(e)])
 
     def test_layer_operation_libraries_and_custom_choices_validate_atomically(self):
         e,mix,source=self.operation_fixture()
@@ -338,7 +338,7 @@ class MixTests(unittest.TestCase):
         e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix);self.focus(e,mix)
         self.assertEqual(source.par.lay0operation.eval(),'choice_20');self.assertEqual(mix.writes,0)
         self.assertFalse(any(m[:2] in ([191,16],[191,48]) for m in self.messages(e)))
-        self.assertIn(sysex(10,24,(0,4,*text13('Op * Choice 21'))),[tuple(m) for m in self.messages(e)])
+        self.assertIn(SysExCommand.PARAM_VALUES.message((0,4,*text13('Op * Choice 21'))),[tuple(m) for m in self.messages(e)])
         self.cc(e,56,127);self.turn(e,4,16383);self.cc(e,56,0)
         self.assertEqual(source.par.lay0operation.eval(),'screen');self.assertEqual(mix.writes,1)
 
@@ -387,7 +387,7 @@ class MixTests(unittest.TestCase):
     def test_layer_operation_projection_and_send_metadata_preserve_gaps(self):
         e,mix,source=self.operation_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
         self.enter(e,mix);self.focus(e,mix)
-        self.assertIn(list(sysex(12,3,(4,))),self.messages(e))
+        self.assertIn(list(SysExCommand.NUM_SENDS.message((4,))),self.messages(e))
         p=e.GetMixProfile()['descriptor']
         self.assertEqual(projection(p,('all',(0,2,0,2)),0)[:2],[(0,'operation'),(1,'operation')])
         self.assertEqual(projection(p,('all',(0,2,0,3)),0)[:2],[(0,'swap'),(1,'swap')])
@@ -414,8 +414,8 @@ class MixTests(unittest.TestCase):
 
     def test_layer_focus_has_own_four_fields_and_reuses_target_guards(self):
         e,mix,source,*_=self.layer_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
-        self.enter(e,mix);e._receive_midi(sysex(10,9,(0,1)),e._ingress_token())
-        e._receive_midi(sysex(12,2,(0,)),e._ingress_token());mix.tick(now=2)
+        self.enter(e,mix);e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)),e._ingress_token())
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)),e._ingress_token());mix.tick(now=2)
         self.assertEqual(mix.addresses()[:4],[(1,k) for k in ('opacity','brightness','black_level','gamma')])
         self.cc(e,53,127);self.turn(e,1,8192);self.cc(e,53,0)
         self.assertAlmostEqual(source.par.lay1bright.eval(),2*8192/16383)
@@ -491,8 +491,8 @@ class MixTests(unittest.TestCase):
         e._pending = b''
         return e, mix, m, f, source, channels, operators
 
-    def enter(self, e, mix, view=(1, (0, 0, 0, 0))):
-        e._receive_midi(sysex(12, *view), e._ingress_token())
+    def enter(self, e, mix, view=(SysExCommand.SET_MIXER_ALL_MODE, (0, 0, 0, 0))):
+        e._receive_midi(view[0].message(view[1]), e._ingress_token())
         mix.tick(now=1)
         e._pending = b''
 
@@ -527,7 +527,7 @@ class MixTests(unittest.TestCase):
         mix.tick(now=1.2)
         self.assertIn([191, 69, 64], self.messages(e))
         self.assertIn([191, 70, 64], self.messages(e))
-        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token())
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,2)), e._ingress_token())
         self.cc(e, 54, 127); self.turn(e, 2, 16383); self.cc(e, 54, 0)
         self.assertEqual(source.par.Highthresh.eval(), .1)  # selection fences its accompanying touch
         mix.tick(now=1.4)
@@ -564,18 +564,18 @@ class MixTests(unittest.TestCase):
         e, mix, _, _, source, *_ = self.fixture()
         e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low', 'Mid', 'High'))
         self.enter(e, mix)
-        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token())
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,2)), e._ingress_token())
         self.cc(e, 54, 127); self.cc(e, 54, 0)
         mix.tick(now=2)
-        self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,2,*text13('>High 0.100')))), self.messages(e))
         e._pending = b''
         mix.tick(now=12)
-        self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
-        e._receive_midi(sysex(10,9,(0,1)), e._ingress_token())
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,2,*text13('>High 0.100')))), self.messages(e))
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)), e._ingress_token())
         self.cc(e, 53, 127); self.cc(e, 53, 0)
         mix.tick(now=13)
-        self.assertIn(list(sysex(10,24,(0,1,*text13('>Mid 0.100')))), self.messages(e))
-        self.assertIn(list(sysex(10,24,(0,2,*text13('Thresh 0.100')))), self.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,1,*text13('>Mid 0.100')))), self.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,2,*text13('Thresh 0.100')))), self.messages(e))
         self.assertEqual(mix.writes, 0)
         self.assertEqual(source.par.Highthresh.eval(), .1)
 
@@ -586,21 +586,21 @@ class MixTests(unittest.TestCase):
         e.SetMixProfile(mix.scope, profile)
         self.enter(e, mix)
         mix.tick(now=1.2)
-        self.assertIn(list(sysex(10,24,(0,0,*text13('>Long 0.100')))), self.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,0,*text13('>Long 0.100')))), self.messages(e))
         e._pending = b''
         self.focus(e, mix)
-        self.assertIn(list(sysex(10,24,(0,0,*text13('Thresh 0.100')))), self.messages(e))
-        self.assertFalse(any(m[5:7] == [10,24] and m[9:10] == [ord('>')] for m in self.messages(e)))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,0,*text13('Thresh 0.100')))), self.messages(e))
+        self.assertFalse(any(SysExCommand.identify(m) is SysExCommand.PARAM_VALUES and m[9:10] == [ord('>')] for m in self.messages(e)))
 
     def test_overview_selection_does_not_resend_unchanged_motor_positions(self):
         e, mix, _, _, source, *_ = self.fixture()
         e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low','Mid','High'))
         self.enter(e, mix)
-        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token()); mix.tick(now=2)
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,2)), e._ingress_token()); mix.tick(now=2)
         e._pending = b''
         # Actual hardware reports selection before touch. Repeating positions
         # here produced extra Knob 3 touch/selection in the physical trace.
-        e._receive_midi(sysex(10,9,(0,0)), e._ingress_token())
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,0)), e._ingress_token())
         self.cc(e,52,127); self.cc(e,52,0); mix.tick(now=3)
         motors = [m for m in self.messages(e) if len(m)==3 and m[0]==191 and (12<=m[1]<=19 or 44<=m[1]<=51)]
         self.assertEqual(motors, [])
@@ -619,11 +619,11 @@ class MixTests(unittest.TestCase):
         queued = [[191,13,42], [191,45,85]]
         for message in queued:
             e._send(message, mix=True)
-        e._send(sysex(10,24,(0,1,*text13('Old text'))), mix=True)
-        e._receive_midi(sysex(10,9,(0,1)), e._ingress_token())
+        e._send(SysExCommand.PARAM_VALUES.message((0,1,*text13('Old text'))), mix=True)
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)), e._ingress_token())
         self.assertTrue(e._pending.startswith(tail))
         self.assertEqual([json.loads(line)['midi'] for line in e._pending[len(tail):].splitlines()], queued)
-        e._receive_midi(sysex(12,2,(0,)), e._ingress_token())
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), e._ingress_token())
         self.assertEqual(e._pending, tail)
         mix.tick(now=2)
         frames = [json.loads(line)['midi'] for line in e._pending[len(tail):].splitlines()]
@@ -652,10 +652,10 @@ class MixTests(unittest.TestCase):
         e, mix, m, f, source, *_ = self.fixture(); registry = copy.deepcopy(m.data)
         self.enter(e, mix)
         token = e._ingress_token()
-        e._receive_midi(sysex(10,9,(0,1)), token)  # actual unlocked trace: selection precedes touch
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)), token)  # actual unlocked trace: selection precedes touch
         self.cc(e, 53, 127, token); self.turn(e, 1, 16383)
         self.assertEqual(mix.selected, 1); self.assertEqual(source.par.Midthresh.eval(), .1)
-        e._receive_midi(sysex(12, 2, (0,)), e._ingress_token()); mix.tick(now=2)
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), e._ingress_token()); mix.tick(now=2)
         self.turn(e, 1, 16383)  # old touch cannot write new Focus Gain
         self.assertEqual(source.par.Midgain.eval(), 2)
         self.cc(e, 53, 0); self.cc(e, 53, 127); self.turn(e, 1, 8192)
@@ -671,8 +671,8 @@ class MixTests(unittest.TestCase):
         self.assertEqual(mix.selected, 0)
         self.assertEqual(mix.epoch, epoch)
         self.assertEqual(mix.writes, 0)
-        self.assertIn(list(sysex(10,24,(0,0,*text13('>Low 0.100')))), self.messages(e))
-        self.assertFalse(any(m[:7] == list(sysex(12,4)[:7]) for m in self.messages(e)))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,0,*text13('>Low 0.100')))), self.messages(e))
+        self.assertFalse(any(m[:7] == list(SysExCommand.DAW_SELECT_TRACK.message()[:7]) for m in self.messages(e)))
         # LOCK keeps selection; overview knobs retain their independent targets.
         self.cc(e, 53, 127); self.turn(e, 1, 8192); self.cc(e, 53, 0)
         self.assertAlmostEqual(source.par.Midthresh.eval(), .6 * 8192 / 16383)
@@ -685,7 +685,7 @@ class MixTests(unittest.TestCase):
         for raw in (0, 16383): self.turn(e, 0, raw)
         for value in (127, 0, 127): self.cc(e, 27, value)  # unassigned MIX button
         target = next(iter(e._host.controls.values()))
-        e._receive_midi(sysex(11, 11, (target.index >> 7, target.index & 127, *digest(target.target_id, 6), 0, 0, 0)))
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((target.index >> 7, target.index & 127, *digest(target.target_id, 6), 0, 0, 0)))
         self.assertEqual(source.par.Lowthresh.eval(), .1); self.assertEqual(mix.writes, 0)
         self.assertFalse(target.mapped)
         self.cc(e, 52, 127); self.turn(e, 0, 8192); self.turn(e, 0, 8192)
@@ -708,7 +708,7 @@ class MixTests(unittest.TestCase):
     def test_view_backlog_and_stale_ingress_require_new_touch(self):
         e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
         self.cc(e, 52, 127); self.cc(e, 12, 127)
-        old = e._ingress_token(); e._receive_midi(sysex(12, 2, (0,)), old)
+        old = e._ingress_token(); e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), old)
         mix.tick(backlog=True, now=2)
         self.cc(e, 44, 127); self.assertFalse(mix.ready)
         mix.tick(now=3)
@@ -789,16 +789,16 @@ class MixTests(unittest.TestCase):
     def test_active_buttons_ignore_stale_held_and_unsupported_views(self):
         e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
         old = e._ingress_token()
-        e._receive_midi(sysex(12, 1, (0, 1, 0, 0)), old); mix.tick(now=2)
+        e._receive_midi(SysExCommand.SET_MIXER_ALL_MODE.message((0, 1, 0, 0)), old); mix.tick(now=2)
         self.cc(e, 20, 127, old); self.cc(e, 20, 127)
         self.assertEqual(mix.writes, 0)
         self.cc(e, 20, 0); self.cc(e, 20, 127)
         self.assertFalse(source.par.Lowactive.eval()); self.assertEqual(mix.writes, 1)
-        for event in (sysex(12, 1, (0, 0, 1, 0)), sysex(12, 1, (0, 0, 2, 0)), sysex(12, 2, (0,))):
+        for event in (SysExCommand.SET_MIXER_ALL_MODE.message((0, 0, 1, 0)), SysExCommand.SET_MIXER_ALL_MODE.message((0, 0, 2, 0)), SysExCommand.SET_MIXER_SELECTED_MODE.message((0,))):
             e._receive_midi(event, e._ingress_token()); mix.tick(now=3)
             self.cc(e, 20, 0); self.cc(e, 20, 127); self.cc(e, 20, 0)
             self.assertEqual(mix.writes, 1)
-        e._receive_midi(sysex(12, 1, (0, 0, 0, 0)), e._ingress_token()); mix.tick(now=4)
+        e._receive_midi(SysExCommand.SET_MIXER_ALL_MODE.message((0, 0, 0, 0)), e._ingress_token()); mix.tick(now=4)
         self.cc(e, 27, 127); self.cc(e, 27, 0)
         self.assertEqual(mix.writes, 1)  # unassigned button never falls back
 
@@ -826,7 +826,7 @@ class MixTests(unittest.TestCase):
     def test_button_held_across_view_change_requires_release_and_new_press(self):
         e,mix,_,_,source,*_=self.fixture();self.enter(e,mix)
         self.cc(e,20,127);self.assertEqual(mix.writes,1)
-        e._receive_midi(sysex(12,1,(0,1,0,0)),e._ingress_token());mix.tick(now=2)
+        e._receive_midi(SysExCommand.SET_MIXER_ALL_MODE.message((0,1,0,0)),e._ingress_token());mix.tick(now=2)
         self.cc(e,20,127);self.assertEqual(mix.writes,1)
         self.cc(e,20,0);self.cc(e,20,127);self.cc(e,20,0)
         self.assertTrue(source.par.Lowactive.eval());self.assertEqual(mix.writes,2)
@@ -834,7 +834,7 @@ class MixTests(unittest.TestCase):
     def test_shared_track_requests_and_follow_outputs_cannot_mutate_mix_or_plugin(self):
         e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix)
         before = copy.deepcopy(m.data)
-        e._receive_midi(sysex(10, 9, (0, 1)), e._ingress_token())
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0, 1)), e._ingress_token())
         self.assertEqual(mix.selected, 1); self.assertEqual(m.data, before)
         e._pending = b''; m.announce_tracks(); m.announce()
         self.assertEqual(e._pending, b'')
@@ -843,22 +843,22 @@ class MixTests(unittest.TestCase):
 
     def test_view_readback_and_send_name_requests_do_not_echo_track_selection(self):
         e, mix, *_ = self.fixture(); self.enter(e, mix)
-        e._receive_midi(sysex(12, 2, (0,)), e._ingress_token()); mix.tick(now=2)
-        self.assertFalse(any(m[5:7] == [12, 4] for m in self.messages(e) if len(m) >= 8))
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), e._ingress_token()); mix.tick(now=2)
+        self.assertFalse(any(SysExCommand.identify(m) is SysExCommand.DAW_SELECT_TRACK for m in self.messages(e) if len(m) >= 8))
         e._pending = b''
-        e._receive_midi(sysex(12, 7, (6,)), e._ingress_token())
-        self.assertEqual(self.messages(e), [list(sysex(12, 8, (6, *([0] * (8 * 13)))))])
-        e._receive_midi(sysex(12, 5, (0,)), e._ingress_token())
-        self.assertIn(list(sysex(12, 9)), self.messages(e)); self.assertIsNone(mix.view)
+        e._receive_midi(SysExCommand.REQUEST_SEND_TRACK_NAMES.message((6,)), e._ingress_token())
+        self.assertEqual(self.messages(e), [list(SysExCommand.SEND_TRACK_NAMES.message((6, *([0] * (8 * 13)))))])
+        e._receive_midi(SysExCommand.SET_MIXER_CHANNEL_MODE.message((0,)), e._ingress_token())
+        self.assertIn(list(SysExCommand.REFRESH_MIX_MODE.message()), self.messages(e)); self.assertIsNone(mix.view)
 
     def test_unchanged_focus_text_is_renewed_bounded_and_stops_outside_mix(self):
         e, mix, _, _, source, *_ = self.fixture()
-        self.enter(e, mix, (2, (0,)))
+        self.enter(e, mix, (SysExCommand.SET_MIXER_SELECTED_MODE, (0,)))
         before = {name: p.eval() for name, p in source.par.items()}
         mix.tick(now=1.11)
         expected = ('Thresh 0.100', 'Gain 2.000', 'Add 0.000', 'Smooth 0.000')
         def captions():
-            return [m for m in self.messages(e) if len(m) >= 10 and m[:7] == list(sysex(10, 24)[:7])]
+            return [m for m in self.messages(e) if len(m) >= 10 and m[:7] == list(SysExCommand.PARAM_VALUES.message()[:7])]
         # API 2.23 expires text without renewed SHOW CONTROL VALUE, even when
         # the value is unchanged. Exercise the real extension's output queue.
         self.assertEqual([bytes(m[9:-1]).rstrip(b'\0').decode() for m in captions()], list(expected))
@@ -869,7 +869,7 @@ class MixTests(unittest.TestCase):
         self.assertEqual(len(captions()), 4)  # coalesce unsent renewals
         self.assertEqual(mix.writes, 0)
         self.assertEqual({name: p.eval() for name, p in source.par.items()}, before)
-        e._receive_midi(sysex(11, 1), e._ingress_token()); e._pending = b''
+        e._receive_midi(SysExCommand.SET_PLUGIN_MODE.message(), e._ingress_token()); e._pending = b''
         mix.tick(now=101)
         self.assertEqual(captions(), [])
 
@@ -880,12 +880,12 @@ class MixTests(unittest.TestCase):
         self.assertEqual(mix.writes, 0)
 
     def test_plugin_return_restores_metadata_only_after_actual_mode_message(self):
-        e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix, (2, (0,)))
+        e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix, (SysExCommand.SET_MIXER_SELECTED_MODE, (0,)))
         mix.tick(now=2); self.assertFalse(e._host.plugin)
-        self.assertFalse(any(m[:7] == list(sysex(11, 2)[:7]) for m in self.messages(e)))
-        token = e._ingress_token(); e._receive_midi(sysex(11, 1), token)
+        self.assertFalse(any(m[:7] == list(SysExCommand.NUM_DEVICES.message()[:7]) for m in self.messages(e)))
+        token = e._ingress_token(); e._receive_midi(SysExCommand.SET_PLUGIN_MODE.message(), token)
         self.assertTrue(e._host.plugin); self.assertFalse(mix.active)
-        self.assertTrue(any(m[:7] == list(sysex(10, 7)[:7]) for m in self.messages(e)))
+        self.assertTrue(any(m[:7] == list(SysExCommand.TRACK_DETAILS.message()[:7]) for m in self.messages(e)))
         self.turn(e, 0, 16383); self.assertEqual(mix.writes, 0)
         mix.tick(backlog=True); self.assertTrue(mix.returning)
         mix.tick(); self.assertFalse(mix.returning)
@@ -894,19 +894,19 @@ class MixTests(unittest.TestCase):
 
     def test_old_connection_cannot_enter_mix_after_reconnect(self):
         e, mix, _, f, *_ = self.fixture(); old = e._ingress_token()
-        f.session_boundary(); e._receive_midi(sysex(12, 1, (0, 0, 0, 0)), old)
+        f.session_boundary(); e._receive_midi(SysExCommand.SET_MIXER_ALL_MODE.message((0, 0, 0, 0)), old)
         self.assertFalse(mix.active)
 
     def test_func_retained_across_plugin_returns_directly_to_same_focus(self):
         e, mix, _, _, source, *_ = self.fixture()
         self.enter(e, mix)
-        e._receive_midi(sysex(10, 9, (0, 1)), e._ingress_token())
-        e._receive_midi(sysex(12, 2, (0,)), e._ingress_token()); mix.tick(now=2)
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0, 1)), e._ingress_token())
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), e._ingress_token()); mix.tick(now=2)
         before = {name: p.eval() for name, p in source.par.items()}
-        e._receive_midi(sysex(11, 1), e._ingress_token()); mix.tick(now=3)
+        e._receive_midi(SysExCommand.SET_PLUGIN_MODE.message(), e._ingress_token()); mix.tick(now=3)
         self.assertFalse(mix.active); self.assertIsNone(mix.view)
         # The retained FUNC reports Focus directly, without an All Tracks event.
-        e._receive_midi(sysex(12, 2, (0,)), e._ingress_token()); mix.tick(now=4)
+        e._receive_midi(SysExCommand.SET_MIXER_SELECTED_MODE.message((0,)), e._ingress_token()); mix.tick(now=4)
         self.assertTrue(mix.active); self.assertTrue(mix.ready)
         self.assertEqual(mix.view, ('focus', 0)); self.assertEqual(mix.selected, 1)
         self.assertEqual(mix.addresses()[:4], [(1, key) for key in ('threshold', 'gain', 'add', 'smooth')])
@@ -928,8 +928,8 @@ class MixTests(unittest.TestCase):
         with self.assertRaises(ValueError): e.Connect()
 
     def test_invalid_selection_and_master_return_clear_feedback_and_never_write(self):
-        malformed = (*sysex(12, 2)[:-1], 128, 247)
-        for event in (sysex(10, 9, (0, 7)), sysex(10, 9), sysex(12, 1, (1, 0, 0, 0)), sysex(12, 2, (8,)), malformed):
+        malformed = (*SysExCommand.SET_MIXER_SELECTED_MODE.message()[:-1], 128, 247)
+        for event in (SysExCommand.SELECT_TRACK.message((0, 7)), SysExCommand.SELECT_TRACK.message(), SysExCommand.SET_MIXER_ALL_MODE.message((1, 0, 0, 0)), SysExCommand.SET_MIXER_SELECTED_MODE.message((8,)), malformed):
             with self.subTest(event=event):
                 e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
                 e._receive_midi(event, e._ingress_token()); mix.tick(now=2)
@@ -942,7 +942,7 @@ class MixTests(unittest.TestCase):
     def test_queue_keeps_frame_tail_and_session_then_latest_feedback(self):
         e, mix, *_ = self.fixture()
         tail = b'127]}\n'
-        ping = (json.dumps({'midi': list(sysex(10, 3, (1,)))}) + '\n').encode()
+        ping = (json.dumps({'midi': list(SysExCommand.DAW_PING_RESP.message((1,)))}) + '\n').encode()
         motor = (json.dumps({'midi': [191, 12, 127]}) + '\n').encode()
         self.assertEqual(discard(tail + ping + motor, business_output), tail + ping)
         self.assertEqual(discard(b'{"midi": [191,', business_output), b'{"midi": [191,')
@@ -957,7 +957,7 @@ class MixTests(unittest.TestCase):
         e._trace_control_midi = Mock()
         def line(message): return (json.dumps({'midi': message}) + '\n').encode()
         tail = line((191, 44, 127)); split = len(tail) // 2
-        packet = line(sysex(12, 1, (0, 0, 0, 0)))
+        packet = line(SysExCommand.SET_MIXER_ALL_MODE.message((0, 0, 0, 0)))
         packet += line((191, 52, 127)) + line((191, 12, 127)) * 255 + tail[:split]
         def tick(chunks):
             with patch('RotoPythonExt.os.read', side_effect=chunks), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
@@ -976,8 +976,8 @@ class MixTests(unittest.TestCase):
                 child = Mock(); child.poll.return_value = None
                 e._process = child; e._transport_ready = True
                 e._started_at = time.monotonic(); e._trace_control_midi = Mock()
-                events = [sysex(12, 2, (0,))]
-                events += [sysex(10, 9, (0, index)) for index in selections]
+                events = [SysExCommand.SET_MIXER_SELECTED_MODE.message((0,))]
+                events += [SysExCommand.SELECT_TRACK.message((0, index)) for index in selections]
                 events += [(191, 53, 127), (191, 13, 127), (191, 45, 127), (191, 53, 0)]
                 packet = b''.join((json.dumps({'midi': event}) + '\n').encode() for event in events)
                 with patch('RotoPythonExt.os.read', side_effect=[packet, BlockingIOError]), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
@@ -987,7 +987,7 @@ class MixTests(unittest.TestCase):
                 self.assertEqual(mix.selected, 1)
                 self.assertEqual(mix.writes, 0)  # buffered gestures still require a fresh touch
                 token = e._ingress_token()
-                e._receive_midi(sysex(10, 9, (0, 0)), (token[0] - 1, *token[1:]))
+                e._receive_midi(SysExCommand.SELECT_TRACK.message((0, 0)), (token[0] - 1, *token[1:]))
                 self.assertEqual(mix.selected, 1)
                 self.cc(e, 53, 127); self.turn(e, 1, 16383)
                 self.assertEqual(source.par.Midgain.eval(), 7)

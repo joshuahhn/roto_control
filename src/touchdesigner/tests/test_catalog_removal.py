@@ -6,7 +6,7 @@ import test_api
 import controls
 import binding
 import collection_protocol
-from protocol import sysex,digest
+from protocol import SysExCommand,digest
 
 class CatalogRemovalTests(unittest.TestCase):
     def fixture(self):
@@ -38,9 +38,9 @@ class CatalogRemovalTests(unittest.TestCase):
         self.assertEqual([s['id'] for s in ext.GetControlCatalog()],['speed'])
         self.assertFalse(ext.ownerComp.op('base_targets/watch_button8').par.active)
         sent=[];host.send=sent.append
-        host.start();host.receive(sysex(10,12));host.receive(sysex(11,1,(0,)))
-        self.assertIn(sysex(11,14,(1,7)),sent)
-        sent.clear();host.receive(sysex(11,11,(0,15,*digest(old_identity,6),1,7,0)))
+        host.start();host.receive(SysExCommand.ROTO_DAW_CONNECTED.message());host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
+        self.assertIn(SysExCommand.UNMAP_CTL.message((1,7)),sent)
+        sent.clear();host.receive(SysExCommand.CONTROL_MAPPED.message((0,15,*digest(old_identity,6),1,7,0)))
         self.assertEqual(sent,[])
         with self.assertRaises(ValueError):host.offer_parameter(('button',8))
         with self.assertRaises(ValueError):ext.SetValue(1,id='reset')

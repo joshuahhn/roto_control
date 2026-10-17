@@ -2,6 +2,7 @@
 import copy
 import os
 import time
+from protocol import SysExCommand
 
 DEVICE_TAG = 'roto_device'
 
@@ -332,7 +333,9 @@ class CompFollower:
         if len(message) == 3 and message[0] == 191:
             return True
         if len(message) >= 8 and message[0] == 240:
-            return message[5] != 10 or message[6] not in (1, 3, 4, 5, 7, 8)
+            return SysExCommand.identify(message) not in (SysExCommand.DAW_STARTED, SysExCommand.DAW_PING_RESP,
+                                                         SysExCommand.NUM_TRACKS, SysExCommand.FIRST_TRACK,
+                                                         SysExCommand.TRACK_DETAILS, SysExCommand.TRACK_DETAILS_END)
         return False
 
     def fence(self):

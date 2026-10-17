@@ -24,7 +24,7 @@ def verify(c, baseCOMP):
     assert learner.pending['parameter'].name == 'Alpha'
     def packet():
         t = learner.pending['template']
-        return proto.sysex(11, 11, (t.index >> 7, t.index & 127, *proto.digest(t.target_id, 6), 0, 2, 0))
+        return proto.SysExCommand.CONTROL_MAPPED.message((t.index >> 7, t.index & 127, *proto.digest(t.target_id, 6), 0, 2, 0))
     ack = packet(); a.normMax = 20
     original = e._collection.bindings['knob', 3]
     assignments = copy.deepcopy(c.fetch('parameter_assignments'))

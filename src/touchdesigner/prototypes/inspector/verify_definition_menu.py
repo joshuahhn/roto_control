@@ -46,7 +46,7 @@ class MenuLabelsProbe:
         row=next(r for r in self.model.ext.InspectorModel.adapter.Read(inactive) if r['id']==self.otherid)
         assert row['requires_relearn'] and row['menu_labels']==labels
         proto=c.op('protocol').module
-        ack=lambda identity,slot:proto.sysex(11,11,(old_index>>7,old_index&127,*proto.digest(identity,6),0,slot-1,0))
+        ack=lambda identity,slot:proto.SysExCommand.CONTROL_MAPPED.message((old_index>>7,old_index&127,*proto.digest(identity,6),0,slot-1,0))
         e._receive_midi(ack(old_identity,1));e._publish()
         assert not c.GetControlState(self.id)['mapped'],'Old label hash acknowledged'
         # Matching ACK clears Needs re-LEARN; no hardware assertion is inferred.

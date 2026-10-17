@@ -25,10 +25,10 @@ def start(controller):
     e=fixture.ext.RotoPythonExt;e.Disconnect();e.Applybinding()
     proto=fixture.op('protocol').module
     e._host.send=lambda message:None
-    e._host.start();e._host.receive(proto.sysex(10,12));e._host.receive(proto.sysex(11,1,(0,)))
+    e._host.start();e._host.receive(proto.SysExCommand.ROTO_DAW_CONNECTED.message());e._host.receive(proto.SysExCommand.SET_PLUGIN_MODE.message((0,)))
     for key,t in e._host.controls.items():
-        e._host.receive(proto.sysex(11,11,(t.index>>7,t.index&127,*proto.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
-    e._host.receive(proto.sysex(11,9,(1,)))
+        e._host.receive(proto.SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*proto.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
+    e._host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     e._free_learner.sync()
     assert fixture.op('learn_parameters').par.active.eval()
     assert target.path in fixture.op('learn_parameters').par.op.val
@@ -48,18 +48,18 @@ def check_offer(controller):
     assert e._process is None
     old=e._host.controls['knob',8]
     t=learner.pending['template'];proto=fixture.op('protocol').module
-    message=proto.sysex(11,11,(t.index>>7,t.index&127,*proto.digest(t.target_id,6),0,2,0))
+    message=proto.SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*proto.digest(t.target_id,6),0,2,0))
     assert not learner.receive(message)
     e._host.receive(message)
     state=next(s for s in e.GetControlStates() if (s['kind'],s['slot'])==('knob',3))
     assert state['mapped'] and state['parameter']=='Speed'
     assert e._host.controls['knob',8] is old and old.mapped
-    e._host.receive(proto.sysex(11,9,(0,)));learner.sync()
+    e._host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((0,)));learner.sync()
     assert not fixture.op('learn_parameters').par.active.eval()
     e._host.receive((191,14,64));e._host.receive((191,46,0))
     assert abs(target.par.Speed.eval()-10*8192/16383)<.001
     # API value writes must not become a new free learn offer.
-    e._host.receive(proto.sysex(11,9,(1,)));learner.sync()
+    e._host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((1,)));learner.sync()
     e.SetValue(7,id=state['id'])
     fixture.store('free_learn_verification',dict(id=state['id'],wire_index=e._host.controls['knob',3].index,
         actual_parameter_callback=True,new_comp_discovered=True,slot_from_hardware_ack=True,

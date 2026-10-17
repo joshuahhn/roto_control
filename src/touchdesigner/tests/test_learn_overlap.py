@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 import test_free_learn
 import test_assignment
-from protocol import sysex,digest
+from protocol import SysExCommand,digest
 
 
 class LearnOverlapTests(unittest.TestCase):
@@ -13,7 +13,7 @@ class LearnOverlapTests(unittest.TestCase):
         low=test_assignment.AssignmentTests().parameter('Float','Lowthresh');low.owner.name='pixelSortV3'
         high=test_assignment.AssignmentTests().parameter('Float','Highthresh');high.owner.name='pixelSortV3'
         self.assertTrue(f.offer(low));t=f.pending['template']
-        packet=sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),0,1,0))
+        packet=SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*digest(t.target_id,6),0,1,0))
         self.assertTrue(f.offer(high))
         self.assertNotEqual(t.index,f.pending['template'].index)
         f.receive(packet);e._host.receive(packet)
@@ -30,7 +30,7 @@ class LearnOverlapTests(unittest.TestCase):
         # The real capture has no selection CC before the edit: the selected
         # button kind is first reported in this delayed ACK on LEARN exit.
         self.assertTrue(f.offer(mask));t=f.pending['template']
-        packet=sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),1,0,0))
+        packet=SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*digest(t.target_id,6),1,0,0))
         self.assertTrue(f.offer(mix))
         f.receive(packet);e._host.receive(packet)
         self.assertTrue(any(s['kind']=='button' and s['slot']==1 and s['parameter']=='Masksource' and s['mapped'] and s['mode']=='cycle' for s in e.GetControlStates()))

@@ -11,7 +11,7 @@ import subprocess
 import time
 import uuid
 from binding import parameter_value, same_parameter
-from protocol import text13, digest
+from protocol import SysExCommand, SysExGroup, text13, digest
 from hardware_config import HardwareConfig, ReadContext
 from snapshots import Snapshots
 from midi_queue import discard, business_output
@@ -551,14 +551,18 @@ class RotoPythonExt:
             return
         if (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2) and message[-1] == 247
                 and all(type(x) is int and 0 <= x < 128 for x in message[1:-1])
-                and (tuple(message[5:7]) in ((10, 2), (10, 9), (10, 20), (10, 21),
-                                           (11, 1), (11, 7), (11, 9), (11, 11), (11, 14)) or message[5] == 12)):
+                and (SysExCommand.identify(message) in (
+                    SysExCommand.PING_DAW, SysExCommand.SELECT_TRACK,
+                    SysExCommand.ROTO_PAGE_LEFT, SysExCommand.ROTO_PAGE_RIGHT,
+                    SysExCommand.SET_PLUGIN_MODE, SysExCommand.ROTO_CONTROL_SELECT_DEVICE,
+                    SysExCommand.SET_DEVICE_LEARN, SysExCommand.CONTROL_MAPPED, SysExCommand.UNMAP_CTL)
+                     or message[5] == SysExGroup.MIX)):
             self._invalidate_hardware('Hardware context/mapping event')
         mix = getattr(self, '_mix', None)
         was_mix = bool(mix and mix.active)
         if mix is not None and mix.receive(message, token):
             return
-        plugin_start = tuple(message[:7]) == (240, 0, 34, 3, 2, 11, 1)
+        plugin_start = (tuple(message[:5]) == (240, 0, 34, 3, 2) and SysExCommand.identify(message) is SysExCommand.SET_PLUGIN_MODE)
         returning = bool(was_mix and mix.returning and plugin_start)
         stale = follower is not None and token is not None and token[:2] != follower.token
         unavailable = manager is not None and (not manager.owner_ready() or manager.quarantined and not manager.legacy)
@@ -1479,7 +1483,7 @@ class RotoPythonExt:
         if not mix and follower is not None and follower.gated and follower.context_output(message):
             return False
         if (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2)
-                and tuple(message[5:7]) in ((10, 0x16), (11, 8), (12, 4))):
+                and SysExCommand.identify(message) in (SysExCommand.SET_CURRENT_TRACK_NAME, SysExCommand.DAW_SELECT_PLUGIN, SysExCommand.DAW_SELECT_TRACK)):
             self._page_caption = None
         self._pending += (json.dumps({"midi": message}) + "\n").encode()
         if len(self._pending) > 262144:
@@ -1509,7 +1513,7 @@ class RotoPythonExt:
             label, deadline = host.track_name, None
         else:
             return
-        host._command(10, 0x16, text13(label))
+        host._send(SysExCommand.SET_CURRENT_TRACK_NAME.message(text13(label)))
         self._page_caption = key, deadline
 
     def _publish(self):
@@ -1687,9 +1691,9 @@ class RotoPythonExt:
         def obsolete(message):
             drop = len(message) == 3 and message[0] == 191 and message[1] in cc
             if len(message) >= 10 and tuple(message[:5]) == (240,0,34,3,2):
-                if message[5:7] == [10,24]:
+                if SysExCommand.identify(message) is SysExCommand.PARAM_VALUES:
                     drop |= tuple(message[7:9]) in addresses
-                elif message[5:7] == [11,10]:
+                elif SysExCommand.identify(message) is SysExCommand.LEARN_PARAM:
                     drop |= (message[7]<<7 | message[8]) in indices
             return drop
         self._pending = discard(getattr(self, '_pending', b''), obsolete)
@@ -1784,7 +1788,7 @@ class RotoPythonExt:
         if self._collection is None:
             return
         is_button = len(message) == 3 and message[0] == 191 and 20 <= message[1] <= 27
-        is_mapping = len(message) >= 8 and tuple(message[:7]) == (240, 0, 34, 3, 2, 11, 11)
+        is_mapping = len(message) >= 8 and (tuple(message[:5]) == (240, 0, 34, 3, 2) and SysExCommand.identify(message) is SysExCommand.CONTROL_MAPPED)
         if is_button or is_mapping:
             table = self.ownerComp.op("base_targets/rx_events")
             table.appendRow([f"{time.monotonic():.3f}", "button" if is_button else "mapping", " ".join(str(x) for x in message)])

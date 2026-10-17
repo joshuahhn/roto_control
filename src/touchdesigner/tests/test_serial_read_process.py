@@ -76,8 +76,8 @@ class SerialReadTests(unittest.TestCase):
         self.assertEqual(list(Path(self.directory).iterdir()), [])
 
     def test_get_boundary_and_request_cannot_supply_writes(self):
-        for command, payload in (('mode', b'\x00'), ('knob', b'0' * 8), ('knob', bytes(PH) + b'\x08')):
-            with self.subTest(command=command), self.assertRaises(worker.ReadError): worker._packet(command, payload)
+        for command, payload in ((worker.SerialGet.MODE, b'\x00'), (worker.SerialGet.PLUGIN_KNOB_CONFIG, b'0' * 8), (worker.SerialGet.PLUGIN_KNOB_CONFIG, bytes(PH) + b'\x08')):
+            with self.subTest(command=command), self.assertRaises(worker.ReadError): command.packet(payload)
         for key in ('opcode', 'raw', 'commands'):
             port = FakePort()
             with self.subTest(key=key), self.assertRaises(worker.ReadError): self.capture(port, dict(job(), **{key: [1, 4]}))
@@ -138,7 +138,7 @@ class SerialReadTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             retired = worker.Retirement('/dev/cu.fixture', PHYSICAL, directory)
             session = worker.ReadSession(port, retired, lambda: clock[0])
-            with self.assertRaises(worker.ReadError) as caught: session.get('firmware')
+            with self.assertRaises(worker.ReadError) as caught: session.get(worker.SerialGet.FW_VERSION)
             self.assertEqual(caught.exception.code, 'timeout'); self.assertEqual(len(port.writes), 1)
             with self.assertRaises(worker.ReadError): worker.Retirement('/dev/cu.fixture', PHYSICAL, directory)
 

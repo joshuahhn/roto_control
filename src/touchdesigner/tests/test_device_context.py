@@ -7,7 +7,7 @@ from unittest.mock import patch
 import test_comp_follow
 import test_delete_popup
 from layouts import Layouts, VERSION
-from protocol import sysex, digest
+from protocol import SysExCommand, digest
 
 
 class DeviceTests(unittest.TestCase):
@@ -21,19 +21,19 @@ class DeviceTests(unittest.TestCase):
 
     def ack(self,e):test_comp_follow.FollowTests().ack(e)
 
-    def hw(self,e,index):e._receive_midi(sysex(11,7,(index,)))
+    def hw(self,e,index):e._receive_midi(SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((index,)))
 
     def test_unlock_routes_selected_track_with_unflushed_locked_device_intent(self):
         for split in (False, True):
             with self.subTest(split=split):
                 e,m,f,a,b,t,pa,pb,s,_ = self.fixture()
                 other = m.create_track('custom', 'Other')
-                e._receive_midi(sysex(11,13,(1,)))
-                e._receive_midi(sysex(10,9,(0,1)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)))
+                e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)))
                 self.hw(e,1)
                 if split:
                     f.flush()
-                e._receive_midi(sysex(11,13,(0,)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)))
                 f.flush()
                 self.assertEqual(m.track()['id'], other)
                 self.assertEqual(m.selected_track, other)
@@ -44,16 +44,16 @@ class DeviceTests(unittest.TestCase):
             with self.subTest(guard=guard):
                 e,m,f,a,b,t,pa,pb,s,_ = self.fixture()
                 other = m.create_track('custom', 'Other')
-                e._receive_midi(sysex(11,13,(1,)))
-                e._receive_midi(sysex(10,9,(0,1)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)))
+                e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)))
                 self.hw(e,1)
-                e._receive_midi(sysex(11,13,(0,)))
-                if guard == 'learn': e._receive_midi(sysex(11,9,(1,)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)))
+                if guard == 'learn': e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((1,)))
                 if guard == 'touch': e._receive_midi((191,52,127))
                 f.flush(backlog=guard == 'backlog')
                 self.assertEqual(m.track()['id'], t)
                 self.assertIsNotNone(f.pending)
-                if guard == 'learn': e._receive_midi(sysex(11,9,(0,)))
+                if guard == 'learn': e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((0,)))
                 if guard == 'touch': e._receive_midi((191,52,0))
                 f.flush()
                 self.assertEqual(m.track()['id'], other)
@@ -78,7 +78,7 @@ class DeviceTests(unittest.TestCase):
                 e._pending=b''
                 e.RenamePlugin('custom',t,pb,'Renamed B')
                 packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
-                details=[p for p in packets if p[5:7]==[11,5]]
+                details=[p for p in packets if SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS]
                 self.assertTrue(details)
                 self.assertTrue(all(p[7]==0 for p in details if p[8:16]==list(digest(m.plugin()['device_id'],8))))
                 self.assertEqual([p['id'] for p in m.track()['plugins']],[pb,pc])
@@ -91,7 +91,7 @@ class DeviceTests(unittest.TestCase):
         before=copy.deepcopy(m.plugin());wire=e._host.controls['knob',1].target_id
         e._pending=b'';e.RenameTrack('custom',t,'Renamed')
         packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
-        self.assertFalse(any(p[5:7]==[11,5] for p in packets))
+        self.assertFalse(any(SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS for p in packets))
         self.assertEqual(m.track()['name'],'Renamed')
         self.assertEqual(m.plugin(),before)
         self.assertEqual(e._host.controls['knob',1].target_id,wire)
@@ -135,8 +135,8 @@ class DeviceTests(unittest.TestCase):
     def test_locked_explicit_plugin_selection_keeps_lock_and_track_browse(self):
         e,m,f,a,b,t,pa,pb,s,_=self.fixture()
         other=m.create_track('custom','Other')
-        e._receive_midi(sysex(11,13,(1,)))
-        e._receive_midi(sysex(10,9,(0,1)))
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)))
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)))
         self.assertFalse(f.gated);self.assertEqual(m.selected_track,other)
         self.hw(e,1);self.assertTrue(f.gated);f.flush()
         self.assertTrue(m.locked);self.assertEqual(m.plugin()['id'],pb)
@@ -144,36 +144,36 @@ class DeviceTests(unittest.TestCase):
         with self.assertRaises(ValueError):e.SelectPlugin('custom',t,pa)
         self.ack(e);e._receive_midi((191,12,127));e._receive_midi((191,44,127))
         self.assertEqual((a.eval(),b.eval()),(5,10))
-        e._receive_midi(sysex(11,13,(0,)));f.flush()
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)));f.flush()
         self.assertEqual(m.track()['id'],other)
 
     def test_locked_plugin_still_waits_for_learn_touch_and_latest_intent(self):
         e,m,f,a,b,t,pa,pb,s,_=self.fixture()
-        e._receive_midi(sysex(11,13,(1,)));e._receive_midi((191,52,127))
-        e._receive_midi(sysex(11,9,(1,)));self.hw(e,1);f.flush()
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)));e._receive_midi((191,52,127))
+        e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((1,)));self.hw(e,1);f.flush()
         self.assertEqual(m.plugin()['id'],pa)
         self.hw(e,0);e._receive_midi((191,52,0));f.flush()
         self.assertIsNotNone(f.pending)
-        e._receive_midi(sysex(11,9,(0,)));f.flush()
+        e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((0,)));f.flush()
         self.assertEqual(m.plugin()['id'],pa);self.assertFalse(e.GetControlState()['mapped'])
         self.ack(e);self.assertTrue(e.GetControlState()['mapped'])
 
     def test_device_bank_browse_not_selection_and_ninth_select(self):
         e,m,f,a,b,t,pa,pb,s,_=self.fixture()
         ids=[pa,pb]+[e.CreatePlugin('custom',t,'DEV'+str(i)) for i in range(2,9)]
-        e._pending=b'';e._receive_midi(sysex(11,4,(8,)))
+        e._pending=b'';e._receive_midi(SysExCommand.SET_FIRST_DEVICE.message((8,)))
         import json
         packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
-        self.assertIn(list(sysex(11,2,(9,))),packets)
-        self.assertIn(list(sysex(11,3,(8,))),packets)
-        details=[p for p in packets if p[5:7]==[11,5]]
+        self.assertIn(list(SysExCommand.NUM_DEVICES.message((9,))),packets)
+        self.assertIn(list(SysExCommand.FIRST_DEVICE.message((8,))),packets)
+        details=[p for p in packets if SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS]
         self.assertEqual([p[7] for p in details],[8])
         self.assertEqual(m.plugin()['id'],pa);self.assertIsNone(f.pending);self.assertFalse(f.gated)
         self.hw(e,0);f.flush();self.assertEqual(m.plugin()['id'],ids[8])
         self.assertEqual(e._host.plugin_index,8)
         self.assertEqual(e.GetControlStates(),[])
         before=copy.deepcopy(m.data);epoch=f.token
-        for packet in (sysex(11,4,(7,)),sysex(11,4,(16,)),sysex(11,7,(1,)),sysex(11,7,(8,))):e._receive_midi(packet)
+        for packet in (SysExCommand.SET_FIRST_DEVICE.message((7,)),SysExCommand.SET_FIRST_DEVICE.message((16,)),SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,)),SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((8,))):e._receive_midi(packet)
         self.assertEqual(m.data,before);self.assertEqual(f.token,epoch)
 
     def test_rename_comp_name_is_metadata_only_and_layout_independent(self):
@@ -234,9 +234,9 @@ class DeviceTests(unittest.TestCase):
         e._started_at=time.monotonic();e._trace_control_midi=Mock()
         def line(message):return (json.dumps({'midi':message})+'\n').encode()
         old=e._host.controls['knob',1]
-        tail=line(sysex(11,11,(old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0)))
+        tail=line(SysExCommand.CONTROL_MAPPED.message((old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0)))
         split=len(tail)//2
-        packet=line(sysex(11,7,(1,)))+line((191,12,127))+line((191,44,127))*255+tail[:split]
+        packet=line(SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,)))+line((191,12,127))+line((191,44,127))*255+tail[:split]
         with patch('RotoPythonExt.os.read',side_effect=[packet,BlockingIOError]),patch('RotoPythonExt.os.write',side_effect=lambda fd,data:len(data)):e.Tick()
         self.assertEqual(m.plugin()['id'],pa);self.assertTrue(f.gated)
         with patch('RotoPythonExt.os.read',side_effect=BlockingIOError),patch('RotoPythonExt.os.write',side_effect=lambda fd,data:len(data)):e.Tick()
@@ -247,7 +247,7 @@ class DeviceTests(unittest.TestCase):
 
     def test_session_end_discards_locked_plugin_and_offline_follow_works(self):
         e,m,f,a,b,t,pa,pb,s,_=self.fixture()
-        e._receive_midi(sysex(11,13,(1,)));e._receive_midi((191,52,127));self.hw(e,1)
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)));e._receive_midi((191,52,127));self.hw(e,1)
         e.Disconnect();self.assertIsNone(f.pending)
         e._host.connected=e._host.plugin=True;f.flush();self.assertEqual(m.plugin()['id'],pa)
         e.Disconnect();f.observe(force=True);s[0]=(s[0][0],(b.owner,));f.observe(force=True);f.flush()
@@ -269,13 +269,13 @@ class DeviceTests(unittest.TestCase):
         for last in ('td','hardware_plugin'):
             with self.subTest(last=last):
                 e,m,f,a,b,t,pa,pb,s,_=self.fixture()
-                e._receive_midi(sysex(11,13,(1,)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)))
                 s[0]=(s[0][0],(b.owner,));f.observe(force=True)
                 self.hw(e,0)
                 if last=='td':
                     s[0]=(s[0][0],(a.owner,));f.observe(force=True)
                     s[0]=(s[0][0],(b.owner,));f.observe(force=True)
-                e._receive_midi(sysex(11,13,(0,)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)))
                 with patch.object(m,'install',wraps=m.install) as install:
                     f.flush();f.flush();self.assertLessEqual(install.call_count,1)
                 self.assertEqual(m.plugin()['id'],pb if last=='td' else pa)

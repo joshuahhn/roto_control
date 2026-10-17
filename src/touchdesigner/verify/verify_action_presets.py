@@ -142,7 +142,7 @@ def _ack(controller):
     e = controller.ext.RotoPythonExt
     p = controller.op('protocol').module
     for key, target in list(e._host.controls.items()):
-        e._receive_midi(p.sysex(11, 11, (target.index>>7, target.index&127,
+        e._receive_midi(p.SysExCommand.CONTROL_MAPPED.message((target.index>>7, target.index&127,
                         *p.digest(target.target_id, 6), int(key[0]=='button'), key[1]-1, 0)))
 
 
@@ -169,14 +169,14 @@ def _configure_toggle(controller, tool, mapping_id):
     assert tool.par.Recalls.eval() == before
     # TYPE is a local adapter in the current runtime, not new wire metadata.
     # Still explicitly refresh matching ACK/reset latch for this fixture stage.
-    e._receive_midi(p.sysex(11, 9, (1,)))
+    e._receive_midi(p.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert controller.Offerparameter(mapping_id)
     _ack(controller)
     state = controller.GetControlState(mapping_id)
     assert state['mapped'] and state['button_type'] == 'toggle'
     e._receive_midi((191, 20, 127))  # LEARN must suppress action even after ACK.
     assert tool.par.Recalls.eval() == before
-    e._receive_midi(p.sysex(11, 9, (0,)))
+    e._receive_midi(p.SysExCommand.SET_DEVICE_LEARN.message((0,)))
     assert tool.par.Recalls.eval() == before
 
 
@@ -273,12 +273,12 @@ def exercise(holder):
     sent = []
     e._host.send = lambda message: sent.append(list(message))
     e._host.connected = e._host.plugin = True
-    e._receive_midi(p.sysex(11, 9, (1,)))
+    e._receive_midi(p.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert c.Offerparameter('native.custom.action')
     _ack(c)
     e._receive_midi((191, 20, 127))
     assert tool.par.Recalls.eval() == r['baseline_count']
-    e._receive_midi(p.sysex(11, 9, (0,)))
+    e._receive_midi(p.SysExCommand.SET_DEVICE_LEARN.message((0,)))
     for value in (127, 127, 0, 0, 127, 0): e._receive_midi((191, 20, value))
     assert tool.par.Recalls.eval() == r['baseline_count']+2
     assert c.GetValue('native.custom.amount') == tool.par.Amount.eval() == .6

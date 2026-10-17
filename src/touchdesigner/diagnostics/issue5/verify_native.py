@@ -41,7 +41,7 @@ def verify(td, source_dir):
         sent=[];e._host.send=sent.append;proto=c.op('protocol').module
         e._host.enabled=e._host.connected=e._host.plugin=True
         for control in e._host.controls.values():
-            e._receive_midi(proto.sysex(11,11,(control.index>>7,control.index&127,
+            e._receive_midi(proto.SysExCommand.CONTROL_MAPPED.message((control.index>>7,control.index&127,
                 *proto.digest(control.target_id,6),0,control.key[1]-1,0)))
         sent.clear();aliases[1].bindExpr='me.par.Mastera'
         before=t.par.Mastera.eval()

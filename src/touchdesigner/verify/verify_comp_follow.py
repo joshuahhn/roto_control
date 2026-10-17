@@ -105,7 +105,7 @@ def selection(controller):
 
 def ack(e, proto):
     for target in list(e._host.controls.values()):
-        e._receive_midi(proto.sysex(11, 11, (target.index >> 7, target.index & 127,
+        e._receive_midi(proto.SysExCommand.CONTROL_MAPPED.message((target.index >> 7, target.index & 127,
             *proto.digest(target.target_id, 6), int(target.key[0] == 'button'), target.key[1]-1, 0)))
 
 
@@ -119,7 +119,7 @@ def midi(controller):
     ack(e, p); assert e.GetControlState()['mapped']
     e._pending = b''
     index = [t['id'] for t in m.layout()['tracks']].index(r['b'])
-    e._receive_midi(p.sysex(10, 9, (index >> 7, index & 127)))
+    e._receive_midi(p.SysExCommand.SELECT_TRACK.message((index >> 7, index & 127)))
     for message in ((191, 12, 127), (191, 44, 127), (191, 20, 127), (191, 20, 0)):
         e._receive_midi(message)
     assert f.gated and e._pending == b''
@@ -133,22 +133,22 @@ def midi(controller):
     e.SelectTrack(r['layout'], r['a']); ack(e, p)
     e._receive_midi((191, 20, 127)); e._receive_midi((191, 20, 0))
     # LOCK keeps A usable; unlock fences before input while LEARN/touch guards wait.
-    e._receive_midi(p.sysex(11, 13, (1,)))
-    e._receive_midi(p.sysex(10, 9, (index >> 7, index & 127)))
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_LOCK.message((1,)))
+    e._receive_midi(p.SysExCommand.SELECT_TRACK.message((index >> 7, index & 127)))
     e._receive_midi((191, 12, 32)); e._receive_midi((191, 44, 0))
     locked_value = h.op('a').par.Speed.eval()
-    e._receive_midi(p.sysex(11, 12, (1,))); e._receive_midi((191, 52, 127))
-    e._receive_midi(p.sysex(11, 13, (0,)))
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_ENABLE.message((1,))); e._receive_midi((191, 52, 127))
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_LOCK.message((0,)))
     for message in ((191, 12, 127), (191, 44, 127), (191, 20, 127), (191, 20, 0)):
         e._receive_midi(message)
     assert h.op('a').par.Speed.eval() == locked_value and f.gated
     f.flush(); assert m.track()['id'] == r['a']
-    e._receive_midi(p.sysex(11, 12, (0,))); e._receive_midi((191, 52, 0)); f.flush()
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_ENABLE.message((0,))); e._receive_midi((191, 52, 0)); f.flush()
     assert m.track()['id'] == r['b']
     # Retained manager: session cancellation, then new offline Follow.
     m.locked = True; f.request(r['layout'], r['a'], 'hardware'); token = f.token
     e.Disconnect(); assert e._layouts is m and f.pending is None and not m.locked
-    e._receive_midi(p.sysex(10, 9, (0, 0)), token); assert f.pending is None
+    e._receive_midi(p.SysExCommand.SELECT_TRACK.message((0, 0)), token); assert f.pending is None
     select(h, h.op('b')); f.observe(force=True)
     select(h, h.op('a')); f.observe(force=True); f.flush()
     assert m.track()['id'] == r['a'] and e._process is None

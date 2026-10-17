@@ -59,9 +59,9 @@ def hardware(controller):
     assert controller.GetValue('fractal.tumble')==2.7
     host.send=test['sent'].append
     protocol=controller.op('protocol').module
-    host.start();host.receive(protocol.sysex(10,12));host.receive(protocol.sysex(11,1,(0,)))
+    host.start();host.receive(protocol.SysExCommand.ROTO_DAW_CONNECTED.message());host.receive(protocol.SysExCommand.SET_PLUGIN_MODE.message((0,)))
     for key,target in host.controls.items():
-        host.receive(protocol.sysex(11,11,(0,target.index,*protocol.digest(target.target_id,6),int(key[0]=='button'),key[1]-1,0)))
+        host.receive(protocol.SysExCommand.CONTROL_MAPPED.message((0,target.index,*protocol.digest(target.target_id,6),int(key[0]=='button'),key[1]-1,0)))
     ext._publish()
     assert len([s for s in controller.GetControlStates() if s['mapped']])==13
     for slot in range(1,9):

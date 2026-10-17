@@ -48,10 +48,10 @@ def exercise(controller):
     # Synthetic hardware selection exercises the actual manager + host without ports.
     proto=fixture.op('protocol').module;m=e._layouts
     e._host.connected=e._host.plugin=True
-    m.receive(proto.sysex(10,9,(0,0)))
+    m.receive(proto.SysExCommand.SELECT_TRACK.message((0,0)))
     assert e.GetLayoutContext()['track_id']==a
     t=e._host.controls['knob',1]
-    e._host.receive(proto.sysex(11,11,(t.index>>7,t.index&127,*proto.digest(t.target_id,6),0,0,0)))
+    e._host.receive(proto.SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*proto.digest(t.target_id,6),0,0,0)))
     m.acknowledge();assert e.GetControlState()['mapped']
     e._host.receive((191,12,64));e._host.receive((191,44,0))
     assert abs(target.par.Speed.eval()-8192/16383)<.0001

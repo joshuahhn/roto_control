@@ -9,7 +9,7 @@ import math
 import os
 import uuid
 from contextlib import contextmanager
-from protocol import digest, display_name, text13
+from protocol import SysExGroup, SysExCommand, digest, display_name, text13
 from binding import parameter_value
 
 VERSION=3
@@ -517,25 +517,25 @@ class Layouts:
     def announce_tracks(self,select=True):
         host=self.ext._host;tracks=self.layout()['tracks']
         self.first_track=min(self.first_track,((len(tracks)-1)//8)*8)
-        host._command(10,4,(len(tracks)>>7,len(tracks)&127))
-        host._command(10,5,(self.first_track>>7,self.first_track&127))
+        host._send(SysExCommand.NUM_TRACKS.message((len(tracks)>>7,len(tracks)&127)))
+        host._send(SysExCommand.FIRST_TRACK.message((self.first_track>>7,self.first_track&127)))
         for index in range(self.first_track,min(self.first_track+8,len(tracks))):
-            host._command(10,7,self.track_detail(index))
-        host._command(10,8)
+            host._send(SysExCommand.TRACK_DETAILS.message(self.track_detail(index)))
+        host._send(SysExCommand.TRACK_DETAILS_END.message())
         if select:
             selected=self.selected_track or self.track()['id']
             index=next(i for i,t in enumerate(tracks) if t['id']==selected)
-            host._command(12,4,self.track_detail(index))
+            host._send(SysExCommand.DAW_SELECT_TRACK.message(self.track_detail(index)))
 
     def announce(self,select=True):
         host=self.ext._host;plugins=self.track()['plugins']
         self.first_plugin=min(self.first_plugin,((len(plugins)-1)//8)*8)
-        host._command(11,2,(len(plugins),));host._command(11,3,(self.first_plugin,))
+        host._send(SysExCommand.NUM_DEVICES.message((len(plugins),)));host._send(SysExCommand.FIRST_DEVICE.message((self.first_plugin,)))
         for index in range(self.first_plugin,min(self.first_plugin+8,len(plugins))):
             record=plugins[index]
-            host._command(11,5,(index,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0))
-        host._command(11,6)
-        if select:host._command(11,8,(plugins.index(self.plugin()),0,0))
+            host._send(SysExCommand.PLUGIN_DETAILS.message((index,*digest(record['device_id'],8),1,*text13(record['plugin_name']),0,0)))
+        host._send(SysExCommand.PLUGIN_DETAILS_END.message())
+        if select:host._send(SysExCommand.DAW_SELECT_PLUGIN.message((plugins.index(self.plugin()),0,0)))
 
     def guard(self,hardware=False,*,automatic_follow=False):
         host=self.ext._host
@@ -907,18 +907,20 @@ class Layouts:
             if message[2]:self.touched.add(message[1])
             else:self.touched.discard(message[1])
         if len(message)<8 or message[:5]!=(240,0,34,3,2) or message[-1]!=247 or any(type(x)is not int or not 0<=x<128 for x in message[1:-1]):return False
-        group,command,data=message[5],message[6],message[7:-1]
+        group,data=message[5],message[7:-1]
+        identity = SysExCommand.identify(message)
         if self.legacy:
-            if group==11 and command==13 and len(data)==1 and data[0] in (0,1):self.locked=bool(data[0]);return True
-            if group==12 or (group==10 and command==2) or (group==11 and command==1):self.locked=False;self.touched.clear()
+            if identity is SysExCommand.SET_PLUGIN_LOCK and len(data)==1 and data[0] in (0,1):self.locked=bool(data[0]);return True
+            if group == SysExGroup.MIX or identity in (SysExCommand.PING_DAW, SysExCommand.SET_PLUGIN_MODE):self.locked=False;self.touched.clear()
             return False
-        if control_only and ((group==11 and command in (11,14)) or (group==10 and command in (20,21))):
+        if control_only and identity in (SysExCommand.CONTROL_MAPPED, SysExCommand.UNMAP_CTL,
+                                         SysExCommand.ROTO_PAGE_LEFT, SysExCommand.ROTO_PAGE_RIGHT):
             return False
-        if group==11 and command==1 and self.ext._host.connected and not control_only:
+        if identity is SysExCommand.SET_PLUGIN_MODE and self.ext._host.connected and not control_only:
             self.page_changed()
-        if group==10 and command in (20,21) and not data and self.ext._host.plugin:
+        if identity in (SysExCommand.ROTO_PAGE_LEFT, SysExCommand.ROTO_PAGE_RIGHT) and not data and self.ext._host.plugin:
             self.page_changed();return True
-        if group==11 and command==11 and len(data)==11 and data[8] in (0,1) and 0<=data[9]<8 and data[10]==0:
+        if identity is SysExCommand.CONTROL_MAPPED and len(data)==11 and data[8] in (0,1) and 0<=data[9]<8 and data[10]==0:
             try:self.recall_page_target(data)
             except ValueError as exc:self.ext._last_error=str(exc)
             pending={tuple(key) for key in self.owner.fetch('pending_unmaps',[])}
@@ -931,10 +933,10 @@ class Layouts:
                         self.ext._last_error='Cannot attribute removed-target acknowledgement uniquely to this Layout'
                         return True
                     self.confirmed=True
-                    self.ext._host._command(11,14,(int(removed['kind']=='button'),removed['slot']-1))
+                    self.ext._host._send(SysExCommand.UNMAP_CTL.message((int(removed['kind']=='button'),removed['slot']-1)))
                     self.ext._host.last_event='Removed target hardware unmap reconciled'
                     return True
-        if group==11 and command==13 and len(data)==1 and data[0] in (0,1):
+        if identity is SysExCommand.SET_PLUGIN_LOCK and len(data)==1 and data[0] in (0,1):
             was_locked=self.locked;self.locked=bool(data[0])
             if follower is not None:
                 if was_locked and not self.locked:follower.unlocked()
@@ -943,11 +945,11 @@ class Layouts:
                 try:self.select_track(self.data['active'],self.selected_track,hardware=True)
                 except ValueError as exc:self.ext._last_error=str(exc)
             return True
-        if group==10 and command in (6,9):
+        if identity in (SysExCommand.SET_FIRST_TRACK, SysExCommand.SELECT_TRACK):
             if len(data)!=2:return True
             index=(data[0]<<7)|data[1];tracks=self.layout()['tracks']
             if index>=len(tracks):return True
-            if command==6:
+            if identity is SysExCommand.SET_FIRST_TRACK:
                 if index%8:return True
                 self.first_track=index;self.announce_tracks(select=False)
             elif follower is not None:
@@ -962,7 +964,7 @@ class Layouts:
                 except ValueError as exc:
                     self.ext._last_error=str(exc);self.announce_tracks();self.ext._publish()
             return True
-        if group==11 and command==7:
+        if identity is SysExCommand.ROTO_CONTROL_SELECT_DEVICE:
             plugins=self.track()['plugins']
             if len(data)==1 and data[0]<8 and self.first_plugin+data[0]<len(plugins):
                 plugin_id=plugins[self.first_plugin+data[0]]['id']
@@ -973,11 +975,11 @@ class Layouts:
                     try:self.select_plugin(self.data['active'],self.track()['id'],plugin_id,hardware=True)
                     except ValueError as exc:self.ext._last_error=str(exc)
             return True
-        if group==11 and command==4:
+        if identity is SysExCommand.SET_FIRST_DEVICE:
             if len(data)==1 and data[0]%8==0 and data[0]<len(self.track()['plugins']):
                 self.first_plugin=data[0];self.announce(select=False)
             return True
-        if (group==10 and command==2) or (group==11 and command==1):
+        if (identity is SysExCommand.PING_DAW) or (identity is SysExCommand.SET_PLUGIN_MODE):
             self.confirmed=False;self.locked=False;self.touched.clear();self.selected_track=self.track()['id']
             self.selected_plugin=self.plugin()['id']
         return False

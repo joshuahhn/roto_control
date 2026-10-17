@@ -10,7 +10,7 @@ import test_layouts
 import test_assignment
 from text_comp_follow import CompFollower
 from layouts import ActivationRollbackError
-from protocol import sysex, digest
+from protocol import SysExCommand, digest
 
 
 class FollowTests(unittest.TestCase):
@@ -46,12 +46,12 @@ class FollowTests(unittest.TestCase):
 
     def ack(self, e):
         for t in list(e._host.controls.values()):
-            e._receive_midi(sysex(11, 11, (t.index >> 7, t.index & 127,
+            e._receive_midi(SysExCommand.CONTROL_MAPPED.message((t.index >> 7, t.index & 127,
                 *digest(t.target_id, 6), int(t.key[0] == 'button'), t.key[1]-1, 0)))
 
     def select_hw(self, e, m, track):
         index = [t['id'] for t in m.layout()['tracks']].index(track)
-        e._receive_midi(sysex(10, 9, (index >> 7, index & 127)))
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((index >> 7, index & 127)))
 
     def test_same_batch_and_backlog_never_write_old_or_new_target(self):
         for backlog in (False, True):
@@ -83,23 +83,23 @@ class FollowTests(unittest.TestCase):
 
     def test_locked_browsing_preserves_old_then_unlock_fences_until_release(self):
         e,m,f,a,b,t1,t2,s,_ = self.fixture()
-        e._receive_midi(sysex(11,13,(1,))); self.select_hw(e,m,t2)
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,))); self.select_hw(e,m,t2)
         self.assertFalse(f.gated)
         e._receive_midi((191,12,127)); e._receive_midi((191,44,127))
         self.assertEqual(a.eval(),10)
-        e._receive_midi((191,52,127)); e._receive_midi(sysex(11,9,(1,)))
-        e._receive_midi(sysex(11,13,(0,)))
+        e._receive_midi((191,52,127)); e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((1,)))
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)))
         self.assertTrue(f.gated)
         e._receive_midi((191,12,0)); e._receive_midi((191,44,0)); f.flush()
         self.assertEqual(m.track()['id'],t1); self.assertEqual(a.eval(),10)
-        e._receive_midi((191,52,0)); e._receive_midi(sysex(11,9,(0,))); f.flush()
+        e._receive_midi((191,52,0)); e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((0,))); f.flush()
         self.assertEqual(m.track()['id'],t2)
 
     def test_latest_td_hardware_intent_single_activation_both_orders(self):
         for last in ('td','hardware'):
             with self.subTest(last=last):
                 e,m,f,a,b,t1,t2,s,_ = self.fixture()
-                e._receive_midi(sysex(11,13,(1,)))
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((1,)))
                 f.request('custom',t2,'td',b.owner)
                 self.select_hw(e,m,t1)
                 if last == 'td':
@@ -108,7 +108,7 @@ class FollowTests(unittest.TestCase):
                     s[0]=(s[0][0],(b.owner,)); f.observe(force=True); self.select_hw(e,m,t1)
                 installed=[]; real=m.install
                 m.install=lambda *args,**kw:(installed.append(args[0]['track_name']),real(*args,**kw))[1]
-                e._receive_midi(sysex(11,13,(0,))); f.flush()
+                e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,))); f.flush()
                 self.assertEqual(m.track()['id'],t2 if last=='td' else t1)
                 self.assertLessEqual(len(installed),1)
                 f.flush(); self.assertLessEqual(len(installed),1)
@@ -189,7 +189,7 @@ class FollowTests(unittest.TestCase):
                 self.assertEqual(m.selected_track,t1);self.assertNotEqual(token,f.token)
                 e._host.connected=e._host.plugin=True
                 f.flush();self.assertEqual(m.track()['id'],t1)
-                e._receive_midi(sysex(10,9,(0,1)),token);self.assertIsNone(f.pending)
+                e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)),token);self.assertIsNone(f.pending)
                 e._host.connected=e._host.plugin=False
                 f.invalidate();f.observe(force=True)
                 s[0]=(s[0][0],(b.owner,));f.observe(force=True);f.flush()
@@ -198,7 +198,7 @@ class FollowTests(unittest.TestCase):
     def test_old_epoch_mapping_cannot_restore_target_and_output_is_framing_safe(self):
         e,m,f,a,b,t1,t2,s,_=self.fixture();token=f.token
         old=e._host.controls['knob',1]
-        packet=sysex(11,11,(0,old.index,*digest(old.target_id,6),0,0,0))
+        packet=SysExCommand.CONTROL_MAPPED.message((0,old.index,*digest(old.target_id,6),0,0,0))
         partial=b'2, 44, 127]}\n'
         e._pending=partial+(json.dumps({'midi':(191,12,127)})+'\n').encode()
         self.select_hw(e,m,t2)
@@ -228,9 +228,9 @@ class FollowTests(unittest.TestCase):
         e._trace_control_midi=Mock()  # fixture has no native diagnostic DAT
         def line(message):return (json.dumps({'midi':message})+'\n').encode()
         old=e._host.controls['knob',1]
-        mapping=sysex(11,11,(0,old.index,*digest(old.target_id,6),0,0,0))
+        mapping=SysExCommand.CONTROL_MAPPED.message((0,old.index,*digest(old.target_id,6),0,0,0))
         tail=line(mapping);split=len(tail)//2
-        packet=line(sysex(10,9,(0,1)))+line((191,12,127))+line((191,44,127))
+        packet=line(SysExCommand.SELECT_TRACK.message((0,1)))+line((191,12,127))+line((191,44,127))
         packet+=line((191,12,127))*254+tail[:split]
         with patch('RotoPythonExt.os.read',side_effect=[packet,BlockingIOError]),patch('RotoPythonExt.os.write',side_effect=lambda fd,data:len(data)):
             e.Tick()
@@ -257,7 +257,7 @@ class FollowTests(unittest.TestCase):
         e,m,f,a,b,t1,t2,s,_=self.fixture();e.ownerComp.par.Followcomp.val=False
         f.observe(force=True);m.locked=True;self.select_hw(e,m,t2)
         self.assertFalse(f.gated);self.assertTrue(e.GetControlState()['mapped'])
-        e._receive_midi(sysex(11,13,(0,)));self.assertTrue(f.gated)
+        e._receive_midi(SysExCommand.SET_PLUGIN_LOCK.message((0,)));self.assertTrue(f.gated)
         f.flush();identity=e.GetControlState()['id'];f.flush()
         self.assertEqual(m.track()['id'],t2);self.assertEqual(e.GetControlState()['id'],identity)
         self.assertFalse(e.GetControlState()['mapped']);self.assertFalse(m.confirmed)

@@ -1,0 +1,642 @@
+{
+  "baseline": "dirty 4ec8016 + completed 681-test checkpoint, captured before command migration",
+  "cases": {
+    "ping": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        2,
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": false,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "started_no_f7": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        1,
+        0
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "started_foreign": {
+      "frame": [
+        240,
+        9,
+        9,
+        9,
+        9,
+        10,
+        1,
+        247
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "unknown_mix": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        12,
+        127,
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": true,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "bool_general": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        true,
+        247
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "float_general": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        1.0,
+        247
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "list_group": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        [],
+        1,
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "list_command": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        [],
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "dict_command": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        10,
+        {},
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "malformed_mix_known": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        12,
+        1
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": null,
+          "family": 0,
+          "epoch_delta": 1,
+          "pending": ""
+        }
+      }
+    },
+    "malformed_mix_unknown": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        12,
+        127
+      ],
+      "expected": {
+        "business_output": false,
+        "CompFollower.context_output": false,
+        "MixRuntime.feedback_output": false,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        }
+      }
+    },
+    "bool_mix": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        12,
+        true,
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": true,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": null,
+          "family": 0,
+          "epoch_delta": 1,
+          "pending": ""
+        }
+      }
+    },
+    "float_mix": {
+      "frame": [
+        240,
+        0,
+        34,
+        3,
+        2,
+        12,
+        1.0,
+        247
+      ],
+      "expected": {
+        "business_output": true,
+        "CompFollower.context_output": true,
+        "MixRuntime.feedback_output": true,
+        "receive_False": {
+          "answer": false,
+          "active": false,
+          "returning": false,
+          "view": [
+            "all",
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "family": 0,
+          "epoch_delta": 0,
+          "pending": ""
+        },
+        "receive_True": {
+          "answer": true,
+          "active": true,
+          "returning": false,
+          "view": null,
+          "family": 0,
+          "epoch_delta": 1,
+          "pending": ""
+        }
+      }
+    }
+  }
+}

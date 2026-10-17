@@ -12,22 +12,20 @@ from time import monotonic
 import json
 
 HEADER=(240,0,34,3,2)
-COMMANDS={
-    10:{1:'DAW_STARTED',2:'PING_DAW',3:'DAW_PING_RESP',4:'NUM_TRACKS',5:'FIRST_TRACK',6:'SET_FIRST_TRACK',7:'TRACK_DETAILS',8:'TRACK_DETAILS_END',9:'SELECT_TRACK',12:'ROTO_DAW_CONNECTED',20:'PAGE_LEFT',21:'PAGE_RIGHT',22:'DISPLAY_NAME'},
-    11:{1:'SET_PLUGIN_MODE',2:'NUM_DEVICES',3:'FIRST_DEVICE',4:'SET_FIRST_DEVICE',5:'DEVICE_DETAILS',6:'DEVICE_DETAILS_END',7:'SELECT_DEVICE',8:'DAW_SELECT_DEVICE',9:'SET_DEVICE_LEARN',10:'LEARN_PARAM',11:'CONTROL_MAPPED',12:'SET_PLUGIN_ENABLE',13:'SET_PLUGIN_LOCK',14:'UNMAP_CONTROL'},
-    12:{1:'SET_MIXER_ALL_MODE',2:'SET_MIXER_SELECTED_MODE',4:'DAW_SELECT_TRACK',5:'SET_MIXER_CHANNEL_MODE'}
-}
 
-def Decode(message):
+def Decode(message, protocol):
+    SysExCommand,SysExGroup=protocol.SysExCommand,protocol.SysExGroup
     raw=tuple(message)
     if len(raw)<8 or raw[:5]!=HEADER or raw[-1]!=247 or any(type(n)is not int or not 0<=n<128 for n in raw[1:-1]):return None
     group,command=raw[5:7]
+    identity=SysExCommand.identify(raw)
     # Continuous display feedback is unrelated to tabs and would drown the trace.
-    if group==10 and command in (11,24) or group==11 and command in (15,):return None
-    return dict(group=group,command=command,name=COMMANDS.get(group,{}).get(command,'UNKNOWN'),data=list(raw[7:-1]),raw=list(raw),family={10:'GENERAL / Track',11:'PLUGIN / Device',12:'MIX'}.get(group,'UNKNOWN'))
+    if identity in (SysExCommand.TRANSPORT_STATUS, SysExCommand.PARAM_VALUES, SysExCommand.SET_MAPPED_CTL_NAME):return None
+    return dict(group=group,command=command,name=identity.name if identity is not None else 'UNKNOWN',data=list(raw[7:-1]),raw=list(raw),family={SysExGroup.GENERAL:'GENERAL / Track',SysExGroup.PLUGIN:'PLUGIN / Device',SysExGroup.MIX:'MIX'}.get(group,'UNKNOWN'))
 
 class Recorder:
-    def __init__(self,snapshot,capacity=512,clock=monotonic):
+    def __init__(self,snapshot,protocol,capacity=512,clock=monotonic):
+        self.protocol=protocol
         self.snapshot=snapshot;self.clock=clock;self.started=clock();self.sequence=0;self.events=deque(maxlen=capacity)
         self.dropped=0;self.errors=0
     def Event(self,kind,data):
@@ -37,7 +35,7 @@ class Recorder:
             self.events.append(dict(sequence=self.sequence,seconds=round(self.clock()-self.started,6),kind=kind,data=data,context=self.snapshot()))
         except Exception:self.errors+=1  # A probe failure must never break dispatch.
     def Packet(self,kind,message,**extra):
-        decoded=Decode(message)
+        decoded=Decode(message,self.protocol)
         if decoded is not None:self.Event(kind,dict(decoded,**extra))
     def Report(self):
         return dict(schema=1,temporary_readonly_probe=True,screen_state_requires_human_markers=True,
@@ -60,7 +58,7 @@ def Snapshot(controller,views=()):
 def Start(controller,path,views=(),menu=None):
     ext=controller.ext.RotoPythonExt
     if getattr(ext,'_tab_layout_probe',None):raise ValueError('Tab probe already running; Stop first')
-    views=tuple(views);rec=Recorder(lambda:Snapshot(controller,views));hooks=[]
+    views=tuple(views);rec=Recorder(lambda:Snapshot(controller,views),controller.op('protocol').module);hooks=[]
     rec.Event('start',dict(controller=controller.path,source='physical messages only'))
     Path(path).write_text(json.dumps(rec.Report(),indent=2))  # Validate output before installing hooks.
     def install(target,name,wrapper):

@@ -29,7 +29,7 @@ def select(h,node):
 
 def ack(e,proto):
     for target in list(e._host.controls.values()):
-        e._receive_midi(proto.sysex(11,11,(target.index>>7,target.index&127,
+        e._receive_midi(proto.SysExCommand.CONTROL_MAPPED.message((target.index>>7,target.index&127,
             *proto.digest(target.target_id,6),int(target.key[0]=='button'),target.key[1]-1,0)))
 
 
@@ -88,7 +88,7 @@ def controls(controller):
     e._host.connected=e._host.plugin=True;ack(e,p)
     e._receive_midi((191,12,127));e._receive_midi((191,44,127))
     assert h.op('a').par.Speed.eval()==1
-    e._receive_midi(p.sysex(11,7,(1,)))
+    e._receive_midi(p.SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,)))
     for packet in ((191,12,0),(191,44,0),(191,20,127)):e._receive_midi(packet)
     ack(e,p);f.flush(backlog=True)
     assert m.plugin()['id']==r['pa'] and f.gated
@@ -108,18 +108,18 @@ def controls(controller):
 def after_controls(controller):
     h,c,e,r=fixture(controller);f=e._follow;m=e._layouts;p=c.op('protocol').module
     assert h.op('a').fetch('pulses',0)==1
-    e._receive_midi(p.sysex(11,13,(1,)));e._receive_midi(p.sysex(11,7,(1,)));f.flush()
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_LOCK.message((1,)));e._receive_midi(p.SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,)));f.flush()
     assert m.locked and m.plugin()['id']==r['pb'];ack(e,p)
     e._receive_midi((191,12,127));e._receive_midi((191,44,127))
     assert [h.op(n).par.Speed.eval() for n in ('a','b')]==[1,1]
-    e._receive_midi(p.sysex(11,13,(0,)));f.flush()
+    e._receive_midi(p.SysExCommand.SET_PLUGIN_LOCK.message((0,)));f.flush()
     ids=[r['pa'],r['pb']]
     for i in range(2,9):ids.append(e.CreatePlugin(r['layout'],r['track'],'DEV'+str(i)))
-    e._pending=b'';e._receive_midi(p.sysex(11,4,(8,)))
+    e._pending=b'';e._receive_midi(p.SysExCommand.SET_FIRST_DEVICE.message((8,)))
     packets=[json.loads(line)['midi'] for line in e._pending.splitlines()]
-    assert list(p.sysex(11,2,(9,))) in packets and list(p.sysex(11,3,(8,))) in packets
+    assert list(p.SysExCommand.NUM_DEVICES.message((9,))) in packets and list(p.SysExCommand.FIRST_DEVICE.message((8,))) in packets
     assert m.plugin()['id']==r['pb'] and f.pending is None
-    e._receive_midi(p.sysex(11,7,(0,)));f.flush()
+    e._receive_midi(p.SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((0,)));f.flush()
     assert m.plugin()['id']==ids[8] and e.GetControlStates()==[]
     e.SelectPlugin(r['layout'],r['track'],r['pa'])
     for plugin in ids[2:]:e.RemovePlugin(r['layout'],r['track'],plugin)

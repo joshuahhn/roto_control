@@ -13,7 +13,7 @@ import signal
 import sys
 import time
 sys.path.insert(0,str(Path(__file__).parents[2]/'code/py/roto_python'))
-from protocol import HEADER, GENERAL, PLUGIN, Host, digest, sysex, text13
+from protocol import SysExGroup, HEADER, Host, digest, SysExCommand, text13
 
 class Probe:
     def __init__(self, send, record):
@@ -42,12 +42,12 @@ class Probe:
         self.record('tx',list(message));self.send_wire(message)
 
     def announce(self):
-        self.send(sysex(PLUGIN,2,(3,)))
-        self.send(sysex(PLUGIN,3,(0,)))
+        self.send(SysExCommand.NUM_DEVICES.message((3,)))
+        self.send(SysExCommand.FIRST_DEVICE.message((0,)))
         for index,name in enumerate(('A','B','EMPTY')):
             identity=self.hosts[index].device_id if index<2 else 'TD layout protocol probe v1 EMPTY'
-            self.send(sysex(PLUGIN,5,(index,*digest(identity,8),1,*text13('PROBE '+name),0,0)))
-        self.send(sysex(PLUGIN,6))
+            self.send(SysExCommand.PLUGIN_DETAILS.message((index,*digest(identity,8),1,*text13('PROBE '+name),0,0)))
+        self.send(SysExCommand.PLUGIN_DETAILS_END.message())
 
     def select(self,name):
         index=('A','B','EMPTY').index(name)
@@ -57,7 +57,7 @@ class Probe:
         self.requested=index;self.active=None
         for h in self.hosts.values():
             h._clear_mapping_state();h.touched=False
-        self.send(sysex(PLUGIN,8,(index,0,0)))
+        self.send(SysExCommand.DAW_SELECT_PLUGIN.message((index,0,0)))
         self.record('requested',name)
 
     def receive(self,message):
@@ -69,32 +69,33 @@ class Probe:
             if len(message)<8 or message[:5]!=HEADER or message[-1:]!=(247,) or any(type(x) is not int or not 0<=x<128 for x in message[1:-1]):
                 self.record("invalid_sysex",list(message));return
             group,command,data=message[5],message[6],message[7:-1]
-            if group==12 or group==GENERAL and command==2:
+            identity = SysExCommand.identify(message)
+            if group == SysExGroup.MIX or identity is SysExCommand.PING_DAW:
                 self.active=self.requested=None;self.learning=False;self.locked=False;self.touched.clear()
                 for h in self.hosts.values(): h.stop()
                 self.record("session_reset",dict(group=group,command=command))
-                if group==GENERAL: self.send(sysex(GENERAL,3,(1,)))
-            elif group==GENERAL and command==12:
-                self.send(sysex(GENERAL,0x16,text13('LAYOUT PROBE')))
-            elif group==PLUGIN and command in (1,4):
+                if identity is SysExCommand.PING_DAW: self.send(SysExCommand.DAW_PING_RESP.message((1,)))
+            elif identity is SysExCommand.ROTO_DAW_CONNECTED:
+                self.send(SysExCommand.SET_CURRENT_TRACK_NAME.message(text13('LAYOUT PROBE')))
+            elif identity in (SysExCommand.SET_PLUGIN_MODE, SysExCommand.SET_FIRST_DEVICE):
                 self.announce()
-                if command==1:
+                if identity is SysExCommand.SET_PLUGIN_MODE:
                     self.active=self.requested=None
                     self.learning=False;self.locked=False;self.touched.clear()
                     for h in self.hosts.values():
                         h.stop();h.connected=h.plugin=True
                     self.select('A')
-            elif group==PLUGIN and command==13 and len(data)==1:
+            elif identity is SysExCommand.SET_PLUGIN_LOCK and len(data)==1:
                 self.locked=bool(data[0]);self.record('lock',self.locked)
-            elif group==PLUGIN and command==9 and len(data)==1:
+            elif identity is SysExCommand.SET_DEVICE_LEARN and len(data)==1:
                 self.learning=bool(data[0])
                 for h in self.hosts.values(): h.learning=self.learning
-            elif group==PLUGIN and command==7 and len(data)==1 and data[0] in (0,1,2):
+            elif identity is SysExCommand.ROTO_CONTROL_SELECT_DEVICE and len(data)==1 and data[0] in (0,1,2):
                 self.requested=data[0];self.active=None
                 for h in self.hosts.values():
                     h._clear_mapping_state();h.touched=False
                 self.record('hardware_selection',data[0])
-            elif group==PLUGIN and command==11:
+            elif identity is SysExCommand.CONTROL_MAPPED:
                 h=self.hosts.get(self.requested)
                 if h is not None:
                     h.receive(message)
@@ -137,7 +138,7 @@ def main():
             log.write(json.dumps(event)+'\n');log.flush()
             if kind not in ('rx','tx','input_suspended','input'): print(json.dumps(event),flush=True)
         probe=Probe(lambda message:outgoing.send(mido.Message.from_bytes(message)),record)
-        probe.send(sysex(GENERAL,1))
+        probe.send(SysExCommand.DAW_STARTED.message())
         os.set_blocking(sys.stdin.fileno(),False);pending=b''
         while running:
             for _ in range(256):

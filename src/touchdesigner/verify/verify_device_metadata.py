@@ -16,6 +16,7 @@ def verify(controller):
             clone.op(name).text = Path(project.folder, 'code/py/roto_python', name+'.py').read_text(encoding='utf-8')
         clone.par.reinitextensions.pulse()
         clone.Applybinding()
+        SysExCommand = clone.op('protocol').module.SysExCommand
         e = clone.ext.RotoPythonExt
         packets = []
         e._host.send = lambda message: packets.append(list(message))
@@ -35,13 +36,13 @@ def verify(controller):
             e._host.connected = e._host.plugin = True
             packets.clear()
             e.RenamePlugin(layout, track, b, 'Renamed B')
-            details = [p for p in packets if p[5:7] == [11, 5]]
+            details = [p for p in packets if SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS]
             assert details and all(p[7] == 0 for p in details[:1]), details
             assert [p['id'] for p in m.track()['plugins']] == [b, c]
             packets.clear()
             e.RenameTrack(layout, track, 'Renamed')
             assert m.track()['name'] == 'Renamed'
-            assert not any(p[5:7] == [11, 5] for p in packets)
+            assert not any(SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS for p in packets)
             e._host.connected = e._host.plugin = False
         assert not clone.errors(recurse=True)
         result = dict(native_build=str(app.build), deletion_reindexed=True,

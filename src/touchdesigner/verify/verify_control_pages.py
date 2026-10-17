@@ -24,20 +24,20 @@ def exercise(controller):
         if not m.receive(packet):e._host.receive(packet)
         m.acknowledge();e._publish()
     def ack(target):
-        return proto.sysex(11,11,(target['index']>>7,target['index']&127,*proto.digest(target['identity'],6),0,0,0))
+        return proto.SysExCommand.CONTROL_MAPPED.message((target['index']>>7,target['index']&127,*proto.digest(target['identity'],6),0,0,0))
     e._host.connected=e._host.plugin=True
     c.AssignParameter('knob',1,t.par.First,_wire_index=128,_hardware_mapped=True)
     first=copy.deepcopy(m.record()['targets'][0]);rx(ack(first))
-    rx(proto.sysex(10,21));assert not c.GetControlStates()
+    rx(proto.SysExCommand.ROTO_PAGE_RIGHT.message());assert not c.GetControlStates()
     c.AssignParameter('knob',1,t.par.Second,_wire_index=129,_hardware_mapped=True)
     second=copy.deepcopy(m.record()['targets'][0]);rx(ack(second))
-    for target,parameter,arrow in ((first,'First',20),(second,'Second',21),(first,'First',20)):
-        rx(proto.sysex(10,arrow));rx(ack(target))
+    for target,parameter,arrow in ((first,'First',proto.SysExCommand.ROTO_PAGE_LEFT),(second,'Second',proto.SysExCommand.ROTO_PAGE_RIGHT),(first,'First',proto.SysExCommand.ROTO_PAGE_LEFT)):
+        rx(arrow.message());rx(ack(target))
         assert c.GetControlState()['parameter']==parameter and c.GetControlState()['mapped']
     assert len(c.fetch('page_targets'))==2
     before=t.par.Second.eval();e._host.receive((191,12,64));e._host.receive((191,44,0))
     assert abs(t.par.First.eval()-8192/16383)<.0001 and t.par.Second.eval()==before
-    rx(proto.sysex(10,21));assert not c.GetControlStates()
+    rx(proto.SysExCommand.ROTO_PAGE_RIGHT.message());assert not c.GetControlStates()
     e._host.receive((191,12,127));e._host.receive((191,44,127));assert t.par.Second.eval()==before
     e.Disconnect()
     h.store('first',first);h.store('second',second);h.store('layout',layout)
@@ -52,7 +52,7 @@ def finish(controller):
     e=c.ext.RotoPythonExt;m=e._layouts;proto=c.op('protocol').module
     assert len(c.fetch('page_targets'))==2
     e._host.connected=e._host.plugin=True
-    target=h.fetch('first');packet=proto.sysex(11,11,(target['index']>>7,target['index']&127,*proto.digest(target['identity'],6),0,0,0))
+    target=h.fetch('first');packet=proto.SysExCommand.CONTROL_MAPPED.message((target['index']>>7,target['index']&127,*proto.digest(target['identity'],6),0,0,0))
     if not m.receive(packet):e._host.receive(packet)
     m.acknowledge();e._publish()
     assert c.GetControlState()['parameter']=='First' and c.GetControlState()['mapped']

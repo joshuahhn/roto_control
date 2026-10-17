@@ -5,7 +5,7 @@ import unittest
 import test_api
 import test_catalog_removal
 from test_bound_parameter import BoundParameter
-from protocol import sysex, digest
+from protocol import SysExCommand, digest
 
 class AssignmentTests(unittest.TestCase):
     def fixture(self):
@@ -23,7 +23,7 @@ class AssignmentTests(unittest.TestCase):
     def test_add_during_learn_preserves_other_mapping_and_saves(self):
         ext=self.fixture();test_api.ApiTests().ready(ext)
         old=ext._host.controls['knob',2];binding=ext._collection.bindings['knob',2]
-        ext._host.receive(sysex(11,9,(1,)))
+        ext._host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         parameter=self.parameter()
         state=ext.AssignParameter('knob',3,parameter)
         self.assertTrue(old.mapped);self.assertIs(ext._host.controls['knob',2],old)
@@ -46,9 +46,9 @@ class AssignmentTests(unittest.TestCase):
         old=ext._host.controls['knob',2];other=ext._host.controls['button',8]
         sent=[];ext._host.send=sent.append
         state=ext.AssignParameter('knob',2,self.parameter())
-        self.assertEqual(sent,[sysex(11,14,(0,1))])
+        self.assertEqual(sent,[SysExCommand.UNMAP_CTL.message((0,1))])
         self.assertTrue(other.mapped)
-        ext._host.receive(sysex(11,11,(0,old.index,*digest(old.target_id,6),0,1,0)))
+        ext._host.receive(SysExCommand.CONTROL_MAPPED.message((0,old.index,*digest(old.target_id,6),0,1,0)))
         self.assertFalse(ext.GetControlState(state['id'])['mapped'])
         self.assertNotIn('speed',ext._collection.ids)
 

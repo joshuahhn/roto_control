@@ -4,7 +4,7 @@ import copy
 import unittest
 from mix_descriptor import validate
 from mix_runtime import MixRuntime
-from protocol import sysex, text13
+from protocol import SysExCommand, text13
 import test_mix
 
 
@@ -18,7 +18,7 @@ class MixTriggerTests(unittest.TestCase):
         return helpers,e,mix,source,channels,operators
 
     def captions(self, e, text):
-        return list(sysex(10,24,(0,4,*text13(text)))) in test_mix.MixTests().messages(e)
+        return list(SysExCommand.PARAM_VALUES.message((0,4,*text13(text)))) in test_mix.MixTests().messages(e)
 
     def test_kick_controls_meter_and_trigger_are_independent(self):
         helpers,e,mix,source,channels,_=self.fixture()
@@ -62,7 +62,7 @@ class MixTriggerTests(unittest.TestCase):
         e._pending=b'';mix.tick(now=2.4)
         self.assertTrue(self.captions(e,'Trig Off'))
         mix.tick(now=2.6)
-        texts=[m for m in helpers.messages(e) if m[:9]==list(sysex(10,24,(0,4)))[:9]]
+        texts=[m for m in helpers.messages(e) if m[:9]==list(SysExCommand.PARAM_VALUES.message((0,4)))[:9]]
         self.assertEqual(len(texts),1)
 
     def test_bad_pulse_sample_clears_stale_high_without_disabling_controls(self):
@@ -112,7 +112,7 @@ class MixTriggerTests(unittest.TestCase):
         helpers,e,mix,_,channels,_=self.fixture()
         channels['kick'].vals=[1];mix.tick(now=2.11)
         channels['kick'].vals=[0]
-        e._receive_midi(sysex(11,1,(0,)),e._ingress_token())
+        e._receive_midi(SysExCommand.SET_PLUGIN_MODE.message((0,)),e._ingress_token())
         self.assertEqual(mix.triggers[0].state,'unknown')
         helpers.enter(e,mix);helpers.focus(e,mix)
         self.assertEqual(mix.triggers[0].state,'idle')

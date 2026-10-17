@@ -7,10 +7,10 @@ def verify(controller):
     protocol = controller.op('protocol').module
     demo = controller.parent().op('base_controls_demo')
     host.start()
-    host.receive(protocol.sysex(10,12))
-    host.receive(protocol.sysex(11,1,(0,)))
+    host.receive(protocol.SysExCommand.ROTO_DAW_CONNECTED.message())
+    host.receive(protocol.SysExCommand.SET_PLUGIN_MODE.message((0,)))
     for key,target in host.controls.items():
-        host.receive(protocol.sysex(11,11,(0,target.index,*protocol.digest(target.target_id,6),int(key[0]=='button'),key[1]-1,0)))
+        host.receive(protocol.SysExCommand.CONTROL_MAPPED.message((0,target.index,*protocol.digest(target.target_id,6),int(key[0]=='button'),key[1]-1,0)))
     assert host.mapped
     # Interleave two pairs: neither control may consume the other's half.
     host.receive((191,12,32));host.receive((191,51,10))

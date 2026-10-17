@@ -30,25 +30,26 @@ def exercise(controller):
     discovered=module.available_components(inspector,'knob')
     assert target in discovered
     proto=fixture.op('protocol').module
+    SysExCommand=proto.SysExCommand
     host=e._host;host.send=lambda message:None
-    host.start();host.receive(proto.sysex(10,12));host.receive(proto.sysex(11,1,(0,)))
+    host.start();host.receive(proto.SysExCommand.ROTO_DAW_CONNECTED.message());host.receive(proto.SysExCommand.SET_PLUGIN_MODE.message((0,)))
     for key,t in host.controls.items():
-        host.receive(proto.sysex(11,11,(0,t.index,*proto.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
+        host.receive(proto.SysExCommand.CONTROL_MAPPED.message((0,t.index,*proto.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
     other=host.controls['knob',8];old=host.controls['knob',2]
     sent=[];host.send=sent.append
-    host.receive(proto.sysex(11,9,(1,)))
+    host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert module.assign(inspector,'knob',2,target.par.Speed)
     state=next(s for s in e.GetControlStates() if s['kind']=='knob' and s['slot']==2)
     assert state['comp']==target.path and not state['mapped']
     assert other is host.controls['knob',8] and other.mapped
-    assert len([m for m in sent if m[0]==240 and m[5:7]==(11,10)])==1
-    assert not any(m[0]==240 and m[5:7]==(11,14) for m in sent)
+    assert len([m for m in sent if m[0]==240 and SysExCommand.identify(m) is SysExCommand.LEARN_PARAM])==1
+    assert not any(m[0]==240 and SysExCommand.identify(m) is SysExCommand.UNMAP_CTL for m in sent)
     # The superseded identity cannot restore a stale assignment.
-    host.receive(proto.sysex(11,11,(0,old.index,*proto.digest(old.target_id,6),0,1,0)))
+    host.receive(proto.SysExCommand.CONTROL_MAPPED.message((0,old.index,*proto.digest(old.target_id,6),0,1,0)))
     assert not e.GetControlState(state['id'])['mapped']
     mapped=host.controls['knob',2]
-    host.receive(proto.sysex(11,11,(0,mapped.index,*proto.digest(mapped.target_id,6),0,1,0)))
-    host.receive(proto.sysex(11,9,(0,)))
+    host.receive(proto.SysExCommand.CONTROL_MAPPED.message((0,mapped.index,*proto.digest(mapped.target_id,6),0,1,0)))
+    host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((0,)))
     host.receive((191,13,64));host.receive((191,45,0))
     assert abs(target.par.Speed.eval()-10*8192/16383)<.001
     e.SetValue(7,id=state['id']);assert target.par.Speed.eval()==7
@@ -82,9 +83,10 @@ def finish(controller):
     fixture.store('removed_controls',[])
     e.Unbind()
     proto=fixture.op('protocol').module
+    SysExCommand=proto.SysExCommand
     e._host.send=lambda message:None
-    e._host.start();e._host.receive(proto.sysex(10,12));e._host.receive(proto.sysex(11,1,(0,)))
-    e._host.receive(proto.sysex(11,9,(1,)))
+    e._host.start();e._host.receive(proto.SysExCommand.ROTO_DAW_CONNECTED.message());e._host.receive(proto.SysExCommand.SET_PLUGIN_MODE.message((0,)))
+    e._host.receive(proto.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert fixture.op('inspector/inspector_data').module.assign(fixture.op('inspector'),'knob',1,target.par.Speed)
     assert e._host.learning
     assert e.GetControlStates()[0]['parameter']=='Speed'

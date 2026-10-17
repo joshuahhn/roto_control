@@ -2,7 +2,7 @@
 import time
 import uuid
 from binding import parameter_chain, parameter_value, same_parameter
-from protocol import LearnParameter, digest, learn_parameter_message
+from protocol import SysExCommand, LearnParameter, digest, learn_parameter_message
 
 
 class FreeLearner:
@@ -215,7 +215,7 @@ class FreeLearner:
                 self.last_parameter = None
                 self.selected_kind = 'knob' if 52 <= message[1] <= 59 else 'button'
         self._prune()
-        if (len(message) != 19 or message[:7] != (240,0,34,3,2,11,11) or message[-1] != 247
+        if (len(message) != 19 or not (tuple(message[:5]) == (240, 0, 34, 3, 2) and SysExCommand.identify(message) is SysExCommand.CONTROL_MAPPED) or message[-1] != 247
                 or any(type(value) is not int or not 0 <= value < 128 for value in message[1:-1])):
             return False
         data = message[7:-1]

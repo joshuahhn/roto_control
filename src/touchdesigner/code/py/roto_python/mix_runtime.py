@@ -6,7 +6,7 @@ import time
 from binding import Binding, parameter_chain, parameter_value, same_parameter
 from mix_descriptor import validate, projection, button_projection, limits, reference, operation_choices as validate_operation_choices, FLOAT_KEYS
 from midi_queue import discard
-from protocol import HEADER, sysex, text13, raw_value
+from protocol import SysExGroup, HEADER, SysExCommand, text13, raw_value
 
 
 def _identity(operator):
@@ -359,7 +359,9 @@ class MixRuntime:
     def feedback_output(message):
         return ((len(message) == 3 and message[0] == 191)
                 or len(message) >= 8 and tuple(message[:5]) == HEADER
-                and (message[5] == 12 or message[5] == 10 and message[6] in (4, 5, 7, 8, 0x18)))
+                and (message[5] == SysExGroup.MIX or SysExCommand.identify(message) in
+                     (SysExCommand.NUM_TRACKS, SysExCommand.FIRST_TRACK, SysExCommand.TRACK_DETAILS,
+                      SysExCommand.TRACK_DETAILS_END, SysExCommand.PARAM_VALUES)))
 
     def stop(self):
         self.active = self.returning = False
@@ -377,16 +379,18 @@ class MixRuntime:
                  and all(type(v) is int and 0 <= v < 128 for v in message[1:-1]))
         stale = token is not None and (len(token) < 3 or token[2] != self.epoch)
         if (not valid and self.active and len(message) >= 7 and message[:5] == HEADER
-                and message[5] == 12 and message[6] in (1, 2, 5)):
+                and SysExCommand.identify(message) in (SysExCommand.SET_MIXER_ALL_MODE,
+                    SysExCommand.SET_MIXER_SELECTED_MODE, SysExCommand.SET_MIXER_CHANNEL_MODE)):
             self.view = None; self.invalidate()
             return True
         if valid:
-            group, command, data = message[5], message[6], message[7:-1]
-            if (group, command) == (11, 1) and self.active:
+            group, data = message[5], message[7:-1]
+            identity = SysExCommand.identify(message)
+            if identity is SysExCommand.SET_PLUGIN_MODE and self.active:
                 self.active = False; self.returning = True; self.view = None
                 self.invalidate(); self.e._mix_mode_boundary()
                 return False  # existing PLUGIN page/ACK/session path handles it
-            if group == 12 and command in (1, 2, 5):
+            if identity in (SysExCommand.SET_MIXER_ALL_MODE, SysExCommand.SET_MIXER_SELECTED_MODE, SysExCommand.SET_MIXER_CHANNEL_MODE):
                 if not self.e._host.connected:
                     return True
                 entering = not self.active
@@ -398,21 +402,21 @@ class MixRuntime:
                     # MIX CC through it or pretending an assignment was learned.
                     self.e._host.receive(message, control_only=True)
                 self.view = None
-                if command == 1 and len(data) == 4 and data[0] in (0, 1) and data[1] in (0, 1, 2) and data[2] in (0, 1, 2):
+                if identity is SysExCommand.SET_MIXER_ALL_MODE and len(data) == 4 and data[0] in (0, 1) and data[1] in (0, 1, 2) and data[2] in (0, 1, 2):
                     self.family = data[0]; self.view = 'all', data
-                elif command == 2 and len(data) == 1 and data[0] == 0 and self.family == 0:
+                elif identity is SysExCommand.SET_MIXER_SELECTED_MODE and len(data) == 1 and data[0] == 0 and self.family == 0:
                     self.view = 'focus', 0
-                elif command == 5 and data == (0,):
+                elif identity is SysExCommand.SET_MIXER_CHANNEL_MODE and data == (0,):
                     self.family = 0  # await actual 01/02 view readback
                 else:
-                    self.family = 1 if command == 5 else self.family
+                    self.family = 1 if identity is SysExCommand.SET_MIXER_CHANNEL_MODE else self.family
                 self.invalidate()
-                if command == 5:
-                    self.command(12, 9)  # request readback; never force 01/02
+                if identity is SysExCommand.SET_MIXER_CHANNEL_MODE:
+                    self.e._send(SysExCommand.REFRESH_MIX_MODE.message(), mix=True)  # request readback; never force 01/02
                 return True
             if not self.active:
                 return False
-            if group == 10 and command in (6, 9):
+            if identity in (SysExCommand.SET_FIRST_TRACK, SysExCommand.SELECT_TRACK):
                 # Hardware state follows wire order, even after an earlier
                 # view/selection invalidated this batch's CC ingress epoch.
                 # The extension rejects old connections before this dispatch.
@@ -420,20 +424,20 @@ class MixRuntime:
                     self.selected = -1; self.invalidate()
                 if len(data) == 2:
                     index = data[0] * 128 + data[1]
-                    if command == 9:
+                    if identity is SysExCommand.SELECT_TRACK:
                         self.select(index)
                     elif index == 0:
                         self.dirty = True
                     else:
                         self.view = None; self.invalidate()
                 return True
-            if group == 12:
-                if command == 7 and len(data) == 1:
+            if group == SysExGroup.MIX:
+                if identity is SysExCommand.REQUEST_SEND_TRACK_NAMES and len(data) == 1:
                     self.send_names(data[0])
                     self.last_text.clear()
                 return True
             # Only session handshake/PING reaches Host while MIX owns routing.
-            return not (group == 10 and command in (2, 0x0C))
+            return identity not in (SysExCommand.PING_DAW, SysExCommand.ROTO_DAW_CONNECTED)
         if not self.active:
             if len(message) == 3 and message[0] == 191 and 20 <= message[1] <= 27 and message[2] == 0:
                 self.button_down.discard(message[1] - 20)
@@ -565,26 +569,23 @@ class MixRuntime:
             self.blocked.add(lane)
         self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))
 
-    def command(self, group, command, data=()):
-        self.e._send(sysex(group, command, data), mix=True)
-
     def metadata(self):
         self.last_text.clear()  # real mode/profile/view boundaries clear motors
         items = self.profile['items'] if self.profile else []
-        self.command(12, 3, (len(self.send_labels()),))
-        self.command(10, 4, (0, len(items))); self.command(10, 5, (0, 0))
+        self.e._send(SysExCommand.NUM_SENDS.message((len(self.send_labels()),)), mix=True)
+        self.e._send(SysExCommand.NUM_TRACKS.message((0, len(items))), mix=True); self.e._send(SysExCommand.FIRST_TRACK.message((0, 0)), mix=True)
         for index, item in enumerate(items):
-            self.command(10, 7, (0, index, *text13(item['label']), 0, 0))
-        self.command(10, 8)
+            self.e._send(SysExCommand.TRACK_DETAILS.message((0, index, *text13(item['label']), 0, 0)), mix=True)
+        self.e._send(SysExCommand.TRACK_DETAILS_END.message(), mix=True)
         if self.select_pending and 0 <= self.selected < len(items):
-            self.command(12, 4, (0, self.selected, *text13(items[self.selected]['label']), 0, 0))
+            self.e._send(SysExCommand.DAW_SELECT_TRACK.message((0, self.selected, *text13(items[self.selected]['label']), 0, 0)), mix=True)
         self.select_pending = False
         self.send_names()
-        self.command(12, 11, (87, 113))  # global meter colors, not item thresholds
+        self.e._send(SysExCommand.SET_MIX_VU_METER_POINTS.message((87, 113)), mix=True)  # global meter colors, not item thresholds
         enabled = [int(bool(self.view and self.family == 0 and i < len(items))) for i in range(8)]
         if self.view and self.view[0] == 'focus':
             enabled = [int(0 <= self.selected < len(items))] + [0] * 7
-        self.command(12, 12, enabled)
+        self.e._send(SysExCommand.SET_MIX_VU_METER_STATES.message(enabled), mix=True)
         self.dirty = False
 
     def send_labels(self):
@@ -596,8 +597,8 @@ class MixRuntime:
 
     def send_names(self, start=0):
         names = self.send_labels()
-        self.command(12, 8, (start, *(byte for index in range(start, start + 8)
-                                    for byte in text13(names[index] if index < len(names) else ''))))
+        self.e._send(SysExCommand.SEND_TRACK_NAMES.message((start, *(byte for index in range(start, start + 8)
+                                    for byte in text13(names[index] if index < len(names) else '')))), mix=True)
 
     def tick(self, *, backlog=False, now=None):
         if not self.active:
@@ -662,8 +663,8 @@ class MixRuntime:
             # API 2.23 returns to native names after a timeout. Renew assigned
             # text on the bounded feedback tick, even when its value is stable.
             if address is not None or trigger is not None or self.last_text.get(lane) != text:
-                self.e._pending = discard(self.e._pending, lambda m: len(m) >= 10 and tuple(m[:7]) == (*HEADER, 10, 0x18) and m[7:9] == [0, lane])
-                self.command(10, 0x18, (0, lane, *text13(text)))
+                self.e._pending = discard(self.e._pending, lambda m: len(m) >= 10 and (tuple(m[:5]) == HEADER and SysExCommand.identify(m) is SysExCommand.PARAM_VALUES) and m[7:9] == [0, lane])
+                self.e._send(SysExCommand.PARAM_VALUES.message((0, lane, *text13(text))), mix=True)
                 self.last_text[lane] = text
         # Native Mute feedback is inverted relative to analyzer Active. Focus
         # buttons remain firmware-owned, so never send business LEDs there.

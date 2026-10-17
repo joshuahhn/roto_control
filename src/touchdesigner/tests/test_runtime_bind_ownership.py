@@ -65,15 +65,15 @@ class RuntimeOwnershipTests(unittest.TestCase):
 
     def test_conflict_discards_queued_feedback_only_for_affected_controls(self):
         import json
-        from protocol import sysex
+        from protocol import SysExCommand
         ext, masters, aliases, specs, sent = self.fixture()
-        for message in ((191,12,64), (191,44,0), sysex(10,24,(0,0,65)),
-                        (191,14,64), (191,46,0), sysex(10,24,(0,2,67))):
+        for message in ((191,12,64), (191,44,0), SysExCommand.PARAM_VALUES.message((0,0,65)),
+                        (191,14,64), (191,46,0), SysExCommand.PARAM_VALUES.message((0,2,67))):
             ext._send(message)
         aliases[1].bindMaster = masters[0]
         with self.assertRaises(ValueError): ext.SetValue(8, id='target1')
         messages = [json.loads(line)['midi'] for line in ext._pending.splitlines()]
-        self.assertEqual(messages, [[191,14,64], [191,46,0], list(sysex(10,24,(0,2,67)))])
+        self.assertEqual(messages, [[191,14,64], [191,46,0], list(SysExCommand.PARAM_VALUES.message((0,2,67)))])
 
     def test_semantic_failure_does_not_hide_shared_master_claim(self):
         ext, masters, aliases, specs, sent = self.fixture()
