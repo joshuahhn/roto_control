@@ -272,6 +272,12 @@ knob and start a fresh touch before writing. Pair halves older than 250 ms, stal
 ingress and untouching motor echoes cannot write. Software edits move motors
 after release. Loading, selecting and viewing make zero parameter writes.
 
+View and item-selection messages follow their received order within a connection,
+including several messages in one Tick. Routing waits for the buffer to drain;
+buffered CC gestures remain fenced and need a fresh touch. Missing feedback
+clears both bars and recovers when its samples return, without disabling a
+separately valid control. Empty scalar samples are handled by the same clear path.
+
 FUNC can remain on across MIX → PLUGIN → MIX within one connection. The adapter
 accepts a direct Focus readback on return, without requiring an overview event
 or toggling FUNC. Physical observation confirms `MIX-FOCUS / Low` and FUNC on;
@@ -292,6 +298,8 @@ No second MIDI owner or new wire protocol is introduced.
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
 in this slice. Second-page Focus and a mixed-style slot editor are later slices.
+MIX hardware LOCK behavior has not been verified; overview touch selection was
+accepted with LOCK off.
 Analysis-only custom slots 7/8 are configured as above. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
 they were not individually checked on hardware. The editor configures one

@@ -2544,3 +2544,46 @@ receipts continue identifying the embedded snapshots. Optional custom trigger/
 comparison and foreign-analyzer examples retain source/native coverage. Audio
 processing #26, Apply simplification #28, other MIX control functions and later
 CI pages remain outside this acceptance.
+
+
+## PR #27 review corrections — 2026-10-17
+
+Fixed review scope is base `faf3bad54ca1fc800ea777ec50326fbbb03fc271`
+to `178f59558eec1a7e75ba736d073a0477dc852c9e`. Independent Standards review
+finds no documented-rule violation. Spec review identifies a same-batch routing
+failure: Focus readback invalidates the MIX epoch, then a later valid General
+Track selection in that batch is discarded. The runtime becomes ready on the
+old item, so a later fresh Gain gesture can write Low instead of selected Mid.
+The real extension/Tick regression first fails for three view/selection orderings.
+
+Hardware view/selection metadata now follows wire order within a connection.
+Connection-generation rejection remains in the extension; CC ingress epochs,
+backlog drain, release/fresh-touch and partial-pair fences remain unchanged.
+Another failing source regression covers scalar feedback with an empty sample
+array. Signal converts its IndexError to the existing invalid-feedback path,
+clearing both bars without suspending a valid target and recovering on return.
+Native Script CHOP in TD 2025.33230 clamps a zero-sample assignment to one sample;
+empty samples are therefore source-only defensive coverage, not a physically
+observed TD failure. Missing-channel clear/recovery has native coverage.
+
+The plan's old assumption that MIX inherits PLUGIN LOCK selection behavior is
+removed. Production overview intentionally sends item selection on fresh touch;
+existing physical acceptance used LOCK off. MIX LOCK semantics remain unverified,
+with no new LOCK behavior or wire message claimed.
+
+All 588 discovery tests pass on the corrected runtime, including the 75 focused
+MIX/reference/trigger tests. An isolated native fixture reproduces buffered
+Focus → Low → Mid, blocks buffered CC until drain, then writes Midgain only on a
+fresh touch. Missing Mid feedback clears both bars while Gain remains writable;
+restoring the channel recovers Level/reference. Two writes affect temporary
+fixture Midgain only, no MIDI process opens, and the fixture is destroyed.
+Fresh normalized snapshots preserve the live original Low/Mid profile/draft,
+registry/four control IDs, Snapshots, user analyzer/demo/layer values, nine demo
+children and old-controller DATs. Temporary recovery/results/scripts stay in
+system temp `roto-pr27-review-s3ickpgm`.
+
+These are source/native corrections. No physical same-batch ordering check or
+new hardware acceptance is claimed; reuse the earlier affected-function hardware
+results with that limit. The active `.18.toe` remains open/disconnected, and its
+saved bytes/receipt and the dirty root checkout remain unchanged. Publication
+of the corrected generic export is recorded separately below.

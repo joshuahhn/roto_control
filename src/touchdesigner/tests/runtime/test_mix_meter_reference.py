@@ -122,6 +122,23 @@ class MixMeterReferenceTests(unittest.TestCase):
         self.assertEqual(self.pair(helper,e),[0,0])
         self.assertEqual(mix.writes,0)
 
+    def test_empty_scalar_clears_both_bars_and_recovers_without_disabling_target(self):
+        for focus in (False,True):
+            with self.subTest(focus=focus):
+                helper,e,mix,source,_,operators=self.fixture()
+                if not focus:helper.enter(e,mix)
+                level=operators['analysis/math2'].data['low']
+                level.vals=[]
+                mix.tick(now=3)
+                self.assertEqual(self.pair(helper,e),[0,0])
+                helper.cc(e,52,127);helper.turn(e,0,16383);helper.cc(e,52,0)
+                self.assertEqual(source.par.Kickthresh.eval(),.6)
+                self.assertEqual(mix.writes,1)
+                mix.tick(now=4)
+                self.assertEqual(self.pair(helper,e),[0,0])
+                level.vals=[.8];mix.tick(now=5)
+                self.assertEqual(self.pair(helper,e),[102,76])
+
     def test_reference_uses_actual_threshold_outside_a_narrower_control_range(self):
         helper,e,mix,source,_,_=self.fixture()
         profile=e.GetMixProfile()['descriptor']

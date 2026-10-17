@@ -127,9 +127,12 @@ therefore changes what FUNC exposes, without copying bindings or storing a secon
 set of parameter values. View changes read current TD values for motor recall;
 they do not restore a value snapshot.
 
-Touch selection follows validated hardware selection messages. Do not derive
-selected slot from every touch: hardware LOCK can suppress touch-based selection.
-MIX selected slot and PLUGIN selected/routing contexts remain separate.
+The implemented overview explicitly selects a configured item on a fresh touch
+and sends its hardware selection. Validated hardware selection messages also
+update that state, in received order even within one buffered batch. Physical
+touch acceptance used LOCK off; MIX LOCK behavior remains unverified rather than
+inheriting PLUGIN LOCK semantics. MIX selected slot and PLUGIN selected/routing
+contexts remain separate.
 
 ## Concrete uses
 

@@ -184,7 +184,10 @@ class Signal:
                 raise ValueError('MIX signal channel removed')
             values = []
             for channel in channels:
-                samples = [float(v) for v in channel.vals] if measure == 'rms_dbfs' else [float(channel[0])]
+                try:
+                    samples = [float(v) for v in channel.vals] if measure == 'rms_dbfs' else [float(channel[0])]
+                except IndexError as exc:
+                    raise ValueError('Empty MIX signal channel') from exc
                 if not samples or any(not math.isfinite(v) for v in samples):
                     raise ValueError('Invalid MIX signal sample')
                 if measure == 'rms_dbfs':
@@ -402,9 +405,12 @@ class MixRuntime:
             if not self.active:
                 return False
             if group == 10 and command in (6, 9):
-                if not stale and len(data) != 2:
+                # Hardware state follows wire order, even after an earlier
+                # view/selection invalidated this batch's CC ingress epoch.
+                # The extension rejects old connections before this dispatch.
+                if len(data) != 2:
                     self.selected = -1; self.invalidate()
-                if not stale and len(data) == 2:
+                if len(data) == 2:
                     index = data[0] * 128 + data[1]
                     if command == 9:
                         self.select(index)

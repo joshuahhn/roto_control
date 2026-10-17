@@ -717,6 +717,31 @@ class MixTests(unittest.TestCase):
         self.cc(e, 52, 0); self.cc(e, 52, 127); self.turn(e, 0, 16383)
         self.assertEqual(mix.writes, 1)
 
+    def test_real_tick_uses_latest_selection_after_same_batch_view_changes(self):
+        for selections in ((1,), (0, 1), (1, 0, 1)):
+            with self.subTest(selections=selections):
+                e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
+                child = Mock(); child.poll.return_value = None
+                e._process = child; e._transport_ready = True
+                e._started_at = time.monotonic(); e._trace_control_midi = Mock()
+                events = [sysex(12, 2, (0,))]
+                events += [sysex(10, 9, (0, index)) for index in selections]
+                events += [(191, 53, 127), (191, 13, 127), (191, 45, 127), (191, 53, 0)]
+                packet = b''.join((json.dumps({'midi': event}) + '\n').encode() for event in events)
+                with patch('RotoPythonExt.os.read', side_effect=[packet, BlockingIOError]), patch('RotoPythonExt.os.write', side_effect=lambda fd, data: len(data)):
+                    e.Tick()
+                self.assertTrue(mix.ready)
+                self.assertEqual(mix.view, ('focus', 0))
+                self.assertEqual(mix.selected, 1)
+                self.assertEqual(mix.writes, 0)  # buffered gestures still require a fresh touch
+                token = e._ingress_token()
+                e._receive_midi(sysex(10, 9, (0, 0)), (token[0] - 1, *token[1:]))
+                self.assertEqual(mix.selected, 1)
+                self.cc(e, 53, 127); self.turn(e, 1, 16383)
+                self.assertEqual(source.par.Midgain.eval(), 7)
+                self.assertEqual(source.par.Lowgain.eval(), 2)
+                self.assertEqual(mix.writes, 1)
+
     def test_plugin_owner_failure_cannot_steal_mix_queue_or_block_mix_input(self):
         e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix)
         m.quarantined = True; f.paused = f.gated = True

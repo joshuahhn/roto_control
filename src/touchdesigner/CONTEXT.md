@@ -39,7 +39,12 @@ corresponding view field retain their original meter behavior. Production Focus
 and the requested overview extension have passed scoped hardware acceptance,
 including the first-Focus transition and normal PLUGIN return.
 Audio processing remains deferred to issue #26.
-One MIX source/style profile is active at a time. Layer input-order/Setup changes
+MIX view/selection metadata follows wire order within one connection while
+buffered CC remains fenced until drain and fresh touch. Source regression and
+isolated native TD checks cover same-batch Focus/item changes; this ordering has
+not been physically forced. Missing meter channels clear/recover independently
+of valid targets; empty scalar samples also have source regression coverage.
+MIX LOCK behavior remains unverified. One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons retain
 input selection. The MIX custom parameter page stages a source/style and a
