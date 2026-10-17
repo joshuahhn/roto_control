@@ -22,7 +22,7 @@ and standalone export contracts.
 
 `controller.GetControlCatalog()` returns a detached persisted catalog, independent of MIDI connection. `controller.GetControlStates()` returns detached snapshots for all active targets, in registration order. Each snapshot also includes binding_type (`parameter`, `callback`, `value`), comp (current path or empty) and parameter (current name or empty). It does not expose Par handles or serialize callback destinations. GetControlState(id) returns the same fields for one target. Querying has no registration/write side effects.
 
-Fresh builds include the Inspector through scripts/build_inspector.py. Embedded exports retain the UI and Inspector Python source; MIDI environment dependencies remain as described in portability.md.
+Fresh builds include the Inspector through build/build_inspector.py. Embedded exports retain the UI and Inspector Python source; MIDI environment dependencies remain as described in portability.md.
 
 If the optional UI refresh fails, its title shows Inspector unavailable and internal refresh_error storage records the reason; hardware transport and target dispatch remain active.
 

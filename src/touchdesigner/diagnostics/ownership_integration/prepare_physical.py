@@ -17,7 +17,7 @@ def prepare(folder):
     c=op(baseline['controller']);assert c.ext.RotoPythonExt._process is None
     assert tuple(c.GetLayoutContext()['key'])==tuple(baseline['routing']['key'])
     assert op('/roto_control_python/base_physical_test') is None
-    namespace=dict(globals());upgrade=pin/'scripts/upgrade_layouts.py'
+    namespace=dict(globals());upgrade=pin/'upgrade/upgrade_layouts.py'
     exec(compile(upgrade.read_text(),str(upgrade),'exec'),namespace)
     namespace['upgrade'](c,pin)
     # Force native extension initialization before using the additive API.

@@ -29,7 +29,7 @@ GROUPS = {
     ],
     'docs': [
         ('Overview', ['overview_md', 'functions_md'], 2),
-        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md', 'fn_snapshots_md', 'fn_mix_md'], 3),
+        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md', 'fn_snapshots_md', 'fn_mix_md', 'fn_mix_analysis_md'], 3),
     ],
 }
 

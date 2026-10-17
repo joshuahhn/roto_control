@@ -1,0 +1,11 @@
+{
+  "python": "../../.venv/bin/python",
+  "preserved": [
+    "registry",
+    "snapshots",
+    "values",
+    "geometry"
+  ],
+  "path_command": "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+  "metadata_hydrated_from_unchanged_targets": true
+}

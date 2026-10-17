@@ -1,0 +1,21 @@
+{
+  "python": "../../.venv/bin/python",
+  "state": {
+    "Connected": true,
+    "Plugin": true,
+    "Mapped": true,
+    "Touched": false,
+    "Learning": false,
+    "Bindingvalid": true,
+    "Rx": 713,
+    "Tx": 34,
+    "Rejected": 0,
+    "Echoblocked": 0,
+    "Status": "Removed target hardware unmap reconciled",
+    "Lasterror": "",
+    "Targetid": "TD controls:plugin.bc87445a6b014fa3ba60a75b2a31f0ad",
+    "Value": 0.41100001335144043,
+    "Targetvalue": 0.41100001335144043
+  },
+  "mappings_preserved": true
+}

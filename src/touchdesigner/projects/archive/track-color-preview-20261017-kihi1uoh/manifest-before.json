@@ -1,0 +1,14 @@
+{
+  "root": "/Users/huihongnin/project/roto_control",
+  "worktree": "/Users/huihongnin/.t3/worktrees/roto_control/td-track-colors",
+  "tmp": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-color-preview-da2187d6",
+  "recovery": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/track-color-preview-20261017-kihi1uoh",
+  "base_commit": "acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99",
+  "original_sha256": {
+    "src/touchdesigner/projects/current/ROTO-CONTROL.toe": "030e2fee006ea9b3e77a8c00fecf65f0cb9ff4625386884f6e3c372476b46ade",
+    "src/touchdesigner/projects/current/project.json": "6f8ad76e6295374c10bb6811c52e6959ce53d97052c02b992c7da7fcfe9ceae5",
+    "src/touchdesigner/exports/roto_python.tox": "b28b0f3ba3d045d7c6f58d286052dc92e303bd3c44aaea869ab9b538d56d1fe0",
+    "src/touchdesigner/exports/roto_python.json": "291ae31f8ed71d48af00b73486c42d6d14342bbdddf8f0001b3790cdece365d4",
+    "src/touchdesigner/upgrade/track_colors_acc7a5c.patch": "aa3ede4893dee6ead9809ef6d9cb7708f7419bc216ecae92b13839fd9dd55133"
+  }
+}

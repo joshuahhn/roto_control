@@ -12,7 +12,7 @@ Native gate: prepare a disconnected isolated fixture for coordinated execution; 
 
 ## Source delivery and remaining gates
 
-Consumer API/result/reconstruction contract: [actions](../functions/actions.md). Source tests: [test_action_presets.py](../../tests/runtime/test_action_presets.py); prepared native stages: [diagnostics/runtime/verify_action_presets.py](../../diagnostics/runtime/verify_action_presets.py). 24 new runtime tests plus 4 Inspector integration tests; full suites 300 runtime / 215 Inspector / OK. Native harness is syntax-checked only, not executed. Native TD reload/export and physical acceptance remain pending; #12/#13 native dependency is not satisfied.
+Consumer API/result/reconstruction contract: [actions](../functions/actions.md). Source tests: [test_action_presets.py](../../tests/test_action_presets.py); prepared native stages: [verify/verify_action_presets.py](../../verify/verify_action_presets.py). 24 new runtime tests plus 4 Inspector integration tests; full suites 300 runtime / 215 Inspector / OK. Native harness is syntax-checked only, not executed. Native TD reload/export and physical acceptance remain pending; #12/#13 native dependency is not satisfied.
 
 Composed base revision `61d0e03fc454dba496618fdf33ab4a5169437b19`; changes remain unstaged/uncommitted in this thread's worktree. A complete review patch with SHA-256 is reported in the integration handoff; it includes new source/docs/tests without staging them. #13 provider may return success, validation_failed, execution_failed or partial plus JSON-safe entry/readback details; the action seam propagates those outcomes. No Snapshot implementation is included.
 

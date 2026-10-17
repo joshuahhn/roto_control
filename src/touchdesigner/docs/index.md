@@ -13,11 +13,11 @@ and the final [HANDOFF](../HANDOFF.md) entry for source/live acceptance status.
 - [Inspector source and builders](../prototypes/inspector/README.md): active compact
   Inspector model/commands/views still live here despite the historical folder name.
   Do not treat the entire directory as disposable prototype code.
-- [Build/upgrade entry points](../scripts/build_network.py), [upgrade](../scripts/upgrade_network.py)
+- [Build/upgrade entry points](../build/build_network.py), [upgrade](../upgrade/upgrade_network.py)
   and [scripts](../scripts/README.md): external Python, executed through live TD.
-- [Runtime tests](../tests/README.md): test files under `tests/runtime`, discovered
+- [Runtime tests](../tests/README.md): test files under `tests`, discovered
   by the standard root unittest command.
-- [Native runtime verifiers](../diagnostics/runtime/README.md): scoped live-TD scripts.
+- [Native runtime verifiers](../verify/README.md): scoped live-TD scripts.
 - [Current plans](plans/), [research](research/) and [historical plans/reports](history/):
   proposals, research and milestone evidence have separate destinations.
 - [Diagnostics](../diagnostics/): scoped probes and results. Former root JSON/JSONL live in `diagnostics/runtime/results`; Inspector captures
@@ -36,7 +36,8 @@ git diff --check
 
 New files: runtime modules go beside the relevant runtime; current contracts go in
 `docs/functions`; scoped investigation/profiling goes in `diagnostics/<topic>`;
-finished development reports go in `docs/history`. Runtime tests live in `tests/runtime`; external build/upgrade/export entry points
-live in `scripts`; native runtime verifiers live in `diagnostics/runtime`.
+finished development reports go in `docs/history`. Runtime tests live in `tests`,
+builders in `build`, upgraders in `upgrade`, and native runtime verifiers in `verify`.
+Shared export, MIDI, layout and documentation helpers remain in `scripts`.
 Keep the root for README/CONTEXT/HANDOFF, OPEN_PROJECT and requirements. Do not move embedded modules or probe
 outputs without also updating their builders/writers and native acceptance.

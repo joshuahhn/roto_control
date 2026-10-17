@@ -53,7 +53,7 @@ Layout/Device/control-page records persist only `action_id` plus mapping metadat
 
 ## Evidence and pending gates
 
-`test_action_presets.py` covers the contract with synthetic MIDI/fake TD handles. Run the complete suite from `src/touchdesigner`: `python3 -m unittest discover -q`. The composed common base is `61d0e03fc454dba496618fdf33ab4a5169437b19`. Full source suites currently pass 300 runtime and 215 Inspector tests. Native stages in `diagnostics/runtime/verify_action_presets.py` are prepared for a disconnected disposable fixture, using this worktree's source. Native execution, actual tox reload/export and physical Button/LED/LCD/motor acceptance are pending; source tests do not satisfy those gates.
+`test_action_presets.py` covers the contract with synthetic MIDI/fake TD handles. Run the complete suite from `src/touchdesigner`: `python3 -m unittest discover -q`. The composed common base is `61d0e03fc454dba496618fdf33ab4a5169437b19`. Full source suites currently pass 300 runtime and 215 Inspector tests. Native stages in `verify/verify_action_presets.py` are prepared for a disconnected disposable fixture, using this worktree's source. Native execution, actual tox reload/export and physical Button/LED/LCD/motor acceptance are pending; source tests do not satisfy those gates.
 
 
 ## Action error provenance and assignment freshness

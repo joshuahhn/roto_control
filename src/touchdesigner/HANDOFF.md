@@ -2784,3 +2784,59 @@ all original configuration, values and user nodes; TD stays open/disconnected,
 with no MIDI connection, probe override or project save. Temporary recovery and
 results stay in system temp `roto-merge-doc-review-zd9420lm`. Source tests, pinned
 source/doc hashes and artifact bytes are independently reconciled before merge.
+
+
+## Local organization reconciled with MIX main — 2026-10-17
+
+Fork main `fb9c5ef` and local organization commit
+`1f735bd048bad692840764c58c28a011d701c939` had diverged from `1cb09d9`.
+Integration uses a separate worktree and preserves both parents. Current runtime,
+MIDI helper, canonical project/receipt and generic export/receipt retain fork
+main's bytes. General builders/upgraders/verifiers move to `build/`, `upgrade/`
+and `verify/`; runtime tests move from `tests/runtime/` to `tests/`. Shared
+export/MIDI/docs helpers and topic-specific fixtures keep their responsibilities.
+Callers, Inspector fingerprints, direct test bootstrap and current links follow
+the new paths. Original local notes remain accessible in the preserved local
+commit, rather than replacing later MIX acceptance.
+
+Local-only projects, recoveries, captures and planning/domain docs are retained.
+The local canonical project and generic export, whose versions differ from main,
+are preserved with their exact receipts under
+`projects/archive/local-organization-1f735bd/`. Every saved `.toe`/`.tox` blob from
+both parents is present by SHA-256: 67 main and 99 local artifact paths, with 95
+unique final artifact hashes. Current generic SHA remains
+`68c4784e039148215f245f18edf94f20b02be175d1d8d20b6758208762872b7b`;
+22 runtime/helper and 12 pinned embedded-documentation receipt hashes match.
+Historical patch payloads retain their bytes/context whitespace; `.gitattributes`
+classifies only those patch files as data for whitespace checks. Active source
+and documentation still receive normal diff checks.
+
+Direct MIX discovery first exposed the missing shared import path after moving
+fixtures; shared test bootstrap fixes it, and 102 focused MIX tests pass. The
+first live fresh build then failed because cleanup did not classify the embedded
+`fn_mix_analysis_md`. A regression builds the guide set from the real Markdown
+loader and reproduces that failure. Adding the missing guide to the measured
+layout group makes the test and live build pass. All 590 root-discovery tests
+pass on the final relevant source; the separate 252 Inspector suite also passes.
+Relocated modules parse/load, the native verification runner resolves its four
+entry points, and 168 changed-document local links resolve.
+
+At the user's request TD is opened with the existing configured MCP project
+`ROTO-CONTROL.mix-analysis.18.toe`, TD 2025.33230/MCP 1.1.55. Its freshly reopened
+state is the preservation baseline; no previously unsaved state is assumed.
+A disconnected temporary fixture builds from the integration source, retains a
+native `.35` parameter assignment through Layout upgrade, verifies Inspector
+idempotence, then installs the relocated MIX upgrade. The subsequent layout
+check applies the measured cleanup recipe first: the upgrader places helper
+nodes itself, so checking positions against a newly calculated recipe without
+applying it was a test-method mismatch, not a framing/routing defect.
+The final check covers four networks, 22 groups and 74 operators, with containment,
+no overlap/backward wires and zero scoped errors.
+
+Fresh full original snapshots and root-node lists match after fixture removal;
+original runtime/mappings/profile/draft/presets/values stay unchanged. There are
+no MIDI processes, pending bytes, hardware tests, source installs into the user
+controller, project saves or canonical artifact exports. TD remains open.
+One-off recovery, failed/fixed calls, snapshots and results remain in system temp
+`roto-org-integration-70dmk2ue`. Source tests, native packaging and historical
+physical acceptance remain separate evidence.

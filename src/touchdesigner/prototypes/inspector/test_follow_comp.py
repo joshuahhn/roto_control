@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 _SOURCE_ROOT = Path(__file__).resolve().parents[2]
-for _path in (_SOURCE_ROOT / "tests/runtime", _SOURCE_ROOT / "scripts", _SOURCE_ROOT / "diagnostics/runtime"):
+for _path in (_SOURCE_ROOT / "tests", _SOURCE_ROOT / "build", _SOURCE_ROOT / "upgrade", _SOURCE_ROOT / "verify", _SOURCE_ROOT / "scripts", _SOURCE_ROOT / "diagnostics/runtime"):
     sys.path.insert(0, str(_path))
 """Real command/adapter/controller callbacks; fake native pars/panels, no TD/MIDI PASS."""
 from pathlib import Path

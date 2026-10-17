@@ -24,11 +24,11 @@ A fresh native build now checks source byte hashes before/after and passes.
 
 Passed checks:
 
-- Fresh build from `scripts/build_network.py`: binding ready, embedded MIDI/docs,
+- Fresh build from `build/build_network.py`: binding ready, embedded MIDI/docs,
   correct local Inspector controller, no process/errors, source bytes preserved.
-- Disconnected `scripts/upgrade_layouts.py`: stable mapping/Layout identity, no
+- Disconnected `upgrade/upgrade_layouts.py`: stable mapping/Layout identity, no
   value writes, Snapshot capture, actual equal-value destination replacement.
-- `scripts/build_inspector.py`: unchanged source rebuild is idempotent.
+- `build/build_inspector.py`: unchanged source rebuild is idempotent.
 - Configured fixture `.tox` save/load: target references local to the loaded
   fixture, local model/controller wiring, one restored Snapshot, no process/errors.
 - Generic `scripts/export_component.py` + load: empty mappings/assignments/
@@ -44,7 +44,7 @@ Passed checks:
 [Raw evidence and configured/generic tox artifacts](builder_recheck/).
 Initial failure/diagnosis retained in `initial_failure.json`; unit-test red output
 is in the session. The runtime regression is
-`tests/runtime/test_assignment.py::test_equal_valued_native_parameters_are_distinct_destinations`.
+`tests/test_assignment.py::test_equal_valued_native_parameters_are_distinct_destinations`.
 Run native functions start→upgrade→exports→finish via external
 `native_builder_recheck.py`, passing its disk `__file__` and TD globals. New artifact
 paths are required for a subsequent export run; never overwrite existing evidence.
