@@ -581,6 +581,7 @@ class Layouts:
     def install(self,record,hardware=False,quarantine=False,*,automatic_follow=False):
         specs,unavailable=self.resolve(record,quarantine)  # preflight before mutation
         ext=self.ext;host=ext._host;session=(host.connected,host.plugin,host.learning)
+        ext._invalidate_hardware('Layout Device installed')
         self.mutating=True
         try:
             inspector=self.owner.op('inspector')
@@ -833,6 +834,7 @@ class Layouts:
         Keep all parameter definitions; current slots are rebuilt solely from
         CONTROL MAPPED hashes. An empty page must never route the previous page.
         """
+        self.ext._invalidate_hardware('Hardware control page changed')
         self.ext._page_caption = None
         self.capture(force=True)
         ext=self.ext;host=ext._host

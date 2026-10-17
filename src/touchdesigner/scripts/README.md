@@ -7,6 +7,14 @@ source text is copied into DATs without bidirectional source-file writes. `../bu
 exports a disconnected generic component. `midi_process.py` owns external MIDI.
 `td_project_docs.py` embeds authoritative Markdown snapshots.
 
+`serial_read_process.py` owns the optional read-only Serial job. It is embedded
+beside the controller and launched only by `ReadHardwareConfig(port=...)`.
+`../upgrade/upgrade_serial.py` provides `install(controller, source_dir)` for an
+otherwise current disconnected controller. Retain a recovery tox first. The
+upgrader preserves mappings and settings and never connects hardware. See
+[Serial read-back](../docs/functions/serial.md) for the supported platform,
+page, status, and timeout recovery contract.
+
 `../upgrade/upgrade_mix.py` installs the independent MIX source on an
 otherwise current disconnected controller. Make a recovery through live TD,
 then call `install(controller, source)`; it preserves PLUGIN assignments and

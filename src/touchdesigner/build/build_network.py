@@ -13,7 +13,7 @@ def build(parent_comp, source_dir):
     # Validate source before constructing anything.
     code_dir = source / "code/py/roto_python"
     files = {name: (code_dir / f"{name}.py").read_text() for name in
-             ("protocol", "snapshots", "midi_queue", "mix_descriptor", "mix_runtime", "RotoPythonExt", "parameter_callbacks", "lifecycle_callbacks")}
+             ("protocol", "snapshots", "hardware_config", "midi_queue", "mix_descriptor", "mix_runtime", "RotoPythonExt", "parameter_callbacks", "lifecycle_callbacks")}
     docs_path = source / "scripts/td_project_docs.py"
     docs = dict(globals())
     exec(compile(docs_path.read_text(), str(docs_path), "exec"), docs)
@@ -46,10 +46,10 @@ def build(parent_comp, source_dir):
     value.max = value.normMax = 1
     value.clampMin = value.clampMax = True
     page.appendPulse("Offerparameter", label="Offer Value to hardware LEARN")
-    kinds = {"protocol": textDAT, "snapshots": textDAT, "midi_queue": textDAT,
+    kinds = {"protocol": textDAT, "snapshots": textDAT, "hardware_config": textDAT, "midi_queue": textDAT,
              "mix_descriptor": textDAT, "mix_runtime": textDAT, "RotoPythonExt": textDAT,
              "parameter_callbacks": parameterexecuteDAT, "lifecycle_callbacks": executeDAT}
-    positions = {"RotoPythonExt": (-250, 0), "protocol": (-250, -170), "snapshots": (-425,-340),
+    positions = {"RotoPythonExt": (-250, 0), "protocol": (-250, -170), "snapshots": (-425,-340), "hardware_config": (-800,-170),
                  "midi_queue": (-600,-170), "mix_descriptor": (-600,-340), "mix_runtime": (-600,-510),
                  "parameter_callbacks": (-250, -340), "lifecycle_callbacks": (-250, -510)}
     for name, kind in kinds.items():
@@ -92,6 +92,11 @@ def build(parent_comp, source_dir):
     upgrade_path = source / "upgrade/upgrade_network.py"
     exec(compile(upgrade_path.read_text(), str(upgrade_path), "exec"), upgrade_ns)
     upgrade_ns["upgrade"](parent_comp, source)
+    serial_helper = comp.op('serial_read_process') or comp.create(textDAT, 'serial_read_process')
+    serial_helper.viewer = True
+    serial_helper.nodeX, serial_helper.nodeY = -800, -340
+    serial_helper.par.language = 'python'
+    serial_helper.text = (source / 'scripts/serial_read_process.py').read_text()
     helper_dat = comp.create(textDAT, 'midi_process')
     helper_dat.par.language = 'python'
     helper_dat.text = (source / 'scripts/midi_process.py').read_text()

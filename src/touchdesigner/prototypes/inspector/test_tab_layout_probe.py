@@ -73,7 +73,7 @@ class ProbeTests(TestCase):
     def test_details_separate_human_routing_from_long_technical_ids(self):
         info=dict(id='stable.long.id',comp='/tool',parameter='Amount',parameter_style='Float',mode='value')
         groups=detail_groups(info,dict(label='Mapped'),dict(Follow=True,FollowStatus='ready'),dict(state=dict(Rx=2,Tx=3,Rejected=0)),('L','T','tool'),('L','T','tool'),('T','tool'),True)
-        self.assertEqual([title for title,rows in groups],['Mapping','Hardware routing','Technical · Refresh snapshot'])
+        self.assertEqual([title for title,rows in groups],['Mapping','Hardware routing','Technical · Refresh snapshot','Hardware snapshot'])
         self.assertEqual(dict((k,v) for k,v,kind in groups[1][1])['Track · FUNC'],'T')
         self.assertNotIn('stable.long.id',str(groups[:2]));self.assertIn('stable.long.id',str(groups[2]))
         groups=detail_groups(dict(info,error='Target missing'),dict(label='Invalid'),{},None,('L','T','tool'),('L','T','tool'),('T','tool'),False)

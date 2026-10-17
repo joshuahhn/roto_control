@@ -1,6 +1,8 @@
 """Scalar filter/confirmation helpers; importing this module performs no writes."""
 from time import monotonic
 
+DETAIL_GROUPS=(('Mapping',3),('Hardware routing',5),('Technical · Refresh snapshot',6),('Hardware snapshot',14))
+
 def ownership_label(metadata):
     category=metadata.get('category','LEGACY')
     owner=metadata.get('owner') or {}
@@ -8,7 +10,7 @@ def ownership_label(metadata):
         return 'COMP: '+str(owner.get('path') or 'Unavailable')+' · '+str(owner.get('state') or 'unavailable')
     return 'CUSTOM' if category=='CUSTOM' else 'Legacy-unclassified'
 
-def detail_groups(info,health,status,snapshot,view_labels,route_labels,selected_labels,following):
+def detail_groups(info,health,status,snapshot,view_labels,route_labels,selected_labels,following,hardware=None):
     """Readable labels first; long identities stay in the scrollable technical group."""
     state=(snapshot or {}).get('state',{})
     error=info.get('definition_error') or info.get('error') or status.get('Lasterror') or status.get('FollowError')
@@ -27,7 +29,7 @@ def detail_groups(info,health,status,snapshot,view_labels,route_labels,selected_
                ('Selected',' / '.join(selected_labels),'long'),
                ('Owner / Follow',ownership_label(status.get('RoutingOwner',{}))+' · '+('Needs Activate · ' if status.get('Quarantined') else '')+follow.replace('_',' '),'long'),
                ('RX / TX / Rej',' / '.join(str(state.get(n,'—')) for n in ('Rx','Tx','Rejected')),'short')]
-    return (('Mapping',tuple(mapping)),('Hardware routing',tuple(routing)),('Technical · Refresh snapshot',tuple(technical)))
+    return tuple((title,rows) for (title,capacity),rows in zip(DETAIL_GROUPS,(tuple(mapping),tuple(routing),tuple(technical),tuple((hardware or {}).get('rows',())))))
 
 def filter_choices(info):
     paths=tuple(dict.fromkeys(row.get('comp','') for row in info if row.get('id') and row.get('parameter')))

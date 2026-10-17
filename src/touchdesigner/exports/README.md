@@ -1,5 +1,12 @@
 # Generic controller export
 
+The current export includes [Hardware snapshot Details](../docs/functions/serial.md#inspector-details)
+with explicit Read/Refresh and historical detected settings. Configured/generic
+component reloads match 30 runtime/Inspector and 13 document hashes. Source
+discovery passes 681 tests; the adjacent receipt separates this slice from older
+acceptance. Generic reload has no endpoint draft, detected readouts or saved
+observation and starts disconnected at `never_read`. No project restart was run.
+
 Use [roto_python.tox](roto_python.tox) for the reusable controller. Its adjacent
 [receipt](roto_python.json) records the artifact SHA-256, source commit,
 embedded runtime/documentation hashes and scoped native validation.
@@ -43,10 +50,27 @@ valid applied Layer Mix source. Source/style changes and custom multi-field
 edits still use Apply; Save only persists preset data. Applied MIX shows the
 actual source and choices. Scoped hardware acceptance covers two-to-four choices
 without Apply, preserved Add with motor repositioning, fresh Knob 5 input to
-Z Film on Input 1 only and normal PLUGIN screen return. The export reload
-matches 22 runtime/helper and 12 documentation hashes, starts disconnected and
-has empty mappings, MIX configuration and presets. The receipt identifies the
+Z Film on Input 1 only and normal PLUGIN screen return. That #28 export reload
+matched 22 runtime/helper and 12 documentation hashes, started disconnected and
+had empty mappings, MIX configuration and presets. The receipt identifies the
 uncommitted source by hashes against baseline `4ec8016`; no release commit is implied.
+
+The latest export adds the optional [Serial read-back API](../docs/functions/serial.md).
+An explicit macOS PLUGIN page-0 read uses a separate GET-only worker. Captures
+remain transient and historical. The new generic reload matches 24 runtime/helper
+and 13 documentation hashes, has no external DAT paths, and starts disconnected
+at `never_read`, with empty mappings, MIX assignments and Operation presets.
+Source verification passes 659 tests. The receipt separates four-control hardware
+read-back, active-MIDI three-control read-back, real busy-port ownership and native
+lifecycle evidence from the inherited #28 acceptance. Disconnected USB unplug/replug
+also preserves the four stored records under a new USB incarnation. Empty USB
+inventory reports the absent device without opening a port. Audio remains deferred.
+
+The latest export also fixes Toggle mapping recall. Native Toggle Off/On fields
+no longer cause a false Menu re-LEARN error after reconnect. Changed Menu choices
+and replacement of a saved Menu with a numeric parameter still reject the old
+mapping report. The final source suite passes 662 tests; ordinary hardware MIDI
+reconnect restores all four demo controls without parameter-value changes.
 
 The demo `.toe` has its own [project receipt](../projects/current/project.json).
 Check that receipt separately for its saved runtime version. Numbered exports

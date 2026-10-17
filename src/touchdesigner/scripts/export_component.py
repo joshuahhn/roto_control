@@ -25,6 +25,9 @@ def reset_registration(clone):
     clone.ext.RotoPythonExt._snapshots = None
     clone.ext.RotoPythonExt._snapshot_error = ''
     clone.ext.RotoPythonExt._mix = None
+    clone.ext.RotoPythonExt._hardware_config = None
+    clone.ext.RotoPythonExt._hardware_observation = None
+    clone.ext.RotoPythonExt._hardware_revision = 0
     if getattr(getattr(clone, 'par', None), 'Mixsource', None) is not None:
         clone.op('setup').module.reset_mix_ui(clone)
     clone.op('registration').text = (
@@ -38,6 +41,9 @@ def reset_registration(clone):
 def export(controller, destination):
     if controller.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before exporting')
+    hardware = getattr(controller.ext.RotoPythonExt, '_hardware_config', None)
+    if hardware is not None and hardware.active:
+        raise ValueError('Finish or disconnect Serial read before exporting')
     follower = getattr(controller.ext.RotoPythonExt, '_follow', None)
     if follower is not None:
         follower.refresh_links()
@@ -51,6 +57,10 @@ def export(controller, destination):
         raise ValueError('Upgrade the controller runtime before generic export; '
                          'the exported python3 command requires PATH resolution')
     resolver(controller.par.Python.eval(), project.folder)
+    for name in ('hardware_config', 'serial_read_process'):
+        node = controller.op(name)
+        if node is None or not node.text.strip():
+            raise ValueError('Embed ' + name + ' before exporting')
     holder = controller.parent().create(baseCOMP, 'base_export_' + uuid.uuid4().hex[:8])
     holder.viewer = holder.display = True
     try:

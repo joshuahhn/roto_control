@@ -40,6 +40,13 @@ No external wires are required. Hardware input writes mapped custom parameters o
 
 ## Portability
 
+The optional [Serial read-back API](docs/functions/serial.md) reads stored
+PLUGIN first-page configuration through a separate worker. It requires an
+explicit endpoint and currently supports macOS. Captures are transient historical
+snapshots. Inspector Details provides an explicit Read/Refresh action and shows
+detected settings separately from declared button adapters. Opening or switching
+controls never starts a read; MIDI connection remains independent.
+
 TD code, MIDI helper, Inspector and docs are embedded in the tox. No repository source files or demo COMPs are required. The only external runtime is a Python interpreter with the MIDI packages. On another computer select that computer's Python interpreter. The portable tool starts disconnected and has no demo mappings or outer CHOP outputs.
 
 See [portability](docs/functions/portability.md), [Inspector](docs/functions/inspector.md), [control API](docs/functions/controls.md) and [binding API](docs/functions/binding.md). Diagnostics remain inside base_state and controller.State.

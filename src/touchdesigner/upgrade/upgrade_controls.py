@@ -8,6 +8,9 @@ def upgrade(parent_comp, source_dir):
     comp = parent_comp.op('roto_python')
     if comp.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before upgrading controls')
+    hardware = getattr(comp.ext.RotoPythonExt, '_hardware_config', None)
+    if hardware is not None and hardware.active:
+        raise ValueError('Finish or disconnect Serial before upgrading controls')
     page = next(p for p in comp.customPages if p.name == 'Binding')
     comp.par.Setupmode.menuNames = ['value', 'parameter', 'callback', 'collection']
     comp.par.Setupmode.menuLabels = ['Built-in Value', 'Custom parameter', 'Registration hook', 'Multiple controls']
@@ -15,7 +18,7 @@ def upgrade(parent_comp, source_dir):
         p = page.appendStr('Groupid', label='Stable collection ID')[0]
         p.default = p.val = 'demo.controls.v1'
     comp.par.Groupid.enableExpr = "me.par.Setupmode == 'collection'"
-    for name, pos in [('collection_protocol', (1150,-300)), ('controls', (1325,-300)), ('snapshots', (1500,-300))]:
+    for name, pos in [('collection_protocol', (1150,-300)), ('controls', (1325,-300)), ('snapshots', (1500,-300)), ('hardware_config', (-775,-340))]:
         dat = comp.op(name) or comp.create(textDAT, name)
         dat.viewer = True
         dat.nodeX, dat.nodeY = pos
@@ -148,6 +151,10 @@ def upgrade(parent_comp, source_dir):
     exec(compile(free_path.read_text(),str(free_path),'exec'),free_ns)
     free_ns['install'](comp,source)
     # Refresh existing source DATs only after dependencies exist.
+    serial = comp.op('serial_read_process') or comp.create(textDAT, 'serial_read_process')
+    serial.par.language = 'python'
+    serial.par.syncfile = False; serial.par.loadonstart = False; serial.par.file = ''
+    serial.text = (source/'scripts/serial_read_process.py').read_text()
     for name in ('setup','RotoPythonExt'):
         comp.op(name).text=(source/'code/py/roto_python'/f'{name}.py').read_text()
     layout_ns = dict(globals())

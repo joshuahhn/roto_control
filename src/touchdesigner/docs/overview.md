@@ -4,6 +4,11 @@ Choose single-target Knob 1 mode or a collection of up to eight knobs and eight 
 
 Transport uses a managed external Python process. Protocol/session behavior, target-unit conversion and TD integration are separate source modules. Parameter Execute DATs watch registered targets. Value changes are event-driven; Tick checks target validity/path and performs a one-time value resync after a path change.
 
+The optional [Serial read-back API](functions/serial.md) uses its own one-shot
+worker to inspect stored PLUGIN configuration. Explicit reads produce historical
+snapshots with USB and control identity checks. They do not connect MIDI or
+change mappings, values, or hardware settings.
+
 Diagnostics are inside base_state and available via controller.State, without outer CHOP outputs in the portable tool. Value is normalized 0–1; Targetvalue uses target units. Transport resets on extension reinit. Parameter mapping restores the saved Layout/Track/Plugin; Python registration mode runs the saved registration hook to recreate runtime callables. Direct API registrations remain temporary. Connect is explicit.
 
 Direct hardware LEARN watches new COMP custom parameter edits, offers the edited target and commits the slot reported in the matching acknowledgement. Its observer is disabled outside LEARN. Interactive explicit assignment also uses the Inspector COMP/Parameter pickers and AssignParameter to persist one slot without replacing other mappings. Assigned records live in controller storage and overlay the saved registration on reload. Hardware LEARN selection is still performed on the controller.

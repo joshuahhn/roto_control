@@ -31,6 +31,30 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 ## Architecture
 
+The optional [Serial read-back](docs/functions/serial.md) uses a separate
+GET-only one-shot worker. `ReadHardwareConfig(port=...)` starts an explicit
+macOS PLUGIN page-0 read; `GetHardwareConfig()` returns detached status and a
+historical snapshot with USB/session/control identity and capture time. The
+observation owner is transient and separate from MIDI errors, Layouts and the
+catalog. Timeout/framing uncertainty retires the USB incarnation until physical
+reconnection. Build/upgrade/export embed both source files. The first slice has
+659 passing source tests, native lifecycle checks, four-control physical readback,
+disconnected USB unplug/replug and scoped MIDI coexistence/busy-port evidence. Physical feel, other pages and
+Windows remain unaccepted. The separate MIDI Button 1 recall discrepancy is now
+fixed by normalizing current Menu choices before comparison. Native Toggle
+Off/On fields no longer prevent exact-identity recall; source tests and
+ordinary MIDI reconnect verify four mapped demo controls without value changes.
+See the final dated HANDOFF entry for saved artifact identity.
+
+The owned Inspector now exposes the explicit Serial endpoint/read action and
+historical hardware settings in Details. Only an integer revision enters its
+publication DAT; a detached transient observation reaches both views through
+display-only notifications. Complete Device/control batch matching withholds
+foreign settings. Serial completion preserves edit drafts and pending Clear.
+See [Serial Details](docs/functions/serial.md#inspector-details) for operation and
+the dated HANDOFF entry for native versus physical evidence. Audio remains
+deferred, and this slice does not require a project restart.
+
 The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
 Low/Mid/High/Kick/Snare/Rhythm analysis and wired Layer Mix float routing with 10 Hz native meters.
 New/generic Analysis drafts default to those six; saved drafts and the Python

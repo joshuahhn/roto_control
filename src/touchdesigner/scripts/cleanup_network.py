@@ -11,6 +11,7 @@ GROUPS = {
         ('Guide', ['readme_md', 'docs'], 2),
         ('Focus', ['text_comp_follow'], 1),
         ('MIX', ['midi_queue', 'mix_descriptor', 'mix_runtime'], 2),
+        ('Serial', ['hardware_config', 'serial_read_process'], 1),
         ('Value output', ['parameter_values', 'null_values', 'out_values'], 3),
         ('Control output', ['select_controls', 'null_controls', 'out_controls'], 3),
     ],
@@ -29,7 +30,7 @@ GROUPS = {
     ],
     'docs': [
         ('Overview', ['overview_md', 'functions_md'], 2),
-        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md', 'fn_snapshots_md', 'fn_mix_md', 'fn_mix_analysis_md'], 3),
+        ('Functions', ['fn_binding_md', 'fn_controls_md', 'fn_inspector_md', 'fn_lifecycle_md', 'fn_portability_md', 'fn_layouts_md', 'fn_actions_md', 'fn_snapshots_md', 'fn_mix_md', 'fn_mix_analysis_md', 'fn_serial_md'], 3),
     ],
 }
 

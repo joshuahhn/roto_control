@@ -97,7 +97,7 @@ def _isolate_sources(component):
 
 def _verify_runtime_sources(controller,source):
     names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
-           'free_learn','layouts','layout_migration','text_comp_follow','setup',
+           'free_learn','layouts','layout_migration','text_comp_follow','setup','hardware_config',
            'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
     for name in names:
         node=controller.op(name)
@@ -118,11 +118,18 @@ def _verify_runtime_sources(controller,source):
     if helper is None or helper.text!=(source/'scripts/midi_process.py').read_text(encoding='utf-8'):
         raise ValueError('Embed the current MIDI helper before Inspector')
     _require_file_parameters(helper)
+    helper=controller.op('serial_read_process')
+    if helper is None or helper.text!=(source/'scripts/serial_read_process.py').read_text(encoding='utf-8'):
+        raise ValueError('Embed the current Serial helper before Inspector')
+    _require_file_parameters(helper)
 
 
 def build(controller, source_dir, legacy_archive=None, legacy_receipt=None):
     if controller.ext.RotoPythonExt._process is not None:
         raise ValueError('Disconnect before installing Inspector')
+    hardware = getattr(controller.ext.RotoPythonExt, '_hardware_config', None)
+    if hardware is not None and hardware.active:
+        raise ValueError('Finish or disconnect Serial read before installing Inspector')
     source = Path(source_dir).resolve()
     directory = source / 'prototypes/inspector'
     _verify_runtime_sources(controller,source)
@@ -161,7 +168,7 @@ def build(controller, source_dir, legacy_archive=None, legacy_receipt=None):
         node.viewer = True
     for name in ('inspector_data', 'owned_runtime'):
         node = wrapper.op(name) or wrapper.create(textDAT, name)
-        _source(node, (source/'code/py/roto_python/inspector'/f'{name}.py').read_text())
+        _source(node, (source/'code/py/roto_python/inspector'/f'{name}.py').read_text(encoding='utf-8'))
     # Build commands/Targets before initializing the controller-backed model.
     model = wrapper.op('inspector_model') or wrapper.create(baseCOMP, 'inspector_model')
     model.par.parentshortcut = 'InspectorModel'
@@ -172,7 +179,7 @@ def build(controller, source_dir, legacy_archive=None, legacy_receipt=None):
     model.par.Controller.expr = 'parent().parent()'
     for name, filename in [('InspectorModel', 'model.py'), ('live_model', 'live_model.py')]:
         dat = model.op(name) or model.create(textDAT, name)
-        _source(dat, (directory/filename).read_text())
+        _source(dat, (directory/filename).read_text(encoding='utf-8'))
     scope = dict(globals(), inspector_source_dir=directory, model_comp=model,
                  prototype_parent=wrapper, model_expression="parent().op('inspector_model')")
     _execute(directory/'build_commands.py', scope)

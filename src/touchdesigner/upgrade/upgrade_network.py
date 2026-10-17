@@ -8,6 +8,10 @@ def upgrade(parent_comp, source_dir):
     comp = parent_comp.op('roto_python')
     if comp is None:
         raise ValueError('Build roto_python first')
+    extension = getattr(getattr(comp, 'ext', None), 'RotoPythonExt', None)
+    hardware = getattr(extension, '_hardware_config', None)
+    if extension is not None and extension._process is not None or hardware is not None and hardware.active:
+        raise ValueError('Disconnect MIDI and finish or disconnect Serial before network upgrade')
     display_page = next((p for p in comp.customPages if p.name == "Display"), None) or comp.appendCustomPage("Display")
     for name, value in (("Trackname", "EFFECT"), ("Pluginname", "CUSTOM")):
         if getattr(comp.par, name, None) is None:
@@ -63,6 +67,7 @@ def upgrade(parent_comp, source_dir):
         hook.text = 'def onRegister(controller):\n    # Replace this demo call with your Extension/DAT registration.\n    demo = controller.parent().op("base_callback_demo")\n    controller.BindCallback(id="demo.callback.speed", label="Callback", minimum=0, maximum=10, value=demo.par.Speed.eval(), on_change=demo.op("demo_callbacks").module.on_change)\n'
     for name, kind, pos in [('setup', textDAT, (725,-420)), ('binding', textDAT, (550,-210)),
                             ('snapshots', textDAT, (725,-315)),
+                            ('hardware_config', textDAT, (-800,-170)),
                             ('midi_queue', textDAT, (-600,-170)),
                             ('mix_descriptor', textDAT, (-600,-340)),
                             ('mix_runtime', textDAT, (-600,-510)),
@@ -76,6 +81,12 @@ def upgrade(parent_comp, source_dir):
         dat.par.file = os.path.relpath(f, project.folder)
         dat.par.syncfile = False
         dat.par.loadonstart = True
+    helper = comp.op('serial_read_process') or comp.create(textDAT, 'serial_read_process')
+    helper.viewer = True
+    helper.nodeX, helper.nodeY = -800, -340
+    helper.par.language = 'python'
+    helper.par.syncfile = False; helper.par.loadonstart = False; helper.par.file = ''
+    helper.text = (source/'scripts/serial_read_process.py').read_text()
     watcher = comp.op('target_callbacks')
     watcher.par.active = False
     watcher.par.op = ''
