@@ -2605,3 +2605,71 @@ occurs. Canonical and `.18.toe` SHA-256 values are unchanged; `.18.toe` and its
 adjacent saved receipt still identify runtime `7a99f31`. The unnumbered generic
 export and receipt identify the new source independently. No new physical
 acceptance or full project restart is claimed.
+
+
+## Focus Button 2 isolated countercheck — 2026-10-17
+
+Live runtime hashes still match all 22 helpers at `e74e413`, checkout `707126f`,
+project `.18.toe`. Fresh recovery and normalized snapshots precede testing. The
+bounded observer calls the original MIDI trace and leaves send/receive routing
+untouched. Original Low/Mid profile and all parameter values remain unchanged.
+
+The first round records multiple FUNC view transitions, then a successful actual
+Knob 2 touch selection (`0A09 00 01` plus CC53 ON/OFF) followed by Focus readback.
+The user confirms touch Knob 2 → FUNC works. Its three-minute timeout disconnects
+cleanly with zero writes. That round cannot establish the reported held-FUNC
+combination because the operations were not individually localized in its trace.
+
+The second round isolates the previously claimed Focus button selector: FUNC is
+pressed/released, then Button 2 alone. TD receives `0C02 00` and is ready in
+Focus/Low. No Button 2 CC or General Track selection follows; the user reports
+Low. Zero writes and no parameter changes. This is not evidence that a received
+selection was dropped. Stop closes/reaps the MIDI child with return 0, removes
+the observer and clears pending output. Full normalized snapshots still match
+registry/four IDs, Snapshots, profile/draft/presets, user values/nodes and old DATs.
+Temporary scripts/results stay under system temp `roto-batch-hardware-r61qn6vy`,
+with the isolated case in `round2`.
+
+This supersedes the earlier interpretation that physical Focus Button 2 selects
+Mid. Those earlier user observations and General selection traces did not isolate
+button input from touch. The official user manual describes overview touch →
+FUNC Track Focus, and the official Bitwig MainLayerHandler.setTrackControl sets
+ButtonMode.NONE. Leave Focus buttons firmware-owned and unassigned; do not invent
+a software route for an absent MIDI event. No production runtime change is made.
+General view/selection same-batch regressions remain valid synthetic protocol
+coverage, but this button sequence is not a supported way to force that ordering.
+MIX LOCK and physical same-batch timing remain unverified.
+
+### Corrected-runtime touch/Focus/Gain acceptance
+
+Round 3 uses the same unmodified `e74e413` runtime and original Low/Mid profile.
+The actual overview Knob 2 touch sends `0A09 00 01` plus CC53 ON/OFF; FUNC then
+sends `0C02 00`. The user confirms MIX-FOCUS/Mid. TD is ready, selected item 1,
+with Knob 2 addressing Midgain, and all values unchanged before the gesture.
+These events use separate ingress epochs, so this is normal-path hardware
+acceptance, not a forced same-batch ordering test.
+
+The first Gain 4 reply contains no touch or CC gesture and is not treated as
+input evidence. A subsequent explicit fresh gesture reaches Midgain
+4.48721235426967 through 38 CC13/45 pairs and CC53 ON/OFF. Exactly 38 changed
+writes affect Midgain only; Lowgain remains 2.000 and every other analyzer value
+matches baseline. Software restores Midgain 4.000. The user confirms motor return
+about 57%, caption/meter and normal demo_A PLUGIN parameter/value display. Actual
+PLUGIN mode/ACK traffic is recorded, with no additional MIX writes: final 38.
+
+Disconnect closes/reaps the child with return 0, pending output is empty and the
+observer is removed. The same previously recorded local Button 1 reconciliation
+occurs on PLUGIN recall: only its known control ID is missing. Guarded restoration
+through the existing Layout manager reinstates the original active Plugin state;
+normalized full snapshots then match registry/four IDs, Snapshots, profile/draft/
+presets, every user analyzer/demo/layer value, nine demo children and old DATs.
+All 22 runtime/helper hashes remain `e74e413`, with zero scoped errors. Temporary
+results/recovery are under `roto-batch-hardware-r61qn6vy/round3`.
+
+TD remains open/disconnected. No project/export save, source install, hardware
+configuration or production runtime edit occurs. The 588 source tests from
+`e74e413` remain applicable; this update changes authoritative Markdown and
+acceptance receipt metadata only. Generic `.tox`/embedded docs retain their
+existing `e74e413` identities; `.18.toe` retains its older saved receipt. Refresh
+embedded docs at the next authorized artifact export rather than claiming these
+new notes are already embedded.

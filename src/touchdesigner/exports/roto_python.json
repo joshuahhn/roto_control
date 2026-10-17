@@ -76,11 +76,11 @@
     "native_mix_configuration_reload": "passed without value recall",
     "native_mix_scoped_upgrade": "passed: existing profile, mappings and values preserved",
     "mix_generic_reload": "passed: no profile/presets/draft source/custom assignments, 34 custom draft fields reset, default Analysis bands Low Mid High Kick Snare Rhythm; comparison toggles off",
-    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred. Same-batch FUNC/item timing and MIX LOCK behavior lack physical acceptance; prior scoped physical acceptance was at runtime 7a99f31.",
+    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred. Same-batch FUNC/item timing and MIX LOCK behavior lack physical acceptance; earlier scoped physical acceptance was at runtime 7a99f31; touch/Focus/Mid Gain also accepted at e74e413. Focus Button 2 alone produces no input/selection in the isolated check.",
     "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
     "native_documentation_layout": "Existing twelve snapshot positions preserved; no new documentation nodes",
     "native_mix_toggle_writes": 3,
-    "mix_active_button_hardware": "passed: Low off/on, Mid on/off, four changed writes only, correct native polarity LEDs and unchanged float values; Focus Button 2 still selects Mid; normal PLUGIN return; all original values restored",
+    "mix_active_button_hardware": "passed: Low off/on, Mid on/off, four changed writes only, correct native polarity LEDs and unchanged float values; earlier Focus Button 2 selector interpretation withdrawn after isolated no-input check; overview Active acceptance remains valid; normal PLUGIN return; all original values restored",
     "native_mix_layer_float_targets": 8,
     "native_mix_layer_configuration_reload": "passed without value recall",
     "native_mix_layer_rewire_guard": "passed: changed inputs invalidate routing until explicit reconfiguration, even after original wiring restored",
@@ -315,6 +315,37 @@
       "standards": "no findings",
       "spec": "same-batch selection failure fixed with real Tick and native regressions",
       "defensive_feedback": "empty scalar source regression; native zero-sample construction clamps to one sample"
+    },
+    "mix_post_review_mid_hardware": {
+      "runtime_source_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7",
+      "overview_touch_func": "passed: actual Track selection/touch then Focus readback, selected Mid",
+      "gain_gesture": {
+        "parameter": "Midgain",
+        "from": 4.0,
+        "to": 4.48721235426967,
+        "changed_writes": 38,
+        "cc_pairs": 38,
+        "touch_on_off": true,
+        "other_analysis_values_unchanged": true
+      },
+      "motor_return": "passed: Gain 4.000 / about 57%; meter normal",
+      "plugin_return": "passed: demo_A original parameter/value display and actual mode/ACK traffic",
+      "final_changed_writes": 38,
+      "focus_button2_countercheck": "Focus/Low after FUNC release, isolated Button2: no selection/CC, remains Low, zero writes; earlier selector interpretation withdrawn",
+      "same_batch_physical_timing": false,
+      "send_override": false,
+      "receive_override": false,
+      "restoration": {
+        "preserved": true,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "child_returncode": 0,
+        "observer_removed": true,
+        "scoped_errors": 0
+      },
+      "publication": "acceptance metadata only; tox and embedded-doc hashes unchanged"
     }
   },
   "runtime_source_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7",

@@ -42,12 +42,17 @@ Audio processing remains deferred to issue #26.
 MIX view/selection metadata follows wire order within one connection while
 buffered CC remains fenced until drain and fresh touch. Source regression and
 isolated native TD checks cover same-batch Focus/item changes; this ordering has
-not been physically forced. Missing meter channels clear/recover independently
+not been physically forced. Corrected-runtime hardware acceptance confirms touch
+Mid → FUNC, Midgain-only input to 4.487212, 4.000 motor return and normal PLUGIN
+restoration. Missing meter channels clear/recover independently
 of valid targets; empty scalar samples also have source regression coverage.
 MIX LOCK behavior remains unverified. One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
-Swap have source/native and scoped hardware acceptance; Focus buttons retain
-input selection. The MIX custom parameter page stages a source/style and a
+Swap have source/native and scoped hardware acceptance; Focus buttons stay
+firmware-owned with no TD business route. A later isolated Button 2 check produces
+no input/selection, so the earlier item-selector interpretation is withdrawn.
+Select in overview by touch, then use FUNC for details. The MIX custom parameter
+page stages a source/style and a
 user-named Operation preset with six custom slots until Apply; two filled slots
 are sufficient. Preset save/name/delete changes data without routing. Clear removes
 only MIX; generic export clears applied data, user Operation presets and draft
@@ -55,7 +60,7 @@ source references. Other analyzers use the documented descriptor API rather than
 the known audioAnalysis convenience adapter. Audio stays
 deferred. `mix_runtime`
 also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
-retain native item selection. It
+remain firmware-owned. It
 owns MIX mode/view/touch state; the extension keeps the existing external MIDI
 owner and mutually exclusive MIX/PLUGIN business dispatch. PLUGIN Layouts,
 Follow and LEARN remain separate. See the latest HANDOFF for native versus

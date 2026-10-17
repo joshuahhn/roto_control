@@ -117,9 +117,12 @@ The production Low/Mid check establishes overview press/release as CC20 127/0.
 Only native On/Off maps to analyzer Active. Solo/Arm remain unassigned. Active
 True uses native Mute-off feedback 0; Active False uses 127. Press duplicates and
 release cannot toggle twice, and state feedback is reconfirmed after release.
-Track Focus Button 2 instead selects Mid via Track selection, with no CC21
-press/release. Keep Focus buttons as item selectors, with no business toggle or
-PLUGIN fallback. The native Toggle and source tests cover the new Active route;
+An isolated later Track Focus/Low test receives no Button 2 selection or CC and
+stays on Low. The earlier Button 2 selector interpretation is withdrawn; source
+tests injecting General Track selection do not prove physical button behavior.
+Keep Focus buttons firmware-owned, with no business toggle or PLUGIN fallback.
+Choose an item by overview touch, then use FUNC for details.
+The native Toggle and source tests cover the new Active route;
 use dated HANDOFF evidence for its physical acceptance.
 
 The same target object is projected into either view. Editing it in All Tracks

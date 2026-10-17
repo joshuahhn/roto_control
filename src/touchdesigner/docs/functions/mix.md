@@ -126,7 +126,7 @@ not supported by this slice.
 Combined captions use `Opac`, `Bright`, `Black` and `Gamma` to fit the hardware
 text field. Normalized ranges come from the actual TD parameter metadata.
 Disabled fields stay unavailable. Overview buttons have no Layer Mix business
-action; Focus buttons keep native input selection.
+action; Focus buttons have no TD business assignment.
 
 The meter is scalar readback of that layer's Opacity over 0..1, duplicated into
 both native bars. It does not measure image intensity or an audio signal.
@@ -139,7 +139,8 @@ guards also apply to every write. Operation/Swap source status follows below.
 
 First-Focus Operation is on knob 5 and Swap on knob 6. Hardware acceptance covers
 Common plus custom Xor/Z Film, reaching Z Film, Add/Over motor feedback, Swap
-unavailable under Add, Swap On input and Off motor return. Focus buttons continue selecting inputs.
+unavailable under Add, Swap On input and Off motor return. Select another input
+in overview by touch, then press FUNC to reopen its details.
 Operation/Swap are described only when the existing TOP already uses Per Layer.
 The caller must let the TOP cook after enabling that setting; the adapter never
 enables it itself.
@@ -218,9 +219,15 @@ polarity is inverted: Active=True sends CC value 0, Active=False sends 127. The
 state is confirmed again after momentary release. Meter sources remain independent
 of this feedback; an inactive detector may itself produce zero output.
 
-FUNC Focus buttons select items. The read-only hardware check found Button 2
-selects Mid through Track selection, without a CC21 press/release. These buttons
-keep that firmware function; Active is operated from overview.
+FUNC Focus buttons stay firmware-owned with no TD business assignment. A later
+isolated check enters Focus/Low, releases FUNC, then presses only Button 2: no
+selection or CC arrives, the item remains Low and no values change. The earlier
+Button 2 selection interpretation is withdrawn; it did not isolate button input
+from touch selection. Use FUNC to return to overview, touch the desired item,
+then press FUNC for its details. Active is operated from overview. The official
+[Bitwig integration](https://github.com/Melbourne-Instruments/roto_control/blob/main/src/bitwig/src/main/java/com/bitwig/extensions/controllers/melbourneinstruments/MainLayerHandler.java)
+also disables its button layer in Track Focus with `ButtonMode.NONE`; this does
+not establish an extra configurable button function in our firmware.
 
 Readable combined name/value feedback uses SHOW CONTROL VALUE. Float captions
 reserve space for the three-decimal value before shortening the label to the

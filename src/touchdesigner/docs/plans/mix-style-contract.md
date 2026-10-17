@@ -169,8 +169,10 @@ Only Gain input was enabled: the user reached 2.84093267411341, then software
 restored 2.000 and the user confirmed its motor position, all four texts and meter.
 Those prototype results did not establish other float input routes, multi-item
 selection, long labels, menus or button behavior. The later production Low/Mid
-slice adds overview Active toggles and preserves Focus buttons as native item
-selectors; see the [current contract](../functions/mix.md). Mute/Swap and other
+slice adds overview Active toggles and leaves Focus buttons firmware-owned. An
+isolated later Button 2 check receives no selection/CC, superseding the earlier
+item-selector interpretation; see the [current contract](../functions/mix.md).
+Mute/Swap and other
 style buttons remain future work. Prototype evidence is not a production API.
 
 The probe's original timeout cleanup prematurely published PLUGIN Track metadata,

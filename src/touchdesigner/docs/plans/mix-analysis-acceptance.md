@@ -143,6 +143,23 @@ restore, and zero writes from slot 8. Native validation already covers cross-COM
 scope, so hardware need not repeat a separate graph-building exercise. Restore
 both custom drafts and the original applied profile at finish.
 
+## Corrected-runtime Mid routing
+
+Completed on 2026-10-17 at runtime `e74e413`, preserving the original Low/Mid
+profile. Overview Knob 2 touch selects Mid; FUNC opens MIX-FOCUS/Mid with Gain
+4.000. A fresh Focus Knob 2 gesture sends 38 CC13/45 pairs plus touch ON/OFF and
+changes only Midgain to 4.48721235426967. Software restore to 4.000 returns the
+motor to about 57%; meter and normal demo_A PLUGIN return pass. The final count
+stays at 38, with no restore/echo writes. All original values and configuration
+are restored and the child/observer are removed.
+
+An isolated Focus/Low Button 2 check receives no selection or CC and stays Low,
+with zero writes. This withdraws the earlier physical button-selector claim.
+Use overview touch → FUNC. The normal successful gesture does not force view
+and selection into the same ingress batch; same-batch timing and MIX LOCK retain
+their existing limits. No runtime change or new source-test run is needed for
+this evidence/documentation update.
+
 ## Restore and finish
 
 Restore captured values/profile/draft and verify only expected test writes
