@@ -2757,3 +2757,30 @@ Live original configuration/values/nodes remain preserved with updated source
 and docs, open/disconnected with no override or pending bytes. Canonical and
 `.18.toe` hashes remain unchanged; the saved `.18.toe` receipt still identifies
 runtime `7a99f31`. No project save or full restart is claimed.
+
+
+## Final merge-readiness documentation correction — 2026-10-17
+
+The independent follow-up reviews cover `178f595` → `2a9cff7`, reusing the prior
+full review from base `faf3bad`. Standards reports zero findings. Spec confirms
+the runtime corrections and finds one P3: the Analysis API table still calls
+Focus buttons item selectors after that claim was withdrawn. The table and
+button_projection docstring now state no TD button assignment. After stripping
+function docstrings, the executable AST is identical to the reviewed source.
+
+All 589 discovery tests pass at `dbd341c42b433998065749af2b1da1151437837f`.
+A fresh disconnected recovery/snapshot precedes the scoped doc/source sync.
+Generic export/reload verifies the corrected API table and actual loaded
+function docstring, all 22 runtime/helper and 12 documentation hashes, empty
+mappings/profile/presets/triggers/source paths, 34 custom defaults, six empty
+Operation slots, Follow off, Python python3 and no external DATs/process/errors.
+Runtime and embedded Markdown both pin `dbd341c42b433998065749af2b1da1151437837f`.
+Export SHA-256:
+`68c4784e039148215f245f18edf94f20b02be175d1d8d20b6758208762872b7b`.
+
+No business routing or parameter behavior changes, so the prior scoped native/
+physical acceptance remains applicable. Full fresh normalized snapshots preserve
+all original configuration, values and user nodes; TD stays open/disconnected,
+with no MIDI connection, probe override or project save. Temporary recovery and
+results stay in system temp `roto-merge-doc-review-zd9420lm`. Source tests, pinned
+source/doc hashes and artifact bytes are independently reconciled before merge.
