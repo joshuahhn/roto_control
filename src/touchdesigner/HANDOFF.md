@@ -2470,3 +2470,22 @@ normally. It uses no send/receive override and makes zero parameter writes.
 All original values/profile/draft/local control IDs are restored and the child
 is closed/reaped with empty pending output. Publication receipts below pin the
 final source/artifact versions; earlier saved project files remain unchanged.
+
+
+### Snare/Rhythm and caption publication
+
+Runtime/documentation source `7a99f315557b257476005bfab39d4105b2451828`, with 586
+passing discovery tests. The live generic export/reload verifies all 22
+runtime/helper and 12 Markdown hashes, empty user mappings/MIX profiles/presets/
+source paths, six empty Operation draft slots, all 34 custom analysis fields
+reset, comparison toggles False, Follow off, Python python3 and no external DATs
+or MIDI process. Export SHA-256:
+`61a0a37f7389815afd89b824caf5c3931b3ccac248e5e4bd1d33f46b8a7c591f`.
+
+Live TD separately saves local `ROTO-CONTROL.mix-analysis.18.toe`, SHA-256
+`a756d631a50f013b0d1a1e1cec5eba25c6916fd57f7974dcfd83961c916f6ded`,
+with an adjacent receipt. Canonical and .8/.10/.12/.14/.16 hashes are unchanged.
+Original Low/Mid profile/draft and user nodes/values remain intact. TD stays
+open/disconnected with no override or pending output. The checked-in generic
+receipt records the scoped hardware results; custom slots remain a future
+physical check, not a claim established by this round.
