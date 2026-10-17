@@ -21,10 +21,16 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 ## Architecture
 
 The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
-Low/Mid/High analysis and wired Layer Mix float routing with 10 Hz native meters.
-The Analysis bands draft accepts an ordered subset, defaulting to Low/Mid;
-Apply and routing guards retain their existing behavior. Kick trigger feedback
-and audio processing remain separate future slices.
+Low/Mid/High/Kick/Snare/Rhythm analysis and wired Layer Mix float routing with 10 Hz native meters.
+New/generic Analysis drafts default to those six; saved drafts and the Python
+call's original Low/Mid default stay unchanged. Slots 7/8 can explicitly assign
+another analyzer's controls and CHOP feedback through two custom parameter pages,
+sharing the original Apply. Missing fields remain unassigned;
+Apply and routing guards retain their existing behavior. Kick has only
+Threshold/Active, as do Snare/Rhythm, with verified pre-threshold meters and independent read-only
+trigger text in first Focus screen 5. Trigger feedback uses normal Tick
+observations and a bounded display hold; new detector/custom-slot hardware acceptance is pending.
+Audio processing remains deferred to issue #26.
 One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons retain
@@ -33,7 +39,7 @@ user-named Operation preset with six custom slots until Apply; two filled slots
 are sufficient. Preset save/name/delete changes data without routing. Clear removes
 only MIX; generic export clears applied data, user Operation presets and draft
 source references. Other analyzers use the documented descriptor API rather than
-the Low/Mid convenience adapter. Audio stays
+the known audioAnalysis convenience adapter. Audio stays
 deferred. `mix_runtime`
 also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
 retain native item selection. It

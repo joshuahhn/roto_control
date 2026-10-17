@@ -16,7 +16,12 @@ FLOAT_KEYS = {
     'layers': ('opacity', 'brightness', 'black_level', 'gamma'),
 }
 DETAIL_KEYS = dict(FLOAT_KEYS, layers=FLOAT_KEYS['layers'] + ('operation', 'swap'))
-ANALYSIS_BANDS = ('Low', 'Mid', 'High')
+ANALYSIS_BANDS = ('Low', 'Mid', 'High', 'Kick', 'Snare', 'Rhythm')
+ANALYSIS_DETECTORS = {
+    'Kick': ('Kick', 'math2', 'low', 'kick', 1),
+    'Snare': ('Snare', 'math16', 'high', 'snare', 1),
+    'Rhythm': ('Rythm', 'math10', 'chan0', 'rythm', 100),
+}
 
 
 def reference(value):
@@ -153,6 +158,8 @@ def validate(profile):
                     raise ValueError('RMS needs CHOP samples')
             trigger = item.get('trigger')
             if trigger:
+                if style != 'analysis':
+                    raise ValueError('Trigger feedback belongs to analysis items')
                 _fields(trigger, ('source', 'hold_ms'), ('enabled',))
                 _signal(trigger['source'])
                 if trigger.get('enabled'):
@@ -171,7 +178,7 @@ def analysis_profile(source, bands=('Low', 'Mid'), *, id='analysis.main'):
     reference(source)
     if (not isinstance(bands, (list, tuple)) or not bands
             or any(b not in ANALYSIS_BANDS for b in bands) or len(set(bands)) != len(bands)):
-        raise ValueError('Choose unique analysis bands from Low, Mid and High')
+        raise ValueError('Choose unique analysis bands from ' + ', '.join(ANALYSIS_BANDS))
     items = []
     for band in bands:
         controls = {}
@@ -179,11 +186,21 @@ def analysis_profile(source, bands=('Low', 'Mid'), *, id='analysis.main'):
                 ('threshold', 'thresh', 'Thresh', 'float'),
                 ('gain', 'gain', 'Gain', 'float'), ('add', 'add', 'Add', 'float'),
                 ('smooth', 'smooth', 'Smooth', 'float'), ('active', 'active', 'Active', 'toggle')):
+            if band in ANALYSIS_DETECTORS and key not in ('threshold', 'active'):
+                continue
+            prefix = ANALYSIS_DETECTORS[band][0] if band in ANALYSIS_DETECTORS else band
             controls[key] = dict(label=label, kind=kind,
-                                 target=dict(op=source, parameter=band + suffix))
-        items.append(dict(id=band.lower(), label=band, primary='threshold', controls=controls,
+                                 target=dict(op=source, parameter=prefix + suffix))
+        item = dict(id=band.lower(), label=band, primary='threshold', controls=controls,
                           meter=dict(source=dict(kind='chop', op=source + '/out1', channels=[band.lower()]),
-                                     measure='scalar', range=[0, 1], stage='analysis output')))
+                                     measure='scalar', range=[0, 1], stage='analysis output'))
+        if band in ANALYSIS_DETECTORS:
+            prefix, level_op, level_channel, pulse_channel, maximum = ANALYSIS_DETECTORS[band]
+            item['meter'] = dict(source=dict(kind='chop', op=source + '/' + level_op, channels=[level_channel]),
+                                 measure='scalar', range=[0, maximum], stage=band + ' level before threshold')
+            item['trigger'] = dict(source=dict(kind='chop', op=source + '/out1', channels=[pulse_channel]),
+                                   enabled=dict(op=source, parameter=prefix + 'active'), hold_ms=200)
+        items.append(item)
     return validate(dict(version=1, style='analysis', id=id, source=source, items=items))
 
 

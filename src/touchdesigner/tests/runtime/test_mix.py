@@ -237,12 +237,21 @@ class MixTests(unittest.TestCase):
                 p.name = band + suffix; p.owner = source; p.enable = True
                 p.normMin = p.min = low; p.normMax = p.max = high; p.val = value
                 source.par[p.name] = p
-        channels = {'low': Channel([.25]), 'mid': Channel([.75]), 'high': Channel([.5])}
+        for prefix,minimum,maximum in (('Kick',0,.6),('Snare',0,.6),('Rythm',10,90)):
+            for suffix,kind,value in (('thresh','Float',.26 if prefix!='Rythm' else 49), ('active','Toggle',False)):
+                p=BoundParameter(kind);p.name=prefix+suffix;p.owner=source;p.enable=True
+                p.normMin=p.min=minimum if kind=='Float' else 0;p.normMax=p.max=maximum if kind=='Float' else 1
+                p.val=value;source.par[p.name]=p
+        channels = {'low': Channel([.25]), 'mid': Channel([.75]), 'high': Channel([.5]), 'kick': Channel([0]), 'snare':Channel([0]), 'rythm':Channel([0])}
         class Chop:
             valid = True; id = 801; path = '/demo/analysis/out1'
-            def __getitem__(self, name): return channels.get(name)
+            data = channels
+            def __getitem__(self, name): return self.data.get(name)
         chop = Chop()
-        operators = {'analysis': source, 'analysis/out1': chop}
+        level = Chop();level.id=802;level.path='/demo/analysis/math2';level.data={'low':Channel([.8])}
+        snare=Chop();snare.id=803;snare.path='/demo/analysis/math16';snare.data={'high':Channel([.4])}
+        rhythm=Chop();rhythm.id=804;rhythm.path='/demo/analysis/math10';rhythm.data={'chan0':Channel([70])}
+        operators = {'analysis': source, 'analysis/out1': chop, 'analysis/math2':level,'analysis/math16':snare,'analysis/math10':rhythm}
         scope = SimpleNamespace(valid=True, isCOMP=True, id=799, path='/demo', op=operators.get)
         oldop = e.ownerComp.op
         e.ownerComp.op = lambda name: scope if name == '../demo' else oldop(name)
@@ -315,7 +324,7 @@ class MixTests(unittest.TestCase):
         self.assertEqual(restored.profile, saved['descriptor'])
         self.assertEqual(source.par.Highgain.eval(), 3)
         self.assertEqual(restored.writes, 0)
-        for bands in ((), ('High', 'High'), ('Kick',), ('Low', 'Unknown'), 'High', None):
+        for bands in ((), ('High', 'High'), ('Unknown',), ('Low', 'Unknown'), 'High', None):
             with self.subTest(bands=bands), self.assertRaises(ValueError):
                 e.ConfigureMixAnalysis(mix.scope, 'analysis', bands)
             self.assertEqual(e.GetMixProfile(), saved)

@@ -6,9 +6,12 @@ embedded runtime/documentation hashes and scoped native validation.
 
 The current export includes main-screen parameter-page hints, explicit LEARN
 metadata, an 83-entry Track color menu and a read-only Track BG preview.
-It also includes independent Low/Mid/High analysis and wired Layer Mix float controls,
+It also includes independent Low/Mid/High/Kick/Snare/Rhythm analysis and wired Layer Mix float controls,
 user-named Operation presets with two to six choices and conditional Swap,
-analysis overview Active buttons, motor feedback and native meters. The
+analysis overview Active buttons, motor feedback and native meters. Two optional
+custom analysis slots assign another analyzer's parameter names and CHOP feedback
+through the same Apply. Detectors use independent pre-threshold meters and actual
+read-only trigger feedback; their new hardware acceptance is pending. The
 overview keeps the selected analysis band name/value visible after release,
 without resending unchanged motor positions when selecting another band. One MIX
 source/style profile is active at a time. Configure existing sources through the

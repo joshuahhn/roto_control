@@ -98,7 +98,7 @@ class RotoPythonExt:
         return self.GetMixProfile()
 
     def ConfigureMixAnalysis(self, scope, source='audioAnalysis', bands=('Low', 'Mid')):
-        """Describe existing Low/Mid/High bands. Audio/detection settings stay as-is."""
+        """Describe known bands/detectors. Audio/detection settings stay as-is."""
         return self.SetMixProfile(scope, analysis_profile(source, bands))
 
     def ConfigureMixLayers(self, scope, source='layermix_layers', *, operation_choices=None, operation_library=None, custom_operations=()):
@@ -145,7 +145,7 @@ class RotoPythonExt:
         if self._dispatching or mix.touched or self._host.touched or self._host.learning:
             raise ValueError('Exit LEARN and release knobs before clearing MIX configuration')
         self.ownerComp.store('mix_profile', None)
-        mix.profile = None; mix.targets.clear(); mix.meters.clear(); mix.errors.clear()
+        mix.profile = None; mix.targets.clear(); mix.meters.clear(); mix.errors.clear(); mix.triggers.clear()
         mix.invalidate()
         self._sync_mix_summary()
 

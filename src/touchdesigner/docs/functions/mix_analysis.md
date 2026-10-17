@@ -10,12 +10,92 @@ and Appendix B. An analyzer does not need to implement MIDI or SysEx itself.
 convenience adapter for our known audioAnalysis COMP. It expects `Lowthresh`,
 `Lowgain`, `Lowadd`, `Lowsmooth`, `Lowactive`, their Mid/High equivalents, and
 `out1['low']` / `out1['mid']` / `out1['high']` for the selected bands. Pass an
-ordered subset such as `bands=('High', 'Low')`; the default remains Low/Mid.
+ordered subset such as `bands=('Low', 'Mid', 'High', 'Kick', 'Snare', 'Rhythm')`;
+the Python call's default remains Low/Mid for existing callers.
 The MIX page's Analysis bands field uses the same adapter and accepts names
-separated by spaces or commas. Kick is not accepted by this adapter yet.
-The MIX page's Analysis source picker uses this
-adapter. Other analyzers use the descriptor API; the picker does not infer their
-parameter names, ranges or signal stage.
+separated by spaces or commas. Kick exposes only `Kickthresh` and `Kickactive`.
+Its meter reads the verified pre-threshold `math2['low']`, and its actual trigger
+reads `out1['kick']`. Snare uses `Snarethresh` / `Snareactive`, pre-threshold
+`math16['high']` over 0..1 and actual `out1['snare']`. Rhythm uses the source's
+`Rythmthresh` / `Rythmactive`, `math10['chan0']` before the threshold clamp over
+0..100, and actual `out1['rythm']`. Rhythm's knob range is the real parameter's
+10..90, independent of that meter range. These paths/scales were inspected in the
+existing COMP; the adapter requires them and does not construct them.
+
+New/generic GUI drafts default to all six in that order. Existing saved drafts
+and applied profiles are preserved on upgrade. Other analyzers use the explicit
+custom slot fields or descriptor API; the picker does not infer their parameter
+names, ranges or signal stage.
+
+## Existing audioAnalysis inventory
+
+The inspected local COMP has 24 analysis controls across nine items, plus nine
+read-only Analysis Data outputs. This is an inventory, not a claim that all nine
+items are implemented by the convenience adapter.
+
+| Item | Writable parameters | Public `out1` feedback | Convenience adapter |
+| --- | --- | --- | --- |
+| Low | `Lowthresh`, `Lowgain`, `Lowadd`, `Lowsmooth`, `Lowactive` | `low` | Yes |
+| Mid | `Midthresh`, `Midgain`, `Midadd`, `Midsmooth`, `Midactive` | `mid` | Yes |
+| High | `Highthresh`, `Highgain`, `Highadd`, `Highsmooth`, `Highactive` | `high` | Yes |
+| Kick | `Kickthresh`, `Kickactive` | `kick`, actual detection | Yes; separate pre-threshold meter |
+| Snare | `Snarethresh`, `Snareactive` | `snare`, actual detection | Yes; separate pre-threshold meter |
+| Rhythm | `Rythmthresh`, `Rythmactive` | `rythm`, actual detection | Yes; separate pre-threshold score |
+| Slow spectral density | `Ssdactive` | `smsd` | Not yet |
+| Fast spectral density | `Fsdactive` | `fmsd` | Not yet |
+| Spectral centroid | `Scactive` | `spectralCentroid` | Not yet |
+
+Keep the source's actual `Rythm` spelling in parameter references. Spectral
+feedback scales still need source-specific verification before assigning them.
+Nine items exceed this slice's single
+eight-item profile; no second item bank is implemented.
+
+Other existing parameters are `Audioout` and `Listenvolume` for audio monitoring,
+`Galmap` for Enable Mapper, and five Neutone controls: `Neutoneactive`,
+`Neutonebass`, `Neutonedrums`, `Neutonevocals`, `Neutoneother`. They are outside the
+current analysis mapping. Their existence does not verify a Neutone plugin or
+authorize enabling audio/processing. About/Help metadata needs no MIX target.
+
+For this known adapter, assign the source COMP and ordered item names; it fills
+the known control and feedback references. For another analyzer, explicitly
+assign its control targets, meter sources/units/stages, and optional actual
+trigger sources. Read-only feedback is not a writable parameter mapping.
+
+## Custom slots 7 and 8
+
+The controller's `MIX Slot 7` and `MIX Slot 8` custom parameter pages are staged
+assignments for another analyzer, using the same analysis controls. They share
+the existing MIX page's Apply; there is no extra Apply button. Names do not
+define new controls or a new protocol.
+
+| Draft field | Assignment |
+| --- | --- |
+| Item name | User label; blank disables the slot while retaining its draft |
+| Analyzer COMP | Existing component owning the assigned control parameters |
+| Overview control | Explicit Threshold/Gain/Add/Smooth target, or Read-only |
+| Threshold/Gain/Add/Smooth parameter | Exact existing Float name; blank omits it |
+| Active parameter | Exact existing writable Toggle name; blank omits it |
+| Meter CHOP / channel names | Existing CHOP and one or two named channels |
+| Meter measurement / minimum / maximum / stage | Scalar or audio RMS dBFS, actual source units and signal location |
+| Actual trigger CHOP / channel name | Optional real pulse output; display hold is 200 ms |
+
+Assign only fields that exist. Controls use validated native parameter ranges;
+feedback units/ranges are independent. If Active is assigned, it also supplies
+the trigger's enabled state. Otherwise the trigger is observed without an enabled
+flag. The descriptor API additionally supports a separate read-only enabled flag
+or parameter-valued meter/trigger. Blank feedback CHOPs leave feedback unassigned.
+
+Apply resolves controls and feedback against their common existing COMP ancestor,
+including sources in different networks. Stored descriptor references remain
+relative and cannot escape that explicit scope. Invalid types, missing parameters,
+channels, ranges or signal stages keep the previous profile. Assignment, save and
+reload make no target writes and do not enable detection or connect hardware.
+
+Custom item IDs are stable `custom.7` / `custom.8`, independent of their labels.
+Slots remain physically 7 and 8 even if fewer known bands are selected or Slot 7
+is blank; intervening positions stay unassigned. Configured saves retain draft
+and applied data separately; generic export clears every custom name/reference
+and restores empty custom slots. Mixed Layer/audio controls are not accepted.
 
 ## Control contract
 
@@ -128,9 +208,43 @@ A meter is read-only feedback and does not require a writable control:
   location. Yellow/red meter thresholds remain global MIX settings.
 
 Feedback is coalesced at 10 Hz. Missing/replaced sources, removed channels and
-nonfinite samples clear bars. Trigger indicators are not enabled in the current
-runtime: a descriptor containing `trigger` is rejected even though the planning
-contract describes it. A level bar is not a trigger/threshold-crossing guarantee.
+nonfinite samples clear bars. A level bar is not a trigger/threshold-crossing
+guarantee.
+
+## Trigger contract
+
+An analysis item may supply `trigger` independently of its meter and controls.
+For the example above, add an existing `levels['pulse']` output from the actual
+detector, then register the descriptor again:
+
+```python
+descriptor['items'][0]['trigger'] = {
+    'source': {'kind': 'chop', 'op': 'levels', 'channels': ['pulse']},
+    'enabled': {'op': '.', 'parameter': 'Enabled'},
+    'hold_ms': 200,
+}
+controller.SetMixProfile(scope, descriptor)
+```
+
+`source` accepts the same scalar parameter/named CHOP references as meters. Any
+positive evaluated sample means detected. Supply a real detector output, not a
+comparison invented from the displayed level and knob threshold. `enabled` is
+optional and references an existing Toggle; read-only/expression-driven Toggles
+are accepted for feedback. This field never writes or enables detection.
+
+`hold_ms` is an integer from 0 to 1000. An observed positive sample stays visible
+for that duration after its latest observation. The runtime observes on normal
+TD Ticks and publishes at 10 Hz; it cannot guarantee pulses shorter than the
+sampling interval. Backlogged observations are skipped, not replayed. Mode,
+view, selection and profile changes clear the display hold.
+
+In first FUNC Focus, screen 5 displays `Trig Off` for disabled detection,
+`Trig 0` for idle, `Trig 1` for an observed/held detection, and `Trig ?` for
+unknown or unavailable feedback. Missing/replaced sources, removed channels and
+nonfinite/empty samples clear stale detections and report an error. Screen 5 is
+read-only; Knob 5 has no target. Focus knobs 1–4 retain any real controls, so
+Kick/Snare/Rhythm use Knob 1 only. Native headings remain firmware UI. Their new
+display/input routes still need the [batched physical check](../plans/mix-analysis-acceptance.md).
 
 ## Lifecycle and diagnostics
 
@@ -143,7 +257,9 @@ the MIX page's uncommitted draft.
 
 `GetMixProfile()` returns a detached saved record. `GetMixState()` reports
 `active`, `ready`, `view`, `selected`, `epoch`, changed `writes`, profile `error`
-and per-control `controls` errors. A valid descriptor can retain unavailable
+and per-control `controls` errors. `triggers` lists each trigger's item index,
+state and error; disconnected/reloaded triggers start unknown until observed.
+A valid descriptor can retain unavailable
 individual targets; inspect those errors after registration. Structural/source
 configuration errors raise `ValueError` before replacing the previous profile.
 `ready=False` while disconnected is expected, not proof that registration failed.
@@ -151,7 +267,7 @@ configuration errors raise `ValueError` before replacing the previous profile.
 Parameter replacement, type/range/menu/mode changes and stale input suspend the
 affected routes; release and explicitly reconfigure after changing the target
 contract. One profile has at most eight ordered items, with first FUNC Focus
-only. General Float step sizes, mixed styles, audio Gain/Mute and trigger
-indicators remain outside this API slice. See the full
+only. General Float step sizes, mixed styles, audio Gain/Mute and additional
+item banks remain outside this API slice. See the full
 [descriptor contract](../plans/mix-style-contract.md) and
 [MIX behavior](mix.md) for the remaining guards and accepted hardware scope.

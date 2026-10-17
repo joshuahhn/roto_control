@@ -139,7 +139,7 @@ class MixUiTests(unittest.TestCase):
     def test_invalid_or_missing_analysis_bands_preserve_the_applied_profile(self):
         e, mix, c, source = self.fixture()
         before = e.GetMixProfile()
-        for bands in ('', 'Low Low', 'Kick', 'High Unknown'):
+        for bands in ('', 'Low Low', 'Unknown', 'High Unknown'):
             with self.subTest(bands=bands):
                 c.par.Mixanalysisbands.val = bands
                 e.onParPulse(c.par.Applymix)
@@ -161,6 +161,31 @@ class MixUiTests(unittest.TestCase):
         self.assertEqual(c.par.Mixanalysisbands.eval(), 'High Mid')
         self.assertEqual(e.GetMixProfile(), before)
         self.assertEqual(mix.writes, 0)
+
+    def test_kick_editor_uses_only_existing_controls_without_enabling_detection(self):
+        e, mix, c, source = self.fixture()
+        values = {name:p.eval() for name,p in source.par.items()}
+        c.par.Mixanalysisbands.val = 'Low, Mid High kick'
+        e.onParPulse(c.par.Applymix)
+        profile = e.GetMixProfile()['descriptor']
+        self.assertEqual([item['id'] for item in profile['items']], ['low','mid','high','kick'])
+        self.assertEqual(set(profile['items'][3]['controls']), {'threshold','active'})
+        self.assertEqual(len(mix.targets), 17)
+        self.assertEqual(len(mix.triggers), 1)
+        self.assertEqual({name:p.eval() for name,p in source.par.items()}, values)
+        self.assertEqual(mix.writes, 0)
+        self.assertIsNone(e._process)
+
+    def test_kick_feedback_preflight_preserves_profile_when_source_is_missing(self):
+        e, mix, c, source = self.fixture()
+        before = e.GetMixProfile()
+        c.par.Mixanalysisbands.val = 'Kick'
+        scope = source.parent();old_op=scope.op
+        scope.op = lambda name: None if name == 'analysis/math2' else old_op(name)
+        e.onParPulse(c.par.Applymix)
+        self.assertEqual(e.GetMixProfile(), before)
+        self.assertIn('Analysis feedback unavailable', c.par.Mixsummary.eval())
+        self.assertFalse(source.par.Kickactive.eval())
 
     def test_layer_editor_loads_custom_names_and_retains_full_source_menu(self):
         e, mix, c, source = self.fixture(layers=True)
@@ -298,7 +323,7 @@ class MixUiTests(unittest.TestCase):
         reset_mapping_storage(c); reset_registration(c)
         self.assertIsNone(c.par.Mixsource.eval())
         self.assertEqual(c.par.Mixstyle.eval(), 'analysis')
-        self.assertEqual(c.par.Mixanalysisbands.eval(), 'Low Mid')
+        self.assertEqual(c.par.Mixanalysisbands.eval(), setup.MIX_ANALYSIS_DEFAULT)
         self.assertEqual(c.par.Mixsummary.eval(), 'Unassigned')
         self.assertEqual(c.par.Mixcustom1.eval(), setup.MIX_NO_OPERATION)
         self.assertEqual(c.par.Mixcustom1.menuNames, [setup.MIX_NO_OPERATION])

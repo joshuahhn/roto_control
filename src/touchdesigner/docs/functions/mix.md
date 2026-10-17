@@ -1,6 +1,7 @@
 # Independent MIX controls
 
-This slice implements saved Low/Mid/High analysis and wired Layer Mix descriptions on
+This slice implements saved Low/Mid/High/Kick/Snare/Rhythm analysis, two custom
+analysis assignments and wired Layer Mix descriptions on
 an independent eight-slot MIX page, float input, analysis Active buttons and native
 meter feedback. Source tests, native TD checks
 and scoped hardware acceptance cover touch selection, FUNC details, sustained
@@ -12,6 +13,9 @@ retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lo
 High also has physical overview/Focus caption, persistent-selection and Gain
 input/motor-return acceptance. Its Active button and changing meter level have
 source/native coverage but were not separately checked on hardware.
+The new detector/trigger/custom-slot changes have source/native coverage only;
+the user deferred their [physical batch](../plans/mix-analysis-acceptance.md)
+until returning to the controller.
 
 ## Configure an existing source
 
@@ -20,14 +24,23 @@ Use the controller's **MIX** custom parameter page:
 1. Choose Draft style: Analysis bands or Layer Mix inputs.
 2. Drag the existing audioAnalysis COMP or Layer Mix TOP onto Draft source.
    For Analysis, set Analysis bands to an ordered list such as `Low Mid High`.
-   Spaces or commas separate names, and case does not matter. The default stays
-   `Low Mid`; one band is also valid. Empty, duplicate or unknown names are
-   rejected. The convenience adapter does not yet accept Kick.
+   Spaces or commas separate names, and case does not matter. New/generic drafts
+   default to `Low Mid High Kick Snare Rhythm`; saved drafts stay unchanged.
+   One band is also valid. Empty, duplicate or unknown names are
+   rejected. Kick/Snare/Rhythm each have only Threshold/Active and independent
+   pre-threshold level/actual trigger feedback. See the complete
+   [analyzer inventory and assignment contract](mix_analysis.md).
 3. For Layer Mix, use the six Custom blend slots. Fill any two to six different
    modes and leave unused slots None. Each slot offers the source's complete TD
    blend list. All None omits the Operation control.
 4. Release knobs, exit LEARN, then press Apply MIX draft. Applied MIX shows the
    accepted profile. Invalid configuration leaves the previous profile active.
+
+Analysis has optional `MIX Slot 7` / `MIX Slot 8` assignment pages. Set a user
+name, the other analyzer COMP's actual parameter names and independent CHOP
+feedback, then use the same Apply. Blank item name leaves a slot unassigned.
+See [custom assignments](mix_analysis.md#custom-slots-7-and-8); these stay within
+analysis style and do not create a general mixed-style editor.
 
 Draft edits do not change routing or target values. Draft and applied settings
 persist separately; loading never applies an unfinished draft. Clear MIX
@@ -55,7 +68,7 @@ control types/positions, meter units/stage, lifecycle and a complete example.
 Execute in TD against an upgraded controller:
 
 ```python
-controller.ConfigureMixAnalysis(controller.parent(), 'audioAnalysis', ('Low', 'Mid', 'High'))
+controller.ConfigureMixAnalysis(controller.parent(), 'audioAnalysis', ('Low', 'Mid', 'High', 'Kick', 'Snare', 'Rhythm'))
 controller.GetMixProfile()
 controller.GetMixState()
 ```
@@ -217,6 +230,17 @@ unchanged, so an inactive Mid or High can correctly have zero level. Meter scali
 independent of knob ranges; yellow/red points are global across MIX. Feedback is
 coalesced at 10 Hz, with no replay of old meter samples after backpressure.
 
+Kick instead reads the verified `audioAnalysis/math2['low']` before its threshold
+and the actual `out1['kick']` detection independently. Snare uses `math16['high']`
+and `out1['snare']`. Rhythm uses `math10['chan0']` before the threshold clamp,
+scaled over 0..100, and `out1['rythm']`; its Threshold target retains 10..90.
+These detectors have no Gain/Add/Smooth targets. First FUNC Focus uses Knob 1
+for Threshold and screen 5 for read-only
+`Trig Off` / `Trig 0` / `Trig 1` / `Trig ?`; Knob 5 does not write. An observed
+trigger is held for 200 ms for readability, without changing detection. See the
+[trigger API](mix_analysis.md#trigger-contract) and pending
+[batched hardware check](../plans/mix-analysis-acceptance.md).
+
 [SysEx API v1.6](../../../../docs/ROTO-CONTROL_SYSEX_API_v1.6.pdf), section 2.23,
 defines a timeout for SHOW CONTROL VALUE. Assigned text is therefore renewed on
 the same bounded feedback tick even when its value stays unchanged. Unsent
@@ -248,8 +272,8 @@ No second MIDI owner or new wire protocol is introduced.
 ## Current limits and installation
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
-in this slice. Trigger indicators, the Kick adapter, second-page Focus and a
-mixed-style slot editor are later slices. No detent or freely replaceable native-heading promise
+in this slice. Second-page Focus and a mixed-style slot editor are later slices.
+Analysis-only custom slots 7/8 are configured as above. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
 they were not individually checked on hardware. The editor configures one
 source/style profile, without per-item libraries or mixed-style slots;

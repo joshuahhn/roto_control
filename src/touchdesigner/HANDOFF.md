@@ -26,6 +26,9 @@ source tests and synthetic native messages do not establish physical acceptance.
 - Current MIX runtime activates one source/style profile at a time.
   Mixed-style slots and audio Gain/Mute processing remain deferred;
   audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
+- New Kick/Snare/Rhythm trigger feedback and custom analysis slots have source/native
+  coverage; their physical batch and High Active/changing-meter checks await the
+  user's return. See [the batch](docs/plans/mix-analysis-acceptance.md).
 
 ## Historical milestones
 
@@ -2188,3 +2191,51 @@ adjacent source/hash receipt and SHA-256
 The previous .8 working copy and canonical project hashes are unchanged. Final
 post-save preservation still passes; TD remains open and disconnected. The dirty
 root source checkout was not reset, cleaned or copied over live runtime.
+
+## Six analysis items and two custom assignments — 2026-10-17
+
+Baseline `a1ee1ca`, runtime `be656cd`. While away from hardware, the user requested
+analyzer configuration and clarified the layout: Low/Mid/High/Kick/Snare/Rhythm,
+with two customizable slots for another analyzer's parameters/CHOP feedback.
+The source adapter now describes all six. Kick/Snare/Rhythm expose only their
+actual Threshold/Active controls, bringing the six-item total to 21 targets.
+Read-only inspection verified Kick `math2['low']`, Snare `math16['high']`, and
+Rhythm `math10['chan0']` before their threshold stages. Rhythm's meter is 0..100;
+its real target remains 10..90. Actual triggers read public out1 kick/snare/rythm.
+No audio graph, detection setting or monitoring state was changed.
+
+Optional analysis-only custom parameter pages for slots 7/8 assign a label,
+source COMP, typed parameter names, overview control and independent CHOP
+meter/actual trigger. They reuse the original Apply; no extra Apply button,
+style or wire protocol was added. Common-ancestor scope resolution retains
+relative descriptor references across networks. Invalid assignments preserve
+routing; empty names disable slots without erasing drafts. Generic reset clears
+all custom references and defaults to six known items. Upgrade retains existing
+saved drafts/profiles, and the Python adapter keeps its Low/Mid default.
+
+Trigger observation runs on normal Ticks with a display-only 200 ms hold and
+coalesced 10 Hz output. Focus screen 5 shows Trig Off/0/1/? without a Knob 5
+write route. Mode/view/selection/profile boundaries clear holds; unavailable or
+nonfinite samples clear stale detections. This does not guarantee sub-frame
+pulses or infer triggers from level-versus-threshold comparisons.
+
+574 source discovery tests pass, including six-item independent routing, real
+Rhythm range, two custom assignments, read-only slot 8, invalid draft rejection,
+trigger failures/hold/reset and generic draft sanitization. Native TD 2025.33230
+verifies the real Apply callback with six known/two custom items: 23 targets,
+eight meters, four triggers, seven intended writes to temporary fixture targets
+only, cross-COMP scope, disabled/idle/high text, configured reload and no value
+recall. Both documentation examples run against foreign parameter/channel names
+with zero new writes. Two one-off check errors were test-method issues: a missing
+UTF-8 read and comparing cumulative writes to zero instead of the starting count.
+Neither required a production change. No MIDI process was opened.
+
+Temporary fixtures were removed. Installation verifies all 22 source hashes on
+`/roto_clean_demo/roto_python`, preserves its original Low/Mid profile/draft,
+registry/four control IDs, Snapshots, analyzer/demo/layer values, nine demo children
+and the old controller's 246 DAT hashes. Pending bytes remain zero with no
+send/RX/probe overrides. Recovery/scripts/results are in system temporary
+`roto-mix-analyzer.gUUzosxJI1`. The live unsaved audio project remains open and
+disconnected. New physical acceptance is explicitly deferred to the user's return;
+[the single batch](docs/plans/mix-analysis-acceptance.md) covers High Active/meters,
+all three detectors, custom slots and final PLUGIN restoration. Publication follows.

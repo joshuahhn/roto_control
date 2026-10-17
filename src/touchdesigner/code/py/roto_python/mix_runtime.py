@@ -195,6 +195,45 @@ class Signal:
         return (values * 2)[:2]
 
 
+class Trigger:
+    """Read an actual pulse, retaining observed highs only for display."""
+    def __init__(self, scope, description):
+        self.hold = description['hold_ms'] / 1000
+        self.bind_error = ''
+        self.signal = self.enabled = None
+        try:
+            self.signal = Signal(scope, description['source'])
+            if description.get('enabled'):
+                self.enabled = Signal(scope, dict(kind='parameter', **description['enabled']))
+                if self.enabled.parameter.style != 'Toggle':
+                    raise ValueError('MIX trigger enabled flag needs a Toggle')
+        except (ValueError, AttributeError, TypeError, KeyError) as exc:
+            self.bind_error = str(exc)
+        self.reset()
+
+    def reset(self):
+        self.until = float('-inf')
+        self.state = 'unavailable' if self.bind_error else 'unknown'
+        self.error = self.bind_error
+
+    def observe(self, now):
+        if self.bind_error:
+            return
+        try:
+            if self.enabled is not None and not self.enabled.sample('scalar')[0]:
+                self.until = float('-inf')
+                self.state, self.error = 'disabled', ''
+                return
+            high = any(value > 0 for value in self.signal.sample('scalar'))
+            if high:
+                self.until = now + self.hold
+            self.state = 'high' if high or now < self.until else 'idle'
+            self.error = ''
+        except (ValueError, AttributeError, TypeError, KeyError, IndexError) as exc:
+            self.until = float('-inf')
+            self.state, self.error = 'unavailable', str(exc)
+
+
 class MixRuntime:
     def __init__(self, extension):
         self.e = extension
@@ -203,6 +242,7 @@ class MixRuntime:
         self.layer_state = None
         self.layer_invalid = False
         self.targets, self.errors, self.meters = {}, {}, {}
+        self.triggers = {}
         self.active = self.returning = False
         self.epoch = 0
         self.view = None
@@ -232,8 +272,6 @@ class MixRuntime:
         profile = validate(profile)
         if profile['style'] not in FLOAT_KEYS:
             raise ValueError('Audio processing remains planned')
-        if any(item.get('trigger') for item in profile['items']):
-            raise ValueError('Trigger feedback is not enabled in this MIX slice')
         if scope is None or not scope.valid or not scope.isCOMP:
             raise ValueError('MIX needs an existing COMP scope')
         source = scope.op(profile['source'])
@@ -246,7 +284,7 @@ class MixRuntime:
                     or any(scope.op(item['input']) is None or _identity(scope.op(item['input'])) != _identity(image)
                            for item, image in zip(profile['items'], source.inputs))):
                 raise ValueError('Layer Mix inputs changed; configure the current wired order')
-        targets, errors, meters = {}, {}, {}
+        targets, errors, meters, triggers = {}, {}, {}, {}
         for index, item in enumerate(profile['items']):
             for key, control in item['controls'].items():
                 try:
@@ -269,10 +307,13 @@ class MixRuntime:
                     meters[index] = Signal(scope, item['meter']['source'])
                 except (ValueError, AttributeError, TypeError, KeyError):
                     pass  # invalid feedback clears bars; other controls remain usable
+            if item.get('trigger'):
+                triggers[index] = Trigger(scope, item['trigger'])
         self.scope, self.source, self.profile = scope, source, profile
         self.layer_state = source_state
         self.layer_invalid = False
         self.targets, self.errors, self.meters = targets, errors, meters
+        self.triggers = triggers
         self.error = ''
         self.selected = 0
         self.select_pending = True
@@ -286,6 +327,8 @@ class MixRuntime:
         self.blocked.update(self.touched)
         self.button_blocked.update(self.button_down)
         self.armed.clear(); self.parts.clear()
+        for trigger in self.triggers.values():
+            trigger.reset()
         if not keep_motors:
             self.last_motor.clear()
         self.last_text.clear(); self.last_button.clear()
@@ -560,6 +603,11 @@ class MixRuntime:
         selected_valid = self.profile is not None and 0 <= self.selected < len(self.profile['items'])
         if self.view is not None and self.family == 0 and selected_valid and self.source_valid():
             self.ready = True
+        if self.ready:
+            # Observe on normal TD Ticks, so a pulse between two 10 Hz display
+            # updates can still be held. This does not guarantee sub-frame pulses.
+            for trigger in self.triggers.values():
+                trigger.observe(now)
         if now < self.next_feedback:
             return
         self.next_feedback = now + .1  # no catch-up queue of obsolete samples
@@ -567,6 +615,10 @@ class MixRuntime:
         for lane, address in enumerate(addresses):
             target = self.targets.get(address)
             text = 'Unavailable' if address else ''
+            trigger = (self.triggers.get(self.selected) if self.ready and lane == 4
+                       and self.view[0] == 'focus' else None)
+            if trigger is not None:
+                text = {'high':'Trig 1', 'idle':'Trig 0', 'disabled':'Trig Off'}.get(trigger.state, 'Trig ?')
             if target is not None:
                 try:
                     value = target.check()
@@ -596,7 +648,7 @@ class MixRuntime:
                     return
             # API 2.23 returns to native names after a timeout. Renew assigned
             # text on the bounded feedback tick, even when its value is stable.
-            if address is not None or self.last_text.get(lane) != text:
+            if address is not None or trigger is not None or self.last_text.get(lane) != text:
                 self.e._pending = discard(self.e._pending, lambda m: len(m) >= 10 and tuple(m[:7]) == (*HEADER, 10, 0x18) and m[7:9] == [0, lane])
                 self.command(10, 0x18, (0, lane, *text13(text)))
                 self.last_text[lane] = text
@@ -636,7 +688,8 @@ class MixRuntime:
     def state(self):
         return dict(active=self.active, ready=self.ready, view=copy.deepcopy(self.view),
                     selected=self.selected, epoch=self.epoch, writes=self.writes,
-                    error=self.error, controls=[dict(item=i, control=k, error=v) for (i, k), v in self.errors.items()])
+                    error=self.error, controls=[dict(item=i, control=k, error=v) for (i, k), v in self.errors.items()],
+                    triggers=[dict(item=i, state=trigger.state, error=trigger.error) for i, trigger in self.triggers.items()])
 
     def refresh_scope(self):
         """Retain an explicitly configured scope through a live rename/save."""

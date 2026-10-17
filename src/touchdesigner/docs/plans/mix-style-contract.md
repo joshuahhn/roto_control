@@ -11,7 +11,7 @@ official protocol described in [MIX view mappings](mix-view-mappings.md).
 | Style ID | Item | Writable controls when available | Read-only feedback |
 | --- | --- | --- | --- |
 | `layers` | A Layer Mix input/layer | `opacity`, `brightness`, `black_level`, `gamma`, `operation`, `swap` | Layer opacity |
-| `analysis` | Low, Mid, High, Kick, or another explicitly described detector | Available subset of `threshold`, `gain`, `add`, `smooth`, `active` | Explicit band level; optional actual trigger |
+| `analysis` | Low, Mid, High, Kick, Snare, Rhythm, or another explicitly assigned analyzer item | Available subset of `threshold`, `gain`, `add`, `smooth`, `active` | Explicit band level; optional actual trigger |
 | `audio` | An audio file/input path | `gain`, `mute` | Audio level |
 
 Support these styles directly. No custom style plug-in system, discovery registry
@@ -69,7 +69,10 @@ configured. It must not advertise working audio control.
 
 The [Analysis integration API](../functions/mix_analysis.md) documents how a
 different analyzer maps its own parameter/channel names into this contract,
-including a tested example. Only the convenience adapter uses Low/Mid/High names.
+including a tested example and complete analyzer inventory. Only the convenience
+adapter uses the known Low/Mid/High/Kick/Snare/Rhythm names. Two optional GUI custom
+slots use the same fields with explicit parameter/channel assignments, not a new
+style or generic framework.
 
 ## Feedback fields
 
@@ -84,6 +87,10 @@ An optional trigger supplies an actual public CHOP output, its optional
 detection-enabled target, and `hold_ms`, initially 200. The hold affects display
 only. Disabled detection is distinct from a measured zero trigger. Native meter
 yellow/red points remain global; they are not per-item threshold markers.
+Analysis first Focus puts read-only trigger text on screen 5, without a Knob 5
+target. Normal Tick observations feed bounded 10 Hz output; pulses missed between
+observations cannot be recovered. Mode/view/selection/profile boundaries clear
+the hold. This source/native slice still needs batched detector/custom-slot hardware acceptance.
 
 ## Example: Low analysis item
 
@@ -129,7 +136,7 @@ change these settings while describing or registering a source. Resolve actual
 layer parameters and detect input/layer changes before routing a fresh gesture.
 
 For analysis, each item exposes only its real parameters. The live Low/Mid/High
-controls above were read back; Kick has Threshold/Active rather than those same
+controls above were read back; Kick/Snare/Rhythm have Threshold/Active rather than those same
 five fields. Reading a profile must not enable detection or audio output.
 
 For audio, require an explicit existing Gain/Mute destination. The current file
@@ -160,7 +167,8 @@ producing native VOLUME/PAN/SEND A/SEND B and EFFECT while still in MIX Focus.
 Deferring that metadata restoration until actual PLUGIN return fixed the test
 method; a fresh read-only check and normal PLUGIN return passed. Do not carry the
 prototype's bounded-stream lifecycle into normal continuous runtime feedback.
-The shared descriptor, Low/Mid analysis and wired Layer Mix float adapters now
+The shared descriptor, six known analysis items, two optional custom analysis
+assignments and wired Layer Mix float adapters now
 use the scoped checks described in the [view plan](mix-view-mappings.md). The
 current runtime activates one source/style profile at a time. Operation libraries
 and Swap now have source/native and scoped hardware acceptance;
