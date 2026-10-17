@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIX view mappings</title>
+<style>
+html,body{margin:0;background:transparent;color:var(--foreground);font-family:var(--font-sans,system-ui,sans-serif)}
+#mix-views{padding:0;max-width:100%;overflow-wrap:anywhere}
+#mix-views .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px;margin:18px 0}
+#mix-views label{display:flex;flex-direction:column;gap:6px;min-width:0}
+#mix-views select{max-width:100%;min-width:0;font:inherit}
+#mix-views table{width:100%;border-collapse:collapse;table-layout:fixed}
+#mix-views th,#mix-views td{text-align:left;vertical-align:top;padding:12px 8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+#mix-views th:first-child,#mix-views td:first-child{padding-left:0}
+#mix-views th:last-child,#mix-views td:last-child{padding-right:0}
+#mix-views th{font-weight:500}
+#mix-views .secondary{color:var(--muted-foreground)}
+#mix-views .role{display:block;margin-top:4px}
+#mix-views .summary{margin:16px 0 8px}
+#mix-views .scope{margin:14px 0 0}
+@media(max-width:420px){#mix-views .controls{grid-template-columns:minmax(0,1fr);gap:12px}#mix-views th,#mix-views td{padding:10px 5px}}
+</style>
+</head>
+<body>
+<section id="mix-views" aria-label="MIX view mapping 設計示意">
+  <p class="secondary">操作構想 · 未套用 TD · 唔代表已驗證嘅硬件畫面</p>
+  <div class="controls">
+    <label class="form-label">使用例子
+      <select id="mix-case" class="form-select">
+        <option value="layers">Layer Mix</option><option value="analysis" selected>audioAnalysis</option><option value="audio">Audio file／input</option>
+      </select>
+    </label>
+    <label class="form-label">Touch 揀對象
+      <select id="mix-item" class="form-select"></select>
+    </label>
+    <label class="form-label">View
+      <select id="mix-view" class="form-select">
+        <option value="all">總覽 · 各對象嘅主要控制</option><option value="details" selected>FUNC · 所選對象嘅 details</option>
+      </select>
+    </label>
+  </div>
+  <p id="mix-summary" class="summary" aria-live="polite"></p>
+  <table class="table table-sm" aria-label="所選對象嘅 controls 同 feedback">
+    <thead id="mix-head"></thead>
+    <tbody id="mix-rows"></tbody>
+  </table>
+  <p id="mix-scope" class="scope secondary"></p>
+</section>
+<script>
+(() => {
+  const root = document.getElementById('mix-views');
+  const view = root.querySelector('#mix-view');
+  const example = root.querySelector('#mix-case');
+  const item = root.querySelector('#mix-item');
+  const rows = root.querySelector('#mix-rows');
+  const head = root.querySelector('#mix-head');
+  const summary = root.querySelector('#mix-summary');
+  const scope = root.querySelector('#mix-scope');
+  const cases = {
+    layers: [1,2].map(n=>({
+      name:`Input ${n}`, primary:'Opacity', meter:'所選 layer opacity · 0..1',
+      details:[['Opacity','Float',`Input ${n} opacity`],['Brightness','Float',`Input ${n} brightness`],['Black Level','Float',`Input ${n} black level`],['Gamma','Float',`Input ${n} gamma`],['Operation','Menu','Per-layer blend operation'],['Swap','Toggle','Per-layer swap order']]
+    })),
+    analysis: [
+      ...['Low','Mid','High'].map(b=>({
+        name:b,primary:'Threshold',meter:`${b} level · 量測位置待選`,
+        details:[['Threshold','Float',`${b}thresh`],['Gain','Float',`${b}gain`],['Add','Float',`${b}add`],['Smooth','Float',`${b}smooth`],['Active','Toggle',`${b}active`]]
+      })),
+      {name:'Kick',primary:'Threshold',meter:'Pre-threshold low level ＋ actual kick output',details:[['Threshold','Float','Kickthresh · 0..0.6'],['Active','Toggle','Kickactive'],['Kick detection','Read-only','真實 trigger output']]}
+    ],
+    audio: [
+      ['File','demo_au_file_null'],['Input','demo_au_devin_null']
+    ].map(([name,source])=>({name,primary:'Gain',meter:`${source} · RMS`,details:[['Gain','Float','指定 gain parameter／stage'],['Mute','Toggle','靜音並保留 Gain'],['Level','Read-only',`${source} · RMS`]]}))
+  };
+  function options(){
+    item.replaceChildren();
+    cases[example.value].forEach((entry,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=entry.name;item.append(o);});
+  }
+  function render(){
+    const selected = cases[example.value][Number(item.value)];
+    const details = view.value === 'details';
+    const entries = details ? selected.details : cases[example.value].map(entry=>[entry.name,entry.primary,entry.meter]);
+    const headings = details ? ['Detail','類型','Target／用途'] : ['對象','主要控制','Meter source'];
+    head.replaceChildren();
+    const headingRow=document.createElement('tr');
+    for(const text of headings){const cell=document.createElement('th');cell.scope='col';cell.textContent=text;headingRow.append(cell);}
+    head.append(headingRow);
+    rows.replaceChildren();
+    entries.forEach(entry=>{
+      const tr = document.createElement('tr');
+      for(const text of entry){
+        const cell = document.createElement('td'); cell.textContent = text; tr.append(cell);
+      }
+      rows.append(tr);
+    });
+    summary.textContent = details ? `${example.selectedOptions[0].textContent} → ${selected.name} → Details` : `${example.selectedOptions[0].textContent} → 總覽`;
+    scope.textContent = details ? `Meter：${selected.meter}。實際標題及 button 位置待硬件驗證。` : 'Touch 揀一個對象，再用 FUNC 展開同一個對象嘅 details。';
+  }
+  example.addEventListener('change',()=>{options();render();});
+  for(const control of [view,item]) control.addEventListener('change',render);
+  options();
+  render();
+  console.assert(rows.rows[0].cells[2].textContent==='Lowthresh','Low must show its own targets');
+  item.value='3'; item.dispatchEvent(new Event('change'));
+  console.assert(rows.rows.length===3 && rows.rows[0].cells[2].textContent.startsWith('Kickthresh'),'Kick must have distinct details');
+  example.value='layers'; example.dispatchEvent(new Event('change'));
+  console.assert(rows.rows[4].cells[1].textContent==='Menu' && rows.rows[5].cells[1].textContent==='Toggle','Operation and Swap must retain distinct types');
+  example.value='audio'; example.dispatchEvent(new Event('change'));
+  console.assert(rows.rows[2].cells[1].textContent==='Read-only','Audio Level is feedback');
+  example.value='analysis'; example.dispatchEvent(new Event('change'));
+  console.info('MIX scenarios: object selection, detail types and read-only audio level checked.');
+})();
+</script>
+</body>
+</html>

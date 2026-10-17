@@ -14,7 +14,8 @@ def reset_mapping_storage(clone):
               'assignment_device_id':None,'parameter_assignments':[],
               'page_targets':[],'control_catalog':[],'removed_controls':[],
               'pending_unmaps':[],'control_overrides':{},'needs_relearn':(),
-              'snapshot_presets':dict(version=2,records=[],deleted=[])}
+              'snapshot_presets':dict(version=2,records=[],deleted=[]), 'mix_profile':None,
+              'mix_operation_presets':dict(version=1,records=[])}
     for key,value in defaults.items():clone.store(key,value)
 
 
@@ -23,6 +24,9 @@ def reset_registration(clone):
     clone.ext.RotoPythonExt._actions = None
     clone.ext.RotoPythonExt._snapshots = None
     clone.ext.RotoPythonExt._snapshot_error = ''
+    clone.ext.RotoPythonExt._mix = None
+    if getattr(getattr(clone, 'par', None), 'Mixsource', None) is not None:
+        clone.op('setup').module.reset_mix_ui(clone)
     clone.op('registration').text = (
         'def onRegister(controller):\n'
         '    # Register your parameters/callbacks here, then select Python registration.\n'

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "roto_python.tox",
-  "sha256": "97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50",
+  "sha256": "68c4784e039148215f245f18edf94f20b02be175d1d8d20b6758208762872b7b",
   "export_date": "2026-10-17",
   "touchdesigner_build": "2025.33230",
   "profile": {
@@ -12,35 +12,47 @@
     "python": "python3",
     "embedded_midi_helper": true,
     "external_dat_files": false,
-    "external_runtime": "Python with mido and python-rtmidi"
+    "external_runtime": "Python with mido and python-rtmidi",
+    "mix_assignments": "empty",
+    "mix_draft_source": "empty",
+    "operation_presets": "empty",
+    "operation_custom_slots": 6,
+    "mix_analysis_bands_draft": "Low Mid High Kick Snare Rhythm",
+    "mix_custom_analysis_slots": "empty: slots 7 and 8; 34 draft fields reset",
+    "mix_threshold_comparison_draft": false
   },
   "runtime_source_sha256": {
     "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
     "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
     "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
     "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
-    "lifecycle_callbacks": "dba438adb15dcf6bf0413afc4bb61715cf6fd74ce8f29667f1b8eca8cc8ced6d",
-    "RotoPythonExt": "f228c93e2fb174d2bc1d1b21b22e7c988cc4692b5cf81c235645c4c5dbeda9aa",
+    "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
+    "RotoPythonExt": "eadfaeaa4b40b0e936321c66187c7705eee5a9513fe38600e127ebff66218f1e",
     "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
     "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
     "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
     "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
-    "setup": "3192fb8c3f736cfc514ebb8ad0488c56e4a605e05743f7235be4ad7c3f3723ab",
+    "setup": "f75302af2ef446e08091e929ca98dcafe1ef1ba44575d42fa0425a4b5e3d1421",
     "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
-    "binding": "84399f79c4e598b3228a4cfc0f6dd282f4f1daeea96bc3a6996360901d452f3c",
+    "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
     "layouts": "e987fe479b6b0249cce6ca0bf18d29f6e793fb34a6a638f3a6d1768067feaa2f",
     "target_callbacks": "862dccae82d72b65c0d5849b5346a0e9dfa3d6b5c536334aadf8452b48136bdb",
     "inspector/inspector_data": "26bacb50da1f531bbd822c53dcbeb4ca3d5c04363bac7c8b1dba6902f9ca07ef",
     "inspector/owned_runtime": "f23a10e27739b0224584af2cb965d2e2319cc909b899511560ea67739230a20c",
     "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
-    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17"
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
+    "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
+    "mix_descriptor": "66ef47a06afd19147f32a86bc3910425f5577691e9dd8a133c19ac856cc12869",
+    "mix_runtime": "b618b95a8fd8ec417b8b33536c987bd44e79f55b96c132608132f155213bc6a4"
   },
   "embedded_documentation_sha256": {
-    "readme_md": "f95a0a0a922a7117d68a075df22d7af3d84e6cf02bdc333fa0e746dd9bcf81c8",
+    "readme_md": "71804a9e872f22309e00345e3d4aaac018fa8ebf8ebf51069f11041fde76ac95",
     "docs/overview_md": "493698318faef8c770506e27d2e642ae574568f7371346799fcadab3eee71f9b",
     "docs/fn_lifecycle_md": "f375ab171ee00a8c712dde6468eec9f9830dd2265691013293643c31f283fe43",
+    "docs/fn_mix_analysis_md": "94be526c28228a0248bfffd908c67e4477f1bcb579ff69a90d422752b9869dce",
     "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
     "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
+    "docs/fn_mix_md": "8853565cd5562b5f6c7e0490980df575bb55072b252f9c1813b687c9fcbe12ac",
     "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
     "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
     "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
@@ -49,18 +61,349 @@
   },
   "validation": {
     "native_export_reload": "passed",
-    "runtime_source_count": 19,
-    "documentation_snapshot_count": 10,
-    "source_tests": 487,
+    "runtime_source_count": 22,
+    "documentation_snapshot_count": 12,
+    "source_tests": 589,
     "scoped_errors": 0,
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
     "palette_47_follow_up": "https://github.com/joshuahhn/roto_control/issues/24",
-    "hardware_acceptance": "Earlier same-candidate PLUGIN checks passed: FUNC red/white palette 71 and purple/white palette 82; hardware A/B/A names/colors and Knob 1-3 screens normal. No new hardware operation during save/export.",
+    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747. Snare/Rhythm Active LEDs, actual Trig 0/1, Threshold gestures, motor return and normal PLUGIN return pass. Clean round 122 changed writes: Snare 46, Rhythm 72, four Active presses. Original values restored. Caption fix is physically accepted in overview and Focus at Thres 49.459 with zero writes. Custom Slot7 Lowgain and Slot8 read-only Low meter aliases pass through real Apply: 32 Lowgain writes to 2.6131966062381737 only, 2.000 motor restore, Gain stays on Focus Knob2, Level TEST Focus and PLUGIN return normal. Unassigned Focus Knob1 20 CC12/44 pairs and overview Knob8 22 CC19/51 pairs plus touches produce zero writes. Original profile/draft/values restored; observer removed. MIX LOCK correction at b6d2cc3 passes overview LOCK-on touch preserving Low, unlock touch selecting Mid and normal demo_A PLUGIN return, with zero new writes and full restoration. Raw touch no longer bypasses hardware selection suppression.",
     "arbitrary_rgb_acceptance": false,
     "full_project_restart_acceptance": false,
-    "source_tests_commit": "0254000d1f3810fea47713043c8951f6f1d098ee"
+    "source_tests_commit": "dbd341c42b433998065749af2b1da1151437837f",
+    "native_mix_float_targets": 12,
+    "native_mix_configuration_reload": "passed without value recall",
+    "native_mix_scoped_upgrade": "passed: existing profile, mappings and values preserved",
+    "mix_generic_reload": "passed: no profile/presets/draft source/custom assignments, 34 custom draft fields reset, default Analysis bands Low Mid High Kick Snare Rhythm; comparison toggles off",
+    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred. Same-batch view/item timing is source/native-only. MIX LOCK overview touch selection is physically accepted at b6d2cc3; writing a nonselected target while locked is source-only. Earlier other physical acceptance is scoped to 7a99f31/e74e413. Isolated Focus Button 2 produces no selection/CC.",
+    "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
+    "native_documentation_layout": "Existing twelve snapshot positions preserved; no new documentation nodes",
+    "native_mix_toggle_writes": 3,
+    "mix_active_button_hardware": "passed: Low off/on, Mid on/off, four changed writes only, correct native polarity LEDs and unchanged float values; earlier Focus Button 2 selector interpretation withdrawn after isolated no-input check; overview Active acceptance remains valid; normal PLUGIN return; all original values restored",
+    "native_mix_layer_float_targets": 8,
+    "native_mix_layer_configuration_reload": "passed without value recall",
+    "native_mix_layer_rewire_guard": "passed: changed inputs invalidate routing until explicit reconfiguration, even after original wiring restored",
+    "native_mix_layer_setup": "passed: disabled fields unavailable, original flags unchanged",
+    "mix_layer_hardware": "passed: Opac 0.250/0.750, 25%/75% motors and scalar bars; overview Knob 1 reached 0.3466398095586889 with 44 changed lay0opacity writes only; software return 0.250, Input 2 Focus captions and normal PLUGIN return accepted; no extra MIX writes",
+    "native_mix_operation_source_options": 46,
+    "native_mix_operation_controller_choices": 6,
+    "native_mix_operation_and_swap_writes": 3,
+    "native_mix_operation_reload": "passed without target-value recall",
+    "native_mix_operation_libraries": {
+      "common": 6,
+      "contrast": 6,
+      "math": 8
+    },
+    "mix_operation_hardware": "passed: six first-Focus captions; five selected-layer Operation writes to custom Z Film; Add 20% motor with Swap Unavailable; Over origin motor with Swap available; one Swap On input write; Swap Off origin motor; normal PLUGIN return; no extra MIX writes",
+    "mix_step_support": "Menu choice quantization and two-state Swap accepted. No documented public MIX setter for arbitrary detents or resistance strength was found. Physical MIX detents were not checked; arbitrary Float steps are not added.",
+    "native_mix_editor": {
+      "defaults": "passed",
+      "analysis_apply_callback": "passed",
+      "invalid_source_preserves_profile": "passed",
+      "layer_apply_callback": "passed",
+      "full_menu_blends": 46,
+      "applied_choices": 8,
+      "configured_reload": "passed",
+      "draft_not_auto_applied": "passed",
+      "writes": 0,
+      "process": false,
+      "clear_callback": "passed",
+      "cross_comp_saved_reload": "passed",
+      "existing_profile_ui_hydration": "passed: containing-network OP parameter context",
+      "new_hardware_acceptance": false,
+      "analysis_bands": "passed: six known items, optional custom slots 7/8, real Apply callback; current saved Low/Mid draft preserved"
+    },
+    "native_mix_operation_presets": {
+      "preset_add_two": "passed",
+      "preset_add_six": "passed",
+      "preset_select_draft_only": "passed",
+      "apply_two": "passed",
+      "preset_save_rename_delete": "passed without changing applied choices",
+      "configured_reload": "passed with applied two / draft six",
+      "custom_analysis_doc_native": "passed",
+      "target_writes": 0,
+      "midi_opened": false,
+      "generic_user_presets_removed": "passed"
+    },
+    "native_mix_analysis_targets": 21,
+    "mix_analysis_selection_feedback": "passed: persistent band/value caption; redundant unchanged overview motor positions removed after a failing six-CC regression; queued positions and frame tails preserved, Focus/mode invalidation retained; normal-production Low/High/Low physical check passed",
+    "native_mix_analysis_six_and_custom": {
+      "real_apply_callback": "passed",
+      "known_items": 6,
+      "custom_slots": [
+        7,
+        8
+      ],
+      "targets": 23,
+      "meters": 8,
+      "triggers": 4,
+      "cross_comp_scope": "passed",
+      "test_fixture_writes": 7,
+      "configured_reload": "passed",
+      "draft_not_applied": true,
+      "no_value_recall": true,
+      "midi_connected": false
+    },
+    "native_mix_trigger_documentation": {
+      "document_examples": 2,
+      "foreign_parameter_names": true,
+      "new_writes": 0,
+      "midi_connected": false
+    },
+    "native_mix_custom_generic_reset": {
+      "default_bands": "Low Mid High Kick Snare Rhythm",
+      "custom_draft_fields_cleared": 34,
+      "comparison_toggles": false,
+      "triggers_empty": true,
+      "midi_connected": false,
+      "preserved": true
+    },
+    "new_detector_custom_slot_hardware": "Six-item overview, High Active/meter, Kick/Snare/Rhythm Active/actual trigger/Threshold/motor return, production comparison and Rhythm caption accepted. Slot7 Gain / Slot8 read-only aliases and unassigned Focus Knob1 / overview Knob8 input accepted. Optional custom trigger/comparison remains native/source-only.",
+    "native_mix_focus_reference": {
+      "native_pairs": "passed",
+      "known_detector_scales": "passed",
+      "custom_toggle_apply_and_reload": "passed",
+      "software_reference_updates": "passed",
+      "comparison_writes": 0,
+      "midi_connected": false
+    },
+    "threshold_comparison_prototype": "Accepted at 0.490, upper Threshold CC66/lower Level CC65 horizontal. Temporary probe removed. Subsequent production overview, first-Focus transition and PLUGIN return passed with no send/receive override and zero writes.",
+    "native_mix_overview_reference": {
+      "overview_pairs": "passed",
+      "focus_roundtrip": "passed",
+      "custom_toggle_apply_and_reload": "passed",
+      "software_reference_updates": "passed",
+      "reference_writes": 0,
+      "midi_connected": false
+    },
+    "mix_threshold_comparison_hardware": {
+      "overview": "passed",
+      "focus_transition": "passed",
+      "plugin_return": "passed",
+      "parameter_writes": 0,
+      "differences": [],
+      "preserved": true,
+      "baseline_button1_local_reconciliation_restored": true
+    },
+    "native_mix_caption_width": {
+      "unselected_overview": "Thres 49.459",
+      "selected_overview": ">Rhyt 49.459",
+      "focus": "Thres 49.459",
+      "unchanged_low": ">Low 0.100",
+      "parameter_writes": 0,
+      "midi_connected": false,
+      "preserved": true
+    },
+    "mix_caption_width_hardware": {
+      "overview_caption": "Thres 49.459",
+      "focus_caption": "Thres 49.459",
+      "user_confirmed": true,
+      "plugin_return": true,
+      "parameter_writes": 0,
+      "preserved": true,
+      "disconnected": true,
+      "pending": 0,
+      "baseline_button1_reconciled": true
+    },
+    "mix_snare_rhythm_hardware": {
+      "snare": {
+        "active_led_on_off": "passed",
+        "actual_trigger_0_1": "passed",
+        "threshold_input": 0.4107672587438198,
+        "threshold_changed_writes": 46,
+        "restored": 0.311515,
+        "motor_return": "52% passed"
+      },
+      "rhythm": {
+        "active_led_on_off": "passed",
+        "actual_trigger_0_1": "passed",
+        "threshold_input": 61.70725752304218,
+        "threshold_changed_writes": 72,
+        "restored": 49.4591,
+        "motor_return": "49% passed"
+      },
+      "overview_reference_scales": "Snare 0..1 / Rhythm 0..100 passed",
+      "clean_round_changed_writes": 122,
+      "active_changed_writes": 4,
+      "unrelated_parameter_writes": 0,
+      "plugin_return": "passed",
+      "original_values_profile_draft_restored": true,
+      "send_override": false,
+      "receive_override": false
+    },
+    "mix_custom_slots_hardware": {
+      "real_apply": "passed",
+      "slot7": "Gain TEST: Lowgain control, primary Gain; processed Low meter",
+      "slot8": "Level TEST: read-only processed Low meter",
+      "gain_gesture": {
+        "value": 2.6131966062381737,
+        "changed_writes": 32,
+        "analysis_changes": {
+          "Lowgain": [
+            2.0,
+            2.6131966062381737
+          ]
+        }
+      },
+      "gain_motor_return": "2.000 / 29% passed",
+      "focus_gain_position": "Knob 2; slot 1 remains unassigned",
+      "readonly_focus": "Level TEST / meter passed",
+      "input_guards": {
+        "focus_unassigned_knob1": {
+          "cc_counts": {
+            "12": 20,
+            "44": 20,
+            "52": 2
+          },
+          "parameter_writes": 0
+        },
+        "overview_readonly_slot8": {
+          "cc_counts": {
+            "19": 22,
+            "51": 22,
+            "59": 2
+          },
+          "parameter_writes": 0
+        },
+        "all_analysis_values_unchanged": true,
+        "send_override": false,
+        "receive_override": false
+      },
+      "restoration": {
+        "preserved": true,
+        "profile_restored": true,
+        "draft_restored": true,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "observer_removed": true,
+        "scope": "Slot7 Lowgain / Slot8 processed Low meter alias; Focus Knob1 + overview Knob8 input"
+      },
+      "plugin_return": "passed",
+      "send_override": false,
+      "receive_override": false
+    },
+    "native_mix_review_corrections": {
+      "touch_only_keeps_selection": "passed",
+      "same_batch_latest_selection": "passed",
+      "backlog_and_fresh_touch": "passed",
+      "only_selected_mid_gain_writes": 2,
+      "missing_channel_clears_both_bars": "passed",
+      "meter_recovery": "passed",
+      "midi_opened": false,
+      "zero_samples": "source regression only: native Script CHOP clamps to one sample",
+      "live_preserved": true,
+      "source_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac"
+    },
+    "native_mix_review_installation": {
+      "runtime_hashes": 22,
+      "preserved": true,
+      "midi_opened": false,
+      "project_saved": false
+    },
+    "native_mix_review_generic": {
+      "custom_fields_default": 34,
+      "operation_slots_empty": 6,
+      "profile_empty": true,
+      "presets_empty": true,
+      "api_guidance_corrected": true,
+      "loaded_docstring_corrected": true,
+      "midi_opened": false,
+      "live_preserved": true,
+      "scoped_errors": 0
+    },
+    "review_axes": {
+      "baseline": "faf3bad54ca1fc800ea777ec50326fbbb03fc271",
+      "reviewed_head": "178f59558eec1a7e75ba736d073a0477dc852c9e",
+      "standards": "no findings",
+      "spec": "same-batch selection failure fixed with real Tick and native regressions",
+      "defensive_feedback": "empty scalar source regression; native zero-sample construction clamps to one sample"
+    },
+    "mix_post_review_mid_hardware": {
+      "runtime_source_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7",
+      "overview_touch_func": "passed: actual Track selection/touch then Focus readback, selected Mid",
+      "gain_gesture": {
+        "parameter": "Midgain",
+        "from": 4.0,
+        "to": 4.48721235426967,
+        "changed_writes": 38,
+        "cc_pairs": 38,
+        "touch_on_off": true,
+        "other_analysis_values_unchanged": true
+      },
+      "motor_return": "passed: Gain 4.000 / about 57%; meter normal",
+      "plugin_return": "passed: demo_A original parameter/value display and actual mode/ACK traffic",
+      "final_changed_writes": 38,
+      "focus_button2_countercheck": "Focus/Low after FUNC release, isolated Button2: no selection/CC, remains Low, zero writes; earlier selector interpretation withdrawn",
+      "same_batch_physical_timing": false,
+      "send_override": false,
+      "receive_override": false,
+      "restoration": {
+        "preserved": true,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "child_returncode": 0,
+        "observer_removed": true,
+        "scoped_errors": 0
+      },
+      "publication": "acceptance metadata only; tox and embedded-doc hashes unchanged"
+    },
+    "mix_lock_selection": {
+      "runtime_source_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac",
+      "pre_fix": {
+        "runtime": "e74e413",
+        "lock_on": "touch CC53 without Track selection incorrectly selected Mid",
+        "new_parameter_writes": 0
+      },
+      "fix": "only validated General Track selection changes selected item; raw touch retains contact/arming only; no synthetic LOCK-state command",
+      "source_regression": "passed: LOCK-on CC53 trace preserves Low/epoch/caption; independent Mid overview target still writable",
+      "native": "passed: touch-only keeps selected item, explicit/batched hardware selection and fresh input remain valid",
+      "hardware": {
+        "lock_on": "CC53 ON/OFF, no General selection; selected Low/epoch3 unchanged; user >Low",
+        "lock_off": "General Track selection Mid then CC53; selected Mid/epoch4; user >Mid",
+        "plugin_return": "passed: normal demo_A parameter/value and actual mode/ACK traffic",
+        "new_parameter_writes": 0,
+        "send_override": false,
+        "receive_override": false
+      },
+      "restoration": {
+        "preserved": true,
+        "new_parameter_writes": 0,
+        "runtime_hashes": 22,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "observer_removed": true,
+        "scoped_errors": 0,
+        "stop": {
+          "reason": "user-plugin-pass",
+          "disconnected": true,
+          "pending_after": 0,
+          "child_returncode": 0,
+          "observer_removed": true
+        }
+      },
+      "limits": "Overview touch selection only; locked nonselected knob gesture and forced same-batch view/selection timing not physically accepted"
+    },
+    "merge_readiness_review": {
+      "reviewed_delta_base": "178f59558eec1a7e75ba736d073a0477dc852c9e",
+      "reviewed_head": "2a9cff751ca1e84f5de3f986d7f3d57c4f4e2cdb",
+      "standards_findings": 0,
+      "spec_findings": 1,
+      "spec_resolution": "P3 API table and internal docstring corrected; no outstanding blocker",
+      "executable_ast": "identical to reviewed runtime after removing function docstrings",
+      "source_tests": 589,
+      "source_commit": "dbd341c42b433998065749af2b1da1151437837f",
+      "native_doc_reload": "passed: corrected API table and loaded function docstring",
+      "physical_acceptance": "reuse b6d2cc3/e74e413 scoped results; no executable behavior change",
+      "midi_opened": false
+    }
   },
-  "runtime_source_commit": "0254000d1f3810fea47713043c8951f6f1d098ee",
-  "embedded_documentation_source_commit": "0254000d1f3810fea47713043c8951f6f1d098ee"
+  "runtime_source_commit": "dbd341c42b433998065749af2b1da1151437837f",
+  "embedded_documentation_source_commit": "dbd341c42b433998065749af2b1da1151437837f"
 }

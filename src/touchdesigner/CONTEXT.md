@@ -20,6 +20,58 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 ## Architecture
 
+The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
+Low/Mid/High/Kick/Snare/Rhythm analysis and wired Layer Mix float routing with 10 Hz native meters.
+New/generic Analysis drafts default to those six; saved drafts and the Python
+call's original Low/Mid default stay unchanged. Slots 7/8 can explicitly assign
+another analyzer's controls and CHOP feedback through two custom parameter pages,
+sharing the original Apply. Missing fields remain unassigned;
+Apply and routing guards retain their existing behavior. Kick has only
+Threshold/Active, as do Snare/Rhythm, with verified pre-threshold meters and independent read-only
+trigger text in first Focus screen 5. Trigger feedback uses normal Tick
+observations and a bounded display hold. High Active/meters and all three
+detectors' Active/trigger/Threshold/motor return have scoped hardware acceptance;
+custom Gain/read-only aliases and the tested unassigned input positions also
+pass. Custom trigger/comparison feedback retains source/native coverage. Optional
+overview/first-Focus references supply upper Threshold/lower Level on a common meter scale for the
+known detectors. Custom slots can opt into both; existing profiles without the
+corresponding view field retain their original meter behavior. Production Focus
+and the requested overview extension have passed scoped hardware acceptance,
+including the first-Focus transition and normal PLUGIN return.
+Audio processing remains deferred to issue #26.
+MIX view/selection metadata follows wire order within one connection while
+buffered CC remains fenced until drain and fresh touch. Source regression and
+isolated native TD checks cover same-batch Focus/item changes; this ordering has
+not been physically forced. Corrected-runtime hardware acceptance confirms touch
+Mid → FUNC, Midgain-only input to 4.487212, 4.000 motor return and normal PLUGIN
+restoration. Missing meter channels clear/recover independently
+of valid targets; empty scalar samples also have source regression coverage.
+The pre-fix MIX LOCK check reproduces a software selection bypass: hardware
+suppresses General selection but still emits raw touch CC. Selection now follows
+only the hardware message; source/native checks and corrected-runtime physical
+LOCK-on/off touch selection pass with zero writes and normal PLUGIN return.
+Overview targets remain independent of
+selection. One MIX source/style profile is active at a time. Layer input-order/Setup changes
+require explicit reconfiguration. Curated Operation libraries and conditional
+Swap have source/native and scoped hardware acceptance; Focus buttons stay
+firmware-owned with no TD business route. A later isolated Button 2 check produces
+no input/selection, so the earlier item-selector interpretation is withdrawn.
+Select in overview by touch, then use FUNC for details. The MIX custom parameter
+page stages a source/style and a
+user-named Operation preset with six custom slots until Apply; two filled slots
+are sufficient. Preset save/name/delete changes data without routing. Clear removes
+only MIX; generic export clears applied data, user Operation presets and draft
+source references. Other analyzers use the documented descriptor API rather than
+the known audioAnalysis convenience adapter. Audio stays
+deferred. `mix_runtime`
+also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
+remain firmware-owned. It
+owns MIX mode/view/touch state; the extension keeps the existing external MIDI
+owner and mutually exclusive MIX/PLUGIN business dispatch. PLUGIN Layouts,
+Follow and LEARN remain separate. See the latest HANDOFF for native versus
+physical evidence. The generic export adopts this slice with empty MIX data;
+the checked-in demo project retains its separate older receipt.
+
 `protocol.Host` owns protocol and session state behind complete-message send/receive and normalized parameter callbacks and configurable target identity/label/display. binding.Binding converts target units and handles target writes/callback dispatch. `RotoPythonExt` adapts that interface to TD parameters and a managed external MIDI process. The child owns mido/rtmidi ports; nonblocking pipes keep MIDI I/O out of TD's native MIDI library. Internal base_state owns readonly diagnostics. The generic controller has no CHOP input/output connectors; public State and APIs expose runtime data. Saved Binding page configuration is reapplied after extension initialization; callback mode runs the user-editable registration DAT.
 
 Binding UI now exposes only Parameter mapping (`collection`: Free LEARN, Inspector, Layouts/Tracks) and Python registration (`callback`: saved reconstruction hook). Legacy single-target APIs remain callable; their outer configuration fields are removed after disconnected migration. `setup.configure_ui` is the shared builder/export upgrade. Native input-only receive retesting and its reproducible runner are documented in `diagnostics/native_midi/README.md`; production continues to use the external backend.

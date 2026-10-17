@@ -1,5 +1,333 @@
 """Apply persisted TD configuration through the public binding interface."""
 import copy
+import posixpath
+
+
+MIX_CUSTOM_PARAMETERS = tuple('Mixcustom' + str(i) for i in range(1, 7))
+MIX_NO_OPERATION = '__none__'
+MIX_DRAFT_PRESET = '__draft__'
+MIX_ANALYSIS_DEFAULT = 'Low Mid High Kick Snare Rhythm'
+MIX_ANALYSIS_SLOT_FIELDS = (
+    ('name', 'Str', 'Item name', ''),
+    ('source', 'OP', 'Analyzer COMP', ''),
+    ('primary', 'Menu', 'Overview control', 'none'),
+    ('threshold', 'Str', 'Threshold parameter', ''),
+    ('gain', 'Str', 'Gain parameter', ''),
+    ('add', 'Str', 'Add parameter', ''),
+    ('smooth', 'Str', 'Smooth parameter', ''),
+    ('active', 'Str', 'Active parameter', ''),
+    ('meter', 'OP', 'Meter CHOP', ''),
+    ('channels', 'Str', 'Meter channel names', ''),
+    ('measure', 'Menu', 'Meter measurement', 'scalar'),
+    ('minimum', 'Float', 'Meter minimum', 0),
+    ('maximum', 'Float', 'Meter maximum', 1),
+    ('stage', 'Str', 'Meter signal stage', ''),
+    ('compare', 'Toggle', 'Threshold comparison', False),
+    ('trigger', 'OP', 'Actual trigger CHOP', ''),
+    ('pulse', 'Str', 'Trigger channel name', ''),
+)
+
+
+def install_mix_analysis_slots(controller):
+    for slot in (7, 8):
+        title = 'MIX Slot ' + str(slot)
+        page = next((p for p in controller.customPages if p.name == title), None)
+        page = page if page is not None else controller.appendCustomPage(title)
+        prefix = 'Mixslot' + str(slot)
+        for order, (suffix, kind, label, default) in enumerate(MIX_ANALYSIS_SLOT_FIELDS):
+            name = prefix + suffix
+            parameter = getattr(controller.par, name, None)
+            if parameter is None:
+                parameter = getattr(page, 'append' + kind)(name, label=label)[0]
+                if suffix == 'primary':
+                    parameter.menuNames = ['none', 'threshold', 'gain', 'add', 'smooth']
+                    parameter.menuLabels = ['Read-only', 'Threshold', 'Gain', 'Add', 'Smooth']
+                elif suffix == 'measure':
+                    parameter.menuNames = ['scalar', 'rms_dbfs']
+                    parameter.menuLabels = ['Scalar level', 'Audio RMS dBFS']
+                parameter.default = parameter.val = default
+            parameter.label = label
+            parameter.order = order
+            parameter.enableExpr = "me.par.Mixstyle == 'analysis'"
+            parameter.startSection = suffix in ('threshold', 'meter', 'trigger')
+            parameter.help = 'Optional analysis slot draft. Assign real parameters/CHOPs; use the existing Apply MIX draft. Blank Item name leaves this slot unassigned.'
+            if suffix == 'compare':
+                parameter.enableExpr += " and me.par." + prefix + "threshold != '' and me.par." + prefix + "measure == 'scalar'"
+                parameter.help = 'Overview and first FUNC Focus: upper Threshold, lower mono level on the same meter scale. Use only when level and threshold have the same units and the signal stage is verified. Draft only until Apply.'
+
+
+def analysis_draft(controller, source, bands):
+    """Resolve explicit draft references into the existing descriptor boundary."""
+    drafts, operators = [], [source]
+    for slot in (7, 8):
+        values = {suffix:getattr(controller.par, 'Mixslot' + str(slot) + suffix).eval()
+                  for suffix, *_ in MIX_ANALYSIS_SLOT_FIELDS}
+        if not values['name'].strip():
+            continue
+        if values['source'] is None or not values['source'].valid or not values['source'].isCOMP:
+            raise ValueError('Custom slot ' + str(slot) + ' needs an existing analyzer COMP')
+        for key in ('source', 'meter', 'trigger'):
+            operator = values[key]
+            parameter = getattr(controller.par, 'Mixslot' + str(slot) + key)
+            if operator is None and parameter.val:
+                raise ValueError('Custom slot ' + str(slot) + ' has an unavailable ' + key)
+            if operator is not None:
+                if not operator.valid or (key != 'source' and not operator.isCHOP):
+                    raise ValueError('Custom feedback needs an existing CHOP')
+                operators.append(operator)
+        drafts.append((slot, values))
+    scope = source.parent()
+    while any(not n.path.startswith(scope.path.rstrip('/') + '/') and n.path != scope.path for n in operators):
+        scope = scope.parent()
+    helper = controller.op('mix_descriptor').module
+    descriptor = helper.analysis_profile(posixpath.relpath(source.path, scope.path), bands)
+    for slot, values in drafts:
+        while len(descriptor['items']) < slot - 1:
+            index = len(descriptor['items']) + 1
+            descriptor['items'].append(dict(id='unassigned.' + str(index), label='Unassigned', primary=None, controls={}))
+        target_op = posixpath.relpath(values['source'].path, scope.path)
+        controls = {key:dict(label=label,kind='toggle' if key=='active' else 'float',
+                             target=dict(op=target_op,parameter=values[key].strip()))
+                    for key,label in (('threshold','Thresh'),('gain','Gain'),('add','Add'),('smooth','Smooth'),('active','Active')) if values[key].strip()}
+        primary = None if values['primary']=='none' else values['primary']
+        item = dict(id='custom.' + str(slot),label=values['name'].strip(),primary=primary,controls=controls)
+        if values['meter'] is not None:
+            item['meter'] = dict(source=dict(kind='chop',op=posixpath.relpath(values['meter'].path,scope.path),channels=values['channels'].replace(',',' ').split()),
+                                 measure=values['measure'],range=[values['minimum'],values['maximum']],stage=values['stage'].strip())
+            if values['compare']:
+                item['meter']['overview_reference'] = 'threshold'
+                item['meter']['focus_reference'] = 'threshold'
+        elif values['channels'].strip() or values['stage'].strip() or values['compare']:
+            raise ValueError('Custom meter details need a Meter CHOP')
+        if values['trigger'] is not None:
+            item['trigger'] = dict(source=dict(kind='chop',op=posixpath.relpath(values['trigger'].path,scope.path),channels=[values['pulse'].strip()]),hold_ms=200)
+            if 'active' in controls:
+                item['trigger']['enabled'] = controls['active']['target'].copy()
+        elif values['pulse'].strip():
+            raise ValueError('Custom trigger channel needs an Actual trigger CHOP')
+        if not controls and not item.get('meter') and not item.get('trigger'):
+            raise ValueError('Custom slot needs a control or read-only feedback')
+        descriptor['items'].append(item)
+    return scope, helper.validate(descriptor)
+
+
+def legacy_mix_choices(controller, libraries=None):
+    """Preflight the old uncommitted draft before replacing any source/UI."""
+    parameter = getattr(controller.par, 'Mixoperationlibrary', None)
+    if parameter is None:
+        return None
+    if libraries is None:
+        libraries = controller.op('mix_runtime').module.OPERATION_LIBRARIES
+    library = parameter.eval()
+    if library not in libraries:
+        raise ValueError('Unknown legacy Operation library')
+    choices = list(libraries[library]) + [getattr(controller.par, 'Mixcustom' + str(i)).eval()
+        for i in range(1, 5) if getattr(controller.par, 'Mixcustom' + str(i)).eval() != MIX_NO_OPERATION]
+    choices = list(dict.fromkeys(choices))
+    if len(choices) > 6:
+        raise ValueError('Legacy Operation draft has more than six choices; reduce it before upgrading. Applied MIX is unchanged.')
+    return choices
+
+
+def refresh_mix_presets_ui(controller):
+    parameter = controller.par.Mixoperationpreset
+    selected = parameter.eval()
+    records = controller.ext.RotoPythonExt.GetMixOperationPresets()
+    parameter.menuNames = [MIX_DRAFT_PRESET] + [r['id'] for r in records]
+    parameter.menuLabels = ['Custom draft'] + [r['name'] for r in records]
+    parameter.val = selected if selected in parameter.menuNames else MIX_DRAFT_PRESET
+
+
+def set_mix_operation_draft(controller, choices):
+    if len(choices) > 6:
+        raise ValueError('This preset editor has six slots; the applied API profile is unchanged')
+    refresh_mix_ui(controller)
+    for index, name in enumerate(MIX_CUSTOM_PARAMETERS):
+        parameter = getattr(controller.par, name)
+        value = choices[index] if index < len(choices) else MIX_NO_OPERATION
+        if value not in parameter.menuNames:
+            parameter.menuNames = parameter.menuNames + [value]
+            parameter.menuLabels = parameter.menuLabels + ['Unavailable: ' + value]
+        parameter.val = value
+
+
+def mix_draft_operations(controller):
+    return controller.op('mix_descriptor').module.operation_choices(
+        [getattr(controller.par, name).eval() for name in MIX_CUSTOM_PARAMETERS
+         if getattr(controller.par, name).eval() != MIX_NO_OPERATION], 6)
+
+
+def load_mix_preset_ui(controller):
+    identity = controller.par.Mixoperationpreset.eval()
+    if identity == MIX_DRAFT_PRESET:
+        return
+    record = next((r for r in controller.ext.RotoPythonExt.GetMixOperationPresets() if r['id'] == identity), None)
+    if record is not None:
+        set_mix_operation_draft(controller, record['operations'])
+        controller.par.Mixpresetname.val = record['name']
+
+
+def edit_mix_preset_ui(controller, action):
+    extension = controller.ext.RotoPythonExt
+    identity = controller.par.Mixoperationpreset.eval()
+    if action == 'Deletemixpreset':
+        extension.RemoveMixOperationPreset(identity)
+    else:
+        identity = extension.SaveMixOperationPreset(controller.par.Mixpresetname.eval(), mix_draft_operations(controller),
+            preset_id=identity if action == 'Savemixpreset' else None)
+        controller.par.Mixoperationpreset.val = identity
+
+
+def refresh_mix_ui(controller):
+    """Refresh draft choices only; preserve an unavailable choice until Apply."""
+    source = controller.par.Mixsource.eval()
+    names, labels = [MIX_NO_OPERATION], ['None']
+    if source is not None and source.valid and source.OPType == 'layermixTOP':
+        menu = source.par.operand
+        for name, label in zip(menu.menuNames, menu.menuLabels):
+            if name != 'opperlayer':
+                names.append(name); labels.append(label)
+    for name in MIX_CUSTOM_PARAMETERS:
+        parameter = getattr(controller.par, name)
+        value = parameter.eval()
+        parameter.menuNames = names + ([value] if value not in names else [])
+        parameter.menuLabels = labels + (['Unavailable: ' + value] if value not in names else [])
+        parameter.val = value
+
+
+def install_mix_ui(controller):
+    """Install an explicit-Apply draft editor without changing MIX assignments."""
+    legacy_choices = legacy_mix_choices(controller)
+    new_editor = getattr(controller.par, 'Mixoperationpreset', None) is None
+    page = next((p for p in controller.customPages if p.name == 'MIX'), None)
+    page = page if page is not None else controller.appendCustomPage('MIX')
+    new_source = getattr(controller.par, 'Mixsource', None) is None
+    new_bands = getattr(controller.par, 'Mixanalysisbands', None) is None
+    definitions = [('Mixstyle', 'Menu', 'Draft style', 'analysis'),
+                   ('Mixsource', 'OP', 'Draft source', ''),
+                   ('Mixanalysisbands', 'Str', 'Analysis bands', MIX_ANALYSIS_DEFAULT),
+                   ('Mixoperationpreset', 'Menu', 'Operation preset', MIX_DRAFT_PRESET)]
+    definitions += [(name, 'Menu', 'Custom blend ' + str(i), MIX_NO_OPERATION)
+                    for i, name in enumerate(MIX_CUSTOM_PARAMETERS, 1)]
+    definitions += [('Mixpresetname', 'Str', 'Preset name', ''),
+                    ('Newmixpreset', 'Pulse', 'Add Operation preset', None),
+                    ('Savemixpreset', 'Pulse', 'Save preset edits / name', None),
+                    ('Deletemixpreset', 'Pulse', 'Delete preset', None),
+                    ('Applymix', 'Pulse', 'Apply MIX draft', None),
+                    ('Clearmix', 'Pulse', 'Clear MIX assignments', None),
+                    ('Mixsummary', 'Str', 'Applied MIX', 'Unassigned')]
+    for order, (name, kind, label, default) in enumerate(definitions):
+        parameter = getattr(controller.par, name, None)
+        new_parameter = parameter is None
+        if new_parameter:
+            parameter = getattr(page, 'append' + kind)(name, label=label)[0]
+        if name == 'Mixstyle':
+            parameter.menuNames = ['analysis', 'layers']
+            parameter.menuLabels = ['Analysis bands', 'Layer Mix inputs']
+        elif name == 'Mixoperationpreset' and new_parameter:
+            parameter.menuNames = [MIX_DRAFT_PRESET]
+            parameter.menuLabels = ['Custom draft']
+        elif kind == 'Menu' and new_parameter:
+            parameter.menuNames = [MIX_NO_OPERATION]
+            parameter.menuLabels = ['None']
+        if new_parameter:
+            if default is not None:
+                parameter.default = parameter.val = default
+        parameter.order = order
+        parameter.help = 'Draft only. Apply MIX draft replaces the current MIX profile without changing target values or PLUGIN mappings.'
+    for name in ('Mixoperationpreset', *MIX_CUSTOM_PARAMETERS, 'Mixpresetname', 'Newmixpreset', 'Savemixpreset', 'Deletemixpreset'):
+        getattr(controller.par, name).enableExpr = "me.par.Mixstyle == 'layers'"
+    controller.par.Mixanalysisbands.enableExpr = "me.par.Mixstyle == 'analysis'"
+    controller.par.Mixanalysisbands.help = 'Ordered Low, Mid, High, Kick, Snare and/or Rhythm items. Optional custom assignments stay in slots 7 and 8. Draft only until Apply.'
+    controller.par.Mixoperationpreset.startSection = True
+    controller.par.Applymix.startSection = True
+    controller.par.Mixsummary.readOnly = True
+    controller.par.Mixsummary.help = 'Currently applied profile. Draft edits take effect only after Apply. Audio Gain/Mute is not available yet.'
+    if legacy_choices is not None:
+        set_mix_operation_draft(controller, legacy_choices)
+        controller.par.Mixoperationlibrary.destroy()
+    elif new_editor:
+        saved = controller.fetch('mix_profile', None, search=False)
+        if saved:
+            descriptor = saved['descriptor']
+            scope = controller.op(saved['scope'])
+            source = scope.op(descriptor['source']) if scope is not None else None
+            controller.par.Mixstyle.val = descriptor['style']
+            if source is not None and new_source:
+                # Custom OP parameters resolve from the containing network.
+                controller.par.Mixsource.val = posixpath.relpath(source.path, controller.parent().path)
+            refresh_mix_ui(controller)
+            if descriptor['style'] == 'layers':
+                choices = next((item['controls']['operation']['choices'] for item in descriptor['items']
+                                if 'operation' in item['controls']), [])
+                if len(choices) <= 6:
+                    set_mix_operation_draft(controller, choices)
+    refresh_mix_ui(controller)
+    refresh_mix_presets_ui(controller)
+    if new_bands:
+        saved = controller.fetch('mix_profile', None, search=False)
+        if saved and saved['descriptor']['style'] == 'analysis':
+            descriptor = saved['descriptor']
+            bands = tuple(item['id'].capitalize() for item in descriptor['items'])
+            helper = controller.op('mix_descriptor').module
+            if (bands and all(band in helper.ANALYSIS_BANDS for band in bands)
+                    and descriptor == helper.analysis_profile(descriptor['source'], bands, id=descriptor['id'])):
+                controller.par.Mixanalysisbands.val = ' '.join(bands)
+    callbacks = controller.op('parameter_callbacks')
+    watched = callbacks.par.pars.eval().split()
+    callbacks.par.pars = ' '.join(watched + [name for name in ('Mixsource', 'Mixstyle', 'Mixoperationpreset', 'Newmixpreset',
+        'Savemixpreset', 'Deletemixpreset', 'Applymix', 'Clearmix') if name not in watched])
+    controller.ext.RotoPythonExt._sync_mix_summary()
+    install_mix_analysis_slots(controller)
+
+
+def apply_mix_ui(controller):
+    source = controller.par.Mixsource.eval()
+    if source is None or not source.valid:
+        raise ValueError('Choose an existing MIX source')
+    style = controller.par.Mixstyle.eval()
+    if style == 'analysis':
+        bands = tuple(band.capitalize() for band in controller.par.Mixanalysisbands.eval().replace(',', ' ').split())
+        descriptor = controller.op('mix_descriptor').module.analysis_profile(source.name, bands)
+        if not source.isCOMP or any(getattr(source.par, control['target']['parameter'], None) is None
+                                    for item in descriptor['items'] for control in item['controls'].values()):
+            raise ValueError('Choose an audioAnalysis COMP with ' + '/'.join(bands) + ' controls')
+        scope, descriptor = analysis_draft(controller, source, bands)
+        helper = controller.op('mix_runtime').module
+        for item in descriptor['items']:
+            try:
+                for key, control in item['controls'].items():
+                    helper.Target(scope, control, descriptor['id'] + ':' + item['id'] + ':' + key)
+                if item.get('meter'):
+                    helper.Signal(scope, item['meter']['source'])
+                if item.get('trigger'):
+                    trigger = helper.Trigger(scope, item['trigger'])
+                    if trigger.error:
+                        raise ValueError(trigger.error)
+            except (ValueError, AttributeError, TypeError, KeyError) as exc:
+                raise ValueError('Analysis feedback unavailable or invalid assignment: ' + str(exc)) from exc
+        return controller.ext.RotoPythonExt.SetMixProfile(scope, descriptor)
+    if style == 'layers':
+        return controller.ConfigureMixLayers(source.parent(), source.name,
+            operation_choices=mix_draft_operations(controller))
+    raise ValueError('Choose Analysis or Layer Mix; audio processing remains planned')
+
+
+def reset_mix_ui(controller):
+    """Remove user source references from a generic export clone's draft."""
+    controller.par.Mixstyle.val = 'analysis'
+    controller.par.Mixanalysisbands.val = MIX_ANALYSIS_DEFAULT
+    controller.par.Mixsource.val = ''
+    controller.par.Mixpresetname.val = ''
+    controller.par.Mixoperationpreset.val = MIX_DRAFT_PRESET
+    for name in MIX_CUSTOM_PARAMETERS:
+        getattr(controller.par, name).val = MIX_NO_OPERATION
+    for slot in (7, 8):
+        for suffix, _, _, default in MIX_ANALYSIS_SLOT_FIELDS:
+            getattr(controller.par, 'Mixslot' + str(slot) + suffix).val = default
+    refresh_mix_ui(controller)
+    refresh_mix_presets_ui(controller)
+    controller.ext.RotoPythonExt._sync_mix_summary()
 
 
 # SysEx API v1.6 Appendix A. Index 47 prints a non-hex G component, BO;
@@ -269,6 +597,7 @@ def configure_ui(controller):
     install_follow_ui(controller)
     install_device_ui(controller)
     combine_context_pages(controller)
+    install_mix_ui(controller)
     manager=getattr(controller.ext.RotoPythonExt,'_layouts',None)
     if manager is not None:manager.menu()
     return mode

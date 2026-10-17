@@ -15,7 +15,7 @@ class ApiTests(unittest.TestCase):
     def single(self):
         ext = RotoPythonExt.__new__(RotoPythonExt)
         storage = {}
-        ext.ownerComp = SimpleNamespace(path='/controller',fetch=lambda key,default=None:storage.get(key,default),store=lambda key,value:storage.update({key:value}))
+        ext.ownerComp = SimpleNamespace(path='/controller',fetch=lambda key,default=None,**kwargs:storage.get(key,default),store=lambda key,value:storage.update({key:value}))
         ext._host = Host(lambda message: None, lambda value: None, .123456789)
         ext._collection = ext._binding = None
         ext._last_error = ''

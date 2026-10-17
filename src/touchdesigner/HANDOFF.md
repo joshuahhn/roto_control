@@ -23,6 +23,18 @@ source tests and synthetic native messages do not establish physical acceptance.
   accepted. Only claim the environments and interactions actually recorded.
 - Historical manual gates without a later matching result remain unproven in that
   scope. Investigate them only when the requested change depends on that behavior.
+- Current MIX runtime activates one source/style profile at a time.
+  Mixed-style slots and audio Gain/Mute processing remain deferred;
+  audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
+- Six-item overview, High Active/changing meter and Kick Active/actual trigger/
+  Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm
+  Active/trigger/Threshold/motor return now pass too. Slot 7 Gain / Slot 8
+  read-only aliases and unassigned Focus Knob 1 / overview Knob 8 pass. Optional
+  custom trigger/comparison feedback remains source/native-only. A bounded
+  upper-Threshold/lower-Level prototype was accepted; its explicit production
+  Focus integration has passed an installed-runtime hardware check. The user's
+  requested overview extension and first-Focus/PLUGIN transition have also passed
+  with zero writes. See [the batch](docs/plans/mix-analysis-acceptance.md).
 
 ## Historical milestones
 
@@ -1425,3 +1437,1350 @@ its saved bytes and current values were not changed while packaging publication.
 Checked-in demo project/receipt retain their separate earlier baseline.
 The 487 source tests and scoped preview/native/export/physical evidence above
 are reused, because publication does not alter runtime or UI behavior.
+
+
+## Actual Kick output acceptance and MIX configuration decision — 2026-10-17
+
+On user instruction, extended the bounded one-knob probe to temporarily enable
+`audioAnalysis.Kickactive`. Its bound child `kick.Active` selected
+`null_kickSignal` through `switch1` into `Kickdrum`; the public output was
+`out1['kick']`. Trigger peak length was 0.1 seconds. Hardware K1 was derived
+only from observed real output, with a 0.2-second display hold; it was not
+inferred from a level/threshold comparison. Eight temporary input/indicator
+tests passed. User confirmed K0/K1 alternation, T.262 and normal native meters.
+
+The high-threshold control set Kickthresh to 0.600 temporarily. User still saw
+K1. Native records explain this correctly: pre-threshold level reached
+0.61..0.70, with positive `math8` difference, gate=1 and actual kick output=1.
+There were 63 observed pulse rises in that high phase after settling, and
+367 in the full bounded probe. This was not a valid no-trigger condition.
+Meter scaling at 0..0.6 clipped these peaks; production meter range must be
+independent of the control range. Threshold subtraction matched level minus
+threshold within 5.37e-8. One comparison of upstream Kickdrum versus public
+out1 differed within the first 187 samples after enable, with no further
+mismatch through the final 6552 samples; display authority remained out1.
+This records an initialization/read-timing limit, not a palette defect claim.
+
+The bounded timeout restored both the agent's temporary threshold and Kickactive.
+User confirmed normal PLUGIN return, then Disconnect closed/reaped the child.
+Final audit preserves Kickthresh=0.26174693279619116, Kickactive=False,
+Audioout=False, all parent writable audioAnalysis parameters and child binding
+modes/expressions, controller parameters, demo_A/B values, Snapshots, four
+original local control IDs and 19 source/helper hashes. Registry definitions
+match baseline except revision 271 to 283. Temporary receiver/probe and pending
+output are gone. Scoped native checks for the controller, Kickdrum, trigger1
+and out1 returned no errors/warnings. No saved toe/tox or production source
+changed. Scripts, recovery and detailed results are in system temporary
+`roto-kick-trigger-_axhupqr`; this is a one-off acceptance probe.
+
+User explicitly selected the production design: an independent MIX page with
+eight slots, each configured with its own control target and meter source.
+It must not reuse/switch with the current Device's PLUGIN assignments.
+Implement MIX All Tracks/Level first; preserve PLUGIN routing/LEARN, existing
+transport, session/epoch fences and value/motor ownership. AudioAnalysis and
+later Layer Mix opacity are the concrete uses. Meter range is separate from
+control range, and native yellow/red thresholds are global across MIX meters.
+The production adapter, saved configuration/UI, source/native/physical checks,
+generic tox/receipts and PR remain work to do. Root checkout stays dirty and
+its existing edits must be preserved; PR #25 was found already merged on GitHub
+at 2026-10-16T18:55:15Z, not merged by this work.
+
+
+## Low MIX Focus prototype and deferred audio issue — 2026-10-17
+
+User explicitly deferred audio refinement and authorized a future issue:
+[issue #26](https://github.com/joshuahhn/roto_control/issues/26), labelled
+enhancement/needs-triage, records explicit Gain/Mute destinations, meter stage and
+retained Gain on unmute. No audio processing stage was built. Analysis remains
+the first production style.
+
+Active project remained `ROTO-CONTROL.track-preview.2.toe` and the correct
+controller `/roto_clean_demo/roto_python`. A temporary receiver and the existing
+external MIDI owner provided one MIX item, Low, with two named Sends for Add and
+Smooth. Actual All Tracks readback was `0C 01 00 00 00 00`; FUNC reported
+`0C 02 00`. Target ranges came from native normalization: Threshold 0..0.6,
+Gain 0..7, Add -1..1, Smooth 0..1. The meter used public `out1['low']` at 10 Hz
+over 0..1, labelled as processed output rather than threshold input.
+
+The initial display-only phase made zero parameter writes. User observed
+`MIX-FOCUS / Low`, `Thresh 0.100`, `Gain 2.000`, `Add 0.000`, `Smooth 0.000`,
+an underscore/lower-line display and continuing first-screen meters. This
+establishes readable combined name/value text via SHOW CONTROL VALUE; it does
+not establish arbitrary replacement of every firmware heading.
+
+Only a new Knob 2 touch could then write Lowgain. CC13/45 pairing accepted both
+orders, rejected stale halves and cleared on release. User reached displayed
+Gain 2.841, native value 2.84093267411341. There were 66 changed writes during
+the gesture, with Threshold/Add/Smooth unchanged. Input was then removed again,
+Gain was explicitly restored to its original 2.000, and no additional input
+writes occurred during hands-off feedback.
+
+The 60-second reset observation expired before the user's text report. The
+original probe cleanup republished PLUGIN Track metadata while hardware remained
+MIX Focus, producing native VOLUME/PAN/SEND A/SEND B and EFFECT. This was a
+test-method cleanup defect. A temporary regression at the actual finish method
+failed, then passed after deferring metadata restoration until actual PLUGIN
+return. A second test covers ordering that restoration after the PLUGIN message.
+A fresh three-minute read-only phase passed physical four-text, Knob 2 at about
+29%, and continuing-meter checks. User then confirmed normal PLUGIN. No production
+framing defect or general firmware-label defect is claimed.
+
+Final cleanup closed/reaped the child with return code 0, removed the receiver
+override/probe and left zero pending bytes. Disconnected restore reinstated local
+definitions, not a readback claim about hardware learned storage. Registry data
+match baseline except revision 283 to 290. Controller parameters, all parent
+writable analysis parameters, child Kick bindings/modes, demo_A/B values,
+Snapshots, four original IDs and all 19 runtime/helper hashes match baseline.
+Kickthresh remains 0.26174693279619116; Kickactive and Audioout remain off.
+
+Twelve temporary decoder/projection/cleanup tests passed; they are one-off probe
+tests, not a production runtime suite. Scoped native checks for the controller
+and analysis out1 returned zero errors/warnings. Recovery tox, scripts and separate
+display/input/final results remain only in system temporary `roto-low-details-xmewaxym`.
+No canonical toe/tox, embedded DAT source or runtime module changed; no commit or
+PR was created. The project stays open and disconnected. Source integration of
+the shared descriptor and Low/Mid analysis routing is the next authorized step,
+preserving the dirty checkout in an isolated worktree.
+
+## Independent MIX analysis source slice — 2026-10-17
+
+Implemented in isolated branch `feat/td-mix-analysis`, based on fork main
+`faf3bad54ca1fc800ea777ec50326fbbb03fc271`. The original dirty root checkout was
+not reset, cleaned or used as runtime source. Preserved only the three approved
+new design documents and the two relevant prototype-evidence sections above.
+Official integration guidance already matches this checkout.
+
+`mix_descriptor` validates versioned data for exactly layers/analysis/audio and
+describes existing Low/Mid parameters. `mix_runtime` enables the analysis float
+slice independently of PLUGIN, with overview and first Focus-page projection,
+fresh-touch/pair/session fences, explicit target identity/range/mode checks,
+deferred motor feedback and independent 10 Hz coalesced meters. The small
+`midi_queue` filter preserves in-flight frame tails. Extension dispatch isolates
+shared Track metadata/selection as well as CC/ACK business traffic, and restores
+PLUGIN metadata only after its actual mode message. No fake PLUGIN mapping, new
+MIDI owner or wire protocol was added. Configuration, APIs and current limits
+are documented in [MIX analysis](docs/functions/mix.md).
+
+The final runtime source passes `python3 -m unittest discover -q`: 509 tests,
+including 22 new MIX tests. Existing wrong-target, stale-ACK, persistence,
+ownership, Follow and exactly-once coverage remains. Native TD 2025.33230 fixture
+passes eight actual Low/Mid float writes with unrelated targets unchanged,
+scalar CHOP metering, saved configuration reload without value recall, repeated
+disconnected upgrade, and zero scoped errors. Temporary generic export/reload
+from the complete live controller passes empty MIX configuration, no external
+DAT files, embedded helpers, disconnected state and zero errors.
+
+The attempted full fresh builder reaches an existing ASCII-locale failure in
+Inspector source reads, first `inspector_data.py`, then `parity.py` through nested
+builders. A partial UTF-8 repair was withdrawn to avoid expanding this slice.
+The scoped `scripts/upgrade_mix.py` is natively accepted and does not rebuild
+Inspector. Do not describe the full fresh builder as passing in this environment.
+Builder/cleanup source now classifies the three helpers and the new function doc.
+The native upgrader also verifies one owned MIX annotation after repeat installs;
+Annotate's initializer overrides its requested name, so naming occurs afterward.
+
+Installed only the five affected/new DAT sources in
+`/roto_clean_demo/roto_python`, after verifying all 19 baseline hashes against the
+existing receipt. Its 22 runtime/helper hashes now match this worktree plus the
+unchanged saved baseline. Configured the existing `audioAnalysis` scope for Low
+and Mid. All writable analysis values, four original mappings, registry
+definitions and Snapshots remain equal, allowing the monotonic registry revision
+and serialization-equivalent tuple/list forms. Read-only level/trigger samples
+are live measurements, not configuration equality checks. Midactive remains
+False, Lowactive True, Kickactive/Audioout False, and the user's Kickthresh remains
+0.26174693279619116. The old controller and unsaved audio nodes remain untouched.
+
+One-off recovery, scripts and separate native/install/generic results are in
+system temporary `roto-mix-source-34paqmy5`. The temporary fixture was removed.
+TD remains open/disconnected, no receiver override, zero pending output and zero
+scoped controller errors. No hardware ports were opened by this source slice.
+No canonical toe/tox or receipt changed; no commit, PR or merge exists for MIX.
+
+Next is affected physical acceptance of Low/Mid selection, FUNC details, float
+input/motor and normal PLUGIN restoration. Active/menu/button/trigger routes,
+second-page Focus, Layer Mix, the slot editor and audio #26 remain later slices.
+The earlier bounded Low/Gain proof is not acceptance of these new multi-item
+routes. Canonical save/export and PR publication follow the scoped hardware check.
+
+## Retained FUNC across MIX and PLUGIN — 2026-10-17
+
+User observed that FUNC remains on across MIX → PLUGIN → MIX. A fresh bounded
+connection first reported `0C 01 00 00 00 00`; the user saw MIX-TRACKS, Low/Mid,
+KNOBS-VOL, screen-1 metering and FUNC off. Record this separately from a mode
+round trip; do not infer retained FUNC behavior from a new DAW session.
+
+Kept the same external MIDI child while renewing the bounded observation window.
+User pressed FUNC, PLUGIN, then MIX without pressing FUNC again. The trace records
+Focus `0C 02 00`, PLUGIN `0B 01 00`, then direct Focus `0C 02 00`, without an
+intervening All Tracks report. Runtime projected Low's first details page and
+made zero parameter writes. User confirmed MIX-FOCUS / Low, FUNC on, with native
+Volume/Pan/Send A/Send B and four color labels. This accepts retained Focus and
+main-screen context; it does not yet accept the four small control screens'
+combined text/value rendering after the mode round trip.
+
+Added a real-extension regression for direct Focus return without an overview
+message, preserving selected item, values and fresh-touch fencing. It passes on
+the existing implementation; no runtime change was needed for FUNC retention.
+Full runtime discovery now passes 510 tests; `git diff --check` also passes.
+One-off trace, snapshots and observation are in system temporary
+`roto-mix-func-retained-6he9wazp`, with the round-trip stage in its `roundtrip`
+subdirectory. The 180-second timeout disconnected/reaped the child and removed
+the diagnostic trace wrapper; it did not publish PLUGIN metadata over MIX.
+
+The existing hardware/local Button-1 reconciliation difference recurred during
+PLUGIN recall. Disconnected restoration reinstated the four original local
+control IDs and registry definitions, allowing revision advance. This preserves
+local definitions, not a claim about learned storage readback. Analysis/demo
+values, MIX profile and Snapshots match baseline. No pending bytes, trace or
+receiver override remain; scoped controller errors are zero. No canonical save,
+export promotion, commit or PR was made. Next read the small control screens,
+then continue affected multi-item routing acceptance.
+
+## MIX control-text expiry correction — 2026-10-17
+
+After the bounded FUNC test had stopped, user read the small screens as
+VOLUME/PAN/SEND A/SEND B. Re-read official SysEx API v1.6 section 2.23: SHOW CONTROL
+VALUE uses a timeout and returns to the control name without further messages.
+The accepted temporary Low probe renewed text every 250 ms. The source slice
+instead cached unchanged text indefinitely, which cannot sustain that display.
+The request to read the screens after disconnect was also an invalid method for
+accepting live combined text. FUNC persistence itself remains accepted.
+
+Added a real-extension output regression for unchanged Focus text renewal,
+existing 10 Hz throttling, no repeated motor messages, bounded/coalesced unsent
+captions, zero parameter writes and no MIX renewal after PLUGIN return. It failed
+with no renewed captions, then passed after renewing assigned text on the bounded
+feedback tick. Unassigned blank text still clears only when needed. Full runtime
+discovery passes 511 tests.
+
+Installed this correction through the scoped upgrader while disconnected, with
+a fresh recovery tox and unchanged registry definitions, writable analysis/demo
+values, MIX profile and Snapshots. Native scoped errors are zero. One-off
+recovery/install/active-feedback results belong under temporary
+`roto-mix-func-retained-6he9wazp/text-renewal`. Active hardware text acceptance is
+the next check; no physical success is claimed by this source correction alone.
+
+## MIX Low/Mid hardware acceptance — 2026-10-17
+
+Accepted the production source with the text-renewal correction, on firmware
+3.3.0/API 1.6 and TD 2025.33230. User confirmed all four Low captions remain
+readable for ten seconds with FUNC on. Touching overview Knob 2 and then FUNC
+selects Mid, displaying MIX-FOCUS / Mid and Thresh 0.100, Gain 4.000, Add 0.000,
+Smooth 0.100. Selection/viewing made zero parameter writes. Midactive remained
+False; its processed-output meter can correctly be zero.
+
+A fresh Knob 2 gesture changed only Midgain from 4.0 to 4.396630653726423,
+displayed 4.397, with 21 changed input writes. TD restored 4.000, and the user
+confirmed the motor return and all four captions. The return observation was
+repeated after the user missed its first movement; no additional input writes
+occurred during either hands-off motor move. Original writable analysis values
+were restored, including Midgain 4.0, Lowgain 2.0 and the user's Kickthresh
+0.26174693279619116. Detection/audio toggles were not enabled.
+
+User then confirmed normal demo_A PLUGIN parameter/value screens. The bounded
+diagnostic trace/send wrappers were removed and the single child was closed and
+reaped with return code 0. No receiver override or pending output remains.
+Disconnected restoration reinstated the four original local IDs after the
+existing Button-1 hardware/local recall discrepancy. Registry definitions,
+analysis/demo values, MIX profile and Snapshots match baseline, allowing registry
+revision advance and unordered needs_relearn serialization. This is local
+configuration preservation, not hardware learned-storage readback acceptance.
+Scoped controller errors are zero.
+
+Final relevant source discovery passes 511 tests, including 24 MIX tests. Native
+eight-float target/conversion, configured reload, repeated scoped upgrade and
+generic sanitization evidence above remains applicable. Physical acceptance is
+limited to overview metering, touch selection, first FUNC details, Mid Gain
+input/motor, retained FUNC and PLUGIN return. Pan/Send overview input, other
+physical detail inputs, buttons/menus/triggers and CI=8+ remain unverified or
+disabled as documented. Full fresh Inspector construction still has the
+separate ASCII-locale limitation; the scoped updater passes.
+
+One-off results remain in system temporary
+`roto-mix-func-retained-6he9wazp/text-renewal`, including mid-selection, mid-gain,
+mid-gain-final-return, final-plugin-return and final-restoration.json. TD remains
+open and disconnected with user audio nodes preserved. The generic save/export
+receipt will identify the exact committed source and embedded hashes; the
+checked-in demo project/receipt retain their prior independent baseline.
+
+## MIX generic publication — 2026-10-17
+
+Source and the scoped evidence above are committed as
+`58ff695a5fef1206ff05aa12ff0a3c5dff625c75`. Refreshed eleven Markdown snapshots
+through live TD, exported a generic controller and reloaded it in a temporary
+holder. All 22 runtime/helper and eleven documentation hashes match that commit.
+Reload is disconnected, Python=python3, Follow off, no external DAT dependencies,
+empty MIX profile, mappings, Snapshot records, ownership and Focus links, with
+zero scoped errors. Unchanged menu/color/LEARN behavior reuses its prior evidence.
+The documentation-only layout check places eleven DATs inside two measured
+groups without overlaps. Original outer Guide positions are retained; their
+pre-existing overlap with runtime nodes was also present in recovery and was not
+expanded into a controller-wide layout change.
+The generic SHA-256 is
+`a60fc7d2c59cf270b630081ca8f123ef9159c3494a24aa589eae03498c8c6352`;
+`exports/roto_python.json` pins its source, hashes and acceptance limits.
+
+TD separately saved the configured live working project as
+`ROTO-CONTROL.mix-analysis.2.toe` in the original project's current directory,
+with adjacent identity receipt. Its SHA-256 is
+`9d0efeda58df2dc53191177ef6a0a2b358622363482420f393f1596858e810c2`.
+The old local canonical `ROTO-CONTROL.toe`, its receipt and this worktree's
+checked-in demo remain untouched. The original dirty checkout's runtime source
+was neither copied into TD nor changed. Original values/mappings, the old
+controller's 246 DAT fingerprints and all eight demo-network children, including
+the user's audio nodes, match the pre-publication snapshot. TD stays open and
+disconnected; no full main-project restart is claimed.
+
+Recovery, scripts, export/reload results and the pre-save working file are in
+system temporary `roto-mix-publish-vyql43ej`. The two new committed files for
+distribution are the generic tox and its receipt; probes remain temporary.
+Reuse the final 511 source tests and targeted native/physical evidence because
+publication changed no runtime behavior.
+
+## MIX analysis Active buttons — 2026-10-17
+
+User requested buttons for analyzer Active. Extended the same open PR #27 on
+`feat/td-mix-analysis`, after source/export commits `58ff695` and `778d5a4`.
+Only overview native On/Off switch mode 0 maps to the item's Active Toggle.
+Button 1 is Lowactive, button 2 Midactive. Solo/Arm/unassigned buttons have no
+business target; Focus buttons retain native item selection. No new descriptor
+version, MIDI owner, audio graph or wire protocol was added.
+
+Read-only firmware 3.3.0/API 1.6 acceptance first recorded overview Button 1 as
+BF CC20 press 127, release 0, with zero parameter writes. In FUNC Focus the user
+pressed Button 2 and observed Mid. Wire traffic was General Track selection and
+Focus readback, without CC21 press/release. This establishes the native selector
+seam rather than assuming eight independent Focus business buttons.
+
+The Target adapter now accepts typed Toggle alongside Float, retaining the same
+parameter identity, bind-chain, mode and range guards. Toggle cannot project onto
+a knob. Active toggles once per fresh positive press, ignores held duplicates and
+release, and clears/blocks old presses across view/session boundaries. Native
+Mute LED polarity is inverted from Active: True sends 0, False sends 127. State
+feedback coalesces and is reconfirmed after release, without gating the explicit
+meter source or changing float values.
+
+Two behavioral regressions first failed on missing toggle writes and LED output.
+The final relevant source passes 517 discovery tests, including 30 MIX tests.
+Six new cases cover press semantics, LED/software feedback, stale/held/view
+fences, target invalidation, typed projection and held-button transitions.
+Native TD 2025.33230 accepts three real Toggle writes, duplicate/release
+suppression, independent values, software LED output, unchanged meter sampling
+and no Focus button output. Scoped source upgrade preserves values/configuration,
+matches all 22 runtime/helper hashes and reports zero errors.
+
+Production hardware accepts Low off/on and Mid on/off in overview, with four
+changed writes in total. User confirmed Button 1 lit to unlit and back, Button 2
+unlit to lit and back, and unchanged knob values. All writable analysis values
+then match baseline: Lowactive True, Midactive False, Kickactive/Audioout False,
+and the user's threshold/gain values retained. These new observations do not
+extend acceptance to Solo/Arm, other analysis adapters, menus or audio processing.
+
+Recovery/scripts and separate read-only/native/install/low-off/round-trip results
+are system temporary `roto-mix-active-3lz0aklt`. Final Focus/PLUGIN return and
+save/export bookkeeping follow this checkpoint; later evidence supersedes its
+pending delivery state.
+
+Final production observation also passes Focus Button 2 selecting Mid with normal
+four-detail screens, followed by normal demo_A PLUGIN screens. The MIX changed
+write count remains four. Cleanup closes/reaps the child, removes the temporary
+trace/send wrappers and leaves zero pending bytes. The established disconnected
+local-definition restore preserves the four original IDs after PLUGIN recall;
+registry definitions, analysis/demo values, MIX profile and Snapshots match the
+pre-install baseline. Scoped errors are zero and TD remains open.
+
+Active source is committed as `615b54d975219123eb320f9ab1cf72ba3de5c350`.
+Refreshed embedded Markdown while preserving the measured doc positions, then
+exported/reloaded the generic tox. Its 22 runtime/helper and eleven documentation
+hashes match that commit; MIX/mappings/Snapshots/Focus/ownership are empty,
+Follow is off, Python is python3, no external DAT files and zero scoped errors.
+Generic SHA-256 is
+`4ec90c9f98232458f318b50e3a530a4af8b5c8d139b666202f39067265c4a0af`.
+TD saved the configured working copy as `ROTO-CONTROL.mix-analysis.3.toe`, with
+adjacent receipt, SHA-256
+`fdd549f7df03d5224bfea44104aa62f34cd8e57c6887d060000928dd7fbd2572`.
+Old canonical/demo artifacts and original dirty-root runtime sources remain
+untouched. Final preservation checks include all eight demo children and the old
+controller's 246 DAT fingerprints. Save/export recovery and results are under
+the same temporary folder's `publish` directory. Reuse the final 517 tests;
+publication changes no runtime behavior. This update stays in the same PR #27.
+
+## MIX wired Layer Mix floats — 2026-10-17
+
+Extended the same unmerged PR #27 from `a98cafc`. `ConfigureMixLayers` describes
+an existing Layer Mix TOP with 1..8 wired inputs only. The shared descriptor adds
+an explicit item input reference, and projects the layer's Opacity, Brightness,
+Black Level and Gamma instead of analysis keys. Setup flags and graph/target
+values are never changed by registration. Operation/Swap, reference-only layers,
+mixed-style slots and audio processing are not implemented. One MIX source/style
+profile is active at a time; configuring layers replaces its analysis profile,
+not PLUGIN assignments.
+
+Layer input identities/order, sequence count and Setup flags are pinned. An
+observed change blocks further writes even if the original wiring is restored;
+explicit reconfiguration and fresh touch are required. Existing parameter,
+mode/session/ingress/touch guards, the MIDI owner and PLUGIN LEARN/ACK paths are
+retained. Read-only bars use that layer's Opacity parameter over 0..1, not image
+intensity. Compact captions are Opac/Bright/Black/Gamma. Layer overview buttons
+have no business assignment; Focus buttons retain item selection.
+
+Final relevant runtime source passes 522 discovery tests, including 35 MIX tests.
+Five new behavior cases cover read-only configuration, independent target/meter
+routing, Focus projection, input/Setup/sequence fences, disabled fields, atomic
+profile validation and explicit recovery after a rewire. Native TD 2025.33230
+checks exercise all eight actual Float targets of two wired inputs, independent
+meters, sticky rewire rejection, unchanged disabled Setup flags and configured
+save/reload without target-value recall. The scoped live upgrade matches all 22
+runtime/helper hashes and has zero errors.
+
+The user authorized an isolated two-input demo at
+`/roto_clean_demo/base_layer_mix_demo`: red/blue 64x64 constants, Layer Mix and
+output null. Its initial Opacities are 0.250/0.750. A measured annotation contains
+the four nodes without overlaps. Hardware firmware 3.3.0/API 1.6 accepted both
+captions, 25%/75% motor positions and static scalar bars. Turning only overview
+Knob 1 reached 0.3466398095586889, displayed 0.347, with its bars following.
+Forty-four changed writes affected only lay0opacity. Output samples showed red
+about 0.3451 and blue unchanged about 0.749 in the 8-bit TOP. Software restored
+0.250; the user confirmed motor/text/meter return. FUNC then Button 2 selected
+Input 2 and showed Opac 0.750, Bright 1.000, Black 0.000, Gamma 1.000 with no extra
+input writes. Normal demo_A PLUGIN return was accepted. Other layer float input
+routes have source/native coverage, not physical acceptance.
+
+The bounded diagnostic then disconnected/reaped the child, removed its tracing
+wrappers and restored the original Low/Mid profile and all eight layer float
+values. Analysis parameters, including Kickthresh 0.26174693279619116 and disabled
+Kick/audio output, and Snapshots remain unchanged. User confirmed independently
+changing demo_A.Steps 3 to 4; 4 and Amount 0.44924616981016907 are preserved.
+The pre-existing PLUGIN Button 1 stored-identity reconciliation difference was
+handled as before by restoring the four original local definitions while
+disconnected, without target-value recall. This does not claim a fix or hardware
+learn-storage acceptance for that older difference.
+
+Recovery/scripts/results are under system temporary `roto-mix-layers.FSF5D0jzzv`.
+The original dirty-root runtime sources and old controller remain untouched.
+Save/export and source receipt details follow after publication below.
+
+## Layer Mix save/export — 2026-10-17
+
+Source/documentation commit `3f053812bae4e2ff5824a04fd4a696905f665152` is embedded in the new generic
+export. Native reload confirms 22 runtime/helper and eleven documentation hashes,
+empty MIX/mappings/Snapshots/Focus/ownership, Follow off, Python python3, no external
+DAT files and zero scoped errors. Original outer Guide/doc positions are preserved.
+Generic SHA-256 is
+`3e300151a4d9249c0897fcf3cc7cbf8175e6004407c8996967af1a4aea72d2d2`.
+TD saved `ROTO-CONTROL.mix-analysis.4.toe`, with adjacent receipt, SHA-256
+`9d773da0b234bae0002291c95d3e90f4dcebe3bb8f06a3b197011a56020b6b7b`.
+The working copy keeps the restored Low/Mid profile, authorized Layer Mix demo,
+user Steps=4, original audio nodes and all four local control definitions. Nine
+demo children and the old controller's 246 DAT fingerprints match the publication
+baseline. Canonical/demo toe artifacts and dirty-root runtime source remain
+untouched. The project is open/disconnected, without pending bytes or diagnostic
+overrides. Save/export recovery and results are in the same evidence folder's
+`publish` directory. Reuse the final 522 tests; publication changes no runtime
+behavior. This update stays in PR #27 without merging.
+
+## MIX Operation library source/native checkpoint — 2026-10-17
+
+Continued PR #27 from `18f5db0`. The user refined Operation selection to preset
+libraries plus custom existing TD blend modes. The source now offers common,
+contrast and math libraries, with up to four appended custom names. Descriptors
+save the expanded ordered `choices` by TD option name. The controller range is
+curated, while full TD names/labels are retained for identity checks. Outside-list
+TD values are marked `Op *`, preserved and given no fabricated motor position.
+PLUGIN's default Binding menu capacity remains 24; MIX explicitly permits the
+full TD source menu internally and validates its smaller choice list separately.
+No new wire protocol, transport or library-management framework was added.
+
+First-Focus knob 5 selects Operation, knob 6 is Swap On/Off. The existing Layer
+Mix TOP must already use Per Layer and have cooked its dynamic fields. The adapter
+never enables this setting. Global Operation changes fence the source, with
+explicit reconfiguration required even if the original mode is restored.
+Native TD exposes layNoperation with 46 choices and layNswapord, which is disabled
+for Screen/Add and enabled for Over/Subtract. Disabled Swap clears pending halves,
+blocks a held touch and displays unavailable; availability recovery requires
+release and fresh touch, without rebuilding the profile. Focus buttons remain
+input selectors. Send C/D use the same typed targets, with four advertised sends.
+
+The final relevant source passes 531 discovery tests, including 44 MIX tests and
+existing default Menu capacity/LEARN regressions. Nine new MIX cases cover curated
+name mapping, a custom last source option, invalid libraries/choices, outside-list
+values, delayed dynamic fields, typed Swap, disabled/partial-pair recovery, menu
+identity/global-mode fences and send metadata. A deliberately failing partial-pair
+case prevented an unavailable Swap MSB being reused after enable.
+
+Native fixture checks pass actual 46-option TD menus with six controller choices,
+including custom Z Film, three changed selected-layer Menu/Toggle writes only,
+unchanged eight Float values, outside-list Hue without coercion/motor, sticky
+global-mode fencing and configured save/reload without target-value recall.
+The fixture was removed; no hardware MIDI was opened by those synthetic checks.
+Evidence/recovery/scripts are system temporary `roto-mix-operation.ZpyO0IgoSU`.
+Hardware acceptance, generic artifact/receipt refresh and source publication for
+these new routes remain pending. Prior float/analysis/Active acceptance is reused.
+
+Live preparation on the still-open `ROTO-CONTROL.mix-analysis.4.toe` is unsaved.
+The scoped upgrader now also embeds Binding; all 22 live source hashes match the
+new worktree source. Original registry/profile/values, user demo_A.Steps=4,
+Snapshots, audio nodes and old controller fingerprints were checked before
+staging. Only the authorized isolated Layer Mix demo is temporarily Per Layer,
+with Input 1 Over/Swap Off and Input 2 Add/Swap unavailable. Its original Add mode,
+hidden per-layer fields and Low/Mid profile are in recovery JSON/tox. The bounded
+probe's actual disconnected finish seam restored them and removed its tracing
+wrappers in an offline check, then the demo was restaged. No MIDI process or
+receiver override is active. Await user MIX-TRACKS/FUNC-off ready before calling
+`probe.py`'s `start()`; each window stops within three minutes. These new source
+changes are not yet committed or exported, and the generic receipt remains the
+accepted `3f05381` float-source baseline.
+
+## MIX Operation/Swap hardware acceptance — 2026-10-17
+
+On firmware 3.3.0/API 1.6 the user confirmed first-Focus Input 1's four unchanged
+Float captions, `Op 1 Over`, `Swap Off` and opacity meter. Turning only knob 5
+reached custom `Op 6 Z Film`: five changed Menu writes affected only
+lay0operation. Input 2, all eight Float values and analysis values remained
+unchanged. Software Add sent the 20% motor position and `Op 2 Add`, with Swap
+Unavailable. The user accepted its motor/text and unchanged four floats/meter.
+Software Over returned knob 5 to its origin and made Swap available; knob 6 then
+produced one changed lay0swapord write and `Swap On`, with no other target changes.
+A final fresh read-only connection confirmed knob 6 at origin with Swap Off, then
+normal demo_A PLUGIN return. Six changed business writes in total, without extra
+writes during the read-only/software-feedback/final-return phases.
+
+Each bounded window stopped within three minutes. Some elapsed while the user
+was away/asking questions; their automatic cleanup succeeded, and acceptance
+continued with fresh windows. This is test lifecycle behavior, not a production
+feedback/framing failure. Final cleanup reaped the child return 0, cleared pending
+bytes/tracing wrappers, restored the original Add/global swap setting, hidden
+Screen/Swap fields, eight layer floats and Low/Mid profile. All analysis values,
+Snapshots, demo_A/B values including the user's Steps=4, nine demo children and
+old controller's 246 DAT fingerprints match the installation baseline. The known
+PLUGIN Button 1 learned-identity difference was handled by restoring the four
+original local definitions disconnected, with zero value recall; its scope and
+limitations remain unchanged from earlier entries.
+
+Focus buttons remain native input selectors, as explained to the user. The user's
+step question distinguishes typed value quantization, now accepted, from physical
+haptic detents, still unverified in MIX. Official SysEx API v1.6 section 3.10 lists
+step count in PLUGIN LEARN; chapter 4 has no corresponding MIX per-knob haptic
+setting. No serial or cross-mode PLUGIN configuration command was tried.
+
+Native/source coverage includes Contrast/Math/custom list validation, outside-list
+values, stale pairs and menu/Setup identity changes. Hardware coverage is the
+Common + Xor/Z Film demo and first Focus controls 5/6. Other libraries, per-item
+library edits, overview Send C/D input and second-page Focus were not physically
+accepted. Reuse the final 531 tests. Save/export publication follows below.
+
+## Operation library save/export — 2026-10-17
+
+Committed source/docs `2d84b03ac937329c1ad6737f00b369d2f2580376` are embedded in
+the refreshed generic tox. All 22 runtime/helper and eleven documentation hashes
+match that commit. Export/reload confirms empty MIX/mappings/Snapshots/Focus/ownership,
+Follow off, Python python3, no external DAT files and zero errors. The original
+Guide/doc positions are preserved. Generic SHA-256 is
+`116e9f2e7549000ebae9c84a4f4640bc7abb66c5e092f732446cc7d24600759b`.
+All three libraries were also configured in a disconnected native fixture with
+Xor/Z Film additions: Common six choices, Contrast six, Math eight; no target
+value changes or unavailable controls. The fixture was removed.
+TD saved `ROTO-CONTROL.mix-analysis.5.toe` with adjacent receipt, SHA-256
+`ba34c278f96de288cb0bb3a6ad62c41dcbb66ef471ce764a9209f1d975ce41b9`.
+It retains the restored Low/Mid profile, original demo Add mode, authorized
+Layer Mix demo, audio nodes, Steps=4 and the four local definitions. The old
+controller and canonical/demo toe artifacts, plus dirty-root runtime source,
+remain untouched. TD is open/disconnected without pending bytes or diagnostic
+overrides. Publication adds no runtime behavior; reuse the final 531 tests.
+Recovery/results are in the same evidence folder's `publish` directory. This
+update remains in PR #27 without merging.
+
+## MIX haptic interface review — 2026-10-17
+
+The user's next priority was physical MIX detents/resistance. The
+[scoped findings](docs/plans/mix-haptics-findings.md) distinguish existing
+Menu/Toggle quantization from configurable physical steps. Latest upstream API
+PDFs match local SysEx v1.6/Serial v1.3; neither exposes a MIX haptic setter or
+resistance-strength field. Official integrations use PLUGIN LEARN metadata for
+steps. Firmware v3.1 notes document fixed MIX 0 dB indents, including FUNC Focus;
+v3.3 notes do not add MIX haptic configuration. Their feel/positions in this TD
+session were not physically checked. Do not claim MIX has no haptics, or that its
+native indent represents a TD target's neutral value.
+
+This was read-only research against source `2bcf0ad`, without live TD, MIDI,
+serial or binary changes. No runtime implementation or Float-step feature was
+added. Documentation links/consistency and diff check are the applicable checks;
+the prior 531 runtime tests remain the evidence for unchanged source. No
+save/export or receipt refresh is needed for this Markdown-only update.
+
+## MIX draft editor — 2026-10-17
+
+Source baseline `d97b7fa`. The controller gains a MIX custom parameter page for
+Analysis Low/Mid or Layer Mix source, an Operation library and four custom blend
+menus. Draft changes do not configure routing; Apply uses the existing guarded
+API, and Clear removes only MIX assignments. Saved draft and applied descriptor
+remain independent. Generic export removes both profile and draft source paths.
+Audio and mixed-style/per-item slot editing remain deferred.
+
+Native checks caught TD's initial Menu placeholder replacing a default assigned
+before its choices. Installation now sets choices first. A cross-COMP test also
+found `relativePath` yielding an unresolvable saved scope in this TD process;
+MIX now computes relative paths from actual POSIX OP paths, with a save/reload
+regression. Existing same-parent assignments keep their paths and routing.
+
+Final relevant source passes 541 discovery tests, including nine editor cases
+and the added cross-COMP persistence case. Focused development checks passed
+66 tests. A disconnected native fixture accepted Analysis and Layer Mix through
+real parameter pulses, rejected a missing source without replacing the active
+profile, exposed all 46 blend modes, selected Math + Xor/Z Film, retained an
+unapplied Screen draft across configured tox reload and cleared MIX through its
+pulse. Target writes stayed zero. This is UI/configuration acceptance, not new
+hardware acceptance; earlier accepted MIDI routes are reused. Fixture/evidence
+is system temporary `roto-mix-editor.uBd5Rj1xBh`.
+An additional native saved-tox reload resolves the Analysis scope across root
+COMPs, rebuilding all ten targets without value recall. All temporary fixture
+operators were removed. Live installation and generic publication follow below.
+Importing the existing profile into a new UI page also exposed custom OP
+parameters' containing-network path context, distinct from the runtime's
+controller-relative scope. Draft source hydration now uses that context, with
+source and native coverage. The final 541-test discovery run passes after this
+correction; native hydration resolves the intended Analysis COMP with zero writes.
+
+## MIX editor installation/export — 2026-10-17
+
+Saved runtime source `21cf421671bea9bd5a5baaf72752e7f1f95a166c` is installed on
+`/roto_clean_demo/roto_python`; all 22 runtime/helper hashes match. Recovery is
+`before-editor.tox` in the same temporary evidence folder. The current Low/Mid
+profile, normalized registry, Snapshots, demo_A/B values, all analysis/layer
+values/Setup, nine demo children and old controller's 246 DAT fingerprints match
+the pre-installation snapshot. UI draft source resolves `audioAnalysis`; its
+Applied MIX summary names Low/Mid. No MIDI process was opened.
+
+Generic export/reload verifies empty assignments/mappings/Snapshots/Focus/ownership
+and draft source/custom choices, Follow off, Python python3, no external DATs and
+zero errors. Its 22 runtime and eleven embedded Markdown hashes match source
+`21cf421`; existing Guide/documentation positions are preserved. Generic SHA-256
+is `444d4612a57dec755e1e2a830c5dad1a91951d1d35bd1df8b67e600c15343547`.
+TD automatically incremented the requested numbered save to
+`ROTO-CONTROL.mix-analysis.7.toe`, SHA-256
+`60a3ac91cf8aba3413f0d502c58e0bab508ad94346e6ee30e3b696d34fc70292`,
+with adjacent source/hash receipt. Canonical toe and older saved copies remain
+unchanged. TD stays open/disconnected without pending bytes or probe overrides.
+No hardware routing was changed; reuse the earlier scoped physical acceptance.
+
+## User Operation presets and other analysis sources — 2026-10-17
+
+Baseline `95c060e`. User replaced fixed Operation libraries with user-named
+presets and clarified that six is the default editor capacity; two filled slots
+are enough. The MIX page now has six custom menus plus Add, Save edits/name and
+Delete. Selecting or modifying a preset only changes draft/configuration data;
+Apply alone replaces the active profile. Preset records are stable id/name and
+two-to-six menu-name choices. Unused None slots are omitted. All None omits
+Operation; one distinct choice is rejected. Existing PLUGIN behavior is unchanged.
+
+Explicit `operation_choices` has no built-in prefix. Legacy library Python
+arguments/default and full applied descriptors retain their existing behavior.
+The old UI draft migrates losslessly when it fits six slots. An oversized old
+draft stops upgrade preflight before source/UI writes rather than truncating it.
+TD DAT helpers use explicit sibling module references at function boundaries;
+native tests exposed the import-context restriction in the initial preflight.
+
+The new [Analysis integration API](docs/functions/mix_analysis.md) distinguishes
+descriptor v1 from hardware SysEx/CC, documents fields/types/projection, arbitrary
+parameter/channel names, ranges, meter units/stage, lifecycle and diagnostics.
+The convenience picker remains specific to Low/Mid audioAnalysis. A source test
+executes the documentation example through the real runtime with Triggerlimit,
+Enabled and band_energy names, checking input/toggle isolation and independent
+meter output. Native TD executes the same example on an isolated COMP/CHOP with
+zero configuration writes and no MIDI connection.
+
+Final source passes 548 discovery tests, including 47 MIX and 14 editor tests;
+focused checks pass 61 tests. Native real callbacks accept two/six-choice Add,
+selection, Apply, Save/name edit and Delete without changing target values.
+Configured reload retains the applied two-choice profile and an unapplied
+six-choice draft/preset separately. Generic export/reload removes the saved
+user preset records, selected id/name, six draft slots and source. Temporary
+fixtures were removed; evidence/recovery is system temporary
+`roto-operation-presets.4QUSytukc8`. This is configuration/API acceptance, with
+earlier physical routing/feedback acceptance reused. Live publication follows.
+
+Publication installs source `7c968b149b62de4c053e657dfd8dbcd5330c9eb0` on the
+correct controller, with all 22 runtime/helper hashes matching. Recovery is
+`before-presets.tox` in the same evidence folder. Its old Common draft migrates
+to four explicit choices plus two None slots; current Low/Mid profile, registry,
+Snapshots, analysis/layer/demo values, nine demo children and old controller's
+246 DAT fingerprints remain unchanged. No test presets were left on this controller.
+
+The new Analysis function document is embedded below the existing Functions
+nodes. Measured annotation containment and no-overlap checks pass while other
+Guide positions remain intact. Generic reload verifies 22 runtime and twelve
+Markdown hashes, no user presets/selection/name/source/slots, no assignments or
+ownership, Follow off, Python python3 and zero errors. Generic SHA-256 is
+`09872115a40be0e3642b86efe5eca348f185f4aa791a604da64acb52ee63c780`.
+TD saved `ROTO-CONTROL.mix-analysis.8.toe` with adjacent receipt, SHA-256
+`26f91428800a11fbe101cdb3c43467f41a8f4da9cac4db15db66040141681129`.
+Canonical toe and dirty-root runtime files remain untouched. TD stays open and
+disconnected, pending bytes zero, with no send/receive overrides. This remains
+in PR #27 without merging.
+
+## High analysis band — 2026-10-17
+
+Baseline `b2cd4bb`, saved runtime `7c968b1`. The user left Apply UX issue #28
+for later and continued MIX. The existing audioAnalysis exposes High Threshold,
+Gain, Add, Smooth and Active with a public high channel. The convenience adapter
+now accepts an ordered subset of Low/Mid/High, preserving its Low/Mid default.
+The MIX page adds one staged Analysis bands text field, accepting spaces/commas
+and case-insensitive names. Empty, duplicate and unknown bands are rejected;
+missing selected-band parameters preserve the active profile. Apply behavior,
+wire protocol and target conversion are unchanged. Kick trigger
+feedback and audio processing #26 remain separate future slices.
+
+557 source discovery tests pass, including 53 MIX and 17 editor tests. Added
+coverage verifies High's independent overview Threshold, Focus Gain, meter and
+exactly-once Active button, ordered persistence, draft/upgrade hydration and
+invalid configuration. The existing first-touch selection rule is preserved.
+
+Native TD 2025.33230 verifies the real Apply callback, all fifteen targets,
+invalid band rejection, applied-three versus draft-two configured reload,
+new-field hydration and generic reset to Low/Mid, with zero target writes and
+no MIDI connection. A pulse in the same cook as fixture installation preceded
+watcher registration; sending it after registration passed. This was a test
+ordering issue, not evidence of a production callback defect. The fixture was
+removed. Source installation on the correct controller verifies all 22 hashes,
+preserves the original Low/Mid profile and full baseline, and leaves no overrides.
+Recovery/scripts/results are in system temporary `roto-mix-high.YA3hYsr4Q8`.
+Physical overview and High FUNC captions passed with zero writes. The user
+then requested clearer/longer touch selection feedback, so input testing was
+paused and the connection safely stopped/reaped with the original profile
+restored. The analysis overview now keeps `>High 0.200` on the selected item's
+own screen until another selection or FUNC details, without a new timer/state.
+Two further source tests verify persistence after release, marker movement,
+normal FUNC captions and long-label value visibility.
+
+The first physical marker check reverted Low to High. Passive MIDI capture
+observed Low selection/Touch 52 followed by High selection/Touch 54 while the
+user touched only Knob 1 and LOCK was off. Suppressing repeated Track-list
+metadata did not change that result; suppressing MIX motor output kept Low.
+These are bounded one-condition experiments, not proof of a firmware defect.
+A new regression failed on six redundant motor CCs after overview selection.
+The fix keeps both cached and queued positions while overview lane targets are
+unchanged, and removes metadata's redundant motor-cache reset. It retains normal
+invalidation on profile/view/mode changes, real TD value updates, touch fences,
+queue ordering and in-flight frame tails. Additional regression coverage checks
+queued motor retention and complete old-motor discard on FUNC transition.
+
+All diagnostic send/command/RX wrappers were removed after each experiment;
+the source was reinstalled disconnected with the baseline preserved. Affected
+physical selection/input results follow below; the existing generic receipt
+still identifies source `7c968b1` until publication.
+
+With normal production motor output restored, the user confirmed Low → High →
+Low remains selected after each release, with zero writes. High Focus Gain then
+reached 4.159494598058964 through Knob 2, with 28 changed writes to Highgain only.
+Software restored its original 3.500 and the user confirmed the 50% motor return
+and normal demo_A PLUGIN display. High Active remained False throughout; changing
+High meter levels and High Active hardware input were not newly accepted.
+
+Final disconnection reaped the child with return code 0. The known PLUGIN Button
+1 learned/local identity reconciliation removed the local fourth registration
+again; disconnected restore used this run's active Device snapshot through the
+existing manager, without target-value writes. The four original control IDs,
+normalized registry, original Low/Mid profile/draft, all analysis/demo/layer
+values, Snapshots, nine demo children and old controller's 246 DAT hashes match
+baseline, allowing revision advance to 364. No send/RX/command/probe overrides
+or pending bytes remain. Saved artifact publication follows.
+
+Publication pins runtime/documentation source `be656cd892daf9e7eeb52e293c2db2a070bdec0d`.
+Native generic reload verifies all 22 runtime/helper and twelve Markdown hashes,
+default Analysis bands Low/Mid, no profile, presets, user source references,
+assignments or ownership, Follow off, Python python3, no external DATs and zero
+errors. Existing documentation positions remain unchanged. Generic SHA-256 is
+`f61afd991a3fc0f72ea29c3494ae1a32d873e5f5ac5427a957725089f8d3badb`.
+TD incremented the requested new save to `ROTO-CONTROL.mix-analysis.10.toe`, with
+adjacent source/hash receipt and SHA-256
+`1dd461e574c3fd7524b4b4e4b4a7feeda7b92f3307575a378d57623b7263426b`.
+The previous .8 working copy and canonical project hashes are unchanged. Final
+post-save preservation still passes; TD remains open and disconnected. The dirty
+root source checkout was not reset, cleaned or copied over live runtime.
+
+## Six analysis items and two custom assignments — 2026-10-17
+
+Baseline `a1ee1ca`, runtime `be656cd`. While away from hardware, the user requested
+analyzer configuration and clarified the layout: Low/Mid/High/Kick/Snare/Rhythm,
+with two customizable slots for another analyzer's parameters/CHOP feedback.
+The source adapter now describes all six. Kick/Snare/Rhythm expose only their
+actual Threshold/Active controls, bringing the six-item total to 21 targets.
+Read-only inspection verified Kick `math2['low']`, Snare `math16['high']`, and
+Rhythm `math10['chan0']` before their threshold stages. Rhythm's meter is 0..100;
+its real target remains 10..90. Actual triggers read public out1 kick/snare/rythm.
+No audio graph, detection setting or monitoring state was changed.
+
+Optional analysis-only custom parameter pages for slots 7/8 assign a label,
+source COMP, typed parameter names, overview control and independent CHOP
+meter/actual trigger. They reuse the original Apply; no extra Apply button,
+style or wire protocol was added. Common-ancestor scope resolution retains
+relative descriptor references across networks. Invalid assignments preserve
+routing; empty names disable slots without erasing drafts. Generic reset clears
+all custom references and defaults to six known items. Upgrade retains existing
+saved drafts/profiles, and the Python adapter keeps its Low/Mid default.
+
+Trigger observation runs on normal Ticks with a display-only 200 ms hold and
+coalesced 10 Hz output. Focus screen 5 shows Trig Off/0/1/? without a Knob 5
+write route. Mode/view/selection/profile boundaries clear holds; unavailable or
+nonfinite samples clear stale detections. This does not guarantee sub-frame
+pulses or infer triggers from level-versus-threshold comparisons.
+
+574 source discovery tests pass, including six-item independent routing, real
+Rhythm range, two custom assignments, read-only slot 8, invalid draft rejection,
+trigger failures/hold/reset and generic draft sanitization. Native TD 2025.33230
+verifies the real Apply callback with six known/two custom items: 23 targets,
+eight meters, four triggers, seven intended writes to temporary fixture targets
+only, cross-COMP scope, disabled/idle/high text, configured reload and no value
+recall. Both documentation examples run against foreign parameter/channel names
+with zero new writes. Two one-off check errors were test-method issues: a missing
+UTF-8 read and comparing cumulative writes to zero instead of the starting count.
+Neither required a production change. No MIDI process was opened.
+
+Temporary fixtures were removed. Installation verifies all 22 source hashes on
+`/roto_clean_demo/roto_python`, preserves its original Low/Mid profile/draft,
+registry/four control IDs, Snapshots, analyzer/demo/layer values, nine demo children
+and the old controller's 246 DAT hashes. Pending bytes remain zero with no
+send/RX/probe overrides. Recovery/scripts/results are in system temporary
+`roto-mix-analyzer.gUUzosxJI1`. The live unsaved audio project remains open and
+disconnected. New physical acceptance is explicitly deferred to the user's return;
+[the single batch](docs/plans/mix-analysis-acceptance.md) covers High Active/meters,
+all three detectors, custom slots and final PLUGIN restoration. Publication follows.
+
+Publication pins runtime/documentation source
+`3840ec67f200f3fa5f9c6f47893ddc311f92338b`. Generic reload verifies all 22
+runtime/helper and twelve Markdown hashes, six-band draft defaults, all 32 custom
+assignment draft fields cleared, no triggers/profiles/user mappings/presets,
+Follow off, Python python3, no external DATs and zero errors. Generic SHA-256 is
+`1b3910f1e75364436eae1124165f0eec921163b83f3c1f226a6fe633e033edb3`.
+TD incremented the new working save to `ROTO-CONTROL.mix-analysis.12.toe`, with
+adjacent source/hash receipt and SHA-256
+`2ce5b242c036049563be64fa6551a75f589c2d97f2c7c075e124dc177628d879`.
+Canonical toe and prior .8/.10 saves retain their hashes. Post-save preservation
+passes; TD remains open/disconnected. The original dirty root source was not
+reset, cleaned or copied over TD. Hardware acceptance remains deferred, not passed.
+
+## High/Kick hardware and threshold comparison prototype — 2026-10-17
+
+Baseline `24a058e`, runtime `3840ec6`, TD 2025.33230/firmware 3.3.0/API 1.6,
+working `.12.toe`. The user returned in MIX. All 22 source hashes matched before
+connection. Fresh recovery/snapshots preserved current user values; the dirty
+root and old controller were untouched. No production source or saved artifacts
+changed in this round.
+
+The six-item overview passed with 0.100/0.100/0.200/0.262/0.312/49.459 and two
+unassigned slots, zero writes. High overview Button 3 enabled Highactive once;
+the user confirmed its LED and changing meter. Public high samples ranged from
+0 to 1.122596. The return press disabled Highactive once, with other values
+unchanged. Kick touch + FUNC selected item 3. The hardware retained native PAN /
+SEND A / SEND B headings on unassigned positions; the earlier expectation of
+visually blank screens was inaccurate. Routing contained only Kick Threshold,
+and screen 5 showed Trig Off. This is not stale PLUGIN metadata or a framing
+failure. Unassigned knobs were not physically tested for no-write behavior.
+
+Overview Button 4 enabled Kickactive with one changed write. The user confirmed
+Trig 0/1 and continuing meter; sampled public kick output was positive and held
+feedback showed idle/high. Focus Knob 1 reached 0.600 through 305 changed writes
+to Kickthresh only. The user found the independent pre-threshold level hard to
+relate visually to the threshold. The three-minute timeout restored Kickactive
+False and Kickthresh 0.26174693279619116, reaped the child with return code 0 and
+restored the original Low/Mid profile. Normalized full baseline comparison passed.
+
+At the user's request, a separate temporary one-item Kick Focus probe compared
+pre-threshold Level and the current Threshold over the same 0..1 meter scale.
+Only the outgoing reference-meter value was replaced; production target input,
+mode/queue guards and the single external MIDI owner remained in use. No CHOPs,
+audio/detection settings or global color thresholds were changed. Twelve scoped
+reference/gating checks passed. The user clarified the physical rendering: two
+horizontal bars extending left to right, upper Threshold = CC66, lower Level =
+CC65. The API's Left/Right channel names must not be used as screen orientation.
+The user reached 0.48983702618568026/display 0.490 through 867 changed Kickthresh
+writes only and accepted the comparison for now. It remains a temporary
+prototype, not production runtime/descriptor/generic-tox behavior.
+
+Its timeout restored the parameter/profile, removed send/RX overrides and
+closed/reaped MIDI. A fresh read-only return phase sent the restored 0.261747
+motor position; the user confirmed that return and normal demo_A PLUGIN display.
+Final disconnection reaped the child with return code 0, pending bytes zero.
+The known PLUGIN Button 1 learned/local reconciliation removed one local target
+again; disconnected restore used this run's active Device snapshot through the
+existing manager, without value writes. Four original control IDs, normalized
+registry, Snapshots, Low/Mid profile/draft, all analyzer/demo/layer values, nine
+demo children and the old controller's 246 DAT hashes match baseline. All 22
+runtime hashes remain unchanged, with no overrides or scoped errors. TD stays
+open; no project save/export was performed.
+
+Evidence/scripts/recoveries are in system temporary
+`roto-analysis-hardware.9LBv9IEC0m` and `roto-threshold-bars.CEPDGdvKR7`, including
+orientation/input results and `return/final-preservation.json`. Existing 574
+source tests remain applicable; this evidence-only documentation change does
+not require rerunning them or re-embedding docs. Remaining hardware cases are
+Snare/Rhythm, custom slots and an unassigned-knob input check. Incorporating the
+accepted comparison into the production descriptor/runtime is separate work.
+
+## Production Focus threshold reference — 2026-10-17
+
+Baseline `ef4ef58`, saved runtime `3840ec6`. The user authorized integrating the
+accepted upper-Threshold/lower-Level comparison. Optional meter field
+`focus_reference: 'threshold'` references the same item's existing Float
+Threshold target. It requires analysis style, mono scalar feedback and common
+level/threshold units. First Focus uses measured Level on CC65 and actual
+Threshold on CC66, scaled/clipped by the meter range. This matches the tested
+lower/upper horizontal rendering without treating API Left/Right as physical
+orientation. Overview/stereo/RMS and old profiles lacking the field retain their
+old behavior. Comparison does not imply an actual detection.
+
+Known Kick/Snare/Rhythm adapters opt in with their verified pre-threshold sources
+and 0..1/0..1/0..100 scales. Low/Mid/High processed outputs do not opt in. Each
+custom page adds one default-off Focus threshold comparison toggle, using the
+same Apply; invalid stereo/RMS/missing-Threshold assignments preserve routing.
+The reference reuses the target identity/mode/range check but reads its actual
+value rather than a normalized/clamped motor position. Existing coalescing,
+frame tails, backlog, mode/selection and signal-failure guards remain. No new
+observer, timer, transport, target or persisted value was added.
+
+584 discovery tests pass. Ten new behavioral regressions cover actual CC pairs,
+hardware/software reference updates without detection changes, overview/legacy
+behavior, schema rejection, latest-value coalescing with in-flight tail/backlog,
+source clearing, target-contract changes and custom opt-in/reset. A separate
+trigger-schema test removes the new meter option before testing its own invalid
+style, so its error assertion continues to exercise the trigger rule.
+
+Native TD 2025.33230 verifies the real custom toggle Apply callback, six known
+plus two custom items, all three scales, actual software reference changes,
+configured reload/no value recall and independent foreign analyzer examples.
+The reference-only checks produce zero parameter writes; the reused broader
+fixture retains seven intended temporary target writes. No MIDI process opens.
+Fixtures are removed. Scoped installation verifies all 22 hashes and preserves
+original Low/Mid profile/draft, values, registry/four control IDs, Snapshots, nine
+demo children and old controller DATs. New toggles are False. Recovery/scripts/
+results are in system temporary `roto-meter-reference.tDIaOwwfzf`.
+
+Source/native coverage does not replace the scoped installed-runtime hardware
+check. The earlier temporary probe's geometry/usability result is reused only
+for that scope. [The batch](docs/plans/mix-analysis-acceptance.md#installed-reference-feedback)
+now specifies a production Kick comparison/input/restore check without an output
+probe override. Snare/Rhythm, custom slots and unassigned-knob hardware input
+remain separately pending. Publication follows; TD stays open/disconnected.
+
+
+## Overview and Focus threshold comparison — 2026-10-17
+
+Baseline source `02aa786`, working project `.14.toe`. The user confirmed production
+Focus rendering, then requested the same upper-Threshold/lower-Level comparison
+before entering Focus. Their accidental turn changed only Kickthresh through
+three changed writes, reaching 0.27467496795458707. It was restored to the fresh
+baseline 0.26174693279619116 before disconnecting that round.
+
+Optional `meter.overview_reference: 'threshold'` now enables the same comparison
+in each overview item's own CC pair. `focus_reference` remains independent, so
+saved Focus-only and field-free profiles retain their existing behavior. Known
+Kick/Snare/Rhythm adapters declare both fields; Low/Mid/High processed-output
+meters remain unchanged. Custom slots keep one default-off Threshold comparison
+toggle for both views and use the existing Apply. Upgrade refreshes its label
+and help while preserving staged values. Both views reuse the same target
+validation, real-unit readback, meter scale and bounded output path.
+
+585 discovery tests pass. The extended reference regressions cover independent
+overview item/scales, software updates and Focus switching, legacy Focus-only
+reload, both optional fields' validation and custom opt-in for both views.
+Native TD verifies the actual Apply callback, comparison label/help upgrade,
+known/custom overview CC pairs, software reference changes, Focus roundtrip and
+configured reload with zero writes and no MIDI process. Scoped live installation
+matches all 22 runtime/helper source hashes and preserves the original Low/Mid
+profile/draft, registry, Snapshots, values and nine demo children.
+
+The bounded production hardware follow-up uses no send/receive override. The
+user confirms Kick overview upper Threshold near 26% and dynamic lower Level,
+then the same pairing after FUNC and normal demo_A PLUGIN return. Runtime reports
+zero parameter writes. Disconnect closes/reaps the child with return 0, clears
+pending output and restores the original profile. Full normalized snapshots
+match after restoring the same previously documented Button 1 local registry
+reconciliation through the existing Layout manager; no target values changed.
+All four original local control IDs and old controller DATs remain intact.
+
+Temporary scripts, recovery and results are in system temp
+`roto-overview-reference.I2BPYvvVcF`; no probe is imported into production. Reuse
+this acceptance for Kick comparison only. Snare/Rhythm, custom-slot and
+unassigned-knob physical input remain unverified. Audio processing #26 and Apply
+simplification #28 remain deferred. Save/export receipts identify subsequent
+artifact publication; canonical and earlier saved projects are preserved.
+
+
+### Overview reference publication
+
+Final runtime/documentation source `f7c53ab10b1cbf7a2997baab2b2255d60cc5e6e9`.
+The live-TD generic export/reload verifies 22 runtime/helper and 12 Markdown
+hashes, six-band draft defaults, all 34 custom-slot fields reset, comparison
+False, empty assignments/presets/source references, Follow off, Python python3,
+no external DATs or MIDI process, and zero scoped errors. The export SHA-256 is
+`fe879347c22b2a00e18a28a277d99abd6cec22eb3784975199505a724e3f1b84`;
+its checked-in adjacent receipt pins source and hardware evidence.
+
+A separate live save produced local `ROTO-CONTROL.mix-analysis.16.toe`, SHA-256
+`58f103722e7bdb3e94b0854bb1ee26bba3c39400faafafdded36372df0050ad8`,
+with its adjacent local receipt. Canonical and earlier .8/.10/.12/.14 project
+hashes remain unchanged. The live working controller retains its original
+Low/Mid profile/draft and all user nodes/values; TD remains open/disconnected.
+
+
+## Snare/Rhythm acceptance and Float caption width — 2026-10-17
+
+Baseline checkout `6e4b9d8`, runtime source `f7c53ab`, working project `.16.toe`.
+No graph/audio construction or detector defaults changed. Fresh recovery and
+snapshots precede temporary six-item profiles, using production input/output
+without receive/send overrides. The user confirmed Snare overview 0.312 / upper
+31%, Rhythm 49.459 / upper 49% and both initial Active LEDs off.
+
+Snare Active turns on once, first Focus selects Snare, actual Trig 0/1 changes
+with public snare output, and Knob 1 reaches 0.4107672587438198 through 46 changed
+Snarethresh writes. Restore 0.311515 returns the motor to about 52%; overview
+Button 5 turns Active off once. Rhythm similarly passes Active/first Focus/actual
+Trig 0/1, reaches 61.70725752304218 through 72 Rythmthresh writes, and restores
+49.4591 / about 49% motor. Button 6 turns Active off once; normal demo_A PLUGIN
+return passes. This clean round contains exactly 122 changed writes: 118 Float
+updates plus four Active presses. No other parameter changes or extra motor
+writes occur. The earlier interrupted round had one Snare Active press and was
+fully restored. Its apparent view mismatch was explained by the user's later
+FUNC/touch operations, so no routing defect or transport change is claimed.
+
+Disconnect reaps the child with return 0 and clears pending output. The same
+known Button 1 local registry reconciliation is restored through Layout manager;
+normalized full snapshots then match all original profiles/drafts, values,
+registry/four control IDs, Snapshots, nine demo children and old controller DATs.
+No canonical or numbered project save occurs during these probes.
+
+The user spotted Rhythm text `Thresh 49.45`: the three-decimal value plus label
+exceeded the 12-character payload. A failing regression reproduces the actual
+encoded overview message. Float caption formatting now reserves numeric space
+before shortening the label, yielding `Thres 49.459` in unselected overview and
+Focus. Existing selected captions already reserve the numeric value; Menu,
+Toggle, meters, input conversion and target values are unchanged.
+
+586 discovery tests pass, including the new overview/Focus wire-caption test.
+Native TD checks both captions and the selected `>Rhyt 49.459` caption with zero
+writes, no MIDI process, unchanged Low text, zero scoped errors and full live
+preservation. Scoped install verifies all 22 source/helper hashes and original
+Low/Mid profile/draft. Temporary evidence is in system temp
+`roto-snare-rhythm.xLVJDmmQth`, with separate first-round, clean round2 and caption
+folders. Custom slots and unassigned-knob physical input remain pending.
+
+
+The subsequent production caption hardware check passes in overview and first
+Focus: the full `Thres 49.459` appears, including the final 9, and PLUGIN returns
+normally. It uses no send/receive override and makes zero parameter writes.
+All original values/profile/draft/local control IDs are restored and the child
+is closed/reaped with empty pending output. Publication receipts below pin the
+final source/artifact versions; earlier saved project files remain unchanged.
+
+
+### Snare/Rhythm and caption publication
+
+Runtime/documentation source `7a99f315557b257476005bfab39d4105b2451828`, with 586
+passing discovery tests. The live generic export/reload verifies all 22
+runtime/helper and 12 Markdown hashes, empty user mappings/MIX profiles/presets/
+source paths, six empty Operation draft slots, all 34 custom analysis fields
+reset, comparison toggles False, Follow off, Python python3 and no external DATs
+or MIDI process. Export SHA-256:
+`61a0a37f7389815afd89b824caf5c3931b3ccac248e5e4bd1d33f46b8a7c591f`.
+
+Live TD separately saves local `ROTO-CONTROL.mix-analysis.18.toe`, SHA-256
+`a756d631a50f013b0d1a1e1cec5eba25c6916fd57f7974dcfd83961c916f6ded`,
+with an adjacent receipt. Canonical and .8/.10/.12/.14/.16 hashes are unchanged.
+Original Low/Mid profile/draft and user nodes/values remain intact. TD stays
+open/disconnected with no override or pending output. The checked-in generic
+receipt records the scoped hardware results; custom slots remain a future
+physical check, not a claim established by this round.
+
+
+## Custom assignments and unassigned input acceptance — 2026-10-17
+
+Baseline checkout `ea1fa2f`, embedded runtime/docs source `7a99f31`, working
+project `.18.toe`, TD 2025.33230. All 22 runtime/helper hashes match the receipt.
+No production source, graph, audio routing, processing toggle or saved artifact
+changes. Fresh recovery and full snapshots precede temporary custom draft edits.
+The actual existing Apply callback configures six known items plus Slot 7
+`Gain TEST` / Slot 8 `Level TEST`: 22 targets, eight meters and three triggers.
+Slot 7 assigns only Lowgain, explicitly choosing Gain as the overview control;
+Slot 8 has no controls. Both meters read processed out1 low over 0..1, with that
+stage declared. These are test aliases of the existing analyzer, not a new
+foreign audio graph or a general mixed-style editor.
+
+The user confirms both names, Gain 2.000, about 29% motor and synchronized meters.
+Touch selection persists as >Gain 2.000. A fresh overview Knob 7 gesture reaches
+Lowgain 2.6131966062381737 through exactly 32 changed writes, with no other
+analysis parameter changes. Software restore to 2.000 moves Knob 7 back to 29%.
+First Focus shows Gain TEST, Gain on Knob 2 / about 29%, and continuing meter.
+The absent Threshold slot stays unassigned rather than shifting Gain to Knob 1.
+
+Unassigned first-Focus Knob 1 receives 20 CC12/44 pairs and one touch ON/OFF pair.
+Read-only overview Slot 8 receives 22 CC19/51 pairs and one touch ON/OFF pair.
+The final trace records the corresponding stable views/selections. Both cases
+make zero parameter writes and preserve every analysis value. Slot 8 first
+Focus shows Level TEST and its meter with no TD controls; native headings may
+remain. Normal demo_A PLUGIN return passes. Total changed writes remain 32,
+so neither motor restore nor the unassigned gestures adds a business write.
+
+The initial diagnostic trace saturated its 5,000-record cap with MIDI clock.
+Those initial gestures were not treated as CC-rejection evidence. A bounded
+observer excluding one-byte realtime records then verifies assigned Knob 2 and
+unassigned Knob 1 touch ON/OFF before the final turn comparison. The final
+observer records all non-realtime input and leaves every message on its normal
+receive path. No receive/send override is installed and no production logging
+or transport change is made. Temporary scripts/results/recovery remain under
+system temp `roto-custom-slots.raELxNVafz`.
+
+Disconnect closes/reaps the child with return 0, clears pending output and
+restores the original Low/Mid profile and every custom draft field. The same
+previously documented Button 1 local reconciliation is restored through Layout
+manager. Normalized full snapshots then match registry/four local control IDs,
+Snapshots, all analyzer/demo/layer values, nine demo children and old controller
+DATs. The observer and session are removed, and scoped errors are empty. TD stays
+open/disconnected. Canonical/export/project bytes remain unchanged.
+
+This update records scoped acceptance only. The 586 source tests from `7a99f31`
+remain applicable; no runtime test rerun, rebuild, doc re-embedding or new
+project/export save is needed. Source Markdown is authoritative; existing
+receipts continue identifying the embedded snapshots. Optional custom trigger/
+comparison and foreign-analyzer examples retain source/native coverage. Audio
+processing #26, Apply simplification #28, other MIX control functions and later
+CI pages remain outside this acceptance.
+
+
+## PR #27 review corrections — 2026-10-17
+
+Fixed review scope is base `faf3bad54ca1fc800ea777ec50326fbbb03fc271`
+to `178f59558eec1a7e75ba736d073a0477dc852c9e`. Independent Standards review
+finds no documented-rule violation. Spec review identifies a same-batch routing
+failure: Focus readback invalidates the MIX epoch, then a later valid General
+Track selection in that batch is discarded. The runtime becomes ready on the
+old item, so a later fresh Gain gesture can write Low instead of selected Mid.
+The real extension/Tick regression first fails for three view/selection orderings.
+
+Hardware view/selection metadata now follows wire order within a connection.
+Connection-generation rejection remains in the extension; CC ingress epochs,
+backlog drain, release/fresh-touch and partial-pair fences remain unchanged.
+Another failing source regression covers scalar feedback with an empty sample
+array. Signal converts its IndexError to the existing invalid-feedback path,
+clearing both bars without suspending a valid target and recovering on return.
+Native Script CHOP in TD 2025.33230 clamps a zero-sample assignment to one sample;
+empty samples are therefore source-only defensive coverage, not a physically
+observed TD failure. Missing-channel clear/recovery has native coverage.
+
+The plan's old assumption that MIX inherits PLUGIN LOCK selection behavior is
+removed. Production overview intentionally sends item selection on fresh touch;
+existing physical acceptance used LOCK off. MIX LOCK semantics remain unverified,
+with no new LOCK behavior or wire message claimed.
+
+All 588 discovery tests pass on the corrected runtime, including the 75 focused
+MIX/reference/trigger tests. An isolated native fixture reproduces buffered
+Focus → Low → Mid, blocks buffered CC until drain, then writes Midgain only on a
+fresh touch. Missing Mid feedback clears both bars while Gain remains writable;
+restoring the channel recovers Level/reference. Two writes affect temporary
+fixture Midgain only, no MIDI process opens, and the fixture is destroyed.
+Fresh normalized snapshots preserve the live original Low/Mid profile/draft,
+registry/four control IDs, Snapshots, user analyzer/demo/layer values, nine demo
+children and old-controller DATs. Temporary recovery/results/scripts stay in
+system temp `roto-pr27-review-s3ickpgm`.
+
+These are source/native corrections. No physical same-batch ordering check or
+new hardware acceptance is claimed; reuse the earlier affected-function hardware
+results with that limit. The active `.18.toe` remains open/disconnected, and its
+saved bytes/receipt and the dirty root checkout remain unchanged. Publication
+of the corrected generic export is recorded separately below.
+
+### Review correction publication
+
+Runtime/documentation source `e74e413d0ddeb58a7368c0ad2a62398845e892e7`,
+with 588 passing discovery tests. Scoped disconnected installation preserves
+fresh snapshots and verifies all 22 embedded runtime/helper hashes. Live TD
+exports/reloads the generic clone with all 22 source and 12 Markdown hashes,
+empty mappings/profile/presets/triggers/source paths, all 34 custom fields at
+default, six empty Operation slots, six default bands, Follow off, Python python3,
+no external DATs/process and zero scoped errors. Export SHA-256:
+`451c57bf8466954e2f337bb927c7f0e9671347887dd09855a2f75b6e8109a92c`.
+
+The active controller now embeds the corrected source and current function docs,
+remaining open/disconnected with no pending bytes or override. No project save
+occurs. Canonical and `.18.toe` SHA-256 values are unchanged; `.18.toe` and its
+adjacent saved receipt still identify runtime `7a99f31`. The unnumbered generic
+export and receipt identify the new source independently. No new physical
+acceptance or full project restart is claimed.
+
+
+## Focus Button 2 isolated countercheck — 2026-10-17
+
+Live runtime hashes still match all 22 helpers at `e74e413`, checkout `707126f`,
+project `.18.toe`. Fresh recovery and normalized snapshots precede testing. The
+bounded observer calls the original MIDI trace and leaves send/receive routing
+untouched. Original Low/Mid profile and all parameter values remain unchanged.
+
+The first round records multiple FUNC view transitions, then a successful actual
+Knob 2 touch selection (`0A09 00 01` plus CC53 ON/OFF) followed by Focus readback.
+The user confirms touch Knob 2 → FUNC works. Its three-minute timeout disconnects
+cleanly with zero writes. That round cannot establish the reported held-FUNC
+combination because the operations were not individually localized in its trace.
+
+The second round isolates the previously claimed Focus button selector: FUNC is
+pressed/released, then Button 2 alone. TD receives `0C02 00` and is ready in
+Focus/Low. No Button 2 CC or General Track selection follows; the user reports
+Low. Zero writes and no parameter changes. This is not evidence that a received
+selection was dropped. Stop closes/reaps the MIDI child with return 0, removes
+the observer and clears pending output. Full normalized snapshots still match
+registry/four IDs, Snapshots, profile/draft/presets, user values/nodes and old DATs.
+Temporary scripts/results stay under system temp `roto-batch-hardware-r61qn6vy`,
+with the isolated case in `round2`.
+
+This supersedes the earlier interpretation that physical Focus Button 2 selects
+Mid. Those earlier user observations and General selection traces did not isolate
+button input from touch. The official user manual describes overview touch →
+FUNC Track Focus, and the official Bitwig MainLayerHandler.setTrackControl sets
+ButtonMode.NONE. Leave Focus buttons firmware-owned and unassigned; do not invent
+a software route for an absent MIDI event. No production runtime change is made.
+General view/selection same-batch regressions remain valid synthetic protocol
+coverage, but this button sequence is not a supported way to force that ordering.
+MIX LOCK and physical same-batch timing remain unverified.
+
+### Corrected-runtime touch/Focus/Gain acceptance
+
+Round 3 uses the same unmodified `e74e413` runtime and original Low/Mid profile.
+The actual overview Knob 2 touch sends `0A09 00 01` plus CC53 ON/OFF; FUNC then
+sends `0C02 00`. The user confirms MIX-FOCUS/Mid. TD is ready, selected item 1,
+with Knob 2 addressing Midgain, and all values unchanged before the gesture.
+These events use separate ingress epochs, so this is normal-path hardware
+acceptance, not a forced same-batch ordering test.
+
+The first Gain 4 reply contains no touch or CC gesture and is not treated as
+input evidence. A subsequent explicit fresh gesture reaches Midgain
+4.48721235426967 through 38 CC13/45 pairs and CC53 ON/OFF. Exactly 38 changed
+writes affect Midgain only; Lowgain remains 2.000 and every other analyzer value
+matches baseline. Software restores Midgain 4.000. The user confirms motor return
+about 57%, caption/meter and normal demo_A PLUGIN parameter/value display. Actual
+PLUGIN mode/ACK traffic is recorded, with no additional MIX writes: final 38.
+
+Disconnect closes/reaps the child with return 0, pending output is empty and the
+observer is removed. The same previously recorded local Button 1 reconciliation
+occurs on PLUGIN recall: only its known control ID is missing. Guarded restoration
+through the existing Layout manager reinstates the original active Plugin state;
+normalized full snapshots then match registry/four IDs, Snapshots, profile/draft/
+presets, every user analyzer/demo/layer value, nine demo children and old DATs.
+All 22 runtime/helper hashes remain `e74e413`, with zero scoped errors. Temporary
+results/recovery are under `roto-batch-hardware-r61qn6vy/round3`.
+
+TD remains open/disconnected. No project/export save, source install, hardware
+configuration or production runtime edit occurs. The 588 source tests from
+`e74e413` remain applicable; this update changes authoritative Markdown and
+acceptance receipt metadata only. Generic `.tox`/embedded docs retain their
+existing `e74e413` identities; `.18.toe` retains its older saved receipt. Refresh
+embedded docs at the next authorized artifact export rather than claiming these
+new notes are already embedded.
+
+
+## MIX LOCK selection authority correction — 2026-10-17
+
+Baseline checkout `1f86878`, live runtime `e74e413`, project `.18.toe`, firmware
+3.3.0/API 1.6. Fresh recovery/full snapshots and a bounded raw MIDI observer
+precede a read-only overview test. Low is selected with FUNC off. The user opens
+LOCK, touches/releases only Knob 2 and observes >Mid. The actual trace contains
+CC53 127/0 without General Track selection or a LOCK-state SysEx. Software changes
+selected 0 → 1 on the raw touch. New business writes are zero; cumulative MIX
+writes remain the previous round's 38, with every parameter value unchanged.
+Stop closes/reaps return 0, clears pending output and removes the observer.
+
+The runtime's explicit touch → select fallback bypassed the firmware's selection
+suppression. No new LOCK state/command is needed: only validated General Track
+selection now changes the selected item. Touch CC retains contact/gesture arming;
+overview lanes keep their own targets while selection stays locked. The unused
+private select(send=...) path is removed. Mode/view/session epochs, fresh touch,
+CC pairing, motor/queue-tail behavior and PLUGIN dispatch stay on their paths.
+The old comment describing Focus buttons as selectors is corrected to firmware
+ownership, consistent with the preceding isolated countercheck.
+
+A failing regression replays CC53 ON/OFF with no Track selection and first sees
+selected 1 instead of 0. It now keeps Low, epoch/caption and zero writes, then
+proves that an explicit gesture still controls Mid's overview target without
+changing selection. Three older tests had fabricated touch-only selection;
+they now include the actual unlocked General-selection-before-touch sequence,
+preserving their caption, High control and Focus/fresh-touch assertions.
+All 589 discovery tests pass, including 83 focused MIX/assignment/reference/
+trigger tests. No test invents a MIX LOCK SysEx absent from the actual trace.
+
+An isolated native fixture confirms touch-only input keeps selection and sends
+no host-selected-track packet, while explicit General selection/batched view
+changes still choose Mid and require fresh input. Its temporary Gain writes,
+feedback and cleanup checks pass with no MIDI process and original live snapshots
+preserved. Temporary recovery/results/scripts stay in system temp
+`roto-mix-lock-3vmi21lc`, correction checks under `fix`. Production hardware
+verification of the corrected LOCK-on/off behavior follows separately; it is
+not claimed by the regression/native results.
+
+### Corrected MIX LOCK hardware acceptance
+
+Runtime `b6d2cc30573a1ccec74cb91984a34bfc01120cac`, all 22 source/helper hashes
+verified against a temporary source manifest before connection. Original Low/Mid
+profile and user values/draft remain unchanged. In overview, LOCK on plus Knob 2
+touch sends CC53 ON/OFF and no General selection. Both trace before/after states
+keep selected Low, epoch 3 and ready True; the user sees >Low. Unlock plus the
+same touch sends `0A09 00 01` then CC53, selecting Mid at epoch 4; the user sees
+>Mid. The stale accompanying touch remains fenced as before. The user confirms
+normal demo_A PLUGIN return, with actual mode/ACK traffic recorded.
+
+Zero new parameter writes throughout; Lowgain 2.000, Midgain 4.000 and every
+other analyzer/demo/layer value stay at fresh baseline. Disconnect closes/reaps
+return 0, clears pending output and removes the observer. The known local Button
+1 reconciliation is restored through the guarded existing Layout manager; full
+normalized snapshots then match registry/four IDs, Snapshots, profile/draft/
+presets, user values/nine demo children and old-controller DATs. There are zero
+scoped errors and no send/receive override. Temporary recovery, trace and final
+restoration live in `roto-mix-lock-3vmi21lc/fixed-hardware`.
+
+This accepts overview touch selection with LOCK on/off and normal PLUGIN return
+on the corrected production runtime. It does not force same-batch view/selection
+timing or physically test a nonselected knob gesture while locked. Reuse the
+589 source tests from `b6d2cc3` and the native correction check; no source behavior
+changed after those tests. TD remains open/disconnected, with no project save.
+Generic export/reload and its receipt follow in the publication entry below.
+
+### MIX LOCK correction publication
+
+Generic runtime source `b6d2cc30573a1ccec74cb91984a34bfc01120cac`, embedded
+Markdown source `8d3dc22`, with 589 passing discovery tests. Live TD exports the
+corrected disconnected clone and reloads it with all 22 runtime/helper and 12
+documentation hashes verified. Mappings, MIX profile/presets/triggers/source
+paths are empty; all 34 custom draft fields and six Operation slots reset,
+six default bands, Follow off, Python python3, no external DATs/process and zero
+scoped errors. Export SHA-256:
+`ff863719fa88b1fdb87ef8900ece86f9453ffffe0656bec80fc752ba7b75283c`.
+
+The receipt separates the new LOCK acceptance from reused earlier physical
+results and retains limits on locked target gestures and same-batch timing.
+Live original configuration/values/nodes remain preserved with updated source
+and docs, open/disconnected with no override or pending bytes. Canonical and
+`.18.toe` hashes remain unchanged; the saved `.18.toe` receipt still identifies
+runtime `7a99f31`. No project save or full restart is claimed.
+
+
+## Final merge-readiness documentation correction — 2026-10-17
+
+The independent follow-up reviews cover `178f595` → `2a9cff7`, reusing the prior
+full review from base `faf3bad`. Standards reports zero findings. Spec confirms
+the runtime corrections and finds one P3: the Analysis API table still calls
+Focus buttons item selectors after that claim was withdrawn. The table and
+button_projection docstring now state no TD button assignment. After stripping
+function docstrings, the executable AST is identical to the reviewed source.
+
+All 589 discovery tests pass at `dbd341c42b433998065749af2b1da1151437837f`.
+A fresh disconnected recovery/snapshot precedes the scoped doc/source sync.
+Generic export/reload verifies the corrected API table and actual loaded
+function docstring, all 22 runtime/helper and 12 documentation hashes, empty
+mappings/profile/presets/triggers/source paths, 34 custom defaults, six empty
+Operation slots, Follow off, Python python3 and no external DATs/process/errors.
+Runtime and embedded Markdown both pin `dbd341c42b433998065749af2b1da1151437837f`.
+Export SHA-256:
+`68c4784e039148215f245f18edf94f20b02be175d1d8d20b6758208762872b7b`.
+
+No business routing or parameter behavior changes, so the prior scoped native/
+physical acceptance remains applicable. Full fresh normalized snapshots preserve
+all original configuration, values and user nodes; TD stays open/disconnected,
+with no MIDI connection, probe override or project save. Temporary recovery and
+results stay in system temp `roto-merge-doc-review-zd9420lm`. Source tests, pinned
+source/doc hashes and artifact bytes are independently reconciled before merge.
