@@ -12,8 +12,10 @@ analysis overview Active buttons, motor feedback and native meters. Two optional
 custom analysis slots assign another analyzer's parameter names and CHOP feedback
 through the same Apply. Detectors use independent pre-threshold meters and actual
 read-only trigger feedback; all three detectors have scoped Active/trigger/
-Threshold/motor-return hardware acceptance. Custom slots remain pending. Explicit overview/first-Focus references supply
-upper Threshold/lower Level for known detectors; custom assignments can opt in.
+Threshold/motor-return hardware acceptance. Custom Gain/read-only aliases and
+the scoped unassigned input checks pass; optional custom trigger/comparison
+feedback remains source/native-only. Explicit overview/first-Focus references
+supply upper Threshold/lower Level for known detectors; custom assignments can opt in.
 Old profiles keep their original behavior for each view without its optional
 reference field. Production Kick overview, first-Focus transition and normal
 PLUGIN return passed without parameter writes. The

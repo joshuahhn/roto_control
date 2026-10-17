@@ -31,8 +31,9 @@ Threshold/Active, as do Snare/Rhythm, with verified pre-threshold meters and ind
 trigger text in first Focus screen 5. Trigger feedback uses normal Tick
 observations and a bounded display hold. High Active/meters and all three
 detectors' Active/trigger/Threshold/motor return have scoped hardware acceptance;
-custom-slot hardware checks remain pending. Optional overview/first-Focus
-references supply upper Threshold/lower Level on a common meter scale for the
+custom Gain/read-only aliases and the tested unassigned input positions also
+pass. Custom trigger/comparison feedback retains source/native coverage. Optional
+overview/first-Focus references supply upper Threshold/lower Level on a common meter scale for the
 known detectors. Custom slots can opt into both; existing profiles without the
 corresponding view field retain their original meter behavior. Production Focus
 and the requested overview extension have passed scoped hardware acceptance,

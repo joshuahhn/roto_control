@@ -6,9 +6,9 @@ temporary upper-Threshold/lower-Level Kick comparison was accepted for now. Its
 installed production Focus display has passed. The user then requested the same
 comparison in overview. Installed production overview, first-Focus transition
 and normal PLUGIN return then passed with zero parameter writes. Snare/Rhythm
-Active/trigger/Threshold/motor return now pass too. Custom slots and an
-unassigned-knob hardware input check remain unverified. Reuse completed cases rather than
-running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
+Active/trigger/Threshold/motor return now pass too. Custom Slot 7 Gain / Slot 8
+read-only aliases and unassigned Focus Knob 1 / overview Knob 8 input also pass.
+Reuse completed cases rather than running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
 
 ## Installed reference feedback
 
@@ -114,6 +114,24 @@ Restore each captured Threshold/Active before proceeding. No Gain/Add/Smooth
 routes should appear for these detectors.
 
 ## Two custom slots
+
+Completed on 2026-10-17 using runtime source `7a99f31`, real draft/Apply and the
+existing audioAnalysis COMP. Slot 7 `Gain TEST` uses Lowgain / Gain primary;
+Slot 8 `Level TEST` is meter-only. Both read processed `out1['low']` over 0..1.
+Overview names, Gain 2.000 / 29% motor, paired meters, selection, Slot 7 first
+Focus with Gain on Knob 2, and Slot 8 first Focus/meter pass. Lowgain reaches
+2.6131966062381737 through 32 changed writes, then restores to 2.000 / 29%.
+
+Fresh touch/turn/release on unassigned Focus Knob 1 receives 20 CC12/44 pairs
+and touch ON/OFF; overview Slot 8 receives 22 CC19/51 pairs and touch ON/OFF.
+Both produce zero parameter writes, with every analysis value unchanged.
+A diagnostic observer records raw input without overriding receive/send.
+Normal PLUGIN return passes; all values, original profile/draft and four local
+control IDs are restored, with no MIDI process, pending bytes or observer.
+Custom trigger/comparison feedback and foreign analyzer sources retain their
+existing native/source coverage; they are not additional physical claims here.
+
+Reproduction procedure:
 
 Use the user's chosen existing analyzer if available. Otherwise use a temporary
 assignment to existing Lowgain/public low output, clearly labelled as a test

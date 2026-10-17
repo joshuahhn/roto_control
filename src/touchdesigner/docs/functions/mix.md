@@ -14,8 +14,9 @@ High also has physical overview/Focus caption, persistent-selection, Gain
 input/motor-return and Active/changing-meter acceptance. The six-item overview,
 Kick Active/actual trigger, Threshold input and final motor/PLUGIN restoration
 have scoped hardware acceptance. Snare/Rhythm Active/trigger/Threshold/motor
-return also pass. Custom-slot and unassigned-knob hardware checks remain in the
-[physical batch](../plans/mix-analysis-acceptance.md).
+return also pass. Slot 7 Gain / Slot 8 read-only aliases and the tested
+unassigned input positions pass. See the
+[physical batch](../plans/mix-analysis-acceptance.md) for exact scope.
 
 ## Configure an existing source
 

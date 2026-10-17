@@ -68,7 +68,7 @@
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
     "palette_47_follow_up": "https://github.com/joshuahhn/roto_control/issues/24",
-    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747. Snare/Rhythm Active LEDs, actual Trig 0/1, Threshold gestures, motor return and normal PLUGIN return pass. Clean round 122 changed writes: Snare 46, Rhythm 72, four Active presses. Original values restored. Caption fix is physically accepted in overview and Focus at Thres 49.459 with zero writes.",
+    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747. Snare/Rhythm Active LEDs, actual Trig 0/1, Threshold gestures, motor return and normal PLUGIN return pass. Clean round 122 changed writes: Snare 46, Rhythm 72, four Active presses. Original values restored. Caption fix is physically accepted in overview and Focus at Thres 49.459 with zero writes. Custom Slot7 Lowgain and Slot8 read-only Low meter aliases pass through real Apply: 32 Lowgain writes to 2.6131966062381737 only, 2.000 motor restore, Gain stays on Focus Knob2, Level TEST Focus and PLUGIN return normal. Unassigned Focus Knob1 20 CC12/44 pairs and overview Knob8 22 CC19/51 pairs plus touches produce zero writes. Original profile/draft/values restored; observer removed.",
     "arbitrary_rgb_acceptance": false,
     "full_project_restart_acceptance": false,
     "source_tests_commit": "7a99f315557b257476005bfab39d4105b2451828",
@@ -76,7 +76,7 @@
     "native_mix_configuration_reload": "passed without value recall",
     "native_mix_scoped_upgrade": "passed: existing profile, mappings and values preserved",
     "mix_generic_reload": "passed: no profile/presets/draft source/custom assignments, 34 custom draft fields reset, default Analysis bands Low Mid High Kick Snare Rhythm; comparison toggles off",
-    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations, custom slots and unassigned-knob input lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred.",
+    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred.",
     "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
     "native_documentation_layout": "Existing twelve snapshot positions preserved; no new documentation nodes",
     "native_mix_toggle_writes": 3,
@@ -159,7 +159,7 @@
       "midi_connected": false,
       "preserved": true
     },
-    "new_detector_custom_slot_hardware": "All six overview plus High Active/meter and Kick/Snare/Rhythm Active/actual trigger/Threshold/motor return accepted. Production reference display and Rhythm numeric caption accepted. Custom slots and unassigned-knob input remain pending.",
+    "new_detector_custom_slot_hardware": "Six-item overview, High Active/meter, Kick/Snare/Rhythm Active/actual trigger/Threshold/motor return, production comparison and Rhythm caption accepted. Slot7 Gain / Slot8 read-only aliases and unassigned Focus Knob1 / overview Knob8 input accepted. Optional custom trigger/comparison remains native/source-only.",
     "native_mix_focus_reference": {
       "native_pairs": "passed",
       "known_detector_scales": "passed",
@@ -229,6 +229,59 @@
       "unrelated_parameter_writes": 0,
       "plugin_return": "passed",
       "original_values_profile_draft_restored": true,
+      "send_override": false,
+      "receive_override": false
+    },
+    "mix_custom_slots_hardware": {
+      "real_apply": "passed",
+      "slot7": "Gain TEST: Lowgain control, primary Gain; processed Low meter",
+      "slot8": "Level TEST: read-only processed Low meter",
+      "gain_gesture": {
+        "value": 2.6131966062381737,
+        "changed_writes": 32,
+        "analysis_changes": {
+          "Lowgain": [
+            2.0,
+            2.6131966062381737
+          ]
+        }
+      },
+      "gain_motor_return": "2.000 / 29% passed",
+      "focus_gain_position": "Knob 2; slot 1 remains unassigned",
+      "readonly_focus": "Level TEST / meter passed",
+      "input_guards": {
+        "focus_unassigned_knob1": {
+          "cc_counts": {
+            "12": 20,
+            "44": 20,
+            "52": 2
+          },
+          "parameter_writes": 0
+        },
+        "overview_readonly_slot8": {
+          "cc_counts": {
+            "19": 22,
+            "51": 22,
+            "59": 2
+          },
+          "parameter_writes": 0
+        },
+        "all_analysis_values_unchanged": true,
+        "send_override": false,
+        "receive_override": false
+      },
+      "restoration": {
+        "preserved": true,
+        "profile_restored": true,
+        "draft_restored": true,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "observer_removed": true,
+        "scope": "Slot7 Lowgain / Slot8 processed Low meter alias; Focus Knob1 + overview Knob8 input"
+      },
+      "plugin_return": "passed",
       "send_override": false,
       "receive_override": false
     }

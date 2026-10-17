@@ -252,8 +252,10 @@ read-only; Knob 5 has no target. Focus knobs 1–4 retain any real controls, so
 Kick/Snare/Rhythm use Knob 1 only. Native headings remain firmware UI. Unassigned
 Pan/Send positions can retain those native headings; no TD target is implied.
 Kick/Snare/Rhythm Active, actual trigger, Threshold input and motor return have
-scoped hardware acceptance. Custom slots and unassigned-knob input still need
-the [batched physical check](../plans/mix-analysis-acceptance.md).
+scoped hardware acceptance. Slot 7 Gain / Slot 8 read-only aliases and the tested
+unassigned input positions also pass. Optional custom trigger/comparison and
+foreign-analyzer examples retain source/native coverage. See the
+[batched physical check](../plans/mix-analysis-acceptance.md) for exact scope.
 
 ## Threshold comparison
 

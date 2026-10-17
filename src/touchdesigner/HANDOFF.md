@@ -28,8 +28,9 @@ source tests and synthetic native messages do not establish physical acceptance.
   audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
 - Six-item overview, High Active/changing meter and Kick Active/actual trigger/
   Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm
-  Active/trigger/Threshold/motor return now pass too. Custom slots and an
-  unassigned-knob input check remain pending. A bounded
+  Active/trigger/Threshold/motor return now pass too. Slot 7 Gain / Slot 8
+  read-only aliases and unassigned Focus Knob 1 / overview Knob 8 pass. Optional
+  custom trigger/comparison feedback remains source/native-only. A bounded
   upper-Threshold/lower-Level prototype was accepted; its explicit production
   Focus integration has passed an installed-runtime hardware check. The user's
   requested overview extension and first-Focus/PLUGIN transition have also passed
@@ -2489,3 +2490,57 @@ Original Low/Mid profile/draft and user nodes/values remain intact. TD stays
 open/disconnected with no override or pending output. The checked-in generic
 receipt records the scoped hardware results; custom slots remain a future
 physical check, not a claim established by this round.
+
+
+## Custom assignments and unassigned input acceptance — 2026-10-17
+
+Baseline checkout `ea1fa2f`, embedded runtime/docs source `7a99f31`, working
+project `.18.toe`, TD 2025.33230. All 22 runtime/helper hashes match the receipt.
+No production source, graph, audio routing, processing toggle or saved artifact
+changes. Fresh recovery and full snapshots precede temporary custom draft edits.
+The actual existing Apply callback configures six known items plus Slot 7
+`Gain TEST` / Slot 8 `Level TEST`: 22 targets, eight meters and three triggers.
+Slot 7 assigns only Lowgain, explicitly choosing Gain as the overview control;
+Slot 8 has no controls. Both meters read processed out1 low over 0..1, with that
+stage declared. These are test aliases of the existing analyzer, not a new
+foreign audio graph or a general mixed-style editor.
+
+The user confirms both names, Gain 2.000, about 29% motor and synchronized meters.
+Touch selection persists as >Gain 2.000. A fresh overview Knob 7 gesture reaches
+Lowgain 2.6131966062381737 through exactly 32 changed writes, with no other
+analysis parameter changes. Software restore to 2.000 moves Knob 7 back to 29%.
+First Focus shows Gain TEST, Gain on Knob 2 / about 29%, and continuing meter.
+The absent Threshold slot stays unassigned rather than shifting Gain to Knob 1.
+
+Unassigned first-Focus Knob 1 receives 20 CC12/44 pairs and one touch ON/OFF pair.
+Read-only overview Slot 8 receives 22 CC19/51 pairs and one touch ON/OFF pair.
+The final trace records the corresponding stable views/selections. Both cases
+make zero parameter writes and preserve every analysis value. Slot 8 first
+Focus shows Level TEST and its meter with no TD controls; native headings may
+remain. Normal demo_A PLUGIN return passes. Total changed writes remain 32,
+so neither motor restore nor the unassigned gestures adds a business write.
+
+The initial diagnostic trace saturated its 5,000-record cap with MIDI clock.
+Those initial gestures were not treated as CC-rejection evidence. A bounded
+observer excluding one-byte realtime records then verifies assigned Knob 2 and
+unassigned Knob 1 touch ON/OFF before the final turn comparison. The final
+observer records all non-realtime input and leaves every message on its normal
+receive path. No receive/send override is installed and no production logging
+or transport change is made. Temporary scripts/results/recovery remain under
+system temp `roto-custom-slots.raELxNVafz`.
+
+Disconnect closes/reaps the child with return 0, clears pending output and
+restores the original Low/Mid profile and every custom draft field. The same
+previously documented Button 1 local reconciliation is restored through Layout
+manager. Normalized full snapshots then match registry/four local control IDs,
+Snapshots, all analyzer/demo/layer values, nine demo children and old controller
+DATs. The observer and session are removed, and scoped errors are empty. TD stays
+open/disconnected. Canonical/export/project bytes remain unchanged.
+
+This update records scoped acceptance only. The 586 source tests from `7a99f31`
+remain applicable; no runtime test rerun, rebuild, doc re-embedding or new
+project/export save is needed. Source Markdown is authoritative; existing
+receipts continue identifying the embedded snapshots. Optional custom trigger/
+comparison and foreign-analyzer examples retain source/native coverage. Audio
+processing #26, Apply simplification #28, other MIX control functions and later
+CI pages remain outside this acceptance.
