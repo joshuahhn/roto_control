@@ -13,11 +13,18 @@ def _identity(operator):
 
 
 LAYER_FIELDS = (
-    ('opacity', 'opacity', 'Opac', 'enableopac'),
-    ('brightness', 'bright', 'Bright', 'enablebright'),
-    ('black_level', 'black', 'Black', 'enablelevels'),
-    ('gamma', 'gamma', 'Gamma', 'enablelevels'),
+    ('opacity', 'opacity', 'Opac', 'float', 'enableopac'),
+    ('brightness', 'bright', 'Bright', 'float', 'enablebright'),
+    ('black_level', 'black', 'Black', 'float', 'enablelevels'),
+    ('gamma', 'gamma', 'Gamma', 'float', 'enablelevels'),
+    ('operation', 'operation', 'Op', 'menu', None),
+    ('swap', 'swapord', 'Swap', 'toggle', None),
 )
+OPERATION_LIBRARIES = {
+    'common': ('over', 'add', 'multiply', 'screen'),
+    'contrast': ('overlay', 'softlight', 'hardlight', 'difference'),
+    'math': ('add', 'subtract', 'multiply', 'divide', 'difference', 'average'),
+}
 
 
 def layer_state(operator):
@@ -28,23 +35,39 @@ def layer_state(operator):
     if not 1 <= len(inputs) <= 8 or operator.seq.lay.numBlocks != len(inputs):
         raise ValueError('This Layer Mix slice needs 1..8 wired inputs only')
     return (tuple(_identity(n) for n in inputs),
-            tuple(bool(operator.par[n].eval()) for n in ('enableopac', 'enablebright', 'enablelevels')))
+            tuple(bool(operator.par[n].eval()) for n in ('enableopac', 'enablebright', 'enablelevels')),
+            operator.par.operand.eval())
 
 
-def layer_profile(scope, source):
+def layer_profile(scope, source, *, operation_library='common', custom_operations=()):
     """Describe existing wired layers; no Setup flags, values or graph writes."""
     if scope is None or not scope.valid or not scope.isCOMP:
         raise ValueError('MIX needs an existing COMP scope')
     source = reference(source)
     operator = scope.op(source)
     layer_state(operator)
+    if not isinstance(operation_library, str) or operation_library not in OPERATION_LIBRARIES:
+        raise ValueError('Unknown MIX Operation library')
+    if (not isinstance(custom_operations, (list, tuple)) or len(custom_operations) > 4
+            or any(not isinstance(name, str) or not name for name in custom_operations)):
+        raise ValueError('MIX accepts at most four custom Operation names')
+    choices = list(dict.fromkeys(OPERATION_LIBRARIES[operation_library] + tuple(custom_operations)))
     items = []
     for index, image in enumerate(operator.inputs):
         controls = {}
-        for key, suffix, label, flag in LAYER_FIELDS:
+        for key, suffix, label, kind, flag in LAYER_FIELDS:
+            enabled = operator.par[flag].eval() if flag else operator.par.operand.eval() == 'opperlayer'
+            if not enabled:
+                continue
             parameter = operator.par['lay' + str(index) + suffix]
-            if operator.par[flag].eval() and parameter is not None and parameter.enable:
-                controls[key] = dict(label=label, kind='float', target=dict(op=source, parameter=parameter.name))
+            if parameter is None and flag is None:
+                raise ValueError('Cook Layer Mix after setting Per Layer before configuring MIX')
+            if parameter is not None and (parameter.enable or key == 'swap'):
+                controls[key] = dict(label=label, kind=kind, target=dict(op=source, parameter=parameter.name))
+                if kind == 'menu':
+                    if any(name not in parameter.menuNames for name in choices):
+                        raise ValueError('MIX Operation choice is not in the current TD menu')
+                    controls[key]['choices'] = list(choices)
         item = dict(id='input.' + str(index), label='Input ' + str(index + 1),
                     input=reference(scope.relativePath(image)), primary='opacity' if 'opacity' in controls else None,
                     controls=controls)
@@ -56,38 +79,71 @@ def layer_profile(scope, source):
 
 
 class Target:
-    def __init__(self, scope, description, identity):
+    def __init__(self, scope, description, identity, *, allow_disabled=False):
         self.scope, self.description = scope, description
+        self.allow_disabled = allow_disabled
         self.operator = scope.op(description['target']['op'])
         if self.operator is None or not self.operator.valid:
             raise ValueError('Missing MIX target')
         self.parameter = self.operator.par[description['target']['parameter']]
         kind = description['kind']
-        if self.parameter is None or (kind, self.parameter.style) not in (('float', 'Float'), ('toggle', 'Toggle')):
-            raise ValueError('MIX needs a matching Float or Toggle target; Menu routing is unavailable')
-        if not self.parameter.enable:
+        if self.parameter is None or (kind, self.parameter.style) not in (('float', 'Float'), ('toggle', 'Toggle'), ('menu', 'Menu')):
+            raise ValueError('MIX needs a matching Float, Toggle or Menu target')
+        if not self.parameter.enable and not allow_disabled:
             raise ValueError('MIX parameter is disabled')
         self.chain = self.signature()
-        minimum, maximum = limits(description.get('range', [0, 1] if kind == 'toggle' else [self.parameter.normMin, self.parameter.normMax]))
+        default_range = [0, len(self.parameter.menuNames) - 1] if kind == 'menu' else [0, 1] if kind == 'toggle' else [self.parameter.normMin, self.parameter.normMax]
+        minimum, maximum = limits(description.get('range', default_range))
         if kind == 'toggle' and (minimum, maximum) != (0, 1):
             raise ValueError('MIX Active range must be 0..1')
         self.binding = Binding(identity, description['label'], minimum, maximum,
-                               parameter_value(self.parameter), parameter=self.parameter, integer=kind == 'toggle')
+                               parameter_value(self.parameter), parameter=self.parameter, integer=kind != 'float',
+                               menu_limit=16384)  # Preserve full TD identity; MIX choices are bounded separately.
+        self.choice_indices = None
+        if kind == 'menu':
+            try:
+                self.choice_indices = tuple(self.binding.menu_names.index(name) for name in description['choices'])
+            except ValueError as exc:
+                raise ValueError('MIX choice is not a current TD menu name') from exc
         self.check()
 
     def signature(self):
         return tuple((_identity(p.owner), p.name, p.style, p.mode.name,
-                      p.normMin, p.normMax, p.min, p.max, p.clampMin, p.clampMax)
+                      p.normMin, p.normMax, p.min, p.max, p.clampMin, p.clampMax,
+                      (tuple(p.menuNames), tuple(p.menuLabels)) if p.style == 'Menu' else None)
                      for p in parameter_chain(self.parameter))
 
     def check(self):
         operator = self.scope.op(self.description['target']['op'])
         if (operator is None or not operator.valid or _identity(operator) != _identity(self.operator)
                 or not same_parameter(operator.par[self.parameter.name], self.parameter)
-                or not self.parameter.enable or self.signature() != self.chain):
+                or (not self.parameter.enable and not self.allow_disabled) or self.signature() != self.chain):
             raise ValueError('MIX target identity, range or mode changed; reconfigure to resume')
         self.binding.check_parameter()
+        if not self.parameter.enable:
+            return None  # Swap is temporarily unavailable for a commutative operation.
         return self.binding.clamp(parameter_value(self.parameter))
+
+    def caption(self, value):
+        label = self.binding.label
+        if self.description['kind'] == 'menu':
+            position = str(self.choice_indices.index(int(value)) + 1) if int(value) in self.choice_indices else '*'
+            return f'{label} {position} {self.binding.menu_labels[int(value)]}'
+        if self.description['kind'] == 'toggle':
+            return f'{label} {"On" if value else "Off"}'
+        return f'{label} {value:.3f}'
+
+    def normalized(self, value):
+        if self.choice_indices is None:
+            return self.binding.normalized(value)
+        if int(value) not in self.choice_indices:
+            return None
+        return self.choice_indices.index(int(value)) / (len(self.choice_indices) - 1)
+
+    def from_normalized(self, value):
+        if self.choice_indices is None:
+            return self.binding.from_normalized(value)
+        return self.choice_indices[round(min(1, max(0, value)) * (len(self.choice_indices) - 1))]
 
 
 class Signal:
@@ -185,17 +241,18 @@ class MixRuntime:
         for index, item in enumerate(profile['items']):
             for key, control in item['controls'].items():
                 try:
-                    expected = 'toggle' if profile['style'] == 'analysis' and key == 'active' else 'float' if key in FLOAT_KEYS[profile['style']] else None
+                    expected = 'float' if key in FLOAT_KEYS[profile['style']] else 'toggle' if key in ('active','swap') else 'menu' if key == 'operation' else None
                     if control['kind'] != expected:
-                        raise ValueError('This slice routes Float controls and analysis Active Toggle only')
+                        raise ValueError('MIX control type does not match its style field')
                     if profile['style'] == 'layers':
-                        _, suffix, _, flag = next(field for field in LAYER_FIELDS if field[0] == key)
+                        _, suffix, _, _, flag = next(field for field in LAYER_FIELDS if field[0] == key)
                         if (scope.op(control['target']['op']) is None
                                 or _identity(scope.op(control['target']['op'])) != _identity(source)
                                 or control['target']['parameter'] != 'lay' + str(index) + suffix
-                                or not source.par[flag].eval()):
+                                or not (source.par[flag].eval() if flag else source.par.operand.eval() == 'opperlayer')):
                             raise ValueError('Layer field unavailable or does not match its wired input')
-                    targets[index, key] = Target(scope, control, profile['id'] + ':' + item['id'] + ':' + key)
+                    targets[index, key] = Target(scope, control, profile['id'] + ':' + item['id'] + ':' + key,
+                                                 allow_disabled=profile['style'] == 'layers' and key == 'swap')
                 except (ValueError, AttributeError, TypeError, KeyError) as exc:
                     errors[index, key] = str(exc)
             if item.get('meter'):
@@ -361,6 +418,14 @@ class MixRuntime:
             target = self.targets.get(address)
             if target is None:
                 return True
+            if target.allow_disabled:
+                try:
+                    if target.check() is None:
+                        self.unavailable(lane)
+                        return True
+                except (ValueError, AttributeError, TypeError) as exc:
+                    self.suspend(address, exc)
+                    return True
             parts = self.parts.setdefault(lane, {})
             parts[cc < 32] = value, now
             if True in parts and False in parts:
@@ -370,9 +435,12 @@ class MixRuntime:
                     return True
                 try:
                     before = target.check()
+                    if before is None:
+                        self.unavailable(lane)
+                        return True
                     raw = msb[0] * 128 + lsb[0]
                     self.e._dispatching = True
-                    target.binding.write(target.binding.from_normalized(raw / 16383), 'hardware')
+                    target.binding.write(target.from_normalized(raw / 16383), 'hardware')
                     self.writes += int(before != target.binding.value)
                     self.last_motor[lane] = raw  # don't move against the gesture
                 except Exception as exc:
@@ -415,13 +483,19 @@ class MixRuntime:
         self.errors[address] = str(error)
         self.invalidate()
 
+    def unavailable(self, lane):
+        self.parts.pop(lane, None); self.armed.discard(lane); self.last_motor.pop(lane, None)
+        if lane in self.touched:
+            self.blocked.add(lane)
+        self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))
+
     def command(self, group, command, data=()):
         self.e._send(sysex(group, command, data), mix=True)
 
     def metadata(self):
         self.last_motor.clear(); self.last_text.clear()
         items = self.profile['items'] if self.profile else []
-        self.command(12, 3, (2,))
+        self.command(12, 3, (len(self.send_labels()),))
         self.command(10, 4, (0, len(items))); self.command(10, 5, (0, 0))
         for index, item in enumerate(items):
             self.command(10, 7, (0, index, *text13(item['label']), 0, 0))
@@ -437,8 +511,15 @@ class MixRuntime:
         self.command(12, 12, enabled)
         self.dirty = False
 
-    def send_names(self, start=0):
+    def send_labels(self):
         names = ('Black', 'Gamma') if self.profile and self.profile['style'] == 'layers' else ('Add', 'Smooth')
+        if self.profile and self.profile['style'] == 'layers' and any(
+                key in item['controls'] for item in self.profile['items'] for key in ('operation','swap')):
+            names += ('Op', 'Swap')
+        return names
+
+    def send_names(self, start=0):
+        names = self.send_labels()
         self.command(12, 8, (start, *(byte for index in range(start, start + 8)
                                     for byte in text13(names[index] if index < len(names) else ''))))
 
@@ -469,13 +550,20 @@ class MixRuntime:
             if target is not None:
                 try:
                     value = target.check()
-                    raw = raw_value(target.binding.normalized(value))
-                    text = f'{target.binding.label} {value:.3f}'
-                    if lane not in self.touched and self.last_motor.get(lane) != raw:
-                        self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))
-                        self.e._send((191, 12 + lane, raw >> 7), mix=True)
-                        self.e._send((191, 44 + lane, raw & 127), mix=True)
-                        self.last_motor[lane] = raw
+                    if value is None:
+                        self.unavailable(lane)
+                    else:
+                        normalized = target.normalized(value)
+                        raw = raw_value(normalized) if normalized is not None else None
+                        text = target.caption(value)
+                        if raw is None:
+                            self.last_motor.pop(lane, None)
+                            self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))
+                        elif lane not in self.touched and self.last_motor.get(lane) != raw:
+                            self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))
+                            self.e._send((191, 12 + lane, raw >> 7), mix=True)
+                            self.e._send((191, 44 + lane, raw & 127), mix=True)
+                            self.last_motor[lane] = raw
                 except (ValueError, AttributeError, TypeError) as exc:
                     self.suspend(address, exc)
                     return

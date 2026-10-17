@@ -84,9 +84,10 @@ class RotoPythonExt:
         """Describe an existing Low/Mid source. Audio/detection settings stay as-is."""
         return self.SetMixProfile(scope, analysis_profile(source, bands))
 
-    def ConfigureMixLayers(self, scope, source='layermix_layers'):
+    def ConfigureMixLayers(self, scope, source='layermix_layers', *, operation_library='common', custom_operations=()):
         """Describe existing wired Layer Mix inputs without enabling Setup fields."""
-        return self.SetMixProfile(scope, layer_profile(scope, source))
+        return self.SetMixProfile(scope, layer_profile(scope, source, operation_library=operation_library,
+                                                       custom_operations=custom_operations))
 
     def GetMixProfile(self):
         self._mix_manager()

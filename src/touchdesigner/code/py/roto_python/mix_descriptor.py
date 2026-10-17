@@ -15,6 +15,7 @@ FLOAT_KEYS = {
     'analysis': ('threshold', 'gain', 'add', 'smooth'),
     'layers': ('opacity', 'brightness', 'black_level', 'gamma'),
 }
+DETAIL_KEYS = dict(FLOAT_KEYS, layers=FLOAT_KEYS['layers'] + ('operation', 'swap'))
 
 
 def reference(value):
@@ -94,11 +95,19 @@ def validate(profile):
             if item['primary'] is not None and item['primary'] not in controls:
                 raise ValueError('MIX primary must reference an available control')
             for control in controls.values():
-                _fields(control, ('label', 'kind', 'target'), ('range',))
+                _fields(control, ('label', 'kind', 'target'), ('range', 'choices'))
                 _name(control['label'])
                 if control['kind'] not in ('float', 'menu', 'toggle'):
                     raise ValueError('Unsupported MIX control kind')
                 _target(control['target'])
+                if control['kind'] == 'menu':
+                    choices = control.get('choices')
+                    if (not isinstance(choices, list) or not 2 <= len(choices) <= 24
+                            or any(not isinstance(name, str) or not name for name in choices)
+                            or len(set(choices)) != len(choices)):
+                        raise ValueError('MIX Menu needs 2..24 unique choice names')
+                elif 'choices' in control:
+                    raise ValueError('Only MIX Menu controls have choices')
                 if 'range' in control:
                     limits(control['range'])
             meter = item.get('meter')
@@ -154,7 +163,7 @@ def projection(profile, view, selected):
     if view is None:
         return result
     items = profile['items']
-    keys = FLOAT_KEYS.get(profile['style'])
+    keys = DETAIL_KEYS.get(profile['style'])
     if keys is None:
         return result
     kind, data = view
@@ -163,12 +172,17 @@ def projection(profile, view, selected):
         if family != 0:
             return result
         for index, item in enumerate(items):
-            key = item['primary'] if knob == 0 else keys[1] if knob == 1 else (keys[2] if send == 0 else keys[3] if send == 1 else None)
-            if key in item['controls'] and item['controls'][key]['kind'] == 'float':
+            if knob == 0:
+                key = item['primary']
+            elif knob == 1:
+                key = keys[1]
+            else:
+                key = keys[2 + send] if 2 + send < len(keys) else None
+            if key in keys and key in item['controls'] and item['controls'][key]['kind'] == {'operation':'menu', 'swap':'toggle'}.get(key, 'float'):
                 result[index] = index, key
     elif kind == 'focus' and data == 0 and 0 <= selected < len(items):
         for lane, key in enumerate(keys):
-            if key in items[selected]['controls'] and items[selected]['controls'][key]['kind'] == 'float':
+            if key in items[selected]['controls'] and items[selected]['controls'][key]['kind'] == {'operation':'menu', 'swap':'toggle'}.get(key, 'float'):
                 result[lane] = selected, key
     return result
 

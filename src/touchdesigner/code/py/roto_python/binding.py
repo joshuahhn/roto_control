@@ -56,7 +56,7 @@ def parameter_value(parameter):
 
 class Binding:
     def __init__(self, id, label, minimum, maximum, value, *, integer=False,
-                 parameter=None, on_change=None):
+                 parameter=None, on_change=None, menu_limit=24):
         if not isinstance(id, str) or not id.strip():
             raise ValueError("A nonempty stable target id is required")
         if not isinstance(label, str) or not label.strip():
@@ -74,9 +74,9 @@ class Binding:
         self.menu_names = tuple(parameter.menuNames) if getattr(parameter, 'style', '') == 'Menu' else ()
         self.menu_labels = tuple(parameter.menuLabels) if self.menu_names else ()
         if self.menu_names:
-            if (not 2 <= len(self.menu_names) <= 24 or len(set(self.menu_names)) != len(self.menu_names)
+            if (not 2 <= len(self.menu_names) <= menu_limit or len(set(self.menu_names)) != len(self.menu_names)
                     or len(self.menu_labels) != len(self.menu_names)):
-                raise ValueError('Menu needs 2..24 unique names and matching labels')
+                raise ValueError(f'Menu needs 2..{menu_limit} unique names and matching labels')
             if minimum != 0 or maximum != len(self.menu_names)-1:
                 raise ValueError('Menu range must include all option indices')
             integer = True

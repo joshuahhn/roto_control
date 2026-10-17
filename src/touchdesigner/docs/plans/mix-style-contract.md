@@ -44,6 +44,7 @@ The exact persistence integration is implementation work, not a new path grammar
 | Control `kind` | `float`, `menu` or `toggle`, checked against the real TD parameter |
 | Control `target` | `{op, parameter}` identifying an existing writable TD parameter |
 | Control `range` | Explicit numeric override when needed; otherwise validated TD normalization metadata |
+| Menu control `choices` | Required ordered list of 2..24 unique existing TD option names; explicit curation, not a first-N truncation |
 | Item `meter` | Optional source, measurement, range and signal-stage description |
 | Item `trigger` | Optional real trigger source, detection-enabled target and display hold |
 
@@ -52,9 +53,11 @@ are assigned by the MIX adapter. They are not descriptor field names. A primary
 control and a detail control reference the same target. Do not persist target
 values, connected state, touches, decoded MIDI pairs or active hardware views.
 
-`float` is continuous. `menu` resolves against current TD menu names/options,
-preserving the complete menu rather than treating it as a float or truncating it
-to 16 entries. `toggle` represents the target's boolean state. Menu reordering or
+`float` is continuous. `menu` retains the complete TD menu identity, while an
+explicit choice list limits what the controller can select. Preset libraries and
+up to four custom existing blend modes implement the user's refined Operation
+request. Values outside the list are preserved and marked, without false motor
+feedback. `toggle` represents the target's boolean state. Menu reordering or
 parameter replacement must invalidate stale routing before a write. This does not
 promise configurable MIX detents or native button behavior.
 
@@ -154,5 +157,6 @@ method; a fresh read-only check and normal PLUGIN return passed. Do not carry th
 prototype's bounded-stream lifecycle into normal continuous runtime feedback.
 The shared descriptor, Low/Mid analysis and wired Layer Mix float adapters now
 use the scoped checks described in the [view plan](mix-view-mappings.md). The
-current runtime activates one source/style profile at a time; mixed-style slots,
-Layer Mix Operation/Swap and audio processing remain planned.
+current runtime activates one source/style profile at a time. Operation libraries
+and Swap now have source/native and scoped hardware acceptance;
+mixed-style slots and audio processing remain planned.

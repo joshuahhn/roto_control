@@ -5,7 +5,8 @@ an independent eight-slot MIX page, float input, analysis Active buttons and nat
 meter feedback. Source tests, native TD checks
 and scoped hardware acceptance cover touch selection, FUNC details, sustained
 captions, Mid Gain input/motor return, overview Active toggles, Layer Mix overview
-Opacity input/motor return, Input 2 Focus captions and normal PLUGIN restoration. The generic
+Opacity input/motor return, Input 2 Focus captions, curated Operation selection,
+Swap input/motor return and normal PLUGIN restoration. The generic
 tox includes this slice with no MIX assignments; the checked-in demo project
 retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lowmid-hardware-acceptance--2026-10-17).
 
@@ -63,7 +64,50 @@ both native bars. It does not measure image intensity or an audio signal.
 Changing the input identities/order, sequence count or Setup flags invalidates
 the profile before further writes. Restoring old wiring does not resume it:
 release the knobs and explicitly configure again. Target identity and parameter
-guards also apply to every write. Operation menus and Swap are not routed yet.
+guards also apply to every write. Operation/Swap source status follows below.
+
+## Operation libraries and Swap
+
+First-Focus Operation is on knob 5 and Swap on knob 6. Hardware acceptance covers
+Common plus custom Xor/Z Film, reaching Z Film, Add/Over motor feedback, Swap
+unavailable under Add, Swap On input and Off motor return. Focus buttons continue selecting inputs.
+Operation/Swap are described only when the existing TOP already uses Per Layer.
+The caller must let the TOP cook after enabling that setting; the adapter never
+enables it itself.
+
+```python
+controller.ConfigureMixLayers(
+    existing_scope, 'layermix_layers',
+    operation_library='common', custom_operations=['xor', 'zfilm'])
+```
+
+| Library | Ordered controller choices |
+| --- | --- |
+| `common` | Over, Add, Multiply, Screen |
+| `contrast` | Overlay, Soft Light, Hard Light, Difference |
+| `math` | Add, Subtract, Multiply, Divide, Difference, Average |
+
+Append up to four custom existing TD menu names; duplicates are omitted while
+retaining the first occurrence. Saved choices are names, never renamed TD menu
+indices. Invalid names/library settings reject registration without replacing
+the previous profile. This is an API, without a library editor UI.
+
+The real TD menu retains all options and labels for identity validation. The
+controller only steps through its chosen list. `Op 2 Add` means the second choice
+in that list. If TD selects a value outside the list, `Op *` marks that value;
+no motor position is fabricated and no target value is coerced. A fresh gesture
+can select a listed value. Changing the underlying TD menu or labels invalidates
+the old route until reconfiguration. PLUGIN keeps its existing 24-option limit.
+
+Swap displays On/Off and uses two knob positions. TD disables it for commutative
+operations such as Add/Screen; the controller then shows Unavailable and blocks
+input. When an operation such as Over enables it again, a held touch/partial CC
+pair cannot write until release and fresh touch. Discrete value selection is
+implemented; physical MIX detents are unverified. SysEx API 3.10's step-count
+field belongs to PLUGIN LEARN; chapter 4 does not document a corresponding MIX
+haptic/step-count setting.
+Native Send C/D project Operation/Swap; the send count/names retain missing fields
+as unassigned. Second-page Focus is still disabled.
 
 ## Hardware views
 
@@ -133,14 +177,16 @@ No second MIDI owner or new wire protocol is introduced.
 ## Current limits and installation
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
-in this slice. Menus, trigger indicators, High/Kick adapters, second-page Focus and the slot
+in this slice. Trigger indicators, High/Kick adapters, second-page Focus and the slot
 editor are later slices. No detent or freely replaceable native-heading promise
-is made. Layer Mix Operation/Swap remain planned; audio Gain/Mute processing is deferred to
+is made. Contrast/Math and other custom combinations have source/native coverage;
+they were not individually checked on hardware. A library editor and mixed-style
+slots remain planned; audio Gain/Mute processing is deferred to
 [issue #26](https://github.com/joshuahhn/roto_control/issues/26).
 
 For a current disconnected controller, make a recovery `.tox` through TD, then
 execute `scripts/upgrade_mix.py` and call `install(controller, source_dir)`. It
-embeds three helpers and refreshes the extension/lifecycle source, preserving
+embeds three helpers and refreshes Binding and the extension/lifecycle source, preserving
 existing mappings and target values. Generic export clears the MIX profile and
 starts disconnected with no user paths. The older full Inspector builder has a separate
 ASCII-locale source-loading limitation in this TD process; this upgrader does

@@ -23,8 +23,8 @@ source tests and synthetic native messages do not establish physical acceptance.
   accepted. Only claim the environments and interactions actually recorded.
 - Historical manual gates without a later matching result remain unproven in that
   scope. Investigate them only when the requested change depends on that behavior.
-- Current MIX runtime activates one source/style profile at a time. Layer Mix
-  Operation/Swap, mixed-style slots and audio Gain/Mute processing remain deferred;
+- Current MIX runtime activates one source/style profile at a time.
+  Mixed-style slots and audio Gain/Mute processing remain deferred;
   audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
 
 ## Historical milestones
@@ -1869,3 +1869,93 @@ untouched. The project is open/disconnected, without pending bytes or diagnostic
 overrides. Save/export recovery and results are in the same evidence folder's
 `publish` directory. Reuse the final 522 tests; publication changes no runtime
 behavior. This update stays in PR #27 without merging.
+
+## MIX Operation library source/native checkpoint — 2026-10-17
+
+Continued PR #27 from `18f5db0`. The user refined Operation selection to preset
+libraries plus custom existing TD blend modes. The source now offers common,
+contrast and math libraries, with up to four appended custom names. Descriptors
+save the expanded ordered `choices` by TD option name. The controller range is
+curated, while full TD names/labels are retained for identity checks. Outside-list
+TD values are marked `Op *`, preserved and given no fabricated motor position.
+PLUGIN's default Binding menu capacity remains 24; MIX explicitly permits the
+full TD source menu internally and validates its smaller choice list separately.
+No new wire protocol, transport or library-management framework was added.
+
+First-Focus knob 5 selects Operation, knob 6 is Swap On/Off. The existing Layer
+Mix TOP must already use Per Layer and have cooked its dynamic fields. The adapter
+never enables this setting. Global Operation changes fence the source, with
+explicit reconfiguration required even if the original mode is restored.
+Native TD exposes layNoperation with 46 choices and layNswapord, which is disabled
+for Screen/Add and enabled for Over/Subtract. Disabled Swap clears pending halves,
+blocks a held touch and displays unavailable; availability recovery requires
+release and fresh touch, without rebuilding the profile. Focus buttons remain
+input selectors. Send C/D use the same typed targets, with four advertised sends.
+
+The final relevant source passes 531 discovery tests, including 44 MIX tests and
+existing default Menu capacity/LEARN regressions. Nine new MIX cases cover curated
+name mapping, a custom last source option, invalid libraries/choices, outside-list
+values, delayed dynamic fields, typed Swap, disabled/partial-pair recovery, menu
+identity/global-mode fences and send metadata. A deliberately failing partial-pair
+case prevented an unavailable Swap MSB being reused after enable.
+
+Native fixture checks pass actual 46-option TD menus with six controller choices,
+including custom Z Film, three changed selected-layer Menu/Toggle writes only,
+unchanged eight Float values, outside-list Hue without coercion/motor, sticky
+global-mode fencing and configured save/reload without target-value recall.
+The fixture was removed; no hardware MIDI was opened by those synthetic checks.
+Evidence/recovery/scripts are system temporary `roto-mix-operation.ZpyO0IgoSU`.
+Hardware acceptance, generic artifact/receipt refresh and source publication for
+these new routes remain pending. Prior float/analysis/Active acceptance is reused.
+
+Live preparation on the still-open `ROTO-CONTROL.mix-analysis.4.toe` is unsaved.
+The scoped upgrader now also embeds Binding; all 22 live source hashes match the
+new worktree source. Original registry/profile/values, user demo_A.Steps=4,
+Snapshots, audio nodes and old controller fingerprints were checked before
+staging. Only the authorized isolated Layer Mix demo is temporarily Per Layer,
+with Input 1 Over/Swap Off and Input 2 Add/Swap unavailable. Its original Add mode,
+hidden per-layer fields and Low/Mid profile are in recovery JSON/tox. The bounded
+probe's actual disconnected finish seam restored them and removed its tracing
+wrappers in an offline check, then the demo was restaged. No MIDI process or
+receiver override is active. Await user MIX-TRACKS/FUNC-off ready before calling
+`probe.py`'s `start()`; each window stops within three minutes. These new source
+changes are not yet committed or exported, and the generic receipt remains the
+accepted `3f05381` float-source baseline.
+
+## MIX Operation/Swap hardware acceptance — 2026-10-17
+
+On firmware 3.3.0/API 1.6 the user confirmed first-Focus Input 1's four unchanged
+Float captions, `Op 1 Over`, `Swap Off` and opacity meter. Turning only knob 5
+reached custom `Op 6 Z Film`: five changed Menu writes affected only
+lay0operation. Input 2, all eight Float values and analysis values remained
+unchanged. Software Add sent the 20% motor position and `Op 2 Add`, with Swap
+Unavailable. The user accepted its motor/text and unchanged four floats/meter.
+Software Over returned knob 5 to its origin and made Swap available; knob 6 then
+produced one changed lay0swapord write and `Swap On`, with no other target changes.
+A final fresh read-only connection confirmed knob 6 at origin with Swap Off, then
+normal demo_A PLUGIN return. Six changed business writes in total, without extra
+writes during the read-only/software-feedback/final-return phases.
+
+Each bounded window stopped within three minutes. Some elapsed while the user
+was away/asking questions; their automatic cleanup succeeded, and acceptance
+continued with fresh windows. This is test lifecycle behavior, not a production
+feedback/framing failure. Final cleanup reaped the child return 0, cleared pending
+bytes/tracing wrappers, restored the original Add/global swap setting, hidden
+Screen/Swap fields, eight layer floats and Low/Mid profile. All analysis values,
+Snapshots, demo_A/B values including the user's Steps=4, nine demo children and
+old controller's 246 DAT fingerprints match the installation baseline. The known
+PLUGIN Button 1 learned-identity difference was handled by restoring the four
+original local definitions disconnected, with zero value recall; its scope and
+limitations remain unchanged from earlier entries.
+
+Focus buttons remain native input selectors, as explained to the user. The user's
+step question distinguishes typed value quantization, now accepted, from physical
+haptic detents, still unverified in MIX. Official SysEx API v1.6 section 3.10 lists
+step count in PLUGIN LEARN; chapter 4 has no corresponding MIX per-knob haptic
+setting. No serial or cross-mode PLUGIN configuration command was tried.
+
+Native/source coverage includes Contrast/Math/custom list validation, outside-list
+values, stale pairs and menu/Setup identity changes. Hardware coverage is the
+Common + Xor/Z Film demo and first Focus controls 5/6. Other libraries, per-item
+library edits, overview Send C/D input and second-page Focus were not physically
+accepted. Reuse the final 531 tests. Save/export publication follows below.

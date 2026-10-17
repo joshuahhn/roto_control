@@ -10,7 +10,7 @@ from test_bound_parameter import BoundParameter
 from midi_queue import discard, business_output
 from mix_descriptor import analysis_profile, validate, projection
 from mix_runtime import MixRuntime, Signal
-from protocol import sysex, digest
+from protocol import sysex, digest, text13
 
 
 class Pars(dict):
@@ -30,6 +30,7 @@ class MixTests(unittest.TestCase):
         source=SimpleNamespace(valid=True,OPType='layermixTOP',id=900,path='/demo/layer_mix',inputs=images,par=Pars(),seq=SimpleNamespace(lay=SimpleNamespace(numBlocks=2)))
         for flag in ('enableopac','enablebright','enablelevels'):
             p=BoundParameter('Toggle');p.name=flag;p.owner=source;p.val=True;source.par[flag]=p
+        p=BoundParameter('Menu');p.name='operand';p.owner=source;p.val='add';source.par[p.name]=p
         for index in range(2):
             for suffix,value,high in (('opacity',.25+.5*index,1),('bright',1,2),('black',0,2),('gamma',1,3)):
                 p=BoundParameter();p.name='lay'+str(index)+suffix;p.owner=source;p.enable=True
@@ -38,6 +39,117 @@ class MixTests(unittest.TestCase):
         for image in images:operators[image.path.rsplit('/',1)[1]]=image
         mix.scope.relativePath=lambda n:n.path.removeprefix('/demo/')
         return e,mix,source,images,analysis
+
+    def operation_fixture(self):
+        e,mix,source,*_=self.layer_fixture();source.par.operand.val='opperlayer'
+        for index in range(2):
+            p=BoundParameter('Menu');p.name='lay'+str(index)+'operation';p.owner=source;p.enable=True
+            p.menuNames=['add','over','multiply','screen','overlay','softlight','hardlight','difference','subtract','divide','average'] + ['choice_'+str(i) for i in range(11,46)]
+            p.menuLabels=['Choice '+str(i+1) for i in range(46)]
+            p.val=p.menuNames[0];source.par[p.name]=p
+            p=BoundParameter('Toggle');p.name='lay'+str(index)+'swapord';p.owner=source;p.enable=True;p.val=False
+            source.par[p.name]=p
+        return e,mix,source
+
+    def focus(self,e,mix,index=0):
+        e._receive_midi(sysex(10,9,(0,index)),e._ingress_token())
+        e._receive_midi(sysex(12,2,(0,)),e._ingress_token());mix.tick(now=2)
+
+    def test_layer_curated_operation_uses_real_names_and_writes_only_selected_input(self):
+        e,mix,source=self.operation_fixture()
+        before={n:p.eval() for n,p in source.par.items()}
+        e.ConfigureMixLayers(mix.scope,'layer_mix',custom_operations=['choice_45'])
+        self.assertEqual({n:p.eval() for n,p in source.par.items()},before)
+        self.enter(e,mix);self.focus(e,mix,1)
+        self.assertEqual(mix.addresses()[4:6],[(1,'operation'),(1,'swap')])
+        self.cc(e,56,127);self.turn(e,4,16383);self.cc(e,56,0)
+        self.assertEqual(source.par.lay1operation.eval(),'choice_45')
+        self.assertEqual(source.par.lay0operation.eval(),'add')
+        self.assertEqual(len(mix.targets[1,'operation'].binding.menu_names),46)
+        self.assertEqual(mix.writes,1)
+        mix.tick(now=3)
+        self.assertIn(sysex(10,24,(0,4,*text13('Op 5 Choice 46'))),[tuple(m) for m in self.messages(e)])
+
+    def test_layer_operation_libraries_and_custom_choices_validate_atomically(self):
+        e,mix,source=self.operation_fixture()
+        e.ConfigureMixLayers(mix.scope,'layer_mix',operation_library='math',custom_operations=['choice_45','add'])
+        before=e.GetMixProfile()
+        self.assertEqual(before['descriptor']['items'][0]['controls']['operation']['choices'],
+                         ['add','subtract','multiply','divide','difference','average','choice_45'])
+        for kwargs in ({'operation_library':'missing'}, {'operation_library':[]}, {'custom_operations':['missing']}, {'custom_operations':['add']*5}):
+            with self.assertRaises(ValueError):e.ConfigureMixLayers(mix.scope,'layer_mix',**kwargs)
+            self.assertEqual(e.GetMixProfile(),before)
+        self.assertEqual(source.par.lay0operation.eval(),'add');self.assertEqual(mix.writes,0)
+
+    def test_layer_per_layer_fields_must_exist_before_registration(self):
+        e,mix,source=self.operation_fixture();before=e.GetMixProfile()
+        source.par['lay0operation']=None
+        with self.assertRaisesRegex(ValueError,'Cook Layer Mix'):e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.assertEqual(e.GetMixProfile(),before);self.assertEqual(mix.writes,0)
+
+    def test_layer_operation_outside_library_is_preserved_without_false_motor_feedback(self):
+        e,mix,source=self.operation_fixture();source.par.lay0operation.val='choice_20'
+        e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix);self.focus(e,mix)
+        self.assertEqual(source.par.lay0operation.eval(),'choice_20');self.assertEqual(mix.writes,0)
+        self.assertFalse(any(m[:2] in ([191,16],[191,48]) for m in self.messages(e)))
+        self.assertIn(sysex(10,24,(0,4,*text13('Op * Choice 21'))),[tuple(m) for m in self.messages(e)])
+        self.cc(e,56,127);self.turn(e,4,16383);self.cc(e,56,0)
+        self.assertEqual(source.par.lay0operation.eval(),'screen');self.assertEqual(mix.writes,1)
+
+    def test_layer_swap_is_a_typed_knob_with_no_focus_button_fallback(self):
+        e,mix,source=self.operation_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.enter(e,mix);self.focus(e,mix,1)
+        self.cc(e,57,127);self.turn(e,5,16383);self.cc(e,57,0)
+        self.assertTrue(source.par.lay1swapord.eval());self.assertFalse(source.par.lay0swapord.eval())
+        self.cc(e,21,127);self.cc(e,21,0)
+        self.assertTrue(source.par.lay1swapord.eval());self.assertEqual(mix.writes,1)
+        source.par.lay1swapord.val=False;mix.tick(now=3)
+        self.assertIn([191,17,0],self.messages(e))
+
+    def test_layer_disabled_swap_recovers_after_release_without_reconfiguring_menu(self):
+        e,mix,source=self.operation_fixture();source.par.lay0swapord.enable=False
+        e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix);self.focus(e,mix)
+        self.cc(e,57,127);self.turn(e,5,16383)
+        self.assertFalse(source.par.lay0swapord.eval());self.assertEqual(mix.writes,0)
+        source.par.lay0swapord.enable=True;mix.tick(now=3);self.turn(e,5,16383)
+        self.assertFalse(source.par.lay0swapord.eval())
+        self.cc(e,57,0);self.cc(e,57,127);self.turn(e,5,16383);self.cc(e,57,0)
+        self.assertTrue(source.par.lay0swapord.eval());self.assertEqual(mix.writes,1)
+
+    def test_layer_menu_changes_suspend_old_route_and_per_layer_changes_fence_source(self):
+        for change in ('names','labels','global'):
+            with self.subTest(change=change):
+                e,mix,source=self.operation_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+                self.enter(e,mix);self.focus(e,mix);self.cc(e,56,127)
+                if change=='names':source.par.lay0operation.menuNames.reverse()
+                elif change=='labels':source.par.lay0operation.menuLabels.reverse()
+                else:source.par.operand.val='over'
+                self.turn(e,4,16383);mix.tick(now=3)
+                self.assertEqual(source.par.lay0operation.eval(),'add');self.assertEqual(mix.writes,0)
+                if change=='global':
+                    source.par.operand.val='opperlayer';mix.tick(now=4);self.assertFalse(mix.ready)
+
+    def test_layer_disabled_swap_does_not_reuse_a_partial_pair_after_enable(self):
+        e,mix,source=self.operation_fixture();source.par.lay0swapord.enable=False
+        e.ConfigureMixLayers(mix.scope,'layer_mix');self.enter(e,mix);self.focus(e,mix)
+        self.cc(e,57,127);self.cc(e,17,127)
+        source.par.lay0swapord.enable=True;self.cc(e,49,127)
+        self.assertFalse(source.par.lay0swapord.eval());self.assertEqual(mix.writes,0)
+        self.cc(e,57,0);self.cc(e,57,127);self.turn(e,5,16383);self.cc(e,57,0)
+        self.assertTrue(source.par.lay0swapord.eval());self.assertEqual(mix.writes,1)
+
+    def test_layer_operation_projection_and_send_metadata_preserve_gaps(self):
+        e,mix,source=self.operation_fixture();e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.enter(e,mix);self.focus(e,mix)
+        self.assertIn(list(sysex(12,3,(4,))),self.messages(e))
+        p=e.GetMixProfile()['descriptor']
+        self.assertEqual(projection(p,('all',(0,2,0,2)),0)[:2],[(0,'operation'),(1,'operation')])
+        self.assertEqual(projection(p,('all',(0,2,0,3)),0)[:2],[(0,'swap'),(1,'swap')])
+        self.assertEqual(projection(p,('all',(0,2,0,4)),0),[None]*8)
+        self.assertEqual(projection(p,('focus',8),0),[None]*8)
+        source.par.operand.val='add';e.ConfigureMixLayers(mix.scope,'layer_mix')
+        self.assertNotIn('operation',e.GetMixProfile()['descriptor']['items'][0]['controls'])
+        self.assertNotIn('swap',e.GetMixProfile()['descriptor']['items'][0]['controls'])
 
     def test_layer_adapter_is_readonly_and_opacity_drives_independent_meter_and_input(self):
         e,mix,source,images,analysis=self.layer_fixture()

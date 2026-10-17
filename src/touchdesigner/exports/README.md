@@ -7,6 +7,7 @@ embedded runtime/documentation hashes and scoped native validation.
 The current export includes main-screen parameter-page hints, explicit LEARN
 metadata, an 83-entry Track color menu and a read-only Track BG preview.
 It also includes independent Low/Mid analysis and wired Layer Mix float controls,
+curated Operation libraries and conditional Swap,
 analysis overview Active buttons, motor feedback and native meters. One MIX
 source/style profile is active at a time. Configure existing sources through the
 [MIX API](../docs/functions/mix.md); no analysis/audio graph is constructed.

@@ -275,7 +275,9 @@ disconnected with eight unassigned slots and no user paths.
    export through live TD with recovery copies, generic tox/receipt and a scoped
    PR. The wired Layer Mix float slice now implements Opacity/Brightness/Black
    Level/Gamma and scalar Opacity metering, with explicit input-order and Setup
-   invalidation. Operation/Swap and mixed-style slots remain planned.
+   invalidation. Curated Operation libraries and conditional Swap now add typed
+   first-Focus controls 5/6, with scoped hardware acceptance. Mixed-style slots
+   remain planned.
 
 Runtime implementation follows the repository's scoped-test policy and final
 runtime discovery run. This documentation-only design needs link/consistency

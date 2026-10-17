@@ -11,7 +11,7 @@ def install(controller, source_dir):
     if extension._process is not None:
         raise ValueError('Disconnect before MIX upgrade')
     source = Path(source_dir) / 'code/py/roto_python'
-    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'RotoPythonExt', 'lifecycle_callbacks')
+    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'RotoPythonExt', 'lifecycle_callbacks')
     texts = {name: (source / (name + '.py')).read_text(encoding='utf-8') for name in names}
     if getattr(extension, '_layouts', None) is not None:
         extension._layouts.capture(force=True)
