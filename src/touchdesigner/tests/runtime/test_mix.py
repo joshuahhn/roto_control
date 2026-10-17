@@ -297,8 +297,9 @@ class MixTests(unittest.TestCase):
         mix.tick(now=1.2)
         self.assertIn([191, 69, 64], self.messages(e))
         self.assertIn([191, 70, 64], self.messages(e))
+        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token())
         self.cc(e, 54, 127); self.turn(e, 2, 16383); self.cc(e, 54, 0)
-        self.assertEqual(source.par.Highthresh.eval(), .1)  # first touch selects only
+        self.assertEqual(source.par.Highthresh.eval(), .1)  # selection fences its accompanying touch
         mix.tick(now=1.4)
         self.cc(e, 54, 127); self.turn(e, 2, 16383); self.cc(e, 54, 0)
         self.assertEqual(source.par.Highthresh.eval(), .6)
@@ -333,12 +334,14 @@ class MixTests(unittest.TestCase):
         e, mix, _, _, source, *_ = self.fixture()
         e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low', 'Mid', 'High'))
         self.enter(e, mix)
+        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token())
         self.cc(e, 54, 127); self.cc(e, 54, 0)
         mix.tick(now=2)
         self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
         e._pending = b''
         mix.tick(now=12)
         self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
+        e._receive_midi(sysex(10,9,(0,1)), e._ingress_token())
         self.cc(e, 53, 127); self.cc(e, 53, 0)
         mix.tick(now=13)
         self.assertIn(list(sysex(10,24,(0,1,*text13('>Mid 0.100')))), self.messages(e))
@@ -418,7 +421,9 @@ class MixTests(unittest.TestCase):
     def test_overview_touch_select_then_func_routes_mid_details_without_plugin_writes(self):
         e, mix, m, f, source, *_ = self.fixture(); registry = copy.deepcopy(m.data)
         self.enter(e, mix)
-        self.cc(e, 53, 127); self.turn(e, 1, 16383)
+        token = e._ingress_token()
+        e._receive_midi(sysex(10,9,(0,1)), token)  # actual unlocked trace: selection precedes touch
+        self.cc(e, 53, 127, token); self.turn(e, 1, 16383)
         self.assertEqual(mix.selected, 1); self.assertEqual(source.par.Midthresh.eval(), .1)
         e._receive_midi(sysex(12, 2, (0,)), e._ingress_token()); mix.tick(now=2)
         self.turn(e, 1, 16383)  # old touch cannot write new Focus Gain
@@ -427,6 +432,23 @@ class MixTests(unittest.TestCase):
         self.assertAlmostEqual(source.par.Midgain.eval(), 7 * 8192 / 16383)
         self.assertEqual(source.par.Lowgain.eval(), 2); self.assertEqual(m.data, registry)
         self.assertFalse(e._host.plugin); self.assertFalse(e._host.mapped)
+
+    def test_lock_touch_without_track_selection_keeps_band_and_overview_lane_target(self):
+        e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
+        epoch = mix.epoch
+        # Firmware 3.3.0 LOCK-on trace: CC53 ON/OFF, no General Track selection.
+        self.cc(e, 53, 127); self.cc(e, 53, 0); mix.tick(now=2)
+        self.assertEqual(mix.selected, 0)
+        self.assertEqual(mix.epoch, epoch)
+        self.assertEqual(mix.writes, 0)
+        self.assertIn(list(sysex(10,24,(0,0,*text13('>Low 0.100')))), self.messages(e))
+        self.assertFalse(any(m[:7] == list(sysex(12,4)[:7]) for m in self.messages(e)))
+        # LOCK keeps selection; overview knobs retain their independent targets.
+        self.cc(e, 53, 127); self.turn(e, 1, 8192); self.cc(e, 53, 0)
+        self.assertAlmostEqual(source.par.Midthresh.eval(), .6 * 8192 / 16383)
+        self.assertEqual(source.par.Lowthresh.eval(), .1)
+        self.assertEqual(mix.selected, 0)
+        self.assertEqual(mix.writes, 1)
 
     def test_fresh_touch_required_echo_buttons_and_plugin_ack_cannot_write(self):
         e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix)

@@ -2673,3 +2673,42 @@ acceptance receipt metadata only. Generic `.tox`/embedded docs retain their
 existing `e74e413` identities; `.18.toe` retains its older saved receipt. Refresh
 embedded docs at the next authorized artifact export rather than claiming these
 new notes are already embedded.
+
+
+## MIX LOCK selection authority correction — 2026-10-17
+
+Baseline checkout `1f86878`, live runtime `e74e413`, project `.18.toe`, firmware
+3.3.0/API 1.6. Fresh recovery/full snapshots and a bounded raw MIDI observer
+precede a read-only overview test. Low is selected with FUNC off. The user opens
+LOCK, touches/releases only Knob 2 and observes >Mid. The actual trace contains
+CC53 127/0 without General Track selection or a LOCK-state SysEx. Software changes
+selected 0 → 1 on the raw touch. New business writes are zero; cumulative MIX
+writes remain the previous round's 38, with every parameter value unchanged.
+Stop closes/reaps return 0, clears pending output and removes the observer.
+
+The runtime's explicit touch → select fallback bypassed the firmware's selection
+suppression. No new LOCK state/command is needed: only validated General Track
+selection now changes the selected item. Touch CC retains contact/gesture arming;
+overview lanes keep their own targets while selection stays locked. The unused
+private select(send=...) path is removed. Mode/view/session epochs, fresh touch,
+CC pairing, motor/queue-tail behavior and PLUGIN dispatch stay on their paths.
+The old comment describing Focus buttons as selectors is corrected to firmware
+ownership, consistent with the preceding isolated countercheck.
+
+A failing regression replays CC53 ON/OFF with no Track selection and first sees
+selected 1 instead of 0. It now keeps Low, epoch/caption and zero writes, then
+proves that an explicit gesture still controls Mid's overview target without
+changing selection. Three older tests had fabricated touch-only selection;
+they now include the actual unlocked General-selection-before-touch sequence,
+preserving their caption, High control and Focus/fresh-touch assertions.
+All 589 discovery tests pass, including 83 focused MIX/assignment/reference/
+trigger tests. No test invents a MIX LOCK SysEx absent from the actual trace.
+
+An isolated native fixture confirms touch-only input keeps selection and sends
+no host-selected-track packet, while explicit General selection/batched view
+changes still choose Mid and require fresh input. Its temporary Gain writes,
+feedback and cleanup checks pass with no MIDI process and original live snapshots
+preserved. Temporary recovery/results/scripts stay in system temp
+`roto-mix-lock-3vmi21lc`, correction checks under `fix`. Production hardware
+verification of the corrected LOCK-on/off behavior follows separately; it is
+not claimed by the regression/native results.

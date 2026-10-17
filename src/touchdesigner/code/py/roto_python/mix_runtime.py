@@ -470,11 +470,9 @@ class MixRuntime:
                 fresh = lane not in self.touched
                 self.touched.add(lane)
                 if fresh and self.ready and not stale and lane not in self.blocked:
-                    if self.view and self.view[0] == 'all' and lane != self.selected:
-                        if self.profile and lane < len(self.profile['items']):
-                            self.select(lane, send=True)  # first touch selects, never writes
-                    else:
-                        self.armed.add(lane)
+                    # Only General Track selection changes the selected item.
+                    # MIX LOCK suppresses that message while touch CC continues.
+                    self.armed.add(lane)
             return True
         if not self.ready or stale or self.e._dispatching or not self.source_valid():
             return True
@@ -518,12 +516,11 @@ class MixRuntime:
         # Transport and unknown CCs never fall back to PLUGIN controls.
         return True
 
-    def select(self, index, *, send=False):
+    def select(self, index):
         if not self.profile or not 0 <= index < len(self.profile['items']):
             self.selected = -1; self.invalidate()
         elif index != self.selected:
             self.selected = index
-            self.select_pending |= send
             # Overview lanes still own the same targets. Keep both queued
             # positions and their cache; clearing either would resend motors
             # or lose an update that has not reached the device yet.
@@ -661,7 +658,7 @@ class MixRuntime:
                 self.command(10, 0x18, (0, lane, *text13(text)))
                 self.last_text[lane] = text
         # Native Mute feedback is inverted relative to analyzer Active. Focus
-        # buttons are firmware selectors, so never send business LEDs there.
+        # buttons remain firmware-owned, so never send business LEDs there.
         if self.view and self.view[0] == 'all':
             buttons = button_projection(self.profile, self.view) if self.profile and self.ready else [None] * 8
             mute_bank = self.view[1][2] == 0

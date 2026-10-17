@@ -130,12 +130,14 @@ therefore changes what FUNC exposes, without copying bindings or storing a secon
 set of parameter values. View changes read current TD values for motor recall;
 they do not restore a value snapshot.
 
-The implemented overview explicitly selects a configured item on a fresh touch
-and sends its hardware selection. Validated hardware selection messages also
-update that state, in received order even within one buffered batch. Physical
-touch acceptance used LOCK off; MIX LOCK behavior remains unverified rather than
-inheriting PLUGIN LOCK semantics. MIX selected slot and PLUGIN selected/routing
-contexts remain separate.
+Only validated General Track selection messages change the selected MIX item,
+in received order even within one buffered batch. Raw touch CC tracks contact
+and arms a fresh gesture; it never synthesizes selection. The actual LOCK-on
+trace still contains touch CC but suppresses Track selection, so inferring an
+item change from touch bypassed hardware LOCK. The correction is covered by
+source/native checks; corrected-runtime physical LOCK acceptance is pending.
+Overview knobs retain their independent targets while selection stays locked.
+MIX selected slot and PLUGIN selected/routing contexts remain separate.
 
 ## Concrete uses
 

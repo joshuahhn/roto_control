@@ -274,7 +274,8 @@ renewals coalesce per screen; unchanged motor values are not resent. After MIX
 feedback stops, the device returns to native names such as Volume/Pan/Send.
 Check combined TD name/value text while the connection is active.
 
-Touch only selects an item. After any mode/view/selection transition, release the
+Hardware Track selection chooses the item; raw touch CC alone never changes it.
+After any mode/view/selection transition, release the
 knob and start a fresh touch before writing. Pair halves older than 250 ms, stale
 ingress and untouching motor echoes cannot write. Software edits move motors
 after release. Loading, selecting and viewing make zero parameter writes.
@@ -305,8 +306,11 @@ No second MIDI owner or new wire protocol is introduced.
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
 in this slice. Second-page Focus and a mixed-style slot editor are later slices.
-MIX hardware LOCK behavior has not been verified; overview touch selection was
-accepted with LOCK off.
+The pre-fix hardware LOCK check found touch CC still arriving without Track
+selection; software incorrectly inferred a new item. The correction now follows
+only hardware selection messages and has source/native coverage. Its physical
+LOCK-on/off check is pending. LOCK affects item selection, while each overview
+knob retains its own configured target.
 Analysis-only custom slots 7/8 are configured as above. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
 they were not individually checked on hardware. The editor configures one

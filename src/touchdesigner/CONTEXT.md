@@ -46,7 +46,11 @@ not been physically forced. Corrected-runtime hardware acceptance confirms touch
 Mid → FUNC, Midgain-only input to 4.487212, 4.000 motor return and normal PLUGIN
 restoration. Missing meter channels clear/recover independently
 of valid targets; empty scalar samples also have source regression coverage.
-MIX LOCK behavior remains unverified. One MIX source/style profile is active at a time. Layer input-order/Setup changes
+The pre-fix MIX LOCK check reproduces a software selection bypass: hardware
+suppresses General selection but still emits raw touch CC. Selection now follows
+only the hardware message; source/native checks pass and corrected-runtime
+physical LOCK acceptance is pending. Overview targets remain independent of
+selection. One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons stay
 firmware-owned with no TD business route. A later isolated Button 2 check produces
