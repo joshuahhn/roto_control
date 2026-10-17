@@ -9,7 +9,9 @@ python3 -m unittest discover -q
 ```
 
 `tests/__init__.py` makes runtime fixtures, external scripts and scoped probes
-importable during discovery. For affected Inspector behavior not covered by that
+importable during discovery, including direct runs such as
+`python3 -m unittest discover -s tests -p 'test_mix.py' -q`.
+For affected Inspector behavior not covered by that
 discovery, use its existing suite (or the relevant test module during development):
 
 ```sh

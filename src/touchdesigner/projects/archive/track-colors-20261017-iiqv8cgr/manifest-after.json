@@ -1,0 +1,9 @@
+{
+  "project_sha256": "030e2fee006ea9b3e77a8c00fecf65f0cb9ff4625386884f6e3c372476b46ade",
+  "generic_sha256": "b28b0f3ba3d045d7c6f58d286052dc92e303bd3c44aaea869ab9b538d56d1fe0",
+  "source_patch_sha256": "aa3ede4893dee6ead9809ef6d9cb7708f7419bc216ecae92b13839fd9dd55133",
+  "recovery": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/track-colors-20261017-iiqv8cgr",
+  "evidence_directory": "/private/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-track-color-save-a5_opi_s",
+  "runtime_source_base_commit": "acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99",
+  "committed": false
+}

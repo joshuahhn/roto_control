@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-HK"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Issue #8 · Ownership prototype</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:var(--foreground,#26323e);font:15px/1.55 var(--font-sans,system-ui);background:transparent}h2{font-size:20px;margin:0 0 8px}p{margin:8px 0 14px}small,.muted{color:var(--muted-foreground,#667383)}.panel{padding:16px;border-radius:var(--radius,12px);background:var(--card,#f1f4f7);margin:14px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}dt{font-size:12px;color:var(--muted-foreground,#667383)}dd{margin:0;font-size:18px;font-weight:600;overflow-wrap:anywhere}dl{margin:0}button,input,select{font:inherit}button,select,input{border:1px solid var(--border,#d6dde5);border-radius:7px;padding:7px 10px;background:transparent;color:inherit}button{cursor:pointer}button:hover,button[aria-selected=true]{background:var(--primary,#276c78);color:var(--primary-foreground,white)}button:disabled{opacity:.5;cursor:default}.buttons{display:flex;flex-wrap:wrap;gap:8px}label{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px}input{width:100px}.value{font-size:30px}.track{height:9px;border-radius:6px;background:var(--border,#d6dde5);overflow:hidden}.fill{height:100%;background:var(--primary,#276c78)}#log{font-size:13px;max-height:140px;overflow:auto;padding-left:20px}#steps button{display:block;margin:8px 0;width:100%;text-align:left}code{font-size:12px}@media(max-width:420px){.grid{gap:8px}dd{font-size:16px}}
+</style>
+<h2>CHOP 跟隨 → Roto 接管 → idle return</h2>
+<p>驗證問題：upstream 繼續更新，manual movement 接管之後，可唔可以安全返回最新值？呢個係離線、throwaway model，唔會控制 TD 或 motor。</p>
+<p class="muted">候選：2 秒 idle，movement 或 touch release 重計；held touch 阻止 return；先示範 snap。Timeout、snap／transition 同 target-side edit policy 都未定案。</p>
+<label>Sync strategy <select id="strategy"><option>Python</option><option>Reference expression</option><option>Native BIND</option></select></label>
+<small>三個選項共用 ownership model；呢個 selector 唔模擬 native TD evaluation。</small>
+<div class="panel"><div class="grid" id="state"></div></div>
+<label>Upstream value <input id="source" type="number" min="0" max="1" step="0.05" value="0.4"></label>
+<label>Manual value <input id="manual" type="number" min="0" max="1" step="0.05" value="0.8"></label>
+<div class="buttons" id="actions"></div>
+<div class="panel"><div class="buttons" role="tablist" id="tabs"></div><p id="description"></p><div id="steps"></div></div>
+<small>Feedback／ACK 只係 publication，唔改 owner 或 deadline。Context fence 會丟棄 gesture、source cache 同 timer；舊 input token 亦會失效。Source loss 會 hold 最後 effective value。</small>
+<ol id="log" aria-live="polite"></ol>
+<script>
+// Portable candidate model. Fake time only; no DOM and no persistence.
+const initial=()=>({now:0,owner:'unavailable',latest:null,effective:null,touched:false,active:true,epoch:0,revision:0,timer:null,timeout:2});
+function reduce(previous,a){
+ const s={...previous,timer:previous.timer&&[...previous.timer]};
+ const cancel=()=>{s.revision++;s.timer=null};
+ const arm=()=>{cancel();if(s.active&&s.owner==='manual'&&!s.touched)s.timer=[s.epoch,s.revision,s.now+s.timeout]};
+ const valid=()=>s.active&&(a.epoch===undefined||a.epoch===s.epoch);
+ const fire=token=>{if(token&&s.timer&&token.every((x,i)=>x===s.timer[i])&&s.active&&!s.touched&&s.now>=token[2]){cancel();if(s.latest!==null){s.owner='upstream';s.effective=s.latest}}};
+ switch(a.type){
+ case 'source':if(valid()){s.latest=Number.isFinite(a.value)?Math.max(0,Math.min(1,a.value)):null;if(s.latest===null){if(s.owner!=='manual')s.owner='unavailable'}else if(s.owner!=='manual'||(!s.touched&&s.timer===null)){s.owner='upstream';s.effective=s.latest}}break;
+ case 'movement':if(valid()&&Number.isFinite(a.value)){s.effective=Math.max(0,Math.min(1,a.value));s.owner='manual';arm()}break;
+ case 'touch':if(valid()&&s.touched!==a.held){s.touched=a.held;if(a.held)cancel();else if(s.owner==='manual')arm()}break;
+ case 'advance':s.now+=a.seconds;fire(s.timer);break;
+ case 'timer':fire(a.token);break;
+ case 'fence':s.epoch++;cancel();s.active=!!a.active;s.owner=s.active?'unavailable':'disabled';s.latest=null;s.touched=false;break;
+ case 'feedback':break;
+ }
+ return s;
+}
+const cases=[
+ {name:'Held touch',description:'接管後 upstream 更新。等 10 秒都唔 return；放手之後再等完整 idle interval。',steps:[['Upstream = 0.2',{type:'source',value:.2}],['Touch held',{type:'touch',held:true}],['Manual = 0.8',{type:'movement',value:.8}],['Upstream = 0.4',{type:'source',value:.4}],['等 10 秒',{type:'advance',seconds:10}],['Touch release',{type:'touch',held:false}],['等 2 秒，返回 0.4',{type:'advance',seconds:2}]]},
+ {name:'Feedback / movement',description:'Feedback 唔延長接管；真正 movement 先會重設 deadline。',steps:[['Upstream = 0.2',{type:'source',value:.2}],['Manual = 0.8',{type:'movement',value:.8}],['等 1 秒',{type:'advance',seconds:1}],['Feedback / ACK',{type:'feedback'}],['Manual = 0.7，重計 idle',{type:'movement',value:.7}],['Upstream = 0.6',{type:'source',value:.6}],['等 1 秒，仍然 manual',{type:'advance',seconds:1}],['等 1 秒，返回 0.6',{type:'advance',seconds:1}]]},
+ {name:'Source loss',description:'冇有效 source 時，idle 到期都 hold manual value；fresh source 回復先交返控制。',steps:[['Upstream = 0.2',{type:'source',value:.2}],['Manual = 0.8',{type:'movement',value:.8}],['Channel 消失 / NaN',{type:'source',value:NaN}],['等 2 秒，hold 0.8',{type:'advance',seconds:2}],['Fresh source = 0.3',{type:'source',value:.3}]]},
+ {name:'Context fence',description:'切換 Device 後，舊 physical input 同舊 timer 唔可以控制新 target。',steps:[['Upstream = 0.2',{type:'source',value:.2}],['Manual = 0.8',{type:'movement',value:.8}],['切換 Device',{type:'fence',active:true}],['新 source = 0.1',{type:'source',value:.1}],['舊 Device input = 0.9',{type:'movement',value:.9,epoch:0}],['等 5 秒',{type:'advance',seconds:5}]]}
+];
+let state=initial(),selected=0,step=0,events=[];
+const display=v=>v===null?'—':typeof v==='number'?v.toFixed(2):String(v);
+function dispatch(a,label){state=reduce(state,a);events.push(`${state.now.toFixed(1)}s · ${label}`);events=events.slice(-12);render()}
+function render(){
+ const remaining=state.timer?Math.max(0,state.timer[2]-state.now).toFixed(1)+'s':state.owner==='manual'?(state.touched?'Touch held':'等 fresh source'):'—';
+ const fields=[['Owner',state.owner],['Effective value',display(state.effective)],['Latest upstream',display(state.latest)],['Touch',state.touched?'Held':'Released'],['Idle remaining',remaining],['Fake clock',state.now.toFixed(1)+'s'],['Generation',state.epoch],['Timer slots',state.timer?1:0]];
+ document.getElementById('state').innerHTML=fields.map(([k,v])=>`<dl><dt>${k}</dt><dd>${v}</dd></dl>`).join('');
+ document.getElementById('log').replaceChildren(...events.map(v=>{const li=document.createElement('li');li.textContent=v;return li}));
+ document.getElementById('description').textContent=cases[selected].description;
+ document.querySelectorAll('[role=tab]').forEach((b,i)=>b.setAttribute('aria-selected',i===selected));
+ document.getElementById('steps').replaceChildren(...cases[selected].steps.map(([label,a],i)=>{const b=document.createElement('button');b.textContent=(i<step?'✓ ':`${i+1}. `)+label;b.disabled=i!==step;b.onclick=()=>{step++;dispatch(a,label)};return b}));
+}
+const actions=[['Send upstream',()=>({type:'source',value:Number(document.getElementById('source').value)})],['Physical movement',()=>({type:'movement',value:Number(document.getElementById('manual').value)})],['Touch held',()=>({type:'touch',held:true})],['Touch release',()=>({type:'touch',held:false})],['+1 秒',()=>({type:'advance',seconds:1})],['Feedback / ACK',()=>({type:'feedback'})],['Source loss',()=>({type:'source',value:NaN})],['Context switch',()=>({type:'fence',active:true})],['Disconnect',()=>({type:'fence',active:false})],['Reconnect',()=>({type:'fence',active:true})]];
+for(const [label,action] of actions){const b=document.createElement('button');b.textContent=label;b.onclick=()=>dispatch(action(),label);document.getElementById('actions').append(b)}
+for(const [i,c] of cases.entries()){const b=document.createElement('button');b.textContent=c.name;b.role='tab';b.onclick=()=>{selected=i;step=0;state=initial();events=[];render()};document.getElementById('tabs').append(b)}
+const reset=document.createElement('button');reset.textContent='Reset';reset.onclick=()=>{step=0;state=initial();events=[];render()};document.getElementById('actions').append(reset);
+// Smoke checks of the demonstrator's own candidate cases. No hardware claim.
+const finals=cases.map(c=>c.steps.reduce((s,[,a])=>reduce(s,a),initial()));
+if(finals.some((s,i)=>s.owner!=='upstream'||s.effective!==[.4,.6,.3,.1][i]))throw Error('Candidate walkthrough failed');
+console.log('Four offline walkthroughs pass; native and physical acceptance are separate.');render();
+</script></html>

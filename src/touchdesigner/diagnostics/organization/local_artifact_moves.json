@@ -1,0 +1,524 @@
+[
+  {
+    "old": "roto_control_python.38.toe",
+    "new": "projects/archive/legacy/roto_control_python.38.toe",
+    "bytes": 345828,
+    "sha256": "3f9a0adf42f2b15243d73a494d012fd02fd6268060a9f37f9e017fef986e23d8"
+  },
+  {
+    "old": "roto_control_python.49.toe",
+    "new": "projects/archive/legacy/roto_control_python.49.toe",
+    "bytes": 355300,
+    "sha256": "a868cdb67d27d76243a24865a7512ba9bd6fa1857cbc6277a259ac4918717caf"
+  },
+  {
+    "old": "roto_control_python.61.toe",
+    "new": "projects/archive/legacy/roto_control_python.61.toe",
+    "bytes": 367932,
+    "sha256": "4296a1b276948bbb2e15722edad4b37b60c5187aa9123a0d69ed8673d4fe05ca"
+  },
+  {
+    "old": "roto_control_python.75.toe",
+    "new": "projects/archive/legacy/roto_control_python.75.toe",
+    "bytes": 399172,
+    "sha256": "cc8e900f35edbe98a859c47abe5eae275ac9738f7a9f0bdbe809f73ca9f093e0"
+  },
+  {
+    "old": "roto_control_python.63.toe",
+    "new": "projects/archive/legacy/roto_control_python.63.toe",
+    "bytes": 368076,
+    "sha256": "a946a4f9af80e12085c79da14d87c1ef6862d9226fb6d287cd0a7327268d107f"
+  },
+  {
+    "old": "roto_control_python.73.toe",
+    "new": "projects/archive/legacy/roto_control_python.73.toe",
+    "bytes": 398964,
+    "sha256": "78fc88d70223a0d2cf4e96cb7d12b794c75d59af11d49ce38d246e822d32de5b"
+  },
+  {
+    "old": "roto_control_python.67.toe",
+    "new": "projects/archive/legacy/roto_control_python.67.toe",
+    "bytes": 398916,
+    "sha256": "cf3dc91d58eb35dd795fa53fa34cf57a6f783b59a5ebee5a4c106e8c6cf7e101"
+  },
+  {
+    "old": "roto_control_python.59.toe",
+    "new": "projects/archive/legacy/roto_control_python.59.toe",
+    "bytes": 367044,
+    "sha256": "cec622a55770c0267a60929375969729bd9ed0388bb70aa36fde87788dd90a18"
+  },
+  {
+    "old": "roto_control_python.71.toe",
+    "new": "projects/archive/legacy/roto_control_python.71.toe",
+    "bytes": 398868,
+    "sha256": "634ddcf10761e6092647594dc2c832520e31975110163986dd17968b7e3c3ea9"
+  },
+  {
+    "old": "roto_control_python.65.toe",
+    "new": "projects/archive/legacy/roto_control_python.65.toe",
+    "bytes": 398748,
+    "sha256": "27c2678078ddb8da6250ab587d97a7fcf6b5f784afc049834ae6afd817a9aca2"
+  },
+  {
+    "old": "roto_control_python.toe",
+    "new": "projects/archive/legacy/roto_control_python.toe",
+    "bytes": 399172,
+    "sha256": "cc8e900f35edbe98a859c47abe5eae275ac9738f7a9f0bdbe809f73ca9f093e0"
+  },
+  {
+    "old": "roto_control_python.55.toe",
+    "new": "projects/archive/legacy/roto_control_python.55.toe",
+    "bytes": 362276,
+    "sha256": "a7ca3faf1a43a641d32be07d318f922b0243e949039248a443a10dfd58b7641f"
+  },
+  {
+    "old": "roto_control_python.69.toe",
+    "new": "projects/archive/legacy/roto_control_python.69.toe",
+    "bytes": 398884,
+    "sha256": "34ba9509d896aaa816912dce90a42f43194c131aba7d824d74ccd3b63c25b67b"
+  },
+  {
+    "old": "roto_control_python.42.toe",
+    "new": "projects/archive/legacy/roto_control_python.42.toe",
+    "bytes": 351652,
+    "sha256": "840f0626d20099ef6d1bfc181348408d1389d29fad61b834da5a1b19d40074d8"
+  },
+  {
+    "old": "roto_control_python.57.toe",
+    "new": "projects/archive/legacy/roto_control_python.57.toe",
+    "bytes": 365604,
+    "sha256": "d12e3a0be9bd050545451b630c012796b615e0cde90f0b855a5819b10725dfa4"
+  },
+  {
+    "old": "roto_control_python.47.toe",
+    "new": "projects/archive/legacy/roto_control_python.47.toe",
+    "bytes": 354268,
+    "sha256": "ec7f8d8ac0fadb7f4a7623a98c142812413822997562cc2ff843095a5eddb3ba"
+  },
+  {
+    "old": "roto_control_python.53.toe",
+    "new": "projects/archive/legacy/roto_control_python.53.toe",
+    "bytes": 360540,
+    "sha256": "42a6f9144dabe768daec4263cee236aa595cf058080c89489bac4c432b51323c"
+  },
+  {
+    "old": "roto_control_python.45.toe",
+    "new": "projects/archive/legacy/roto_control_python.45.toe",
+    "bytes": 353892,
+    "sha256": "563a6b2087ac8b3344fe55ef6674d1895261f669927bdf2b6a02e5d043f75f22"
+  },
+  {
+    "old": "roto_control_python.51.toe",
+    "new": "projects/archive/legacy/roto_control_python.51.toe",
+    "bytes": 355940,
+    "sha256": "e781564bfcea255a26013bcc0f99cda3581ce32401e74ae3fdf888cb9d6f5489"
+  },
+  {
+    "old": "roto_control_python.37.toe",
+    "new": "projects/archive/legacy/roto_control_python.37.toe",
+    "bytes": 345660,
+    "sha256": "d1bdf2372b4b8f896ed9f0e8b966cc2b318b819e3a7a211ed5f39f621d263d9f"
+  },
+  {
+    "old": "roto_control_python.35.toe",
+    "new": "projects/archive/legacy/roto_control_python.35.toe",
+    "bytes": 335412,
+    "sha256": "c5d484e9208e40cf126fbf88396e9efb1a54134091b32bb3a93cbebca97c0977"
+  },
+  {
+    "old": "roto_control_python.30.toe",
+    "new": "projects/archive/legacy/roto_control_python.30.toe",
+    "bytes": 290418,
+    "sha256": "5f2a7f2825298daa1eabded46642775174fbce4adac44054b1db8cc2a3ab002c"
+  },
+  {
+    "old": "roto_control_python.pre_multitrack.toe",
+    "new": "projects/archive/legacy/roto_control_python.pre_multitrack.toe",
+    "bytes": 345828,
+    "sha256": "3f9a0adf42f2b15243d73a494d012fd02fd6268060a9f37f9e017fef986e23d8"
+  },
+  {
+    "old": "Backup/roto_control_python.41.toe",
+    "new": "projects/archive/backups/roto_control_python.41.toe",
+    "bytes": 351764,
+    "sha256": "5bafb279d6a8f75061582164143138127e63f17eb95cc8b4129ef473d6b9d59a"
+  },
+  {
+    "old": "Backup/roto_control_python.40.toe",
+    "new": "projects/archive/backups/roto_control_python.40.toe",
+    "bytes": 349860,
+    "sha256": "f98c4508fc67b1a51c3a15f75d73a0d56bf933018020119f7baf55e68a3ce482"
+  },
+  {
+    "old": "Backup/roto_control_python.42.toe",
+    "new": "projects/archive/backups/roto_control_python.42.toe",
+    "bytes": 351652,
+    "sha256": "840f0626d20099ef6d1bfc181348408d1389d29fad61b834da5a1b19d40074d8"
+  },
+  {
+    "old": "Backup/roto_control_python.43.toe",
+    "new": "projects/archive/backups/roto_control_python.43.toe",
+    "bytes": 351452,
+    "sha256": "c62e5b3d116052755bcc108bccfd391c64d97d0d704935c9a58bfd74cd670fc3"
+  },
+  {
+    "old": "Backup/roto_control_python.44.toe",
+    "new": "projects/archive/backups/roto_control_python.44.toe",
+    "bytes": 353308,
+    "sha256": "e2e6b10aae88b93196111318624681406b42fef70aee903abec8a8e719283899"
+  },
+  {
+    "old": "Backup/roto_control_python.36.toe",
+    "new": "projects/archive/backups/roto_control_python.36.toe",
+    "bytes": 336268,
+    "sha256": "c42b9985fff96f036be032a3f3b3a5b03f28b91f448619b44d25685752c3b3d8"
+  },
+  {
+    "old": "Backup/roto_control_python.37.toe",
+    "new": "projects/archive/backups/roto_control_python.37.toe",
+    "bytes": 345660,
+    "sha256": "d1bdf2372b4b8f896ed9f0e8b966cc2b318b819e3a7a211ed5f39f621d263d9f"
+  },
+  {
+    "old": "Backup/roto_control_python.35.toe",
+    "new": "projects/archive/backups/roto_control_python.35.toe",
+    "bytes": 335412,
+    "sha256": "c5d484e9208e40cf126fbf88396e9efb1a54134091b32bb3a93cbebca97c0977"
+  },
+  {
+    "old": "Backup/roto_control_python.34.toe",
+    "new": "projects/archive/backups/roto_control_python.34.toe",
+    "bytes": 338612,
+    "sha256": "3386e939ac02826840da669f6764c2963ca2a8c8578889b22b5bd1c40ea32d52"
+  },
+  {
+    "old": "Backup/roto_control_python.33.toe",
+    "new": "projects/archive/backups/roto_control_python.33.toe",
+    "bytes": 336260,
+    "sha256": "92041ac1536e9ca6f14ef12061f3a54fc5585693b508061266e08a7635f49139"
+  },
+  {
+    "old": "Backup/roto_control_python.32.toe",
+    "new": "projects/archive/backups/roto_control_python.32.toe",
+    "bytes": 290426,
+    "sha256": "d16f5f1e18f99886710d014890ca3228cbc0e5162cef54c27432aebcda0427a1"
+  },
+  {
+    "old": "cycle_feedback_hardware_verification.json",
+    "new": "diagnostics/runtime/results/cycle_feedback_hardware_verification.json",
+    "bytes": 7853,
+    "sha256": "f1d43e9a66b642401004d005b1cef1620b7bf3a98ade1f63ba5cd1c86cafc687"
+  },
+  {
+    "old": "setup_verification.json",
+    "new": "diagnostics/runtime/results/setup_verification.json",
+    "bytes": 930,
+    "sha256": "162c17a975c518c80bc49b9dc52a7fa48650cd8640d950287c7ae8386e3b7567"
+  },
+  {
+    "old": "real_components_verification.json",
+    "new": "diagnostics/runtime/results/real_components_verification.json",
+    "bytes": 2293,
+    "sha256": "14bd39e91cface68ddcdbd635a1624f199868fd987b02e0214932c3a3e7555d4"
+  },
+  {
+    "old": "layout_hardware_verification.json",
+    "new": "diagnostics/runtime/results/layout_hardware_verification.json",
+    "bytes": 2129,
+    "sha256": "a01e5a291e27446a0c0c5a428b88c1d649c47242dd0503de1bf8371e7e9f29e9"
+  },
+  {
+    "old": "controls_verification.json",
+    "new": "diagnostics/runtime/results/controls_verification.json",
+    "bytes": 28771,
+    "sha256": "27636f7476be75cbd3f95c3e5c27d102ba44ed74563989bea2706d7ba21ffe26"
+  },
+  {
+    "old": "tag_device_accepted_before_save.json",
+    "new": "diagnostics/runtime/results/tag_device_accepted_before_save.json",
+    "bytes": 37636,
+    "sha256": "8cc926c62d902610a44fbf872e76bd6f6089ab24d25ffccd280fd6ffe7f5ec45"
+  },
+  {
+    "old": "migration_verification.json",
+    "new": "diagnostics/runtime/results/migration_verification.json",
+    "bytes": 581,
+    "sha256": "616f905db3a07458da7f6ea471fb93d88bfa52e4ffa21a8657651f1d31c2b12f"
+  },
+  {
+    "old": "control_pages_native_verification.json",
+    "new": "diagnostics/runtime/results/control_pages_native_verification.json",
+    "bytes": 390,
+    "sha256": "c042e9a749f2dc918b30c7afcbf0d1fb417f1321c7ae7f987d7db7c7d4615f14"
+  },
+  {
+    "old": "button8_toggle_acceptance.json",
+    "new": "diagnostics/runtime/results/button8_toggle_acceptance.json",
+    "bytes": 642,
+    "sha256": "688d51a96ad8727fc737ae6093a01b0e9d51f16daad70b186fe3cd73dd82d51c"
+  },
+  {
+    "old": "comp_follow_native_verification.json",
+    "new": "diagnostics/runtime/results/comp_follow_native_verification.json",
+    "bytes": 2134,
+    "sha256": "8973373655081b6b6824c053a9e707f7028d672878721621e6a8bde1e938efbc"
+  },
+  {
+    "old": "device_metadata_native_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_native_verification.json",
+    "bytes": 230,
+    "sha256": "c8df99e805f075cce0b22073c28da54b5b80530d95242f038f0afa590169b53b"
+  },
+  {
+    "old": "binding_simplification_verification.json",
+    "new": "diagnostics/runtime/results/binding_simplification_verification.json",
+    "bytes": 1091,
+    "sha256": "d861eed70f657b6997aea388517d1c2cc72d798053b05f97510309eb5cc948db"
+  },
+  {
+    "old": "cycle_feedback_before.json",
+    "new": "diagnostics/runtime/results/cycle_feedback_before.json",
+    "bytes": 4819,
+    "sha256": "30e5d02d9448b67752eff10734d5f048e53ed679bcb92045ae7de7808d40ad3d"
+  },
+  {
+    "old": "tag_device_learn_trace.json",
+    "new": "diagnostics/runtime/results/tag_device_learn_trace.json",
+    "bytes": 12432,
+    "sha256": "afcd93d7c568e75673f7bc5dd06ac88709ed660e5832ba2048d59c41ce6a7109"
+  },
+  {
+    "old": "device_metadata_main_before.json",
+    "new": "diagnostics/runtime/results/device_metadata_main_before.json",
+    "bytes": 35745,
+    "sha256": "3aad6450cc54e22218b2ade88d66a532cbc7c07d0c7c28cb54dbacd991a8c775"
+  },
+  {
+    "old": "control_pages_hardware_verification.json",
+    "new": "diagnostics/runtime/results/control_pages_hardware_verification.json",
+    "bytes": 2607,
+    "sha256": "4aeb619f3d578439f74d2089cbffb6a78941f13efb18c9a0b03b671108ff5200"
+  },
+  {
+    "old": "menu_verification.json",
+    "new": "diagnostics/runtime/results/menu_verification.json",
+    "bytes": 643,
+    "sha256": "864e29d5fc61ca2e61012774ab3becfab44cb08e64a7f1788cb614553871cff6"
+  },
+  {
+    "old": "tag_device_context_diagnosis.json",
+    "new": "diagnostics/runtime/results/tag_device_context_diagnosis.json",
+    "bytes": 15531,
+    "sha256": "e6ade758fd7248b3e78e51eb96ec294affd079d5fa351251ad255ddb4793f9f9"
+  },
+  {
+    "old": "control_page_trace.json",
+    "new": "diagnostics/runtime/results/control_page_trace.json",
+    "bytes": 2711,
+    "sha256": "b45214a0f87313f0553bbed5488df91d3cc1348c5d34ba27e6d9f364ce0e151d"
+  },
+  {
+    "old": "device_lock_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_lock_hardware_verification.json",
+    "bytes": 4195,
+    "sha256": "1e2ba6a44ae79e0e62cdd68e0b8ecf52f65a0a298df60b9d21e0c934e4c7a422"
+  },
+  {
+    "old": "exit_verification.json",
+    "new": "diagnostics/runtime/results/exit_verification.json",
+    "bytes": 1023,
+    "sha256": "935a1021c63c7febd389b08f61caccc679ff2b4cfaf3bdfe86f8a42bee6e0368"
+  },
+  {
+    "old": "lowthresh_button_issue_snapshot.json",
+    "new": "diagnostics/runtime/results/lowthresh_button_issue_snapshot.json",
+    "bytes": 26121,
+    "sha256": "8b4508ade16082084c419741689bb8e8b6be63246312012f8c91eedeeabbba6c"
+  },
+  {
+    "old": "tag_device_hardware_verification.json",
+    "new": "diagnostics/runtime/results/tag_device_hardware_verification.json",
+    "bytes": 5599,
+    "sha256": "fd10521eef664235806e3df6e851f8f9853e7a9a13b4b30628ed1c4adce5618b"
+  },
+  {
+    "old": "tag_device_native_verification.json",
+    "new": "diagnostics/runtime/results/tag_device_native_verification.json",
+    "bytes": 858,
+    "sha256": "21942bf4d4d08f4d9868b7afcba677650ada5c7d0bba09a49a5bf5f33c5f1724"
+  },
+  {
+    "old": "device_context_before.json",
+    "new": "diagnostics/runtime/results/device_context_before.json",
+    "bytes": 18980,
+    "sha256": "138815da6a50ba9aae2de2a324607ae2e399f7771007a20b56bda4a94171e107"
+  },
+  {
+    "old": "live_select_before.json",
+    "new": "diagnostics/runtime/results/live_select_before.json",
+    "bytes": 18994,
+    "sha256": "e5e6a4f69d065a2bbe268f92aa70d60c8cc3066c1b8bfcffbbb167bb15b4f793"
+  },
+  {
+    "old": "network_cleanup_verification.json",
+    "new": "diagnostics/runtime/results/network_cleanup_verification.json",
+    "bytes": 157,
+    "sha256": "7b2b890c84e482a2bb8d9316208a649af5d65601d758e4c3c46e62e7958624f0"
+  },
+  {
+    "old": "button8_push_acceptance.json",
+    "new": "diagnostics/runtime/results/button8_push_acceptance.json",
+    "bytes": 1235,
+    "sha256": "05e044acbd97a10814a7596cbf6881d854d4deae0a5a28627b410c83de08b759"
+  },
+  {
+    "old": "layout_native_verification.json",
+    "new": "diagnostics/runtime/results/layout_native_verification.json",
+    "bytes": 351,
+    "sha256": "95ff17cd1e1db43a58579d2c81d0b97798c2b527c089acbdb1e4dca35639d4c3"
+  },
+  {
+    "old": "control_page_issue_snapshot.json",
+    "new": "diagnostics/runtime/results/control_page_issue_snapshot.json",
+    "bytes": 13446,
+    "sha256": "442903856221ec96aafd606059a1b041e78d4f837a864ee1b362f86d7a1cb54f"
+  },
+  {
+    "old": "lowthresh_button_learn_trace.json",
+    "new": "diagnostics/runtime/results/lowthresh_button_learn_trace.json",
+    "bytes": 20496,
+    "sha256": "2181abc923e06d5554db5b93636822bc447f8cac85d06955039ea858450cf3dc"
+  },
+  {
+    "old": "device_metadata_upgrade_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_upgrade_verification.json",
+    "bytes": 550,
+    "sha256": "77abc2c41cdb20cf4071391de1eba5b05106ca0ab499026687081c7e4fb5170c"
+  },
+  {
+    "old": "portable_tox_verification.json",
+    "new": "diagnostics/runtime/results/portable_tox_verification.json",
+    "bytes": 755,
+    "sha256": "833d50fba9e54923b882c558fded2ee7c93420e08afc71fdac04591841add752"
+  },
+  {
+    "old": "assignment_verification.json",
+    "new": "diagnostics/runtime/results/assignment_verification.json",
+    "bytes": 691,
+    "sha256": "a60701ff19fe77fe10cce2cdada939686f3baa576b2b99fdb972d08703c10130"
+  },
+  {
+    "old": "device_context_native_verification.json",
+    "new": "diagnostics/runtime/results/device_context_native_verification.json",
+    "bytes": 1149,
+    "sha256": "37700e5ae4d515735a9d2b1f46df2a6bb91eb17121510112d92efb745014b27b"
+  },
+  {
+    "old": "device_metadata_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_metadata_hardware_verification.json",
+    "bytes": 705,
+    "sha256": "64538b7c48bf6b641641de7bc89bc0f9c13e9efeb52e521ef3fad2e3edf222e2"
+  },
+  {
+    "old": "device_lock_controls_physical_before.json",
+    "new": "diagnostics/runtime/results/device_lock_controls_physical_before.json",
+    "bytes": 35155,
+    "sha256": "26baa21252e066c8e010bb1cb3834cf98e4f0d65ffc20019bb17ffae0f593933"
+  },
+  {
+    "old": "device_lock_controls_hardware_verification.json",
+    "new": "diagnostics/runtime/results/device_lock_controls_hardware_verification.json",
+    "bytes": 4761,
+    "sha256": "56fdc2761d111902596ba7b63e72ee8c4b1f6b4cfa6fe7f195ca7e6d30653b93"
+  },
+  {
+    "old": "learn_overlap_hardware_verification.json",
+    "new": "diagnostics/runtime/results/learn_overlap_hardware_verification.json",
+    "bytes": 6107,
+    "sha256": "e715ffae59a6099c8756dfdfa6d3ef7d65c22bc0444cafec5dc997289cb790a9"
+  },
+  {
+    "old": "comp_follow_hardware_verification.json",
+    "new": "diagnostics/runtime/results/comp_follow_hardware_verification.json",
+    "bytes": 544,
+    "sha256": "6b7b56117410894e4d901da09445b70cf519d37d687cb952466f9a38ba71a64d"
+  },
+  {
+    "old": "multitrack_hardware_verification.json",
+    "new": "diagnostics/runtime/results/multitrack_hardware_verification.json",
+    "bytes": 12255,
+    "sha256": "1984889b08fb22a0e61998e9f9ea2afc10ab1f3b92efc3271a9c7c51f828dd5b"
+  },
+  {
+    "old": "binding_verification.json",
+    "new": "diagnostics/runtime/results/binding_verification.json",
+    "bytes": 1603,
+    "sha256": "7c3d5a780baf53735ec263c113e9dd058c81fec5411292d0f291e4a37c815872"
+  },
+  {
+    "old": "verification.json",
+    "new": "diagnostics/runtime/results/verification.json",
+    "bytes": 687,
+    "sha256": "bb314c85a1193c7240b88fff60f6929a200b8d29584a054a70fc33ec4edaab48"
+  },
+  {
+    "old": "device_context_upgrade_verification.json",
+    "new": "diagnostics/runtime/results/device_context_upgrade_verification.json",
+    "bytes": 1839,
+    "sha256": "f5450361778279d6225f592d5c1f194726bdfe48a25344663fb3df65792a6b07"
+  },
+  {
+    "old": "learn_overlap_main_before.json",
+    "new": "diagnostics/runtime/results/learn_overlap_main_before.json",
+    "bytes": 25153,
+    "sha256": "ec4f677634403a52840d0fca8e8916e26eb22391ba5e24468bcf1174952af2d7"
+  },
+  {
+    "old": "free_learn_verification.json",
+    "new": "diagnostics/runtime/results/free_learn_verification.json",
+    "bytes": 951,
+    "sha256": "3f789205371df311d3dae00e1a9d36aea55a7ee158bc3ba9c5ea5b3ca66f085d"
+  },
+  {
+    "old": "control_ui_removal_verification.json",
+    "new": "diagnostics/runtime/results/control_ui_removal_verification.json",
+    "bytes": 2020,
+    "sha256": "e35d56cc96fee8546147c8198ea599af2341e1715656bc83b42cea4015913f00"
+  },
+  {
+    "old": "multitrack_native_verification.json",
+    "new": "diagnostics/runtime/results/multitrack_native_verification.json",
+    "bytes": 1088,
+    "sha256": "e741df77a8734f232f1a87909daa6449facfaf14ea948d48142f3afb7f4c5d9d"
+  },
+  {
+    "old": "device_metadata_physical_before.json",
+    "new": "diagnostics/runtime/results/device_metadata_physical_before.json",
+    "bytes": 32932,
+    "sha256": "5d77298802f032a1b40b3957a11c0825fac7bdc18342335f8af0e32b4f1b1938"
+  },
+  {
+    "old": "learn_overlap_native_verification.json",
+    "new": "diagnostics/runtime/results/learn_overlap_native_verification.json",
+    "bytes": 295,
+    "sha256": "d7c3be08624a605845b89c40c37d2e69d99e2dd2d70714f1215a1a0099802820"
+  },
+  {
+    "old": "device_lock_physical_before.json",
+    "new": "diagnostics/runtime/results/device_lock_physical_before.json",
+    "bytes": 35027,
+    "sha256": "68034df1cbe2dfb0e444a752e1f9b6ce98be2b790bfa253cbb2bbcf1161acb12"
+  },
+  {
+    "old": "tag_device_main_before.json",
+    "new": "diagnostics/runtime/results/tag_device_main_before.json",
+    "bytes": 34500,
+    "sha256": "bf2118d259443d44877a0e87f5bc64f573a9d6a252c6b4bf305582b86bbe32b6"
+  },
+  {
+    "old": "context_page_verification.json",
+    "new": "diagnostics/runtime/results/context_page_verification.json",
+    "bytes": 1015,
+    "sha256": "b9cceadde6a3dd424ab185ae6ac05449d64e7ea6e9ed59757859ef2327204d48"
+  }
+]

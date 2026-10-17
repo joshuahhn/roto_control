@@ -6,7 +6,7 @@ User performed each physical gesture and confirmed motor/LCD observations.
 
 Before installation, saved `hardware_results/20261011_114002/main_before_hardware.tox`
 and registry/source configuration in `before.json`. Installed candidate with the
-external disconnected `scripts/upgrade_layouts.py` builder, then reconnected. It adds the
+external disconnected `upgrade/upgrade_layouts.py` builder, then reconnected. It adds the
 merged Snapshot runtime to this older owned-Inspector save and embeds the #15
 commands/UI. Exact four changed/added DAT source hashes match external source.
 All three Layout IDs remain intact; original canonical artifacts were not replaced.

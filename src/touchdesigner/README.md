@@ -30,8 +30,9 @@ Threshold/Gain/Add/Smooth and wired Layer Mix Opacity/Brightness/Black Level/Gam
 user-named Operation presets with six optional blend slots and conditional Swap,
 with read-only native meters. One source/style profile is active at a time. The generic export includes
 the MIX draft/Apply custom parameter page and the matching Python APIs. Touch selects Low/Mid and FUNC opens details; the
-overview On/Off buttons toggle each band's Active. Focus buttons retain item
-selection. The saved demo project and Quick Start above retain their PLUGIN setup.
+overview On/Off buttons toggle each band's Active. Focus buttons remain
+firmware-owned with no TD business assignment. Select an item in overview,
+then press FUNC for details. The saved demo project and Quick Start above retain their PLUGIN setup.
 Other analyzers can use the [Analysis integration API](docs/functions/mix_analysis.md)
 with their own parameter/channel names.
 
@@ -45,7 +46,7 @@ See [portability](docs/functions/portability.md), [Inspector](docs/functions/ins
 
 ## Development
 
-Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. scripts/build_network.py constructs the development component; scripts/export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
+Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. build/build_network.py constructs the development component; scripts/export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
 
 Validation follows [AGENTS.md](../../AGENTS.md#change-scoped-validation): run relevant existing tests during development and required checks for affected source before delivery. See [test entry points](tests/README.md). Reuse unaffected acceptance in [HANDOFF.md](HANDOFF.md); historical pending gates are not a new task queue. Documentation-only edits need scoped diff/link review and `git diff --check`, without runtime or live acceptance. One-off probes and outputs go in temporary storage; see [diagnostics](diagnostics/README.md).
 
@@ -57,3 +58,14 @@ Custom Menu parameters support knobs (quantized option selection) and buttons (C
 Use the Layout page for saved mapping sets and Track groups; use the separate Device page for the active COMP, Focus link and Device name. In PLUGIN mode, FUNC selects a Track group, hold SEL selects a Device inside it, and normal-view arrows change that Device's control page. Layout is selected in TD and its name stays independent of COMP selection. Each Track group contains independent Devices, each with up to eight pages of 8 knobs and 8 buttons. New / rename Layout is the draft for the Layout create/rename actions. Device Focus COMP links a tool and defaults its Device name to the COMP name; manual hardware names use at most 12 printable ASCII bytes. Delete actions open a popup, with no permanent confirmation buttons. Inspector shows the current Layout / Track / Device; Clear All affects its current control targets, while off-page definitions stay saved. Save the TD project to retain changes. See [Layouts, Tracks and Devices](docs/functions/layouts.md) for APIs, migration and acceptance.
 
 Add the `roto_device` OP tag to a COMP under the controller's parent. While idle it appears as its own Device in Active Layout / Active Track; existing Focus links are reused. With Follow selected COMP on, select it before hardware LEARN, then edit its compatible custom parameter. Its mappings belong to that Device. Removing the tag retains saved mappings; explicit Device deletion remains available. Discovery waits during LOCK, LEARN, touch or pending routing and is unavailable in Python registration.
+
+### Python scripts
+
+- `tests/`: source tests, discovered from this source root.
+- `build/`: fresh component builders.
+- `upgrade/`: disconnected component upgraders and historical source patches.
+- `verify/`: native TD verification entry points.
+- `scripts/`: shared export, MIDI, layout and documentation helpers.
+- `diagnostics/` and `prototypes/inspector/`: existing topic-specific fixtures and evidence.
+
+Pass this source root as `source_dir` to builders and upgraders.

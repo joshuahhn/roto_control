@@ -10,7 +10,8 @@ MAIN = '/roto_clean_demo/roto_python'
 
 
 def run_script(name):
-    path = SOURCE / 'scripts' / name
+    folder = 'build' if name.startswith('build_') else 'upgrade' if name.startswith('upgrade_') else 'scripts'
+    path = SOURCE / folder / name
     ns = dict(globals())
     exec(compile(path.read_text(), str(path), 'exec'), ns)
     return ns
@@ -61,7 +62,7 @@ def start():
     par.min = par.normMin = 0; par.max = par.normMax = 1; par.val = .35
     record = c.AssignParameter('knob', 1, par)
     holder.store('mapping_id', record['id'])
-    write('build', dict(entry='scripts/build_network.py', errors=c.errors(recurse=True),
+    write('build', dict(entry='build/build_network.py', errors=c.errors(recurse=True),
                        embedded_midi=True, embedded_docs=True, local_controller=True, source_bytes_preserved=True,
                        hardware_process=False, explicit_python=c.par.Python.eval()))
 
@@ -97,7 +98,7 @@ def upgrade():
     record = c.SaveSnapshot('Builder save/load', [('knob', 1)])
     holder.store('snapshot_id', record['id'])
     assert holder.par.Amount.eval() == .35
-    write('upgrade', dict(entry='scripts/upgrade_layouts.py', mapping_retained=True,
+    write('upgrade', dict(entry='upgrade/upgrade_layouts.py', mapping_retained=True,
                          layout_retained=True, inspector_idempotent=True, native_equal_value_reassignment=True,
                          snapshot_no_write=True, errors=c.errors(recurse=True)))
 

@@ -1,0 +1,3 @@
+# Historical source-reproduction patches are data; retain their context whitespace.
+src/touchdesigner/upgrade/*.patch -whitespace
+src/touchdesigner/projects/archive/**/*.patch -whitespace

@@ -5,6 +5,10 @@
 - Other named folders retain their existing scoped evidence, scripts and artifacts.
 - `organization/artifact_moves.json`: original path, new path, size and SHA256
   for every relocated artifact. Existing result payloads were not rewritten.
+- `organization/local_artifact_moves.json`: the separate relocation record from
+  local organization commit `1f735bd`, retained without rewriting its payload.
+
+General native verifiers are indexed in [verify](../verify/README.md).
 
 Saved projects to open are indexed in [projects](../projects/README.md).
 Follow [change-scoped validation](../../../AGENTS.md#change-scoped-validation).

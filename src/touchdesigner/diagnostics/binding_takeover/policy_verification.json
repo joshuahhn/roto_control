@@ -1,0 +1,17 @@
+{
+  "upstream_tracking": true,
+  "held_touch_blocks_return": true,
+  "release_restarts_idle": true,
+  "latest_sample_return": true,
+  "renewed_movement_resets_idle": true,
+  "stale_timer_fenced": true,
+  "feedback_does_not_reset_idle": true,
+  "duplicate_release_does_not_reset_idle": true,
+  "stale_input_fenced": true,
+  "source_loss_holds_value": true,
+  "fresh_source_recovers": true,
+  "integer_quantization": true,
+  "nonfinite_rejected": true,
+  "timer_slots": 1,
+  "physical_acceptance": false
+}

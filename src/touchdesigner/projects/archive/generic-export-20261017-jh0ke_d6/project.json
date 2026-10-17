@@ -1,0 +1,59 @@
+{
+  "open_this": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.toe",
+  "sha256": "520c08774d8b7a2cb88cb56a476f68b87ffd780694c87c33d6d87c70c432aee7",
+  "source": "Caption PR source e6a5c2f28d3d15a47f6cdbdec8ad38ae295b2b5d plus the scoped LEARN metadata source/test patch; saved through live TD",
+  "python": "../../.venv/bin/python",
+  "midi_helper": "embedded; durable original-checkout external fallback",
+  "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/organization-recovery",
+  "candidate_source_checkout": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-learn-integration-r84fm_j_",
+  "open_filename": "ROTO-CONTROL.toe",
+  "td_title_counter": "ROTO-CONTROL.page-caption.20261020.toe",
+  "interpreter_verification": "diagnostics/runtime/results/python_portability",
+  "interpreter_recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/python-portability-recovery",
+  "source_commit": "e6a5c2f28d3d15a47f6cdbdec8ad38ae295b2b5d",
+  "source_controller": "/roto_clean_demo/roto_python",
+  "sync_recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/sync-20261012-recovery",
+  "generic_export_sha256": "0a5d461ff26a64cc28798132527e3be1e3dea6ee110231ba13061ae81d2cde50",
+  "sync_validation": "Native source parity, generic tox reload empty/disconnected, mapping/value/geometry preservation; no new physical acceptance",
+  "page_caption": {
+    "date": "2026-10-17",
+    "base_source_commit": "2de08c9254e116ccf66b7fb63e7d6d01adb82b9f",
+    "source_patch": "upgrade/page_caption_2de08c9.patch",
+    "source_patch_sha256": "6d6dc3c51d530da195f97d19c121f611ef2b8a2ddd515d42280c3702e7724092",
+    "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/page-caption-20261017-recovery",
+    "saved_snapshot": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.page-caption.20261019.toe",
+    "evidence_directory": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-page-feedback-m_1qjypu",
+    "validation": "249 local-source tests; 478 saved-baseline tests; native reload and empty generic tox reload; physical COMP Follow B/A and hardware control-page round trip show Demo then restore EFFECT",
+    "documentation_baseline": "origin/main 9f02879 Layout documentation plus the scoped caption section; ownership and Follow policy retained",
+    "accepted_runtime_source_sha256": {
+      "RotoPythonExt": "3e7e0870813e0f948e7dd192fd7d8f31d234366b2ba2da6b11c549d4986193f8",
+      "protocol": "c64e01ec0b4fd456f6d725c9229cb5f882318fd50eff25d80ca2226db3d2fdeb",
+      "collection_protocol": "bbaa2acbcde467233f0ed0b3dd308e4df5b7cdb8b2e340bd8125f4f8f7863366",
+      "controls": "d3c03f03ac4993e513d3511588d2c6776e08cafcb802d27064a7e3489bed1a53",
+      "free_learn": "b7baefe2cd4f414a87c5f9ae9951b92a032667ef627ebb84e62a7f82f28e9048",
+      "layouts": "e28bb531b3b134942b44e12ab66c090c81c9ea94de1fcd1dd4056b001bb3970c",
+      "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
+      "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89"
+    }
+  },
+  "runtime_source_sha256": {
+    "RotoPythonExt": "c4f9785f83d3aa6f995321909cbe9cf4279df509193ffc0e9fbc382691f6cb6d",
+    "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
+    "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
+    "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
+    "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
+    "layouts": "e28bb531b3b134942b44e12ab66c090c81c9ea94de1fcd1dd4056b001bb3970c",
+    "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
+    "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89"
+  },
+  "learn_metadata": {
+    "date": "2026-10-17",
+    "base_source_commit": "e6a5c2f28d3d15a47f6cdbdec8ad38ae295b2b5d",
+    "source_patch": "upgrade/learn_metadata_e6a5c2f.patch",
+    "source_patch_sha256": "cc1e3bcaffd7c70e9bb7a48cff59cb54ac07e2d5c9669fc496b0ae7cd13ca654",
+    "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/learn-metadata-20261017-recovery",
+    "evidence_directory": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-learn-integration-r84fm_j_",
+    "saved_snapshot": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.page-caption.20261020.toe",
+    "validation": "481 combined source tests; 163 corpus packets and 8 native registered/Free LEARN packets byte-identical; native import/reload and empty generic tox reload; original configuration/values preserved; no hardware MIDI or new LEARN acceptance"
+  }
+}

@@ -11,7 +11,7 @@ def verify(td, source_dir):
     h.viewer=True; h.nodeX=3000; h.nodeY=-1900
     c = None
     try:
-        ns=dict(td); path=source/'scripts/build_network.py'
+        ns=dict(td); path=source/'build/build_network.py'
         exec(compile(path.read_text(),str(path),'exec'),ns)
         c=ns['build'](h,source); e=c.ext.RotoPythonExt
         t=h.create(td['baseCOMP'],'base_aliases');t.viewer=True;t.nodeX=0;t.nodeY=-700

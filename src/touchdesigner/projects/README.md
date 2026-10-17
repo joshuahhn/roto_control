@@ -25,3 +25,16 @@ in diagnostics, with a byte/hash relocation index at
 
 If TouchDesigner creates numbered saves in current, the unnumbered ROTO-CONTROL.toe
 is the named entry point; retain numbered copies as recovery history.
+
+## Local organization history
+
+Integration of local commit `1f735bd` preserves its additional project snapshots,
+recovery copies and receipts. Its different unnumbered project/export are retained
+byte-for-byte in [local-organization-1f735bd](archive/local-organization-1f735bd/).
+They do not replace the canonical project or the current generic MIX export.
+
+The later [MIX working snapshot](current/ROTO-CONTROL.mix-analysis.18.toe) has its
+own [receipt](current/ROTO-CONTROL.mix-analysis.18.json). It identifies saved
+runtime `7a99f31`; the generic export separately pins `dbd341c`. These saved
+versions differ from both the checkout and the unsaved live TD state. Integration
+does not reload, save or modify that live project.

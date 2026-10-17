@@ -1,5 +1,16 @@
 # ROTO-CONTROL Python context
 
+## Organization integration baseline
+
+Local organization commit `1f735bd` is reconciled with merged MIX main `fb9c5ef`.
+Current runtime/helper bytes and generic export/receipt retain the MIX baseline.
+Builders, upgraders, verifiers and runtime tests now live in `build/`, `upgrade/`,
+`verify/` and `tests/`; shared helpers remain in `scripts/`. Pass this source
+root to builders. Source paths and test discovery are updated together.
+Unique saved local artifacts remain available as history; see
+[projects](projects/README.md#local-organization-history). Original local notes
+remain in the preserved `1f735bd` commit rather than replacing later acceptance.
+
 ## Purpose
 
 Python host for ROTO-CONTROL in TouchDesigner, with Layout/Track/Device mapping, parameter and callback targets, an owned compact Inspector, Action presets and slot-value Snapshots. Official Ableton/Logic integration behavior remains a reference.

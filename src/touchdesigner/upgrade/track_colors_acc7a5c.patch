@@ -1,0 +1,438 @@
+diff --git a/src/touchdesigner/code/py/roto_python/RotoPythonExt.py b/src/touchdesigner/code/py/roto_python/RotoPythonExt.py
+index 014ea2b..8141399 100644
+--- a/src/touchdesigner/code/py/roto_python/RotoPythonExt.py
++++ b/src/touchdesigner/code/py/roto_python/RotoPythonExt.py
+@@ -323,7 +323,7 @@ class RotoPythonExt:
+ 
+     def GetTracks(self, layout_id=None):
+         manager=self._layout_manager();layout=manager.layout(layout_id)
+-        return [dict(id=t['id'],name=t['name'],plugin_id=t['active_plugin'],
++        return [dict(id=t['id'],name=t['name'],color=t.get('color',0),plugin_id=t['active_plugin'],
+                      plugin_name=manager.plugin(layout['id'],t['id'])['plugin_name'],
+                      plugin_count=len(t['plugins']),
+                      active=t['id']==layout['active_track']) for t in layout['tracks']]
+@@ -364,6 +364,10 @@ class RotoPythonExt:
+     def RenameTrack(self, layout_id, track_id, name):
+         return self._layout_manager().rename_track(layout_id,track_id,name)
+ 
++    def SetTrackColor(self, layout_id, track_id, color):
++        """Persist a fixed ROTO palette index, 0..82, for one Track group."""
++        return self._layout_manager().set_track_color(layout_id,track_id,color)
++
+     def RemoveTrack(self, layout_id, track_id):
+         return self._layout_manager().remove_track(layout_id,track_id)
+ 
+@@ -1604,6 +1608,12 @@ class RotoPythonExt:
+             try:self.SelectTrack(manager.data['active'],par.eval())
+             except ValueError as exc:
+                 par.val=manager.layout()['active_track'];self._last_error=str(exc);self._publish()
++        elif par.name == 'Trackcolor':
++            manager=self._layout_manager()
++            if manager.mutating:return
++            try:self.SetTrackColor(manager.data['active'],manager.track()['id'],int(par.eval()))
++            except ValueError as exc:
++                par.val=str(manager.track().get('color',0));self._last_error=str(exc);self._publish()
+         elif par.name == 'Plugin':
+             manager=self._layout_manager()
+             if manager.mutating or par.eval()==manager.plugin()['id']:return
+diff --git a/src/touchdesigner/code/py/roto_python/layouts.py b/src/touchdesigner/code/py/roto_python/layouts.py
+index 872ead1..19c2936 100644
+--- a/src/touchdesigner/code/py/roto_python/layouts.py
++++ b/src/touchdesigner/code/py/roto_python/layouts.py
+@@ -119,6 +119,8 @@ class Layouts:
+             for track in tracks:
+                 if not isinstance(track.get('id'),str) or not track['id'] or track['id'] in track_ids:raise ValueError('Invalid or duplicate Track ID')
+                 track_ids.add(track['id']);display_name(track['name'])
++                if type(track.get('color',0)) is not int or not 0<=track.get('color',0)<83:
++                    raise ValueError('Track color must be a palette index from 0 to 82')
+                 plugins=track.get('plugins')
+                 if not isinstance(plugins,list) or not 1<=len(plugins)<=127:raise ValueError('Track needs 1..127 Plugins')
+                 if track.get('active_plugin') not in [p['id'] for p in plugins]:raise ValueError('Active Plugin is missing')
+@@ -486,6 +488,8 @@ class Layouts:
+                 par.menuNames=[r['id'] for r in records]
+                 par.menuLabels=[r.get('category','LEGACY')+' / '+r['name'] for r in records] if name=='Layout' else [r['name'] for r in records]
+                 par.val=active
++        color=getattr(self.owner.par,'Trackcolor',None)
++        if color is not None:color.val=str(self.track().get('color',0))
+         par=getattr(self.owner.par,'Plugin',None)
+         if par is not None:
+             par.menuNames=[p['id'] for p in self.track()['plugins']]
+@@ -508,7 +512,7 @@ class Layouts:
+ 
+     def track_detail(self,index):
+         track=self.layout()['tracks'][index]
+-        return (index>>7,index&127,*text13(track['name']),0,0)
++        return (index>>7,index&127,*text13(track['name']),track.get('color',0),0)
+ 
+     def announce_tracks(self,select=True):
+         host=self.ext._host;tracks=self.layout()['tracks']
+@@ -779,6 +783,24 @@ class Layouts:
+             if layout_id==self.data['active'] and self.ext._host.connected:self.announce_tracks(select=False)
+         return track_id
+ 
++    def set_track_color(self,layout_id,track_id,color):
++        if type(color) is not int or not 0<=color<83:
++            raise ValueError('Track color must be a palette index from 0 to 82')
++        if self.legacy:raise ValueError('Track colors require Parameter mapping')
++        track=self.track(layout_id,track_id)
++        if track.get('color',0)==color:return color
++        self.guard()
++        follower=getattr(self.ext,'_follow',None)
++        if follower and (follower.gated or follower.pending or follower.paused or follower.backlog):
++            raise ValueError('Wait for routing recovery before changing Track color')
++        if color:track['color']=color
++        else:track.pop('color',None)
++        self.save();self.menu()
++        if layout_id==self.data['active'] and self.ext._host.connected:
++            self.announce_tracks(select=track_id==(self.selected_track or self.track()['id']))
++        self.ext._publish()
++        return color
++
+     def remove(self,id):
+         if self.layout(id).get('owner'):raise ValueError('Use UnregisterLayoutOwner; owner Layouts retain recovery records')
+         if len(self.data['records'])==1:raise ValueError('Cannot delete the last Layout')
+diff --git a/src/touchdesigner/code/py/roto_python/setup.py b/src/touchdesigner/code/py/roto_python/setup.py
+index cf082d5..72a2220 100644
+--- a/src/touchdesigner/code/py/roto_python/setup.py
++++ b/src/touchdesigner/code/py/roto_python/setup.py
+@@ -2,6 +2,105 @@
+ import copy
+ 
+ 
++# SysEx API v1.6 Appendix A. Index 47 prints a non-hex G component, BO;
++# retain its palette identity instead of inventing an RGB value.
++TRACK_COLOR_LABELS = (
++    "00 / #FF94A0 / dark text",
++    "01 / #FFA527 / dark text",
++    "02 / #D39925 / dark text",
++    "03 / #FFF477 / dark text",
++    "04 / #C6FB00 / dark text",
++    "05 / #1BFF2D / dark text",
++    "06 / #26FFA2 / dark text",
++    "07 / #5FFFDF / dark text",
++    "08 / #90C5F6 / dark text",
++    "09 / #5780DB / dark text",
++    "10 / #97A7F6 / dark text",
++    "11 / #E06CDB / dark text",
++    "12 / #ED539A / dark text",
++    "13 / #FFFFF6 / dark text",
++    "14 / #FF3634 / dark text",
++    "15 / #FF6C02 / dark text",
++    "16 / #9E6248 / dark text",
++    "17 / #FFF032 / dark text",
++    "18 / #8CFF63 / dark text",
++    "19 / #3FC300 / dark text",
++    "20 / #00BFA8 / dark text",
++    "21 / #19E9F6 / dark text",
++    "22 / #10A4E5 / dark text",
++    "23 / #007DB9 / dark text",
++    "24 / #8D6CDB / dark text",
++    "25 / #BD77BF / dark text",
++    "26 / #FF39CC / dark text",
++    "27 / #D8D0C8 / dark text",
++    "28 / #EC6856 / dark text",
++    "29 / #FFA36F / dark text",
++    "30 / #DBAD6D / dark text",
++    "31 / #F6FFA7 / dark text",
++    "32 / #DAE492 / dark text",
++    "33 / #C1D06F / dark text",
++    "34 / #A1C488 / dark text",
++    "35 / #DCFDD9 / dark text",
++    "36 / #D4F1EF / dark text",
++    "37 / #C0C1DA / dark text",
++    "38 / #D4BBDB / dark text",
++    "39 / #B498DC / dark text",
++    "40 / #EDDCD9 / dark text",
++    "41 / #AFA9A3 / dark text",
++    "42 / #EE9286 / dark text",
++    "43 / #BE8252 / dark text",
++    "44 / #9E8366 / dark text",
++    "45 / #C6BA65 / dark text",
++    "46 / #ACBE00 / dark text",
++    "47 / RGB unavailable / dark text",
++    "48 / #8DC2B3 / dark text",
++    "49 / #A1B3BD / dark text",
++    "50 / #8AA5BF / dark text",
++    "51 / #8893C4 / dark text",
++    "52 / #AB95AE / dark text",
++    "53 / #C69FB7 / dark text",
++    "54 / #C37190 / dark text",
++    "55 / #7F7B76 / dark text",
++    "56 / #B53331 / light text",
++    "57 / #AF512F / light text",
++    "58 / #764F3E / light text",
++    "59 / #E3C300 / light text",
++    "60 / #8A961D / light text",
++    "61 / #569F2F / light text",
++    "62 / #0A9C88 / light text",
++    "63 / #24637F / light text",
++    "64 / #1B2F90 / light text",
++    "65 / #30529C / light text",
++    "66 / #654BA6 / light text",
++    "67 / #A94BA6 / light text",
++    "68 / #D32E6A / light text",
++    "69 / #3E3C39 / light text",
++    "70 / #101010 / light text",
++    "71 / #FF0000 / light text",
++    "72 / #00FF00 / dark text",
++    "73 / #FFFF00 / dark text",
++    "74 / #0000F6 / light text",
++    "75 / #FF00F6 / light text",
++    "76 / #00FFF6 / dark text",
++    "77 / #840000 / light text",
++    "78 / #848000 / dark text",
++    "79 / #008000 / light text",
++    "80 / #00807B / dark text",
++    "81 / #00007B / light text",
++    "82 / #84007B / light text",
++)
++
++
++def track_color_rgb(index):
++    """Normalized palette background, or None where the official RGB is invalid."""
++    if type(index) is not int or not 0 <= index < len(TRACK_COLOR_LABELS):
++        raise ValueError('Track color must be a palette index from 0 to 82')
++    color = TRACK_COLOR_LABELS[index].split(' / ')[1]
++    if not color.startswith('#'):
++        return None
++    return tuple(int(color[offset:offset + 2], 16) / 255.0 for offset in (1, 3, 5))
++
++
+ def install_follow_ui(controller):
+     """Create opt-in Follow and the active Device's optional COMP reference."""
+     binding = next(p for p in controller.customPages if p.name == 'Binding')
+@@ -48,10 +147,31 @@ def combine_context_pages(controller):
+         page = next((p for p in controller.customPages if p.name == 'Layouts'), None) or controller.appendCustomPage('Layout')
+         page.name = 'Layout'
+     device = next((p for p in controller.customPages if p.name == 'Device'), None) or controller.appendCustomPage('Device')
++    color=getattr(controller.par,'Trackcolor',None)
++    new_color=color is None
++    if color is None:
++        color=page.appendMenu('Trackcolor',label='Track color')[0]
++    color.menuNames=[str(index) for index in range(len(TRACK_COLOR_LABELS))]
++    color.menuLabels=list(TRACK_COLOR_LABELS)
++    if new_color:color.default=color.val='0'
++    color.enableExpr="me.par.Setupmode == 'collection'"
++    preview_names=('Trackcolorpreviewr','Trackcolorpreviewg','Trackcolorpreviewb')
++    if getattr(controller.par,preview_names[0],None) is None:
++        page.appendRGB('Trackcolorpreview',label='Track BG preview')
++    for channel,name in enumerate(preview_names):
++        parameter=getattr(controller.par,name)
++        parameter.default=track_color_rgb(0)[channel]
++        parameter.expr="(me.op('setup').module.track_color_rgb(int(me.par.Trackcolor)) or (0, 0, 0))["+str(channel)+"]"
++        parameter.readOnly=True
++        parameter.enableExpr="me.par.Setupmode == 'collection' and me.par.Trackcolor != '47'"
++        parameter.help='Read-only palette background preview. Palette 47 has an invalid RGB component in the official tables; its disabled preview is unavailable.'
++    callbacks=controller.op('parameter_callbacks');watched=callbacks.par.pars.eval().split()
++    callbacks.par.pars=' '.join(watched+['Trackcolor'] if 'Trackcolor' not in watched else watched)
++    names=names[:7]+('Trackcolor',)+preview_names+names[7:]
+     for order, name in enumerate(names):
+         parameter = getattr(controller.par, name)
+-        parameter.page = page if order<10 else device
+-        parameter.order = order if order<10 else order-10
++        parameter.page = page if order<14 else device
++        parameter.order = order if order<14 else order-14
+         parameter.startSection = name == 'Track'
+     controller.par.Layout.label = 'Active Layout (mapping set)'
+     controller.par.Track.label = 'Active Track group (FUNC)'
+diff --git a/src/touchdesigner/diagnostics/runtime/verify_tag_devices.py b/src/touchdesigner/diagnostics/runtime/verify_tag_devices.py
+index c34e2ed..c0667ed 100644
+--- a/src/touchdesigner/diagnostics/runtime/verify_tag_devices.py
++++ b/src/touchdesigner/diagnostics/runtime/verify_tag_devices.py
+@@ -37,7 +37,7 @@ def begin(controller):
+         p=t.appendCustomPage('Controls').appendFloat('Power')[0]
+         p.min=p.normMin=2;p.max=p.normMax=16;p.val=8
+     assert len(next(p for p in c.customPages if p.name=='Device').pars)==6
+-    assert len(next(p for p in c.customPages if p.name=='Layout').pars)==10
++    assert len(next(p for p in c.customPages if p.name=='Layout').pars)==14
+     assert c.par.Plugin.page.name=='Device' and c.par.Layout.page.name=='Layout'
+     assert c.par.Plugin.label=='Active Device (SEL)' and c.par.Track.label=='Active Track group (FUNC)'
+     h.store('result',dict(layout=layout,track=e._layouts.track()['id'],native_build=str(app.build),physical_acceptance=False))
+diff --git a/src/touchdesigner/docs/functions/layouts.md b/src/touchdesigner/docs/functions/layouts.md
+index ec9f714..7a98ac1 100644
+--- a/src/touchdesigner/docs/functions/layouts.md
++++ b/src/touchdesigner/docs/functions/layouts.md
+@@ -4,6 +4,35 @@ A saved Layout contains multiple selectable Track groups. Each Track contains 1.
+ 
+ The Layout custom page manages the saved mapping set and Track groups. The separate Device page manages the active COMP/Device, its Focus link and display name. Active Layout selects the saved configuration; New / rename Layout is its name draft. Active Track group (FUNC) selects a group, and Active Device (SEL) selects one tool inside it. New Track / Device actions create and select empty records; Focus linking does not automatically map parameters. Delete actions open a native popup with Cancel; no permanent confirmation buttons. Last Layout/Track/Device deletion is rejected. Popup choices expire on any of the three context IDs or extension reload. Save the containing TD project to persist changes.
+ 
++## Track group colors
++
++`Track color` on the Layout page selects a fixed ROTO palette color for the
++active Track group. Each menu entry shows its palette index, background hex
++color and dark/light text where specified in the official SysEx v1.6 Appendix A.
++Index 47 is identified by index because that table prints a non-hex component.
++`Track BG preview` shows that background as a read-only RGB color parameter
++beside the menu. It follows palette edits and Track selection without MIDI
++output of its own. Palette 47 disables the preview because both official tables
++print an invalid RGB component; its disabled placeholder does not mean black.
++The correction is tracked in [issue #24](https://github.com/joshuahhn/roto_control/issues/24).
++This first version uses the 83-entry palette, rather than arbitrary RGB output.
++
++Colors belong to Tracks, independently of Devices, parameter pages and COMP node
++colors. They persist with the containing TD project and replay through the
++existing Track-list/selection metadata. Old records without a color retain
++palette 0. Changing colors does not change IDs, mappings or parameter values.
++Edits require LOCK, LEARN, touch and routing-recovery guards to be clear; a
++rejected edit restores the saved choice in the UI. Python registration does not
++expose Track colors. Generic exports begin with the default color and no saved
++user groups.
++
++Physical acceptance on 2026-10-17 covers palette 71 red and palette 82 purple
++with white text in FUNC, then hardware selection from `demo_A / EFFECT` to
++`CUSTOM / COLOR TEST` and back. The user confirmed both main-screen names and
++group colors, with the original Knob 1–3 screens normal. Temporary test groups
++and colors were removed afterward. This accepts those two palette entries in
++PLUGIN mode; arbitrary RGB and all 83 physical colors were not tested.
++
+ ## Tagged COMP workflow
+ 
+ Add the `roto_device` OP tag to an external COMP under the controller's parent scope, or call `RegisterComp(comp)`. While idle, registration ensures its dedicated COMP-owned Layout with an empty Track/Device entry, without selecting or moving existing mappings. Repeated registration, rename and reload reuse durable owner metadata; names and Focus links do not establish ownership. Removing the tag retains the Layout/mappings; explicit unregister retains a tombstone. Direct owner Layout/entry deletion remains guarded. See the [owner contract](../plans/issue-9-owner-layouts.md) and its [accepted integration evidence](../../diagnostics/issue_9/integration_acceptance.md).
+@@ -79,10 +108,11 @@ Offline deletion is reconciled only against the matching removed-target identity
+ 
+ - `GetLayouts()` returns detached IDs, labels, active state, active display names and Track count.
+ - `CreateLayout(name)`, `SelectLayout(id)`, `RenameLayout(id, name)`, `RemoveLayout(id)` manage outer configurations. Creating does not select; the UI combines both actions.
+-- `GetTracks(layout_id=None)` returns detached Track IDs/names, active Plugin IDs/names, Plugin counts and saved active state. Omitted Layout means current Layout.
++- `GetTracks(layout_id=None)` returns detached Track IDs/names, palette `color` indices, active Plugin IDs/names, Plugin counts and saved active state. Omitted Layout means current Layout.
+ - `CreateTrack(layout_id, name)` creates an empty Track and returns its ID without selecting it.
+ - `SelectTrack(layout_id, track_id)` activates the specified Layout and Track.
+ - `RenameTrack(layout_id, track_id, name)` changes its hardware display name.
++- `SetTrackColor(layout_id, track_id, color)` saves an integer palette index from 0 to 82 and returns that index. Default 0 needs no new stored field. It does not select a different Track.
+ - `RemoveTrack(layout_id, track_id)` removes it; active removal selects a surviving Track. It does not erase unrelated hardware mappings.
+ - `GetPlugins(layout_id=None, track_id=None)` returns detached Device IDs, names, full COMP names, name policy, Focus links and active state.
+ - `CreatePlugin(layout_id, track_id, name)`, `SelectPlugin(layout_id, track_id, plugin_id)`, `RenamePlugin(layout_id, track_id, plugin_id, name)`, `RemovePlugin(layout_id, track_id, plugin_id)` manage independent Devices. Creation does not select; active removal selects a surviving Device.
+diff --git a/src/touchdesigner/tests/runtime/test_layouts.py b/src/touchdesigner/tests/runtime/test_layouts.py
+index ddf9aa7..e4e46c7 100644
+--- a/src/touchdesigner/tests/runtime/test_layouts.py
++++ b/src/touchdesigner/tests/runtime/test_layouts.py
+@@ -7,7 +7,7 @@ import test_assignment
+ from controls import Controls
+ from collection_protocol import CollectionHost
+ from layouts import Layouts
+-from protocol import digest,sysex
++from protocol import digest,sysex,text13
+ 
+ class Par:
+     def __init__(self,value):self.val=value;self.enable=True
+@@ -118,6 +118,92 @@ class LayoutTests(unittest.TestCase):
+         self.assertEqual(ext._pending,b'')
+         self.assertEqual(ext.ownerComp.fetch('pending_unmap_identities'),[])
+ 
++class TrackColorTests(unittest.TestCase):
++    fixture=LayoutTests.fixture
++
++    def packets(self,ext):
++        return [tuple(json.loads(line)['midi']) for line in ext._pending.splitlines()]
++
++    def test_color_metadata_preserves_targets_values_and_survives_reload(self):
++        ext,m,p=self.fixture();track=m.track()['id']
++        plugin=copy.deepcopy(m.plugin());value=p.eval()
++        ext._pending=b''
++        self.assertEqual(ext.SetTrackColor('custom',track,71),71)
++        detail=(0,0,*text13('EFFECT'),71,0)
++        packets=self.packets(ext)
++        self.assertIn(sysex(10,7,detail),packets)
++        self.assertEqual(packets[-1],sysex(12,4,detail))
++        self.assertEqual(m.plugin(),plugin);self.assertEqual(p.eval(),value)
++        self.assertEqual(ext.GetTracks()[0]['color'],71)
++        restored=Layouts(ext);ext._layouts=restored
++        self.assertEqual(restored.track()['color'],71)
++        other=restored.create_track('custom','OTHER')
++        restored.select_track('custom',other);restored.select_track('custom',track)
++        self.assertEqual(restored.track_detail(0)[-2:],(71,0))
++        self.assertEqual(p.eval(),value)
++
++    def test_offline_color_and_track_list_refresh_keep_selected_track(self):
++        ext,m,p=self.fixture();original=m.track()['id']
++        other=m.create_track('custom','OTHER')
++        ext._host.connected=ext._host.plugin=False;ext._pending=b''
++        ext.SetTrackColor('custom',other,82)
++        self.assertEqual(ext._pending,b'')
++        self.assertEqual(m.track()['id'],original)
++        ext._host.connected=ext._host.plugin=True
++        m.announce_tracks()
++        details=[packet for packet in self.packets(ext) if packet[5:7]==(10,7)]
++        self.assertEqual([packet[-3] for packet in details],[0,82])
++        self.assertEqual(self.packets(ext)[-1],sysex(12,4,m.track_detail(0)))
++        selected=m.selected_track
++        ext._pending=b''
++        ext.SetTrackColor('custom',other,71)
++        self.assertFalse(any(packet[5:7]==(12,4) for packet in self.packets(ext)))
++        self.assertEqual(m.track()['id'],original)
++        self.assertEqual(m.selected_track,selected)
++        self.assertEqual(m.track_detail(1)[-2:],(71,0))
++
++    def test_invalid_colors_and_default_noop_leave_registry_unchanged(self):
++        ext,m,p=self.fixture();track=m.track()['id']
++        before=copy.deepcopy(m.data);ext._pending=b''
++        self.assertEqual(ext.SetTrackColor('custom',track,0),0)
++        self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
++        self.assertNotIn('color',m.track())
++        for color in (-1,83,True,1.5,'71',None):
++            with self.subTest(color=color):
++                with self.assertRaises(ValueError):ext.SetTrackColor('custom',track,color)
++                self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
++                broken=copy.deepcopy(m.data);broken['records'][0]['tracks'][0]['color']=color
++                with self.assertRaises(ValueError):Layouts.validate(broken)
++        ext.SetTrackColor('custom',track,71)
++        ext._pending=b''
++        self.assertEqual(ext.SetTrackColor('custom',track,0),0)
++        self.assertNotIn('color',m.track())
++        self.assertEqual(self.packets(ext)[-1],sysex(12,4,(0,0,*text13('EFFECT'),0,0)))
++
++    def test_guards_reject_color_edits_before_persistence_or_output(self):
++        ext,m,p=self.fixture();track=m.track()['id'];before=copy.deepcopy(m.data)
++        for obj,field,value in ((m,'locked',True),(m,'mutating',True),
++                                (m,'touched',{52}),(ext._host,'touched',True),(ext._host,'learning',True)):
++            with self.subTest(field=field):
++                old=getattr(obj,field);setattr(obj,field,value);ext._pending=b''
++                with self.assertRaises(ValueError):ext.SetTrackColor('custom',track,71)
++                self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
++                setattr(obj,field,old)
++        ext._follow=SimpleNamespace(gated=True,pending=None,paused=False,backlog=False)
++        with self.assertRaisesRegex(ValueError,'routing'):ext.SetTrackColor('custom',track,71)
++        self.assertEqual(m.data,before);self.assertEqual(ext._pending,b'')
++
++    def test_ui_edit_persists_and_rejected_edit_restores_saved_color(self):
++        ext,m,p=self.fixture()
++        color=Par('71');color.name='Trackcolor';ext.ownerComp.par.Trackcolor=color
++        ext.onParValueChange(color,'0')
++        self.assertEqual(m.track()['color'],71)
++        m.locked=True;color.val='72';before=copy.deepcopy(m.data);ext._pending=b''
++        ext.onParValueChange(color,'71')
++        self.assertEqual(color.eval(),'71');self.assertEqual(m.data,before)
++        self.assertEqual(ext._pending,b'')
++
++
+ class MultiTrackTests(unittest.TestCase):
+     fixture=LayoutTests.fixture
+ 
+diff --git a/src/touchdesigner/tests/runtime/test_setup.py b/src/touchdesigner/tests/runtime/test_setup.py
+index 89a4574..c5415a3 100644
+--- a/src/touchdesigner/tests/runtime/test_setup.py
++++ b/src/touchdesigner/tests/runtime/test_setup.py
+@@ -5,7 +5,7 @@ from types import SimpleNamespace
+ import unittest
+ 
+ sys.path.insert(0,str(Path(__file__).parents[2]/'code/py/roto_python'))
+-from setup import restore
++from setup import restore, track_color_rgb
+ 
+ 
+ class Par:
+@@ -38,6 +38,15 @@ class Controller:
+ 
+ 
+ class SetupTests(unittest.TestCase):
++    def test_track_background_preview_uses_normalized_palette_colors(self):
++        self.assertEqual(track_color_rgb(0),(1.0,148/255,160/255))
++        self.assertEqual(track_color_rgb(71),(1.0,0.0,0.0))
++        self.assertEqual(track_color_rgb(82),(132/255,0.0,123/255))
++        self.assertIsNone(track_color_rgb(47))
++        for index in (-1,83,True,'71'):
++            with self.subTest(index=index),self.assertRaises(ValueError):
++                track_color_rgb(index)
++
+     def test_value_restores_default(self):
+         c=Controller('value')
+         self.assertEqual(restore(c),'Value')

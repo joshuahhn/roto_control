@@ -42,7 +42,7 @@ def start():
     holder.viewer=True;holder.nodeX=900;holder.nodeY=-400
     holder.par.parentshortcut='ValidationFixture'
     namespace=dict(globals())
-    path=SOURCE/'scripts/build_network.py'
+    path=SOURCE/'build/build_network.py'
     exec(compile(path.read_text(),str(path),'exec'),namespace)
     controller=namespace['build'](holder,SOURCE)
     assert controller.ext.RotoPythonExt._process is None

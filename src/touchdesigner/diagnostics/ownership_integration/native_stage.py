@@ -16,7 +16,7 @@ def build_fixture(parent,source,python,execution_folder):
     original_hashes={str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest() for p in source.rglob('*') if p.is_file()}
     assert all(hashlib.sha256((execution/p).read_bytes()).hexdigest()==h for p,h in original_hashes.items())
     namespace=dict(globals())
-    builder=source/'scripts/build_network.py'
+    builder=source/'build/build_network.py'
     exec(compile(builder.read_text(),str(builder),'exec'),namespace)
     controller=namespace['build'](parent,str(execution))
     # The stock builder creates demo targets; this fixture intentionally starts empty.

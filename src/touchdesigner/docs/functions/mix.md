@@ -322,7 +322,7 @@ audio Gain/Mute processing is deferred to
 [issue #26](https://github.com/joshuahhn/roto_control/issues/26).
 
 For a current disconnected controller, make a recovery `.tox` through TD, then
-execute `scripts/upgrade_mix.py` and call `install(controller, source_dir)`. It
+execute `upgrade/upgrade_mix.py` and call `install(controller, source_dir)`. It
 embeds three helpers and refreshes Binding, setup and the extension/lifecycle source, preserving
 existing mappings and target values. Generic export clears the MIX profile, user
 Operation presets and draft, and
