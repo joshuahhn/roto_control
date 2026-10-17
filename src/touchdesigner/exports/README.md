@@ -30,6 +30,12 @@ ownership links, Snapshot records, MIX assignments, user Operation presets or dr
 interpreter with `mido` and `python-rtmidi` remains required. Runtime DATs, the
 MIDI helper, owned Inspector and documentation are embedded.
 
+The latest export also preserves hardware view/item selection order within one
+input batch while retaining stale-CC and fresh-touch fences. Source/native checks
+cover that correction and missing-meter recovery; physical batch timing and MIX
+LOCK behavior remain unverified. The adjacent receipt separates these results
+from the earlier scoped hardware acceptance.
+
 The demo `.toe` has its own [project receipt](../projects/current/project.json).
 Check that receipt separately for its saved runtime version. Numbered exports
 remain historical recovery copies; use the unnumbered tox and adjacent receipt.

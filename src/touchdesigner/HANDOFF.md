@@ -2587,3 +2587,21 @@ new hardware acceptance is claimed; reuse the earlier affected-function hardware
 results with that limit. The active `.18.toe` remains open/disconnected, and its
 saved bytes/receipt and the dirty root checkout remain unchanged. Publication
 of the corrected generic export is recorded separately below.
+
+### Review correction publication
+
+Runtime/documentation source `e74e413d0ddeb58a7368c0ad2a62398845e892e7`,
+with 588 passing discovery tests. Scoped disconnected installation preserves
+fresh snapshots and verifies all 22 embedded runtime/helper hashes. Live TD
+exports/reloads the generic clone with all 22 source and 12 Markdown hashes,
+empty mappings/profile/presets/triggers/source paths, all 34 custom fields at
+default, six empty Operation slots, six default bands, Follow off, Python python3,
+no external DATs/process and zero scoped errors. Export SHA-256:
+`451c57bf8466954e2f337bb927c7f0e9671347887dd09855a2f75b6e8109a92c`.
+
+The active controller now embeds the corrected source and current function docs,
+remaining open/disconnected with no pending bytes or override. No project save
+occurs. Canonical and `.18.toe` SHA-256 values are unchanged; `.18.toe` and its
+adjacent saved receipt still identify runtime `7a99f31`. The unnumbered generic
+export and receipt identify the new source independently. No new physical
+acceptance or full project restart is claimed.
