@@ -2031,3 +2031,25 @@ parameters' containing-network path context, distinct from the runtime's
 controller-relative scope. Draft source hydration now uses that context, with
 source and native coverage. The final 541-test discovery run passes after this
 correction; native hydration resolves the intended Analysis COMP with zero writes.
+
+## MIX editor installation/export — 2026-10-17
+
+Saved runtime source `21cf421671bea9bd5a5baaf72752e7f1f95a166c` is installed on
+`/roto_clean_demo/roto_python`; all 22 runtime/helper hashes match. Recovery is
+`before-editor.tox` in the same temporary evidence folder. The current Low/Mid
+profile, normalized registry, Snapshots, demo_A/B values, all analysis/layer
+values/Setup, nine demo children and old controller's 246 DAT fingerprints match
+the pre-installation snapshot. UI draft source resolves `audioAnalysis`; its
+Applied MIX summary names Low/Mid. No MIDI process was opened.
+
+Generic export/reload verifies empty assignments/mappings/Snapshots/Focus/ownership
+and draft source/custom choices, Follow off, Python python3, no external DATs and
+zero errors. Its 22 runtime and eleven embedded Markdown hashes match source
+`21cf421`; existing Guide/documentation positions are preserved. Generic SHA-256
+is `444d4612a57dec755e1e2a830c5dad1a91951d1d35bd1df8b67e600c15343547`.
+TD automatically incremented the requested numbered save to
+`ROTO-CONTROL.mix-analysis.7.toe`, SHA-256
+`60a3ac91cf8aba3413f0d502c58e0bab508ad94346e6ee30e3b696d34fc70292`,
+with adjacent source/hash receipt. Canonical toe and older saved copies remain
+unchanged. TD stays open/disconnected without pending bytes or probe overrides.
+No hardware routing was changed; reuse the earlier scoped physical acceptance.
