@@ -1,0 +1,242 @@
+--- a/src/touchdesigner/code/py/roto_python/protocol.py
++++ b/src/touchdesigner/code/py/roto_python/protocol.py
+@@ -6,6 +6,7 @@
+ 
+ import hashlib
+ import math
++from typing import NamedTuple, Optional
+ 
+ 
+ HEADER = (0xF0, 0, 0x22, 3, 2)
+@@ -51,6 +52,32 @@
+     if not math.isfinite(value):
+         raise ValueError("Value must be finite")
+     return round(min(1.0, max(0.0, value)) * 16383)
++
++
++class LearnParameter(NamedTuple):
++    """Immutable offer metadata, independent of a control's session state."""
++
++    index: int
++    target_id: str
++    target_label: str
++    key: tuple
++    mode: str
++    button_type: Optional[str] = None
++    menu_labels: tuple = ()
++
++
++def learn_parameter_message(parameter, value):
++    """Encode one LEARN PARAM message without touching routing or targets."""
++    value = raw_value(value)
++    steps = 2 if parameter.key[0] == 'button' else 0
++    labels = ('Ready', 'Trigger') if parameter.mode == 'pulse' else ('Off', 'On')
++    strings = tuple(byte for label in labels for byte in text13(label)) if steps else ()
++    if parameter.key[0] == 'knob' and parameter.menu_labels:
++        steps = len(parameter.menu_labels)
++        strings = tuple(byte for label in parameter.menu_labels for byte in text13(label)) if steps <= 16 else ()
++    return sysex(PLUGIN, 0x0A, (parameter.index >> 7, parameter.index & 127,
++                              *digest(parameter.target_id, 6), 0, 0, steps,
++                              value >> 7, value & 127, *text13(parameter.target_label), *strings))
+ 
+ 
+ class Host:
+@@ -198,10 +225,8 @@
+         return True
+ 
+     def _parameter_details(self):
+-        value = raw_value(self.value)
+-        self._command(PLUGIN, 0x0A, (0, 0, *digest(self.target_id, 6),
+-                                    0, 0, 0, value >> 7, value & 127,
+-                                    *text13(self.target_label)))
++        parameter = LearnParameter(0, self.target_id, self.target_label, ('knob', 1), 'value')
++        self._send(learn_parameter_message(parameter, self.value))
+ 
+     def _display(self):
+         self._command(GENERAL, 0x18, (0, 0, *text13(self.format_value(self.value))))
+--- a/src/touchdesigner/code/py/roto_python/collection_protocol.py
++++ b/src/touchdesigner/code/py/roto_python/collection_protocol.py
+@@ -1,14 +1,15 @@
+ """One PLUGIN device with independently acknowledged knobs/buttons."""
+ import time
+-from protocol import Host, GENERAL, PLUGIN, digest, raw_value, text13
++from protocol import Host, GENERAL, PLUGIN, LearnParameter, digest, learn_parameter_message, raw_value, text13
+ 
+ 
+ class Control(Host):
+-    def __init__(self, send, key, index, identity, label, value, formatter, mode, button_type=None):
++    def __init__(self, send, key, index, identity, label, value, formatter, mode, button_type=None, *, menu_labels=()):
+         super().__init__(send, lambda value: None, value)
+         self.key, self.index, self.mode = key, index, mode
+         self.target_id, self.target_label, self.format_value = identity, label, formatter
+         self.button_type = button_type
++        self.menu_labels = tuple(menu_labels)
+         self.last_pulse = float('-inf')
+         self._pulse_state = 0
+ 
+@@ -19,17 +20,9 @@
+         return result
+ 
+     def _parameter_details(self):
+-        value = raw_value(self.value)
+-        steps = 2 if self.key[0] == 'button' else 0
+-        labels = ('Ready', 'Trigger') if self.mode == 'pulse' else ('Off', 'On')
+-        strings = (*text13(labels[0]), *text13(labels[1])) if steps else ()
+-        binding = getattr(self.format_value, '__self__', None)
+-        if self.key[0] == 'knob' and binding is not None and binding.menu_names:
+-            steps = len(binding.menu_names)
+-            strings = tuple(byte for label in binding.menu_labels for byte in text13(label)) if steps <= 16 else ()
+-        self._command(PLUGIN, 10, (self.index >> 7, self.index & 127,
+-                                   *digest(self.target_id, 6), 0, 0, steps,
+-                                   value >> 7, value & 127, *text13(self.target_label), *strings))
++        parameter = LearnParameter(self.index, self.target_id, self.target_label,
++                                   self.key, self.mode, self.button_type, self.menu_labels)
++        self._send(learn_parameter_message(parameter, self.value))
+ 
+     def _display(self):
+         kind, slot = self.key
+@@ -96,7 +89,8 @@
+             if kind == 'button' and button_type not in ('toggle', 'push') or kind == 'knob' and button_type is not None:
+                 raise ValueError('button_type is toggle/push for buttons only')
+             self.controls[key] = Control(self._send, key, index, identity, spec['label'],
+-                                          spec['value'], spec['formatter'], mode, button_type)
++                                          spec['value'], spec['formatter'], mode, button_type,
++                                          menu_labels=spec.get('menu_labels', ()))
+         if not self.controls and not allow_empty:
+             raise ValueError('Register at least one control')
+ 
+--- a/src/touchdesigner/code/py/roto_python/controls.py
++++ b/src/touchdesigner/code/py/roto_python/controls.py
+@@ -143,6 +143,7 @@
+             mode = self.modes[key]
+             yield dict(kind=key[0], slot=key[1], index=self.indices[key], identity=binding.wire_identity + (':action:' + repr(binding.action_id) if binding.action_id else '') + ':' + mode,
+                        label=binding.label, mode=mode, button_type=self.button_types[key], value=binding.normalized(binding.value),
++                       menu_labels=binding.menu_labels,
+                        formatter=binding.format_value if mode in ('value','cycle') else lambda value, b=binding, m=mode: ('Ready' if m == 'pulse' else
+                                  ('On' if value >= .5 else 'Off') if m == 'toggle' else b.format_value(value)))
+ 
+--- a/src/touchdesigner/code/py/roto_python/free_learn.py
++++ b/src/touchdesigner/code/py/roto_python/free_learn.py
+@@ -2,7 +2,7 @@
+ import time
+ import uuid
+ from binding import parameter_chain, parameter_value, same_parameter
+-from protocol import digest
++from protocol import LearnParameter, digest, learn_parameter_message
+ 
+ 
+ class FreeLearner:
+@@ -194,14 +194,12 @@
+                     parameter=parameter,mode=mode,button_type=adapter,index=index)])
+                 binding = candidate.bindings[kind,1]
+                 wire = next(candidate.specs())
+-            template = self.owner.op('collection_protocol').module.Control(e._host._send,(kind,1),index,
+-                wire['identity'],wire['label'],binding.normalized(parameter_value(parameter) if mode != 'pulse' else 0),
+-                wire['formatter'],mode,wire['button_type'])
+-            template.enabled = template.connected = template.plugin = template.learning = True
++            template = LearnParameter(index, wire['identity'], wire['label'], (kind,1),
++                mode, wire['button_type'], wire['menu_labels'])
+             if (template.index,digest(template.target_id,6)) not in self._offers and len(self._offers) >= 128:
+                 raise ValueError('Too many pending LEARN offers; wait for hardware acknowledgement')
+-            if not template.offer_parameter():
+-                return False
++            e._host._send(learn_parameter_message(template,
++                binding.normalized(parameter_value(parameter) if mode != 'pulse' else 0)))
+             self.pending = dict(parameter=parameter,binding=binding,template=template,time=time.monotonic())
+             self.last_parameter = self.key(parameter)
+             self.status('Offered '+parameter.owner.name+'.'+parameter.name+'; waiting for hardware slot')
+--- a/src/touchdesigner/code/py/roto_python/RotoPythonExt.py
++++ b/src/touchdesigner/code/py/roto_python/RotoPythonExt.py
+@@ -688,7 +688,7 @@
+         wire = list(candidate.specs())[0]
+         replacement = self.ownerComp.op('collection_protocol').module.Control(
+             target.send, key, target.index, wire['identity'], wire['label'], wire['value'],
+-            wire['formatter'], wire['mode'], wire['button_type'])
++            wire['formatter'], wire['mode'], wire['button_type'], menu_labels=wire['menu_labels'])
+         # Do not leave old hardware semantics driving a newly configured target.
+         if target.mapped:
+             self._host.clear_learn(key)
+@@ -876,7 +876,8 @@
+             wire = next(wire for wire in candidate.specs() if (wire['kind'],wire['slot']) == key)
+             replacement = self.ownerComp.op('collection_protocol').module.Control(
+                 self._host._send, key, wire['index'],
+-                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter)
++                wire['identity'], wire['label'], wire['value'], wire['formatter'], mode, adapter,
++                menu_labels=wire['menu_labels'])
+             if target is not None and target.mapped and not self._host.learning and not _hardware_mapped:
+                 self._host.clear_learn(key)
+             watcher.par.active = False
+--- a/src/touchdesigner/tests/runtime/test_menu.py
++++ b/src/touchdesigner/tests/runtime/test_menu.py
+@@ -18,6 +18,27 @@
+ 
+ 
+ class MenuTests(unittest.TestCase):
++    def test_learn_metadata_is_independent_of_value_formatter(self):
++        p=menu();c=Controls([dict(kind='knob',slot=2,id='menu',parameter=p)])
++        spec=dict(next(c.specs()),formatter=lambda value:'Display only')
++        sent=[];h=CollectionHost(sent.append,lambda *args:None,[spec],'menu')
++        h.controls['knob',2]._parameter_details()
++        self.assertEqual(sent[-1],sysex(11,10,(0,1,*digest(spec['identity'],6),
++            0,0,3,64,0,*text13(p.label),*text13('Alpha'),*text13('Beta'),*text13('Gamma'))))
++
++    def test_menu_step_labels_stop_after_sixteen_choices(self):
++        for count in (2,16,17,24):
++            with self.subTest(count=count):
++                p=menu();p.menuNames=[str(i) for i in range(count)]
++                p.menuLabels=['Choice '+str(i) for i in range(count)];p.val='0'
++                c=Controls([dict(kind='knob',slot=8,id='steps',parameter=p,index=129)])
++                spec=next(c.specs());sent=[]
++                h=CollectionHost(sent.append,lambda *args:None,[spec],'steps')
++                h.controls['knob',8]._parameter_details()
++                labels=tuple(byte for label in p.menuLabels for byte in text13(label)) if count<=16 else ()
++                self.assertEqual(sent[-1],sysex(11,10,(1,1,*digest(spec['identity'],6),
++                    0,0,count,0,0,*text13(p.label),*labels)))
++
+     def test_knob_index_rounding_names_and_label_metadata(self):
+         p=menu();c=Controls([dict(kind='knob',slot=2,id='menu',parameter=p)])
+         b=c.bindings['knob',2]
+--- a/src/touchdesigner/tests/runtime/test_free_learn.py
++++ b/src/touchdesigner/tests/runtime/test_free_learn.py
+@@ -1,6 +1,7 @@
+ """Unregistered slider -> offer -> actual hardware slot -> persistent mapping."""
+ from types import SimpleNamespace
+ import unittest
++from unittest.mock import patch
+ import test_assignment
+ import collection_protocol
+ import controls
+@@ -186,6 +187,33 @@
+         self.assertEqual(ext._host.controls['knob',3].index,128)
+         self.assertEqual(ext.ownerComp.fetch('parameter_assignments')[0]['index'],128)
+ 
++    def test_free_offer_matches_registered_metadata_without_target_writes(self):
++        for style,kind in (('Float','knob'),('Toggle','button'),('Pulse','button'),
++                           ('Menu','knob'),('Menu','button')):
++            with self.subTest(style=style,kind=kind):
++                ext,learner,sent=self.fixture()
++                parameter=test_assignment.AssignmentTests().parameter(style,'Offered')
++                parameter.owner.name='master'
++                if style=='Menu':
++                    parameter.menuNames=['alpha','beta','gamma']
++                    parameter.menuLabels=['Alpha','Beta','Gamma'];parameter.val='beta'
++                learner.selected_kind=kind
++                before=parameter.eval();pulses=getattr(parameter,'pulses',0)
++                read=type(parameter).val.fget
++                with patch.object(type(parameter),'val',property(read,
++                        lambda *args:self.fail('LEARN offer wrote a target parameter'))):
++                    self.assertTrue(learner.offer(parameter))
++                template=learner.pending['template'];binding=learner.pending['binding']
++                c=controls.Controls([dict(kind=kind,slot=1,id=binding.id,parameter=parameter,
++                    mode=template.mode,button_type=template.button_type,index=template.index)])
++                registered=[]
++                h=collection_protocol.CollectionHost(registered.append,lambda *args:None,
++                    list(c.specs()),'comparison')
++                h.controls[kind,1]._parameter_details()
++                self.assertEqual(sent,registered)
++                self.assertEqual(parameter.eval(),before)
++                self.assertEqual(getattr(parameter,'pulses',0),pulses)
++
+     def test_slider_drag_does_not_offer_repeatedly_and_wrong_ack_cannot_commit(self):
+         ext,learner,sent=self.fixture();p=self.parameter();p.val=6
+         learner.changes([(p,5)]);p.val=7;learner.changes([(p,6)])

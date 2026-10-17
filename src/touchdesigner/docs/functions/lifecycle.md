@@ -27,11 +27,11 @@ Saved Binding page configuration is restored after initialization (first Tick, o
 
 ## Source upgrades
 
-Disconnect, load changed dependency DAT source, then reinitialize the Extension. Existing host instances can retain old class implementations even when a synced DAT displays new source. Verify the restored setup/runtime before Connect. upgrade_controls.py applies this ordering; it preserves the user-owned targets table and registration hook.
+Disconnect, load changed dependency DAT source, then reinitialize the Extension. Existing host instances can retain old class implementations even when a synced DAT displays new source. Verify the restored setup/runtime before Connect. upgrade/upgrade_controls.py applies this ordering; it preserves the user-owned targets table and registration hook.
 
 ## Sequence verification
 
-`verify_api_sequences.py` builds an isolated six-target fixture without opening MIDI ports. Run build_fixture, wait one TD frame, then exercise. Check the deferred native Pulse callback on the next frame. The saved registration hook also supports extension reinit and tox reload checks. This complements test_api.py with real TD parameters/watchers; synthetic MIDI does not establish physical PUSH acceptance.
+`verify/verify_api_sequences.py` builds an isolated six-target fixture without opening MIDI ports. Run build_fixture, wait one TD frame, then exercise. Check the deferred native Pulse callback on the next frame. The saved registration hook also supports extension reinit and tox reload checks. This complements tests/test_api.py with real TD parameters/watchers; synthetic MIDI does not establish physical PUSH acceptance.
 
 Collection restore refreshes watcher OP expressions even when their source text is unchanged, to clear initialization-time unresolved caches. Verify actual watcher OP handles and a direct parameter edit after disk reopen.
 

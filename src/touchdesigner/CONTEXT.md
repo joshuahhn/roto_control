@@ -2,7 +2,30 @@
 
 ## Purpose
 
-Build a new Python host from scratch, using official Ableton/Logic integration behavior as reference. First milestone accepted: handshake and Value controlled by Knob 1. Current milestone: up to 8 knobs and 8 buttons with parameter/callback targets; software verification passed; physical Knob 2/8 and Button 1/2/8 acceptance passed. Other slots have software coverage.
+Python host using official Ableton/Logic integration behavior as reference. Read this document as context for the local source, not proof that source, saved artifacts and remote main are identical. Current artifact entry is [OPEN_PROJECT.md](OPEN_PROJECT.md); dated acceptance and unresolved limits are in [HANDOFF.md](HANDOFF.md).
+
+## Checkout and artifact scope
+
+Checked 2026-10-12: this local main is at `1cb09d9` with uncommitted changes; GitHub/origin main is `40ac7a4` and includes issue #15 via merged PR #17 plus later fixes. Local main is 22 commits behind. Synchronizing it is separate work that must preserve local edits and artifacts.
+
+The local source still builds the Lister Inspector. The current saved project contains the owned Inspector candidate installed separately, as recorded on 2026-10-11. Do not infer saved runtime parity from this checkout or apply a builder to the current project without resolving which source/artifact is intended. The architecture below describes local source; historical milestones are not current validation gates.
+
+On 2026-10-17 the saved runtime received the automatic parameter-page caption change, then the LEARN metadata refactor. [PR #23](https://github.com/joshuahhn/roto_control/pull/23) now publishes both changes as source/tests/docs plus the synchronized generic export/receipt at `acc7a5c`; its checked-in demo toe retains its older independent project receipt. The local working-project receipt identifies caption source `e6a5c2f` plus [the scoped LEARN patch](upgrade/learn_metadata_e6a5c2f.patch), runtime hashes and recovery. Its eight principal runtime hashes match the combined PR source. Both changes are now in the local saved artifacts. The older [caption patch](upgrade/page_caption_2de08c9.patch) retains its original `2de08c9` reproduction scope. Do not replace the saved runtime with this older dirty checkout wholesale; see the latest [handoff](HANDOFF.md#generic-export-pr-update--2026-10-17).
+
+Before the Track color work below, the local [generic export and receipt](exports/README.md) were synchronized to source `0ed7d97`: 19 runtime/helper DATs and ten embedded Markdown snapshots matched, with an empty/disconnected native reload. Those earlier generic files and scoped documentation are published in PR #23 at `acc7a5c`; the current local artifacts include the later Track color and read-only preview feature.
+
+## Saved Track palette feature
+
+The 2026-10-17 Track palette and read-only RGB preview source lives in the separate worktree
+`/Users/huihongnin/.t3/worktrees/roto_control/td-track-colors`, based on `acc7a5c`.
+Its three changed DATs, including the preview in setup, are saved in `/roto_clean_demo/roto_python` in the local
+canonical toe. The local generic tox/receipt and feature-worktree generic export
+also include the feature, identified by committed source `0254000`,
+19 runtime/helper hashes and ten Markdown hashes. Physical red/purple Track
+feedback passed; temporary groups/colors were removed and the controller remains
+disconnected. See the [save/export handoff](HANDOFF.md#track-color-bg-preview--2026-10-17).
+[PR #25](https://github.com/joshuahhn/roto_control/pull/25) publishes Track colors and the preview; its source commit is `0254000` and export HEAD `0ac1ada`. The older controller remains unchanged. PR #23 is merged; checked-in demo artifacts
+retain their separate version; this dirty checkout's older source must not replace the saved runtime.
 
 ## Architecture
 
@@ -16,15 +39,15 @@ Outer pages are Connection, Binding, Layout and Device. `setup.combine_context_p
 
 ## Source Files
 
-- `build_network.py`: explicit-parent builder; source-synced code DATs and embedded README.
+- `build/build_network.py`: explicit-parent builder; source-synced code DATs and embedded README.
 - `code/py/roto_python/protocol.py`: protocol and one-parameter host.
 - `code/py/roto_python/RotoPythonExt.py`: TD adapter and process lifecycle.
 - `code/py/roto_python/*_callbacks.py`: parameter/frame/exit callbacks.
 - `midi_process.py`: external MIDI owner; exact port resolution.
-- `upgrade_network.py`: in-place disconnected upgrade and demo construction.
+- `upgrade/upgrade_network.py`: in-place disconnected upgrade and demo construction.
 - `code/py/roto_python/binding.py`: target metadata/conversion and adapters.
-- `test_binding.py`: binding behavior, failures and target identity checks.
-- `test_protocol.py`: behavior tests through MIDI and parameter interfaces.
+- `tests/test_binding.py`: binding behavior, failures and target identity checks.
+- `tests/test_protocol.py`: behavior tests through MIDI and parameter interfaces.
 
 ## Constraints
 
@@ -32,7 +55,7 @@ No legacy host imports, no automatic hardware connection, no arbitrary parameter
 
 ## Verification
 
-Protocol unit tests cover handshake, metadata, input pairing, mapping validation, touch and echo suppression. Live TD checks must additionally prove extension promotion, callbacks, CHOP output, process cleanup and errors. Physical knob input, LCD, LEARN and motor follow require controller acceptance and must be recorded separately in HANDOFF.md.
+Follow [change-scoped validation](../../AGENTS.md#change-scoped-validation). Protocol tests cover handshake, metadata, input pairing, mapping validation, touch and echo suppression. Only affected TD-native behavior needs a corresponding native check; only affected MIDI/ACK/feedback behavior needs corresponding hardware acceptance. Reuse unaffected results with their baseline and scope. Record unavailable checks as limitations, not an expanding task list. Documentation-only edits do not require live TD, hardware or artifact re-embedding.
 
 ## Collection architecture
 
@@ -40,7 +63,7 @@ collection_protocol.CollectionHost shares the established session handshake and 
 
 API sequence is documented in docs/functions/lifecycle.md. Button input declares hardware button_type separately from TD action mode; targets table column defaults existing buttons to toggle. Shared button confirmation follows successful consumer dispatch, while knobs retain motor echo suppression.
 
-Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. External Lister config lives inside the inspector wrapper. Build entrypoint includes build_inspector.py; Inspector source is code/py/roto_python/inspector/inspector_data.py.
+Internal Inspector reads persisted target data through GetControlCatalog; Disconnect retains destinations/ranges/values. All 16 physical slots remain visible, with per-COMP pages and Unassigned placeholders. External Lister config lives inside the inspector wrapper. Build entrypoint includes build/build_inspector.py; Inspector source is code/py/roto_python/inspector/inspector_data.py.
 
 Inspector Clear uses RemoveControl / RemoveAllControls: delete registration, disable watcher, suppress saved-hook restore and replay outgoing PLUGIN 0E on reconnect. ClearLearn / ClearAllLearn retain registration as separate hardware-only APIs. Hardware persistence is verified by reconnect, not an unmap acknowledgement.
 
@@ -56,18 +79,75 @@ FreeLearner retains pending parameter offers independently by index/hash during 
 
 ## Active repository
 
-Continue development in joshuahhn/roto_control, src/touchdesigner. The nin-lab location is a migration backup. Documentation embedding uses the local scripts/td_project_docs.py; current project is .32.toe and portable export is .20.tox.
+Continue development in joshuahhn/roto_control, src/touchdesigner. The nin-lab location is a migration backup. Documentation embedding uses scripts/td_project_docs.py. Open projects/current/ROTO-CONTROL.toe; generic export is exports/roto_python.tox. Numbered snapshots are historical; see projects/README.md and the checkout/artifact distinction above.
 
 
 ## Multi-Track registry v2 (2026-10-06)
 
-Historical v2 baseline: Layouts own ordered Tracks; each Track originally owned one Plugin with independent parameter mappings. See the v3 section below for current multi-Device behavior. layouts.py owns versioned migration and Track metadata/selection; protocol.Host delegates Track announcements through tracks_callback. Hardware Track pages are distinct from selection. Only the current routing Track's Plugin is advertised. Under LOCK, selected Track and routing Track may differ; physical behavior remains pending acceptance. Inspector context and clear confirmations are Plugin-scoped. See docs/functions/layouts.md and multitrack_native_verification.json. The .32 baseline above is historical; consult the final HANDOFF entry for current artifacts.
+Historical v2 baseline: Layouts own ordered Tracks; each Track originally owned one Plugin with independent parameter mappings. See the v3 section below for local multi-Device behavior. layouts.py owns versioned migration and Track metadata/selection; protocol.Host delegates Track announcements through tracks_callback. Hardware Track pages are distinct from selection. Under LOCK, selected Track and routing Track may differ. Subsequent physical LOCK acceptance is recorded in HANDOFF.md; the original pending state is historical. Inspector context and clear confirmations are Plugin-scoped. See docs/functions/layouts.md and diagnostics/runtime/results/multitrack_native_verification.json.
 
 ## Live Select COMP (2026-10-07)
 
 text_comp_follow.CompFollower owns optional Device Focus links, current-pane selection sampling and a single latest-intent arbiter shared with hardware Track/Device selection. Binding Followcomp defaults off only on creation/export; Layout Focuscomp edits the active Device link. SetPluginComp, SelectComp and GetCompContext expose the link/context; SetTrackComp remains a compatibility wrapper for the Track’s active Device. No additional Binding mode or signal wires.
 
-Selection/unlock fences immediately suppress business input, mapping/page recall, FreeLearner commits and old feedback; keep session/LOCK/LEARN/touch-release traffic. Drain buffered complete lines before activation; partial inbound lines retain their ingress epoch. Disconnect/open failure/child failure clear pending intents and selected/routing divergence through connection generations. Domain failures do not Disconnect; failed rollback/observer pauses until Apply setup repair. Saved Follow=True restores baseline only. Project Pre Save is explicitly enabled on the lifecycle DAT; its synchronous callback refreshes live links even while paused. Generic exports clear links/preference. Native and synthetic evidence are in comp_follow_native_verification.json; physical Follow acceptance is pending.
+Selection/unlock fences immediately suppress business input, mapping/page recall, FreeLearner commits and old feedback; keep session/LOCK/LEARN/touch-release traffic. Drain buffered complete lines before activation; partial inbound lines retain their ingress epoch. Disconnect/open failure/child failure clear pending intents and selected/routing divergence through connection generations. Domain failures do not Disconnect; failed rollback/observer pauses until Apply setup repair. Saved Follow=True restores baseline only. Project Pre Save is explicitly enabled on the lifecycle DAT; its synchronous callback refreshes live links even while paused. Generic exports clear links/preference. Native evidence is in diagnostics/runtime/results/comp_follow_native_verification.json. Later tagged-COMP physical Follow/recall passed; guarded/locked Follow remains a separate limitation in HANDOFF.md.
+
+## Meter capability probe (2026-10-17)
+
+On firmware 3.3.0 / SysEx API 1.6, native stereo VU bars displayed in MIX after
+official MIX initialization. The same channel-16 CC65/66 signal did not display
+bars in PLUGIN after that successful MIX control. Real stereo file audio and
+duplicated mono device input both passed user-observed MIX tests. These are
+bounded capability probes, not a production meter API or MIX control backend.
+Runtime source and saved toe/tox artifacts were not changed.
+
+The three requested uses are audio CHOP level, Layer Mix layer opacity and
+audioAnalysis level beside an adjustable threshold. Opacity can supply a
+normalized scalar but still needs an explicit layer adapter. The current host's
+PLUGIN mappings cannot be assumed to control MIX knobs. For audioAnalysis, read
+the signal before its threshold comparison; raw audio RMS and the post-trigger
+output are different measurements. PLUGIN numeric feedback is a possible next
+prototype, not verified native VU support. See HANDOFF.md for initialization,
+evidence scope and cleanup.
+
+The next bounded MIX prototype passed one-knob threshold control, motor recall
+and simultaneous native meter display. It mapped touched Knob 1 to
+`audioAnalysis.Kickthresh` over 0..0.6, read pre-comparison `math2/low` for its
+meter, and kept the existing PLUGIN parser/guards. A temporary MIX receiver
+owned its one-track view instead of treating MIX selection as PLUGIN Track
+selection. This proves the small adapter approach; it is not installed in the
+saved runtime. `Kickactive` stayed off, so actual kick-trigger acceptance is
+separate. The user's resulting threshold 0.26174693279619116 was preserved.
+
+Actual Kick output was subsequently verified with `Kickactive` temporarily on:
+hardware K0/K1 follows `out1['kick']`, retaining observed pulses for 0.2 seconds.
+At threshold 0.600, K1 correctly remained possible because measured pre-threshold
+peaks reached about 0.70. A meter range must therefore be independent of the
+knob's 0..0.6 range. All parameters and bindings were restored afterward.
+The user selected an independent MIX page with eight slots, each with its own
+control target and meter source, rather than sharing the current Device's
+PLUGIN assignments. Production implementation is the next active task.
+
+The user clarified the intended workflow as tool/source → selected item → detail
+controls, using touch to select and FUNC to open details, rather than requiring
+physical SEL for item selection. The [MIX view proposal](docs/plans/mix-view-mappings.md)
+and [three-style contract](docs/plans/mix-style-contract.md) describe `layers`,
+`analysis` and `audio`, with typed Float/Menu/Toggle targets and separate read-only
+feedback. Native Level/Pan/Send names are adapter addresses. This supersedes both
+the Level-only assumption and using native function names as the TD domain model.
+Low Focus now has bounded physical proof for four readable name/value texts,
+first-meter placement and Gain touch input/motor return. Multi-item selection,
+other input types, Focus buttons and second-page offsets remain unverified.
+Audio refinement is deferred to [issue #26](https://github.com/joshuahhn/roto_control/issues/26),
+so analysis remains the first active style. The initial read-only Low Focus
+probe was user-observed as `MIX-FOCUS / Low` with Thresh/Gain/Add/Smooth values
+and a continuing meter. Gain was temporarily changed to 2.84093267411341 and
+restored to 2.000, with motor return and zero further input writes after input was
+disabled. The probe's timeout metadata cleanup was corrected to restore PLUGIN
+metadata only on actual return. User confirmed normal PLUGIN; disconnected audit
+preserves all parameters, Snapshots, four original control IDs and 19 DAT hashes.
+Production descriptor/analysis integration for Low/Mid is next, using a separate
+worktree rather than this older dirty runtime checkout.
 
 ## Independent Device context v3 (2026-10-07)
 

@@ -1,0 +1,13 @@
+{
+  "open_this": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.toe",
+  "sha256": "82376663ce64c17759ce36d3374f30acb4a1beab16d14c9dd3d9a342f72f61d5",
+  "source": "existing physically accepted owned Inspector candidate, saved through live TD after portable interpreter patch",
+  "python": "../../.venv/bin/python",
+  "midi_helper": "embedded; durable original-checkout external fallback",
+  "recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/organization-recovery",
+  "candidate_source_checkout": "/tmp/roto-control-issue15",
+  "open_filename": "ROTO-CONTROL.toe",
+  "td_title_counter": "ROTO-CONTROL.1.toe",
+  "interpreter_verification": "diagnostics/runtime/results/python_portability",
+  "interpreter_recovery_directory": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/python-portability-recovery"
+}

@@ -513,6 +513,7 @@ class Layouts:
         Keep all parameter definitions; current slots are rebuilt solely from
         CONTROL MAPPED hashes. An empty page must never route the previous page.
         """
+        self.ext._page_caption = None
         self.capture(force=True)
         ext=self.ext;host=ext._host
         if ext._collection is None:return

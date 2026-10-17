@@ -1,0 +1,9 @@
+{
+  "project_sha256": "68420323eeddd934027da07794c9d603acaffe68af4a8ce8176798861df73bdd",
+  "generic_sha256": "97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50",
+  "source_patch_sha256": "4ca208affd1267560221023f202d0f3027b12b1cc7c6573fb378c39b846d38f6",
+  "recovery": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/archive/track-color-preview-20261017-kihi1uoh",
+  "evidence_directory": "/private/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-color-preview-da2187d6",
+  "runtime_source_base_commit": "acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99",
+  "export_source": "base commit plus scoped patch"
+}

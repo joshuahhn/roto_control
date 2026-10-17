@@ -1,6 +1,23 @@
 # ROTO-CONTROL Python handoff
 
-## Current State
+## Current requirements and entry point
+
+Use [AGENTS.md](../../AGENTS.md#change-scoped-validation) for validation requirements and [OPEN_PROJECT.md](OPEN_PROJECT.md) for the current saved project. Source checkout and saved runtime are distinct: see [CONTEXT.md](CONTEXT.md#checkout-and-artifact-scope). Local main is behind remote main; issue #15 was merged through PR #17, not left pending upstream.
+
+Reuse dated acceptance when the relevant behavior and environment are unaffected. The latest applicable result supersedes an earlier pending statement for that same case only. Historical counts, paths, connection states and Resume Steps below describe their date; they are not instructions to reopen old artifacts or repeat all checks. Relocated evidence is indexed in [diagnostics](diagnostics/README.md), including the old/new path manifest.
+
+## Unresolved limitations, not automatic tasks
+
+- This checkout's recorded physical coverage does not establish ninth-Device banking, guarded/locked TD Follow or control-page re-LEARN/recall acceptance. Revisit only when affected by the requested change or explicitly requested.
+- Non-macOS behavior, full-day reliability and USB hot-plug acceptance are not established by these records. Native MIDI receive investigation remains separate from the production external MIDI backend.
+- Reconcile local source and the saved owned Inspector candidate before source-driven live upgrades. Remote main already contains later implementation; synchronizing the dirty checkout is separate from this documentation change.
+
+## Accepted evidence to reuse within its scope
+
+- Later 2026-10-07 entries accept delayed Free LEARN ACKs, Cycle LED/LCD, tagged-COMP Follow/recall, unlocked Device metadata/SEL, LOCK selection, and the tested mapped-control/motor/isolation cases. Earlier pending statements for those cases are historical.
+- The 2026-10-11 entries record current-project reopen/controller checks and Python portability/export acceptance. Their source and artifact scopes differ; they do not establish parity of every checkout or unrestricted hardware coverage.
+
+## Historical record — first milestone (2026-10-03)
 
 First hardware milestone accepted on TD 2025.33230, 2026-10-03:
 
@@ -24,13 +41,13 @@ Value edits now auto-offer once per LEARN session. Hardware-origin callbacks are
 - Default Value mapping recall after reconnect still passes. Custom parameter binding physical LEARN and knob input passed (user confirmation); motor/LCD and reconnect recall also passed for the custom parameter target. Callback binding physical LEARN, hardware events, motor and LCD also passed; reconnect mapping recall passed for both targets. Software SetValue left callback Events unchanged. Cleanup reaped the owned process in about 40 ms. Synthetic messages are not physical acceptance.
 - Saved component remains source-file/venv dependent. Callback objects and bindings reset on extension reload; startup registration is explicit.
 
-## Known Issues
+## Historical known issues (2026-10-04)
 
 Single-target mode is physically accepted. Collection supports up to 8 knobs/8 PLUGIN buttons in software; physical acceptance is in progress. No bank/page editor, MIX or transport controls. macOS was tested; other platforms are unverified. Numeric display is a temporary firmware overlay. No full-day reliability or USB hot-plug acceptance is claimed. Disconnect before source reload; extension reinit deliberately resets connection state.
 
 TD 2025.33230 native MIDI receive defects are avoided through the external Python process, not fixed. No native MIDI operators are added to this project's user network. TD's system MIDI operators are unchanged.
 
-## Resume Steps
+## Historical resume steps (2026-10-04)
 
 Open `roto_control_python.toe`, select `roto_python`, press Connect. Learned mapping should recall automatically. In collection mode inspect each base_targets/state row: aggregate Mapped stays false until all 16 configured targets are learned. If learning again, follow the ordered README steps. Disconnect before editing source. For another target, press the corresponding demo Use this binding. Saved Binding page setup is restored after initialization; temporary direct API registrations are replaced by that saved setup. Inspect diagnostics inside base_state or controller.State.
 
@@ -417,3 +434,641 @@ User requested testing the remaining mapped-control/motor case using existing ma
 Still locked, hardware SEL switches to fractal_pop; Knob 1 changes Power, LCD identifies Power, and rotating unassigned Knob 2 leaves pixelSortV3 Lowthresh=0.75. Inspection also verifies the old Knob 1 Sortcrit value is untouched. Software Power=12 drives Knob 1 to approximately 71% and matching LCD=12; the user confirms motor/LCD, unchanged Lowthresh and LOCK. Subsequent hardware unlock is observed activating T / TRACK / PLUGIN. Evidence: device_lock_controls_physical_before.json and device_lock_controls_hardware_verification.json. This accepts these existing two-Device mappings, button feedback, motor feedback and cross-Device isolation under LOCK; ninth-Device banking and locked TD Follow remain separate gates.
 
 Restored Lowthresh=0.454312396996887 and Power=8.164682903009217, original T / T / pixelSortV3 context and Follow preference. All original COMP numeric/Menu/Toggle values and mapping configuration/identities/libraries match the pre-test snapshot; added assignment metadata is validated against saved targets. Test storage removed, docs updated/embedded with clean geometry. Generic .40.tox reload is empty/disconnected/Follow-off/unlinked and embeds current source/docs. Saved through TD as roto_control_python.75.toe and promoted canonical project/export copies. Saved startup is disconnected, live MIDI reconnects. No runtime source changes, commit, push or GitHub reply posted.
+
+### Project and JSON artifact organization — 2026-10-11
+
+User requested an obvious project entry point and proper JSON placement. Actually
+organized both original checkout and isolated candidate. Former root .toe files
+now live in projects/archive/legacy; original Backup snapshots in archive/backups.
+Root JSON/JSONL moved byte-identically to diagnostics/runtime/results; Inspector
+JSON/JSONL moved to diagnostics/inspector/results and historical Inspector tox
+to projects/components/inspector. Artifact manifest records old/new paths and hashes.
+Existing scoped diagnostics and exports retain their content; all moved hashes pass.
+
+Saved the physically tested owned Inspector candidate through live TD, with recovery,
+to projects/current/ROTO-CONTROL.toe in the original checkout and copied the saved
+artifact into the candidate. OPEN_PROJECT.md plus README/project index give one entry.
+Reopened this exact file in TD; restored Snapshot1 and Amount0.6, reopened compact
+Inspector, reconnected actual controller and verified Knob1 ACK/errors0/Rejected0.
+TD title retains its internal .1 save counter; the unnumbered file is the entry point.
+Embedded runtime carries the tested candidate; original checkout runtime source
+remains its prior Git baseline, while #15 source work is in the isolated worktree.
+Original source runtime230 tests and candidate441/Inspector248 pass; diff checks pass.
+No binary editing, artifact deletion, commit/push or inherited source modifications.
+
+### Portable Python interpreter / Connection buttons — 2026-10-11
+
+Connect/Disconnect Pulse callbacks both dispatch correctly. Connect remained at
+Opening MIDI ports because the timeline was paused and lifecycle Tick is frame-driven;
+Disconnect terminated the child even while paused. User confirmed operation after
+Play. Polling behavior is retained; portability docs now explain the timeline requirement.
+
+Interpreter resolution accepts a short PATH command, project-relative venv, home-relative
+or absolute interpreter and preserves venv entrypoint symlinks. Seven Connect regressions
+include red-before/green-after PATH and home-relative cases. Applied only this scoped
+runtime change to both original source and issue15 candidate; unrelated candidate fixes
+were not installed into the live project.
+
+Live Python is ../../.venv/bin/python. Generic export defaults to python3 instead of
+serializing this machine's absolute interpreter. The PATH Python on this machine lacks
+mido/python-rtmidi; generic users must install dependencies or configure their own venv.
+Current project's existing venv reconnects successfully with Connected/Plugin/Mapped
+true, Rejected0 and no TD errors. Mapping definitions, identities, Snapshots, parameter
+values and geometry match baseline; restoration only hydrates identity/Menu metadata
+from unchanged saved targets, while registry revision and transport readouts are transient.
+
+Original237/candidate449 runtime tests and Inspector248 pass. Generic tox live load
+passes empty/disconnected/Follow-off/no-Snapshots/no-DAT-file-dependencies/local owned
+Inspector checks. Saved through live TD to original projects/current/ROTO-CONTROL.toe
+(disconnected startup), updated identity receipt and canonical exports/roto_python.tox
+from new roto_python.portable.20261011.tox. Live is reconnected with timeline playing.
+Recovery toe/tox/source are retained in projects/archive/python-portability-recovery;
+evidence and external harness: diagnostics/runtime/results/python_portability and
+diagnostics/runtime/verify_python_portability.py in the original checkout.
+Candidate canonical artifacts remain unchanged. No commit/push or inherited source changes.
+
+## Artifact sync — 2026-10-12
+
+Current `/roto_clean_demo/roto_python` runtime, watcher callbacks, embedded MIDI helper
+and 16 principal Inspector source DATs matched merged main `2de08c9` before changes.
+No runtime reinstall was needed. Updated five embedded Markdown snapshots from that
+source (README, actions, inspector, lifecycle, portability), preserving geometry.
+Live TD 2025.33230 saved `projects/current/ROTO-CONTROL.3.toe`; canonical
+`ROTO-CONTROL.toe` matches its bytes. Refreshed `projects/current/project.json`.
+
+Exported `exports/roto_python.synced.20261012.tox` through live TD and promoted its
+bytes to `exports/roto_python.tox`. Native reload passed runtime/Inspector parity,
+local Inspector ownership, empty mappings/Snapshots, disconnected startup, Follow off,
+Python=python3 and no DAT file dependencies. Original mapping registry, Snapshots,
+parameter values and geometry match the pre-operation baseline; zero scoped errors.
+Live project remains disconnected, as found. No new hardware acceptance is claimed.
+
+Recovery copies of prior project/export/receipt and configured controller are retained
+in `projects/archive/sync-20261012-recovery`. One-off harness/results are in the system
+temporary directory `/private/tmp/roto-artifact-sync-20261012`. Original dirty local
+main/source checkout was not synchronized; other project components were not upgraded.
+No commit/push or changes to issue #6.
+
+## LEARN metadata source refactor — 2026-10-16
+
+User approved the first capability-plan step: isolate LEARN metadata without adding feedback APIs or changing queue/routing policy. Local source now uses immutable `protocol.LearnParameter` metadata and the pure `learn_parameter_message` encoder. Legacy Host, collection controls and Free LEARN share the encoder; `Controls.specs` passes Menu labels explicitly. Free LEARN retains metadata for pending offers instead of creating a temporary Control and setting session flags. Formatter introspection is removed. Existing index/hash, Menu signatures, pending-offer expiry, mapping ACK handling and target writes retain their prior paths.
+
+The checkout remains dirty local `1cb09d9`; pre-existing edits were preserved, including the interpreter changes in RotoPythonExt. Its two replacement-Control paths now also pass Menu labels. Three regressions cover formatter-independent Menu packets, the 16-label boundary at 2/16/17/24 choices, and Free LEARN versus registered metadata with no target value/Pulse writes. `python3 -m unittest discover -q` from this checkout's `src/touchdesigner` passes 240 tests.
+
+The same scoped refactor was adapted to a system-temporary source extraction of saved receipt commit `2de08c9`, retaining its later transaction/ownership fixes; its same discovery command passes 472 tests. Each baseline's before/after corpus of 163 complete LEARN messages is byte-identical, covering all physical slots, Menu sizes 2..24, numeric and button offers, Free LEARN and the legacy Host. A Python inline-module import probe also passes; this is not native TD acceptance. Regression tests are retained above; the one-off packet capture and baseline patches are in `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-learn-metadata-opmbqmh1` (`capture_packets.py`, `local-refactor.patch`, `saved-refactor.patch` and before/after JSON outputs). The saved patch is based on `2de08c9`, not the dirty root checkout.
+
+Source-only delivery: current `.toe/.tox` and their receipt remain unchanged, with saved runtime still at `2de08c9`. No native TD reload, new physical acceptance, save/export, commit or push. A future live integration must use the saved-baseline patch or an equivalent scoped application to the chosen current source, rather than install this older checkout wholesale.
+
+## Main-screen context first — 2026-10-16
+
+User selected current COMP/Device context as the first feedback use case, initially with a short indication on switching. After the concept preview, the user explicitly prioritized the main screen; Screen 8 is a fallback only if the main screen cannot meet the actual need. Reuse the native Menu Window Track/Device names before adding an overlay. No timed popup, name-spoofing mechanism or Screen 8 context output was implemented.
+
+Checked official upstream `2d43a72c6699983080f8765292498502ff08be57`: local SysEx v1.6 and Serial v1.3 PDFs and the examined Ableton/Bitwig/Logic integration files match upstream bytes. The manual's PLUGIN section identifies the Menu Window Track/Device display. SysEx `0A 16` updates the current Track name; `0B 05/06/08` supply Plugin details/end/selection. Names carry 12 ASCII characters plus NULL. No independent main-screen popup/timeout command is documented; `0A 18` addresses knob/switch controls 0..7. Serial setup/Plugin name writes are configuration operations and were not used as a live display workaround.
+
+Existing metadata/context tests passed on the dirty local `1cb09d9` source, 3+19 tests, and on the system-temporary saved-receipt `2de08c9` source with the prior scoped LEARN refactor, 3+21 tests. A further one-off host-output probe passed seven scenarios on each baseline: direct A/B/A Device selection, LEARN/touch/backlog deferral, locked explicit Device selection and unlock to the selected Track. It checks advertised Device name/index/hash against the routing Device, unchanged target values/identities for direct switching, no advertised Device activation while guarded, retained LOCK/selected-Track distinction, no forced page selection and no context `SHOW CONTROL VALUE` output. This is source-output evidence, not a firmware display emulator or physical screen acceptance. Probe source is in the system temporary directory `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-main-screen-5yib9jw7/probe_context.py`.
+
+No runtime gap requiring an additional context message was found in these cases. Documented the existing behavior and main-screen-first policy in `docs/functions/layouts.md`. Reuse the historical Device metadata/LOCK acceptance above for its original scope; it does not establish a new transient popup or exact locked Track-field rendering. The configured local TD MCP endpoint `http://127.0.0.1:13316/mcp` returned `Connection refused`, so the active project and current controller screen could not be inspected. No MCP configuration/install changes, live TD/controller I/O, runtime source changes, artifact embedding/save/export, commit or push in this step.
+
+## Main-screen physical check — 2026-10-16
+
+After the user opened TD and replied ready, the configured MCP connected successfully without configuration changes. Verified `ROTO-CONTROL.3.toe` in `projects/current`, controller `/roto_clean_demo/roto_python`, TD 2025.33230, and eight principal runtime DATs byte-identical to saved receipt source `2de08c9`. This live session contains the user's existing COMP-owned `demo_A` and `demo_B` Layouts; it is not the older pixelSort/fractal context. Captured its actual registry, controller parameters, linked COMP values/modes, Snapshots and source hashes before connection. The prior LEARN refactor was not installed or accepted by this check.
+
+Connected the existing external MIDI backend to `Roto-Control`. Firmware query returned 3.3.0, commit `eaa37b0`; SysEx API query returned 1.6. A temporary receive wrapper forwarded normal messages and removed itself after both responses; the original receive method is restored. No serial access, firmware update or MCP installation. Official 3.3.0 release notes were checked for relevant UI changes; the downloaded PDF and extraction remain in the temporary evidence directory.
+
+Physical observations confirmed by the user:
+
+- Initial normal PLUGIN view showed `demo_A` with a blank/underscore lower line, although the host Track name was `EFFECT`. A direct `0A 16` current-Track-name message did not change that line.
+- Sent the existing Track/index again using official Ableton-style `0C 04`. The user then found `EFFECT` in FUNC's Track list and selected its first button; normal main view showed `demo_A / EFFECT`. That combined sequence does not isolate the packet alone as a fix. Initial Track-field rendering is an unresolved refresh issue, not evidence that the main screen is unavailable.
+- TD `SelectLayout` to existing `demo_B` changed the main screen to `demo_B / EFFECT`, with the eight control screens normal. Returning to existing `demo_A` showed `demo_A / EFFECT`.
+- The user enabled hardware LOCK. TD observed it; an attempted TD Layout switch to demo_B raised `Unlock hardware before switching Layout`, changed no registry/context and emitted no MIDI. The user confirmed the main screen retained `demo_A / EFFECT`, then physically unlocked.
+
+This accepts native main-screen Device context and the tested A/B/A / TD-origin LOCK case. It does not accept a timed popup, divergent selected/routing Track rendering, same-Track hardware SEL switching, new LEARN behavior or unrelated motor/control behavior. Keep Screen 8 deferred. No runtime change was needed for the tested Device context; initial Track-line refresh needs a separately scoped diagnosis rather than a speculative timer/queue/transport change.
+
+Ordinary connection recall reported existing stale/Menu mapping issues and reconciled pending unmaps, temporarily changing cached active definitions. No parameter value, Pulse action or LEARN was deliberately invoked. Restored the entire original TD registry and active four-control configuration while disconnected, preserving monotonic registry revision. Verified original IDs/targets/state except revision, both linked COMPs' values and modes, all controller parameters, Snapshots, Follow=True, LOCK=False, original demo_A context and disconnected/no-process session. The eight captured runtime DAT hashes match the initial live baseline; zero scoped TD errors. Controller internal learned storage was not read back for a full comparison, and ordinary reconciliation traffic is not claimed as no hardware unmaps.
+
+Recovery/probes/results remain only in `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-main-screen-5yib9jw7`, including `live-baseline.json`, `live-source`, `hardware-versions.json`, `physical-observations.json`, `lock-guard.json`, `live-pre-restoration.json` and `live-restoration.json`. No runtime source edits, builder/reload, save/export, embedded-doc refresh, commit or push. TD remains open; canonical toe/tox and receipt are unchanged. Only these authoritative Markdown records were updated.
+
+## Different Track-group display check — 2026-10-16
+
+User requested a different group to see whether the main screen updates. Reconfirmed the same active project/controller, captured a fresh baseline at registry revision 183, and connected the existing backend. Within the existing demo_A Layout, created one temporary second Track named `GROUP TEST` and renamed its automatically created empty Device `TEST DEVICE`. No targets or mappings were added. TD `SelectTrack` selected that Track at index 1; the user confirmed the main screen immediately showed `TEST DEVICE / GROUP TEST`, without FUNC. Selecting the original index-0 Track immediately restored `demo_A / EFFECT`, also confirmed without FUNC. This establishes normal distinct Track-group updates in both directions on firmware 3.3.0 / API 1.6; it does not resolve or reclassify the earlier initial-connection Track-line issue.
+
+Removed the temporary Track via the public API, then restored the complete fresh baseline while disconnected. Registry/configuration matches except monotonic revision, original four controls/IDs are restored, controller parameters, linked COMP values/modes, Snapshots, Follow, LOCK and original context match, and eight runtime DAT hashes are unchanged. No target value or Pulse/LEARN action was invoked; no new source code or artifact save/export. TD remains open with the original disconnected session. The normal recall/reconciliation limitations from the previous physical check still apply.
+
+Fresh baseline, fixture IDs, scripts and restoration result are retained only beside the previous temporary evidence as `group-baseline.json`, `group-fixture.json`, `group-live-source`, `group-pre-restoration.json`, `group-restoration.json` and `group-physical-observations.json`. Authoritative Layout documentation was updated; Screen 8 remains unused.
+
+## Parameter-page caption prototype, three physical round trips — 2026-10-17
+
+The user chose the TD custom-parameter page belonging to the currently mapped hardware controls, rather than TD's open parameter tab. Reconfirmed `ROTO-CONTROL.3.toe` and the same controller/backend/firmware, capturing a fresh disconnected baseline at registry revision 197. The acknowledged controls after normal recall were Knobs 1–3, targeting demo_A Amount, Steps and Mode, all on the TD `Demo` page. A manual probe read those actual bindings and sent `Demo` with current-Track-name command `0A 16`, without changing the software Track name. The user confirmed main screen `demo_A / Demo`, then corrected the FUNC-list observation to `EFFECT`. Thus the tested main-screen caption and Track-list name can differ; the correction supersedes the preceding report of `Demo` in that list.
+
+At the user's request for repeated testing, created an empty temporary TD custom page `Controls` on demo_A. The dedicated custom-parameter tool reported success without creating an empty page; a documented `appendCustomPage` call created it instead. No parameter moved during that failed setup attempt. Each test step moved only the same three acknowledged parameters between `Controls` and `Demo`, derived their common page name, and manually sent that caption. Three complete round trips, six individually confirmed screen states, passed: `demo_A / Controls` then `demo_A / Demo` each time, with normal eight control screens and no FUNC operation. Each step checked matching mapped slot/target identities, unchanged linked-COMP values/modes and software Track `EFFECT`. This changes TD parameter-page metadata, not hardware control-page assignments. It does not accept automatic page feedback, hardware arrow-page recall, mixed/callback targets, mode/selector recovery, a timed popup or the earlier initial Track-line refresh issue. No new LEARN or business parameter/Pulse writes were invoked; ordinary connection reconciliation has the same limitations recorded above.
+
+Restored all original parameter page memberships and order, verified the temporary page was empty before destroying it, and sent the real Track caption `EFFECT`; the outbound queue drained before Disconnect. Restored the complete fresh software baseline except monotonic registry revision 203. Original four control definitions/IDs, controller parameters, linked-COMP values/modes, Snapshots, Follow=True, LOCK=False and demo_A context match; eight principal runtime DAT hashes are unchanged. TD remains open, disconnected with no MIDI child. Native scoped errors are zero. Caption output draining is transport evidence, not an additional physical observation after restoration.
+
+Temporary evidence remains in `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-main-screen-5yib9jw7`: `page-baseline.json`, `page-live-source`, `page-label-probe.json`, `page-cycle-state.json`, the page-step/restoration scripts, `page-presentation-restoration.json`, `page-pre-restoration.json` and `page-restoration.json`. Runtime remains saved source `2de08c9`; no production page-feedback implementation, runtime source edit/reload, save/export, embedded-doc refresh, commit or push. Only the authoritative Layout documentation and this handoff were changed for this result; Screen 8 remains unused.
+
+## Automatic parameter-page hint — 2026-10-17
+
+After the user requested the next step, implemented the agreed brief main-screen hint. `Controls.mapped_page` reads the public TD parameters of acknowledged slots and returns a common COMP/page only when unambiguous. `RotoPythonExt` sends that page name through existing `0A 16`, then restores the real Track name after a two-second deadline on the next safe Tick. Different pages/COMPs, callback/action targets, invalid targets and empty mappings use the Track name. Existing LEARN/touch/LOCK/restore/context/backlog guards defer output; existing queue fences remove old hints. Native Device/Track announcements and control-page changes invalidate the hint cache. No new timer, UI parameter, DAT, queue adapter or Screen 8 output; no changes to target writes, names, FUNC metadata or wire identities.
+
+Preserved the dirty `1cb09d9` checkout and separately adapted only this delta to a fresh system-temporary `2de08c9` extraction. Nine regressions cover deadline/restoration and duplicate suppression, native page metadata changes, matching versus rejected ACKs and partial readiness, mixed pages/COMPs, callback/invalid targets, empty/same-name page recall, guards, session/selection replay and queued-hint removal by the existing fence. `python3 -m unittest discover -q` passes 249 tests on the final local runtime source and 478 on the saved-baseline candidate. The reusable [saved-baseline patch](upgrade/page_caption_2de08c9.patch) includes its runtime changes and regression file under the saved source's `tests/runtime` layout; reverse-apply check passes against that candidate. It targets `2de08c9`, not this older dirty root checkout.
+
+Verified the active project and disconnected baseline at revision 203 before loading three candidate DATs and reinitializing the extension. Native parameter-page reads resolved `Demo`; the registry, values/modes and other five captured DAT hashes were preserved. The user physically confirmed TD COMP Follow from demo_A to demo_B and back: each main screen showed `Demo`, then restored `EFFECT`, with normal control screens and no FUNC/LEARN/knob action. A hardware right/left arrow-page round trip likewise re-displayed `Demo` after the original three knob mappings recalled, then restored `EFFECT`. Native output observations recorded approximately 2.00–2.30 seconds between those messages, reflecting the deadline and subsequent safe Tick. Exact guarded/mixed-target physical rendering, initial Track-line refresh, new LEARN and unrelated motor behavior were not accepted by these checks. Ordinary connection reconciliation retained the previously recorded stale/Menu limitations.
+
+Removed the temporary outbound observer and restored the complete original software configuration except monotonic revision 221. Original four control definitions/IDs, controller parameters, linked-COMP values/modes, Snapshots, Follow=True, LOCK=False and demo_A context match; no MIDI child remains. Only the three intended runtime DAT hashes differ from the baseline. Refreshed the existing embedded Layout documentation without rebuilding/repositioning the network. The saved-baseline exporter produced a generic tox that reloaded empty/disconnected with no user mappings, Focus/ownership links or Snapshots, embedded helper/docs, `Python=python3` and matching runtime hashes. Scoped native errors are zero.
+
+Saved through live TD and promoted `projects/current/ROTO-CONTROL.toe` and `exports/roto_python.tox`; [project.json](projects/current/project.json) records the base source, patch hash, runtime hashes and artifact hashes. TD's numbered-save convention produced `ROTO-CONTROL.page-caption.20261018.toe`; that suffix is the resulting save counter, not a test date. Recovery copies of the prior canonical artifacts/receipt and original runtime sources are in `projects/archive/page-caption-20261017-recovery`. TD remains open and disconnected. The prior LEARN metadata refactor is still source-only and was not installed by this change. No commit or push.
+
+One-off source extraction, probes and results remain in `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-page-feedback-m_1qjypu`, including `baseline.json`, `candidate-native.json`, `automatic-caption.json`, `physical-follow-acceptance.json`, `physical-page-acceptance.json`, `all-caption-events.json`, `restoration.json`, `generic-export-validation.json` and `save-result.json`. The new caption behavior is documented in [Layouts](docs/functions/layouts.md#main-screen-context). The source patch is retained because the saved runtime baseline is newer than the checkout; the one-off installer/verifiers are not added to the repository.
+
+## Caption PR and documentation correction — 2026-10-17
+
+Created [PR #23](https://github.com/joshuahhn/roto_control/pull/23) from fork main `9f02879` in an isolated worktree, retaining the original dirty checkout. Its source passes 478 tests; the caption runtime is identical to the tested local candidate. The PR contains source/tests/docs and the owner-provided official guidance. Remote canonical artifacts still have their older issue-15-era receipt, so their update would include a separate pre-existing artifact-sync delta. They are excluded from this source-only PR. Local updated artifacts and recovery remain intact; unpublished artifact-preparation branch `feat/td-page-caption` was retained, not rewritten or deleted. The published branch is `feat/td-page-caption-source`.
+
+PR preparation found that the earlier local Layout snapshot had also embedded older ownership/Follow documentation from the dirty checkout. Kept latest-main text, inserted only the caption section, and refreshed the local embedded snapshot/export. Runtime and physical acceptance are unchanged. The refreshed generic export reloaded empty/disconnected, and live TD saved the local project at numbered counter `20261019`; canonical artifact hashes were refreshed in its receipt. That counter is not a date. No other function-document snapshots were replaced.
+
+## LEARN metadata saved-runtime integration — 2026-10-17
+
+After PR creation, the user explicitly selected LEARN metadata integration as the next step. Composed the previously tested scoped refactor over caption PR source `e6a5c2f`, preserving current ownership/transaction code and caption behavior. Updated only protocol, collection_protocol, controls, free_learn and RotoPythonExt DATs. Immutable `LearnParameter` metadata and the pure encoder now serve registered controls, Free LEARN and the legacy Host; formatter introspection and the temporary session-enabled Control are removed. Existing index/hash/Menu signatures, multiple pending offers, matching ACK handling, target writes and routing policy remain on their existing paths.
+
+Final combined source passes `python3 -m unittest discover -q`: 481 tests. A fresh before/after corpus of 163 complete LEARN messages is byte-identical. With the real controller disconnected, native TD captured metadata from its four actual registered controls and four isolated FreeLearner offers reading the same native parameters; all eight packets match before/after. Temporary send callbacks were restored immediately, and the isolated learner had no real Inspector/status or session writes. Native imports share the same `LearnParameter` class, and pending metadata has no connected/session flags. This is native encoding/import evidence, not hardware LEARN/ACK acceptance. No MIDI connection, LEARN operation or parameter/Pulse write was invoked in this integration; prior physical behavior is reused only where packet semantics are unchanged.
+
+Native reload preserved the registry at revision 221, all original four definitions/IDs, controller parameters, linked-COMP values/modes and Snapshots. The eight principal runtime hashes match the combined candidate, with only the intended five changing from the fresh caption baseline; scoped errors are zero. Generic tox reloaded empty/disconnected with no user mappings/Focus/ownership/Snapshots, embedded helper/docs, `Python=python3`, and matching runtime hashes. The existing caption page resolver still reads the native `Demo` page; its nine source regressions pass in the combined suite.
+
+Saved through live TD and promoted local canonical project/tox; receipt now records caption source `e6a5c2f28d3d15a47f6cdbdec8ad38ae295b2b5d` plus [the reproducible LEARN source/test patch](upgrade/learn_metadata_e6a5c2f.patch). The reverse-apply check passes against that candidate. The actual numbered save is `ROTO-CONTROL.page-caption.20261020.toe`, again a counter rather than a test date. Recovery of the preceding caption artifacts/receipt/runtime is in `projects/archive/learn-metadata-20261017-recovery`. TD remains open and disconnected, with no MIDI child. This LEARN integration is local and not part of caption PR #23; no second PR or LEARN integration commit was created.
+
+One-off source extraction, corpus captures and native scripts/results remain in `/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-learn-integration-r84fm_j_`, including `baseline.json`, `packets-before.json`, `packets-after.json`, `native-packets-before.json`, `native-packets-after.json`, `candidate-native.json`, `generic-export-validation.json` and `save-result.json`. The retained patch is needed to reproduce the local saved runtime from its published caption baseline without replacing the older dirty root source wholesale.
+
+## Combined caption/LEARN PR — 2026-10-17
+
+The user clarified that caption and LEARN metadata should be delivered in one PR. Added the scoped LEARN source/test delta to the clean `feat/td-page-caption-source` worktree at `e6a5c2f`, committed and pushed `0ed7d975d17a50c193c134cffac97ea63a6ea976`, and updated the existing [PR #23](https://github.com/joshuahhn/roto_control/pull/23) title/body to cover both changes. No second PR was created, and PR #23 remains open against main. GitHub reports mergeable/clean with no configured status checks; the PR is linked to this T3 thread.
+
+Final combined branch discovery passes 481 tests. Its eight principal runtime hashes match the local saved receipt, and the canonical project/tox still match their recorded artifact hashes. Rechecked the retained 163 source packets and eight native TD packets: each before/after pair remains byte-identical. `git diff --check` passes for the complete PR diff. No new native TD, MIDI or hardware acceptance was performed while packaging the PR; the earlier caption physical acceptance and LEARN native encoding/reload evidence retain their stated scopes.
+
+The PR contains source/tests/docs only, including nine caption and three metadata regressions. Older checked-in artifacts and their receipt remain unchanged. The original dirty checkout, current local artifacts, reproducible patches and recovery copies are preserved; only this current overview/handoff were updated locally to reflect the combined PR.
+
+## Generic export sync preparation — 2026-10-17
+
+The user selected generic tox and version receipt synchronization, leaving demo toe synchronization out of scope. Verified the active TD project and read the receipt-designated `/roto_clean_demo/roto_python`: all 19 present runtime/helper DATs match PR source `0ed7d97`, with the four legacy outer-Control/Lister callbacks absent. The currently selected `/roto_control_python/roto_python` is an older separate instance and was observed only.
+
+Loaded the local generic tox in an isolated root fixture. Its 19 runtime/helper DATs match the combined PR; only the embedded README needed refresh. Embedded source Markdown on the detached clone, exported through live TD and reloaded the new tox. All 19 runtime/helper hashes and ten documentation snapshots match `0ed7d975d17a50c193c134cffac97ea63a6ea976`. Reload is empty/disconnected with Follow off, Python=python3, embedded helper, no DAT file dependencies, user mappings, Focus/ownership links or Snapshot records, and zero scoped errors. Quiesced/removed the fixture and verified original controller storage, source DAT hashes and demo parameter values/modes unchanged. No hardware/MIDI or new physical acceptance was invoked.
+
+Promoted the native-saved tox to local `exports/roto_python.tox` with SHA-256 `509911ddcb0d23db9c8db3aa4706140c1475cb64dad4bcd975d659aff125515d`; added `exports/roto_python.json` and an export index. Updated the working-project receipt's generic hash/receipt reference without changing the demo toe bytes. Previous local tox/project receipt are retained under `projects/archive/generic-export-20261017-jh0ke_d6`.
+
+The same generic tox, adjacent receipt and scoped docs are prepared in the existing PR #23 worktree. No commit or push in this step; published PR HEAD remains `0ed7d97` and source-only. The 481-test source result is reused because runtime/scripts/tests did not change. Receipt JSON, artifact SHA-256, all source/documentation hashes and diff checks pass. One-off native script/result, exported tox, prior PR tox and draft updated PR body remain in system temporary `roto-generic-sync-4hp7mefd` and `/tmp/roto-combined-pr-23-body.md`.
+
+## Generic export PR update — 2026-10-17
+
+User requested the next step after the prepared generic export sync. Committed the five scoped export/receipt/index/context/handoff files as `acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99` and pushed to the existing PR #23 branch, without rewriting history or creating another PR. Updated the PR body to include the distributable generic artifact and its broader embedded-runtime sync scope. GitHub readback confirms the new HEAD and open PR; it has not been merged into main.
+
+Rechecked receipt JSON, artifact SHA-256, 19 runtime/helper source hashes and ten Markdown snapshot hashes before commit; staged and complete-PR diff checks pass. Runtime/scripts/tests/demo project and its checked-in receipt were not changed. Reuse the previous 481 source tests and scoped native export/reload evidence; no new TD/MIDI/hardware operation was needed for this publication. The PR worktree is clean, and local dirty-checkout edits/artifacts/recovery remain preserved.
+
+## Track group palette colors — 2026-10-17
+
+Implemented separately on uncommitted `feat/td-track-colors` at
+`/Users/huihongnin/.t3/worktrees/roto_control/td-track-colors`, based on `acc7a5c`.
+Its HANDOFF records the detailed source/native/hardware scope. The Layout-page
+Track color menu and `SetTrackColor` API use the official 83-entry palette;
+old records default to 0. Source tests pass 486, scoped Layout tests 26, and
+native menu/guard/configured/generic reload checks pass with zero scoped errors.
+The user physically confirmed FUNC red/white EFFECT and purple/white COLOR TEST,
+then both main-screen names/colors through hardware A/B/A with normal Knob 1–3
+screens. Arbitrary RGB and all palette entries were not physically tested.
+
+Only three DATs were installed in `/roto_clean_demo/roto_python`. Removed the
+temporary Track/colors and disconnected afterward. Original definitions, four
+control IDs, controller parameters, Follow, LOCK and Snapshots are preserved.
+Before restoration, demo_A.Amount differed from 0.4 to 0.44924616981016907.
+The user confirmed manually changing it during testing. Kept that value/modes
+and the matching catalog cache.
+Do not claim unchanged target values for the whole physical session.
+
+The open project remains unsaved with the candidate runtime. Saved canonical
+toe/tox/receipts, PR #23 and this checkout's runtime sources remain unchanged.
+Configured recovery/candidate tox, an empty generic candidate and one-off
+evidence are in system temporary `roto-track-color-sgtyqd5s`. The restored
+configured candidate is `restored-track-color-candidate.tox`; generic SHA-256 is
+`d56ea7cea4b721012c8ef4bcf159c4783661f2d3046b922e1b6b5067c7948cb1`.
+No commit, push or PR publication was performed for this feature.
+
+## Track color save and export — 2026-10-17
+
+Saved the accepted Track palette feature through live TD after the user requested
+the next step. The active project and 19 runtime/helper source hashes matched
+`acc7a5c` plus the uncommitted feature. Original four control IDs, registry,
+controller parameters, Follow, LOCK, Snapshots and current linked-COMP values/modes
+are preserved. Amount remains the user's manually edited 0.44924616981016907.
+The separate old controller was fingerprinted and remains unchanged.
+
+Refreshed ten Markdown snapshots from the feature worktree, exported the generic
+tox through TD, then reloaded it. It has 83 color choices with default 0, Layout
+11 fields and Device 6 fields, empty mappings/Focus/ownership/Snapshots, Follow
+off, Python=python3, embedded helper, no DAT file dependencies and zero scoped
+errors. All 19 runtime/helper and ten documentation hashes match the feature
+source. The temporary export fixture was quiesced and removed before saving.
+No new hardware operation or full main-project restart was performed. Reuse the
+same-candidate 486 source tests and prior physical red/purple A/B/A acceptance.
+
+TD saved `ROTO-CONTROL.track-colors.20261018.toe` in the original project's current
+folder; the numeric suffix is TD's incrementing save counter. Promoted its bytes
+to local canonical `ROTO-CONTROL.toe`, SHA-256
+`030e2fee006ea9b3e77a8c00fecf65f0cb9ff4625386884f6e3c372476b46ade`.
+Updated the local project receipt and both local/feature-worktree generic tox
+and receipts. Generic SHA-256 is
+`b28b0f3ba3d045d7c6f58d286052dc92e303bd3c44aaea869ab9b538d56d1fe0`.
+Receipts identify source base `acc7a5cb7fbba234dc2cef80fcf880c19c3d5a99` plus
+`upgrade/track_colors_acc7a5c.patch`, SHA-256
+`aa3ede4893dee6ead9809ef6d9cb7708f7419bc216ecae92b13839fd9dd55133`.
+The reproducible patch includes three runtime files, Layout docs, regression
+tests and the affected existing native verifier count. It excludes artifact and
+receipt bookkeeping; content hashes identify the actual embedded runtime/docs.
+
+Recovery is retained in the original checkout under
+`projects/archive/track-colors-20261017-iiqv8cgr`, including prior canonical
+artifacts/receipts and the configured live controller before doc refresh.
+One-off scripts/results are in system temporary `roto-track-color-save-a5_opi_s`,
+including `live-baseline.json`, `save-result.json` and `promoted.json`.
+The open TD project remains saved/disconnected with no MIDI child. This save
+supersedes the earlier unsaved-candidate note. This feature remains uncommitted;
+PR #23 and its clean worktree were not changed. The feature worktree's checked-in
+demo toe/receipt retain their independent older version; only its generic export
+was synchronized. The original dirty checkout's runtime sources remain intact.
+
+## Track color BG preview — 2026-10-17
+
+Added a native read-only RGB custom parameter, `Track BG preview`, beside
+`Track color` on Layout. Three reactive expressions derive normalized RGB from
+the existing palette labels through a pure setup helper. No preview callback,
+queue or MIDI message was added. The menu remains the sole color-setting input;
+preview components cannot be edited in TD's UI. Index 47's invalid `81 BO 4A`
+appears in both official SysEx v1.6 Appendix A page 33 and Serial v1.3 Appendix A
+page 27. Its preview is explicitly unavailable/disabled, with correction tracked
+in https://github.com/joshuahhn/roto_control/issues/24. It remains selectable as
+a hardware palette index.
+
+Source passes 487 tests, including a palette-to-normalized-RGB regression for
+default/red/purple, invalid indices and unavailable 47. Native TD checks pass
+for actual menu callbacks, red/purple Track switching, read-only/expression flags,
+unavailable 47, repeated setup and configured tox reload. Layout now has 14
+component fields, including the RGB triplet; Device remains 6. Original registry
+definitions, source DATs and demo values were preserved during isolated checks;
+only the monotonic registry revision advanced from 236 to 238. The fixture was
+quiesced and removed. Physical color acceptance from the unchanged packet path
+is reused; preview checks did not open MIDI.
+
+Installed only the updated setup DAT in the intended live controller, preserving
+all four control IDs, original controller parameter values, registry definitions,
+Snapshots and target values/modes. Saved through TD as
+`ROTO-CONTROL.track-preview.2.toe`, then synchronized local canonical toe and
+root/feature-worktree generic tox with receipts. Generic reload is empty and
+disconnected, default palette 0 and its read-only preview, Follow off, embedded
+helper, Python=python3, no external DAT files or mappings/ownership/Focus/Snapshots,
+19 matching runtime/helper hashes, ten Markdown hashes and zero scoped errors.
+No full main-project restart is claimed.
+
+Local project SHA-256:
+`68420323eeddd934027da07794c9d603acaffe68af4a8ce8176798861df73bdd`.
+Generic tox SHA-256:
+`97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50`.
+The updated reproducible patch over `acc7a5c` includes runtime, Layout docs, both
+regression files and the affected verifier; SHA-256:
+`4ca208affd1267560221023f202d0f3027b12b1cc7c6573fb378c39b846d38f6`.
+Recovery is retained in original checkout
+`projects/archive/track-color-preview-20261017-kihi1uoh`; one-off native/install/
+save/promotion evidence is in system temporary `roto-color-preview-da2187d6`.
+The open TD project remains saved/disconnected, current Amount is preserved,
+and the old controller is unchanged. This supersedes the earlier artifact hashes.
+The feature worktree's generic export is updated; its checked-in demo toe and
+receipt retain their independent older version. PR #23 was already merged on
+GitHub when checked; it was not merged by this work.
+
+## Track color source and generic publication — 2026-10-17
+
+Committed Track color, read-only background preview, regression tests and scoped
+native evidence as `0254000d1f3810fea47713043c8951f6f1d098ee`. Generic receipts
+now pin all 19 runtime/helper and ten embedded documentation hashes to that
+commit, replacing the temporary base-plus-patch description. The source patch
+is retained in local recovery rather than duplicated in the published source.
+The generic tox keeps SHA-256
+`97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50`.
+The local canonical project receipt also identifies the same committed source;
+its saved bytes and current values were not changed while packaging publication.
+Checked-in demo project/receipt retain their separate earlier baseline.
+The 487 source tests and scoped preview/native/export/physical evidence above
+are reused, because publication does not alter runtime or UI behavior.
+
+## Track color PR and next capability check — 2026-10-17
+
+Published https://github.com/joshuahhn/roto_control/pull/25 against main. Source
+commit is `0254000d1f3810fea47713043c8951f6f1d098ee`; export/receipt commit and PR
+HEAD is `0ac1adab330f452d238d8159949f19662c9f8fb2`. GitHub readback reports OPEN,
+MERGEABLE and no configured status checks. The worktree is clean and the PR is
+linked to this thread. PR #23 had already been merged independently; this work
+did not merge it. Palette 47's documentation correction is deferred in issue #24.
+Source/native/export evidence above remains the final relevant evidence; no new
+hardware operation or full project restart was performed during publication.
+
+Began the next meters capability review without changing runtime or hardware.
+Official SysEx v1.6 Appendix B.1, PDF pages 34-35, assigns channel-16 CC65-80 to
+eight stereo MIX meters; Appendix B.2's PLUGIN table does not list meters.
+Section 4.11, PDF page 31, supplies MIX thresholds via 0C 0B. Ableton reference
+`_get_meter_changed_listener` sends ordinary CC values and `_setup_meters` sets
+MIX thresholds. This documents MIX support, not proof that firmware refuses or
+renders those levels in PLUGIN. A concrete TD audio/CHOP use case and mode choice
+remain undecided; no meter stream, mode change or queue refactor was added.
+
+## Meter mode and real audio capability acceptance — 2026-10-17
+
+This supersedes the preliminary meter note above. The user supplied
+`/roto_clean_demo/demo_au_file_null`, `demo_au_devin_null` and `audioAnalysis` and
+authorized exploration. Verified active project `ROTO-CONTROL.track-preview.2.toe`
+and controller `/roto_clean_demo/roto_python`; its 19 runtime/helper DAT hashes
+match source commit `0254000d1f3810fea47713043c8951f6f1d098ee` throughout. The old
+controller was not used. Controller readback returned firmware `3.3.0 eaa37b0`
+and SysEx API `1.6`; MIX refresh returned All Tracks / Audio / Level / Mute.
+
+Initial channel-16 CC65/66 patterns produced no bars in either PLUGIN or MIX.
+Adding only the reference integration's `0C 0C` meter states, eight values of 1,
+also produced no bars in MIX. A complete reference MIX initialization then sent
+zero send tracks, current Track metadata and selection, `0C 0B` thresholds
+87/113 and the same meter states. The user now observed left/right alternating
+104/24 bars in MIX. After switching to PLUGIN, the same bounded CC pattern still
+showed only the normal parameter/value. This supports native VU display in MIX
+and no native VU display in the tested PLUGIN view on this firmware. The exact
+necessary initialization packet within the successful bundle was not isolated;
+the earlier failures are not evidence of a hardware or queue defect.
+
+Official Ableton `_send_meters_state` supplies `0C 0C`, absent from the published
+SysEx v1.6 command list. Its local source blob
+`58a7d08e173959b3394691c0f46f8989bc887502` matched upstream via GitHub API during
+this check. Existing external MIDI ownership and JSON queue were reused; no
+transport, framing or PLUGIN routing guards were changed.
+
+Real audio probes read existing null CHOP sample arrays at 10 Hz, compute RMS,
+and map -60..0 dBFS to meter CC values 0..127. The user confirmed stereo file
+bars followed the audio and mono input bars rose/fell together while speaking.
+Observed file RMS ranged 0.01486..0.53439 left and 0.01330..0.47477 right; mono
+input ranged 0.000620..0.022297. This establishes these supplied CHOP sources
+through the temporary reader, not a packaged production meter feature, meter
+calibration or opacity/threshold control acceptance. Audio parameters, playback,
+gain, outputs and network topology were not changed.
+
+Layer Mix opacity needs a per-layer 0..1 adapter; COMP/base is not assumed to
+have a universal opacity parameter. Existing parameter bindings require custom
+parameters, so a tool COMP's custom proxy or existing callback route is preferable
+to loosening all target guards. For audioAnalysis, trace the selected detector's
+pre-comparison level. The observed kick path subtracts `Kickthresh` at `math8`
+from `math2`, before `limit4`, `logic1` and `trigger1`; `null_kickSignal` is the
+trigger output. MIX color thresholds apply globally, not as independent threshold
+markers per meter. Adjusting existing PLUGIN threshold mappings while showing
+native MIX bars is not established. A small PLUGIN numeric level/threshold
+prototype is an alternative; no such feedback or new MIX input backend was built.
+
+All temporary streams were bounded to 120 seconds, then explicitly stopped and
+cleared after observation. A five-second receive trace for version/refresh
+readback restored the original trace method. User confirmed PLUGIN and its
+normal screen before Disconnect closed/reaped the MIDI child. Connection-time
+mapping reconciliation had removed local Button 1 registration; disconnected
+restore reinstated all four baseline control IDs. Final native audit confirms
+registry equality except monotonic revision 238 to 257, identical controller
+parameters and demo_A/B values/modes/expressions, unchanged Snapshots and source
+hashes, no pending bytes or probe attributes, and preserved audio nodes. This
+restores local definitions, not a readback claim about hardware learned storage.
+
+One-off scripts, recovery tox and detailed results remain only in system temporary
+`roto-meter-mode-eprqawbp`. No runtime source edits, new operators, live project
+save/export, serial writes, firmware changes, source test run or new PR occurred.
+Documentation records the scoped result; embedded snapshots can refresh during
+the next authorized save/export. The TD project remains open and disconnected.
+
+## One-knob MIX threshold and motor prototype — 2026-10-17
+
+User selected MIX after clarifying that MIX can control parameters as well as
+display meters. No PLUGIN numeric-feedback probe was started. Active project and
+controller remained `ROTO-CONTROL.track-preview.2.toe` and
+`/roto_clean_demo/roto_python`, with the same 19 source/helper hashes pinned to
+`0254000d1f3810fea47713043c8951f6f1d098ee`. Recovery and all one-off scripts/results
+are in system temporary `roto-mix-threshold-boeytys3`.
+
+A temporary receiver reused the existing external MIDI process and output
+queue, leaving the production PLUGIN parser and readiness guards unchanged.
+It first requested MIX refresh and armed only after the actual All Tracks /
+Audio / Level / Mute response. The single displayed MIX track was temporarily
+named `Kick thresh`, without changing the TD Layout registry. Knob 1 CC12/44
+mapped 14-bit input to `audioAnalysis.Kickthresh` over 0..0.6 only while touch52
+was on. Release discarded incomplete pairs; a pair older than 250 ms was not
+combined. Session, ingress token, routing context, owner, parameter mode,
+view and queue guards stopped the probe. Its one-track MIX selection was
+consumed locally rather than routed into PLUGIN Track selection.
+
+Only changes to the threshold drove motor output, deferred while touched.
+The meter read `audioAnalysis/math2['low']`, the actual pre-comparison low-band
+level, and used the same 0..0.6 scale. CC65/66 duplicated that mono level into
+the first stereo meter. The single visible lane's yellow/red points followed
+the threshold in adjacent 7-bit bins; those color thresholds are global and
+this does not establish independent per-lane color thresholds. The control
+text showed `T.209 K-`, where K- truthfully indicates disabled Kick detection.
+`Kickactive` and `Audioout` remained false; no detector or audio routing was
+enabled and actual kick-trigger behavior was not accepted.
+
+User-observed physical results:
+- Initial motor moved to about 35%, T.209 K- and simultaneous meter bars passed;
+  TD recorded zero business writes before physical touch.
+- Turning Knob 1 changed the real threshold from 0.209028 to
+  0.26174693279619116, with matching T.262 and continuing meters. There were
+  196 changed parameter writes during the user's touch gestures. Original
+  demo_A/B values remained unchanged.
+- A temporary software edit to 0.450 moved the motor to about 75%, showed
+  T.450 K- and kept live meters. Hardware input writes during this hands-off
+  motor test were zero.
+- Restoring the user's 0.26174693279619116 returned the motor to about 44%,
+  T.262 and normal meters. User then confirmed normal PLUGIN screen return.
+
+Streams were bounded, including a fixed maximum overall deadline, and stopped
+on PLUGIN entry. The original receive method was restored with no instance
+override left behind. Disconnect closed/reaped the MIDI child; pending output
+is empty and the probe attribute is removed. Disconnected local-config restore
+preserved all four original control IDs and registry definitions except the
+monotonic revision 257 to 271. All controller parameters, demo_A/B
+values/modes/expressions, Snapshots and source hashes match baseline. The only
+audioAnalysis parameter difference is the user's intentional threshold edit;
+the agent's temporary 0.450 is not retained. Hardware learned storage was not
+read back or re-LEARNed.
+
+Five targeted temporary decoder tests passed for untouched motor messages,
+full-range input in either CC order, release and stale-pair handling, wrong
+channel/control and invalid data. This is prototype evidence, not a production
+MIX regression suite. No production source, new TD operators, canonical toe/tox,
+embedded docs, commit or PR was changed. The TD project remains open and
+disconnected. A production MIX adapter/configuration remains future work.
+Scoped native error checks for the controller, `audioAnalysis/math2` and
+`audioAnalysis/math8` returned zero errors/warnings after cleanup.
+
+## Actual Kick output acceptance and MIX configuration decision — 2026-10-17
+
+On user instruction, extended the bounded one-knob probe to temporarily enable
+`audioAnalysis.Kickactive`. Its bound child `kick.Active` selected
+`null_kickSignal` through `switch1` into `Kickdrum`; the public output was
+`out1['kick']`. Trigger peak length was 0.1 seconds. Hardware K1 was derived
+only from observed real output, with a 0.2-second display hold; it was not
+inferred from a level/threshold comparison. Eight temporary input/indicator
+tests passed. User confirmed K0/K1 alternation, T.262 and normal native meters.
+
+The high-threshold control set Kickthresh to 0.600 temporarily. User still saw
+K1. Native records explain this correctly: pre-threshold level reached
+0.61..0.70, with positive `math8` difference, gate=1 and actual kick output=1.
+There were 63 observed pulse rises in that high phase after settling, and
+367 in the full bounded probe. This was not a valid no-trigger condition.
+Meter scaling at 0..0.6 clipped these peaks; production meter range must be
+independent of the control range. Threshold subtraction matched level minus
+threshold within 5.37e-8. One comparison of upstream Kickdrum versus public
+out1 differed within the first 187 samples after enable, with no further
+mismatch through the final 6552 samples; display authority remained out1.
+This records an initialization/read-timing limit, not a palette defect claim.
+
+The bounded timeout restored both the agent's temporary threshold and Kickactive.
+User confirmed normal PLUGIN return, then Disconnect closed/reaped the child.
+Final audit preserves Kickthresh=0.26174693279619116, Kickactive=False,
+Audioout=False, all parent writable audioAnalysis parameters and child binding
+modes/expressions, controller parameters, demo_A/B values, Snapshots, four
+original local control IDs and 19 source/helper hashes. Registry definitions
+match baseline except revision 271 to 283. Temporary receiver/probe and pending
+output are gone. Scoped native checks for the controller, Kickdrum, trigger1
+and out1 returned no errors/warnings. No saved toe/tox or production source
+changed. Scripts, recovery and detailed results are in system temporary
+`roto-kick-trigger-_axhupqr`; this is a one-off acceptance probe.
+
+User explicitly selected the production design: an independent MIX page with
+eight slots, each configured with its own control target and meter source.
+It must not reuse/switch with the current Device's PLUGIN assignments.
+Implement MIX All Tracks/Level first; preserve PLUGIN routing/LEARN, existing
+transport, session/epoch fences and value/motor ownership. AudioAnalysis and
+later Layer Mix opacity are the concrete uses. Meter range is separate from
+control range, and native yellow/red thresholds are global across MIX meters.
+The production adapter, saved configuration/UI, source/native/physical checks,
+generic tox/receipts and PR remain work to do. Root checkout stays dirty and
+its existing edits must be preserved; PR #25 was found already merged on GitHub
+at 2026-10-16T18:55:15Z, not merged by this work.
+
+## Native SEL/FUNC MIX mapping design — 2026-10-17
+
+User chose to retain native SEL/FUNC and design each view's mappings first.
+The [design proposal](docs/plans/mix-view-mappings.md) replaces the earlier
+All Tracks/Level-only delivery assumption. Eight independent MIX slots each
+own optional Level/Pan/Send A–L and boolean targets plus a separate meter source.
+SEL projects one function across slots; FUNC projects the selected slot's
+same target definitions across controls. No duplicate Focus assignments or
+parameter-value snapshots are needed. Native function names remain visible.
+
+Read SysEx API v1.6 sections 4.1–4.11 / Appendix B, the official user manual's
+printed pages 8–9, and Ableton reference code. Focus sends start after Level/Pan:
+the specification says offset CI=08 exposes Send G onward and send-name index 06.
+The inspected Ableton formula treats its stored page value differently; actual
+second-page readback must be captured before that route is enabled. Reference
+Focus metering uses only meter 1 for the selected track; this is a proposed
+placement, not new physical acceptance. Focus buttons remain unassigned until
+their actual semantics are established. Unsupported channel families/pages
+cannot fall back to a Level or PLUGIN target.
+
+Reviewed the clean `td-track-colors` worktree at `0ac1ada` / source `0254000`
+for the existing receive/send seams. MIX needs its own business routing before
+the PLUGIN Layout/FreeLearner path, including shared General Track messages.
+Reuse the existing MIDI owner and parameter conversion, retaining session,
+ingress, fresh-touch and frame-tail protections. Global meter thresholds cannot
+act as independent per-slot analysis thresholds. The proposal records source,
+native and physical verification slices rather than marking them passed.
+
+Only this design document and scoped Context/Handoff notes were added. No
+runtime source, TD/controller connection, browser-driven app operation, parameter
+write, save/export, source test run, commit or PR is part of this design step.
+The interaction diagram uses illustrative routing only and does not contact TD.
+
+## Three-style item/detail contract refinement — 2026-10-17
+
+User described Layer Mix → selected input → Opacity/Brightness/Black Level/Gamma/
+Operation/Swap; analysis → selected Low/Mid/High/Kick → its details; audio file/input
+→ Gain/Level/Mute. User explicitly confirmed selection can be touch + FUNC and
+requested a protocol limited to these three initial styles. The updated
+[view proposal](docs/plans/mix-view-mappings.md) and
+[contract v1 draft](docs/plans/mix-style-contract.md) use real item/detail labels
+and typed targets, with native MIX function addresses kept at the adapter boundary.
+No new wire protocol, generic style registry or profile framework is proposed.
+
+Native read-only inspection first confirmed active project
+`ROTO-CONTROL.track-preview.2.toe` in the canonical project folder. Low/Mid/High each
+expose Threshold/Gain/Add/Smooth/Active and read-only outputs; Kick exposes
+Threshold/Active plus Kick detection. Immediate source inspection confirmed file
+Volume and no Gain/Mute fields on the current device-input source. Installed
+2025.33230 Layer Mix documentation confirms per-layer controls depend on Setup
+flags and Operation being Per Layer. No flags or global operations were changed.
+The get_help alias `audiodevinCHOP` was not found; the documented class is
+`audiodeviceinCHOP`, and actual source parameters were inspected directly.
+
+Audio Level is provisionally treated as read-only RMS, with Gain writable and
+Mute retaining Gain. These fields require an explicit destination/stage; metering
+the existing nulls does not create gain/mute processing. Analysis meter stage must
+be explicit: a public Low output is not automatically the threshold input.
+Operation is a full menu and Swap a toggle, with no 16-option truncation claim.
+
+The next physical question is whether native MIX Track Focus can present a Low
+item's real four float labels and meter clearly. Fixed Volume/Pan headings and
+Focus button behavior are not assumed replaceable. Existing PLUGIN details are
+an alternative to evaluate only if native MIX cannot meet the intended flow.
+The interactive scenarios describe intent, not a verified firmware UI. This step
+changes design/Context/Handoff only; no production source, business parameter,
+MIDI connection, save/export, commit or PR changed.
+
+## Low MIX Focus prototype and deferred audio issue — 2026-10-17
+
+User explicitly deferred audio refinement and authorized a future issue:
+[issue #26](https://github.com/joshuahhn/roto_control/issues/26), labelled
+enhancement/needs-triage, records explicit Gain/Mute destinations, meter stage and
+retained Gain on unmute. No audio processing stage was built. Analysis remains
+the first production style.
+
+Active project remained `ROTO-CONTROL.track-preview.2.toe` and the correct
+controller `/roto_clean_demo/roto_python`. A temporary receiver and the existing
+external MIDI owner provided one MIX item, Low, with two named Sends for Add and
+Smooth. Actual All Tracks readback was `0C 01 00 00 00 00`; FUNC reported
+`0C 02 00`. Target ranges came from native normalization: Threshold 0..0.6,
+Gain 0..7, Add -1..1, Smooth 0..1. The meter used public `out1['low']` at 10 Hz
+over 0..1, labelled as processed output rather than threshold input.
+
+The initial display-only phase made zero parameter writes. User observed
+`MIX-FOCUS / Low`, `Thresh 0.100`, `Gain 2.000`, `Add 0.000`, `Smooth 0.000`,
+an underscore/lower-line display and continuing first-screen meters. This
+establishes readable combined name/value text via SHOW CONTROL VALUE; it does
+not establish arbitrary replacement of every firmware heading.
+
+Only a new Knob 2 touch could then write Lowgain. CC13/45 pairing accepted both
+orders, rejected stale halves and cleared on release. User reached displayed
+Gain 2.841, native value 2.84093267411341. There were 66 changed writes during
+the gesture, with Threshold/Add/Smooth unchanged. Input was then removed again,
+Gain was explicitly restored to its original 2.000, and no additional input
+writes occurred during hands-off feedback.
+
+The 60-second reset observation expired before the user's text report. The
+original probe cleanup republished PLUGIN Track metadata while hardware remained
+MIX Focus, producing native VOLUME/PAN/SEND A/SEND B and EFFECT. This was a
+test-method cleanup defect. A temporary regression at the actual finish method
+failed, then passed after deferring metadata restoration until actual PLUGIN
+return. A second test covers ordering that restoration after the PLUGIN message.
+A fresh three-minute read-only phase passed physical four-text, Knob 2 at about
+29%, and continuing-meter checks. User then confirmed normal PLUGIN. No production
+framing defect or general firmware-label defect is claimed.
+
+Final cleanup closed/reaped the child with return code 0, removed the receiver
+override/probe and left zero pending bytes. Disconnected restore reinstated local
+definitions, not a readback claim about hardware learned storage. Registry data
+match baseline except revision 283 to 290. Controller parameters, all parent
+writable analysis parameters, child Kick bindings/modes, demo_A/B values,
+Snapshots, four original IDs and all 19 runtime/helper hashes match baseline.
+Kickthresh remains 0.26174693279619116; Kickactive and Audioout remain off.
+
+Twelve temporary decoder/projection/cleanup tests passed; they are one-off probe
+tests, not a production runtime suite. Scoped native checks for the controller
+and analysis out1 returned zero errors/warnings. Recovery tox, scripts and separate
+display/input/final results remain only in system temporary `roto-low-details-xmewaxym`.
+No canonical toe/tox, embedded DAT source or runtime module changed; no commit or
+PR was created. The project stays open and disconnected. Source integration of
+the shared descriptor and Low/Mid analysis routing is the next authorized step,
+preserving the dirty checkout in an isolated worktree.

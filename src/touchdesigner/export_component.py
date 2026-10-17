@@ -18,11 +18,8 @@ def export(controller, destination):
         raise ValueError('Export destination must end in .tox')
     if destination.exists():
         raise FileExistsError(destination)
-    paths = {name: (Path(project.folder) / getattr(controller.par, name).eval()).absolute()
-             for name in ('Python',)}
-    for path in paths.values():
-        if not path.is_file():
-            raise FileNotFoundError(path)
+    controller.op('RotoPythonExt').module.resolve_python(
+        controller.par.Python.eval(), project.folder)
     holder = controller.parent().create(baseCOMP, 'base_export_' + uuid.uuid4().hex[:8])
     holder.viewer = holder.display = True
     try:
@@ -52,9 +49,8 @@ def export(controller, destination):
                 node.destroy()
         clone.par.Helper.default = clone.par.Helper.val = ''
         clone.par.Helper.enable = False
-        for name, path in paths.items():
-            par = getattr(clone.par, name)
-            par.default = par.val = str(path)
+        # A generic tox must not serialize the exporting machine's venv path.
+        clone.par.Python.default = clone.par.Python.val = 'python3'
         clone.ext.RotoPythonExt._layouts = None
         clone.par.Followcomp.default = clone.par.Followcomp.val = False
         clone.par.Focuscomp.val = ''

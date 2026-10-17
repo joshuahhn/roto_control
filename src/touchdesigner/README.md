@@ -1,5 +1,7 @@
 # ROTO-CONTROL
 
+**Open the current project: [projects/current/ROTO-CONTROL.toe](projects/current/ROTO-CONTROL.toe)** · [Project index](projects/README.md) · [JSON evidence](diagnostics/README.md)
+
 A reusable TouchDesigner tool for freely mapping ROTO-CONTROL knobs and buttons to custom parameters or Python callbacks.
 
 ## Quick Start
@@ -31,9 +33,9 @@ See [portability](docs/functions/portability.md), [Inspector](docs/functions/ins
 
 ## Development
 
-Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. build_network.py constructs the development component; export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
+Python source and external builders in this folder are the source of truth. Create the environment with `python3 -m venv .venv` and `.venv/bin/python -m pip install -r requirements.txt`. build/build_network.py constructs the development component; export_component.py produces a clean embedded tox after Disconnect. Generic exports strip user assignments while project saves retain them.
 
-Validation: `python3 -m unittest discover -q`. Hardware acceptance and live checks are recorded in HANDOFF.md and verification JSON files.
+Validation follows [AGENTS.md](../../AGENTS.md#change-scoped-validation): relevant tests during development, required affected checks before delivery; runtime source changes require `python3 -m unittest discover -q`. Documentation-only changes need a diff/link/consistency review and `git diff --check`. Native TD or hardware checks depend on the changed behavior. Reuse unaffected dated acceptance from [HANDOFF.md](HANDOFF.md); [diagnostics](diagnostics/README.md) locates retained evidence. One-off probes and outputs default to a system temporary directory.
 
 
 ## Menu parameters
@@ -43,3 +45,12 @@ Custom Menu parameters support knobs (quantized option selection) and buttons (C
 Use the Layout page for saved mapping sets and Track groups; use the separate Device page for the active COMP, Focus link and Device name. In PLUGIN mode, FUNC selects a Track group, hold SEL selects a Device inside it, and normal-view arrows change that Device's control page. Layout is selected in TD and its name stays independent of COMP selection. Each Track group contains independent Devices, each with up to eight pages of 8 knobs and 8 buttons. New / rename Layout is the draft for the Layout create/rename actions. Device Focus COMP links a tool and defaults its Device name to the COMP name; manual hardware names use at most 12 printable ASCII bytes. Delete actions open a popup, with no permanent confirmation buttons. Inspector shows the current Layout / Track / Device; Clear All affects its current control targets, while off-page definitions stay saved. Save the TD project to retain changes. See [Layouts, Tracks and Devices](docs/functions/layouts.md) for APIs, migration and acceptance.
 
 Add the `roto_device` OP tag to a COMP under the controller's parent. While idle it appears as its own Device in Active Layout / Active Track; existing Focus links are reused. With Follow selected COMP on, select it before hardware LEARN, then edit its compatible custom parameter. Its mappings belong to that Device. Removing the tag retains saved mappings; explicit Device deletion remains available. Discovery waits during LOCK, LEARN, touch or pending routing and is unavailable in Python registration.
+
+### Python scripts
+
+- `tests/`: source behavior tests, run with `python3 -m unittest discover -q` from this directory.
+- `verify/`: native TD verification scripts, executed inside TD with each script's documented prerequisites.
+- `upgrade/`: in-place TD upgrade scripts, run disconnected.
+- `build/`: TD network and component builders.
+
+Builders and upgraders still take this directory as `source_dir`, not their script folder. Feature-specific probes remain under `diagnostics/`.

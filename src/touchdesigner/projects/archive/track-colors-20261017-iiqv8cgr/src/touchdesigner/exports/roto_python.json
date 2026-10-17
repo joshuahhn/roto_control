@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "artifact": "roto_python.tox",
+  "sha256": "509911ddcb0d23db9c8db3aa4706140c1475cb64dad4bcd975d659aff125515d",
+  "runtime_source_commit": "0ed7d975d17a50c193c134cffac97ea63a6ea976",
+  "embedded_documentation_source_commit": "0ed7d975d17a50c193c134cffac97ea63a6ea976",
+  "export_date": "2026-10-17",
+  "touchdesigner_build": "2025.33230",
+  "profile": {
+    "disconnected": true,
+    "user_mappings": "empty",
+    "snapshots": "empty",
+    "follow_selected_comp": false,
+    "python": "python3",
+    "embedded_midi_helper": true,
+    "external_dat_files": false,
+    "external_runtime": "Python with mido and python-rtmidi"
+  },
+  "runtime_source_sha256": {
+    "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
+    "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
+    "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
+    "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
+    "lifecycle_callbacks": "dba438adb15dcf6bf0413afc4bb61715cf6fd74ce8f29667f1b8eca8cc8ced6d",
+    "RotoPythonExt": "c4f9785f83d3aa6f995321909cbe9cf4279df509193ffc0e9fbc382691f6cb6d",
+    "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
+    "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
+    "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
+    "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
+    "setup": "a5382bb15cd68487d2d9ea73304fa42523693036a787ad90c2f6b27cfcdcb56b",
+    "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
+    "binding": "84399f79c4e598b3228a4cfc0f6dd282f4f1daeea96bc3a6996360901d452f3c",
+    "layouts": "e28bb531b3b134942b44e12ab66c090c81c9ea94de1fcd1dd4056b001bb3970c",
+    "target_callbacks": "862dccae82d72b65c0d5849b5346a0e9dfa3d6b5c536334aadf8452b48136bdb",
+    "inspector/inspector_data": "26bacb50da1f531bbd822c53dcbeb4ca3d5c04363bac7c8b1dba6902f9ca07ef",
+    "inspector/owned_runtime": "f23a10e27739b0224584af2cb965d2e2319cc909b899511560ea67739230a20c",
+    "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17"
+  },
+  "embedded_documentation_sha256": {
+    "readme_md": "f95a0a0a922a7117d68a075df22d7af3d84e6cf02bdc333fa0e746dd9bcf81c8",
+    "docs/overview_md": "493698318faef8c770506e27d2e642ae574568f7371346799fcadab3eee71f9b",
+    "docs/fn_lifecycle_md": "f375ab171ee00a8c712dde6468eec9f9830dd2265691013293643c31f283fe43",
+    "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
+    "docs/fn_layouts_md": "035bd151a2df4a76df96ae118056d205946d80c8b548c50396dd5bc0c77bd697",
+    "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
+    "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
+    "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
+    "docs/fn_actions_md": "e819d7eae7eb6cbf853f646512598d5379972f34658f6f44dab4c1dbd5a7aca6",
+    "docs/fn_portability_md": "5e45651773ea0f78d71ef021b540dcd351a02e0b17084d28d008e37f1db44790"
+  },
+  "validation": {
+    "native_export_reload": "passed",
+    "runtime_source_count": 19,
+    "documentation_snapshot_count": 10,
+    "source_tests": 481,
+    "source_tests_commit": "0ed7d975d17a50c193c134cffac97ea63a6ea976",
+    "scoped_errors": 0,
+    "original_configuration_values_sources_preserved": true,
+    "hardware_acceptance": "No new hardware MIDI/LEARN acceptance during export sync"
+  }
+}

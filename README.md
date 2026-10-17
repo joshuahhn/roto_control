@@ -5,6 +5,7 @@ Fork of Melbourne Instruments ROTO-CONTROL integrations, with a reusable TouchDe
 - [TouchDesigner tool](src/touchdesigner/README.md): portable tox, free parameter Learn, Inspector and callback API.
 - Ableton integration: src/ableton
 - Bitwig integration: src/bitwig
+- [Official integration guidance](docs/integration-guidance.md): Serial, SysEx, ordinary MIDI and motor output.
 - Hardware protocol references: docs
 
 Active TouchDesigner development lives in src/touchdesigner. Follow its CONTEXT.md and HANDOFF.md.
