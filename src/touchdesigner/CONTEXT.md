@@ -21,7 +21,10 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 ## Architecture
 
 The independent [MIX controls](docs/functions/mix.md) add versioned descriptions,
-Low/Mid analysis and wired Layer Mix float routing with 10 Hz native meters.
+Low/Mid/High analysis and wired Layer Mix float routing with 10 Hz native meters.
+The Analysis bands draft accepts an ordered subset, defaulting to Low/Mid;
+Apply and routing guards retain their existing behavior. Kick trigger feedback
+and audio processing remain separate future slices.
 One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional
 Swap have source/native and scoped hardware acceptance; Focus buttons retain

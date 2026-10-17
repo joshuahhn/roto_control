@@ -1,4 +1,4 @@
-"""Saved MIX descriptions and the existing audioAnalysis Low/Mid adapter.
+"""Saved MIX descriptions and the existing audioAnalysis band adapter.
 
 Only data lives here. Loading or describing a source never writes a TD parameter.
 """
@@ -16,6 +16,7 @@ FLOAT_KEYS = {
     'layers': ('opacity', 'brightness', 'black_level', 'gamma'),
 }
 DETAIL_KEYS = dict(FLOAT_KEYS, layers=FLOAT_KEYS['layers'] + ('operation', 'swap'))
+ANALYSIS_BANDS = ('Low', 'Mid', 'High')
 
 
 def reference(value):
@@ -168,8 +169,9 @@ def validate(profile):
 def analysis_profile(source, bands=('Low', 'Mid'), *, id='analysis.main'):
     """Describe known palette parameters, without enabling detection or audio."""
     reference(source)
-    if not bands or len(set(bands)) != len(bands) or any(b not in ('Low', 'Mid') for b in bands):
-        raise ValueError('This analysis slice supports Low and Mid')
+    if (not isinstance(bands, (list, tuple)) or not bands
+            or any(b not in ANALYSIS_BANDS for b in bands) or len(set(bands)) != len(bands)):
+        raise ValueError('Choose unique analysis bands from Low, Mid and High')
     items = []
     for band in bands:
         controls = {}

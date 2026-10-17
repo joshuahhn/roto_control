@@ -6,9 +6,11 @@ embedded runtime/documentation hashes and scoped native validation.
 
 The current export includes main-screen parameter-page hints, explicit LEARN
 metadata, an 83-entry Track color menu and a read-only Track BG preview.
-It also includes independent Low/Mid analysis and wired Layer Mix float controls,
+It also includes independent Low/Mid/High analysis and wired Layer Mix float controls,
 user-named Operation presets with two to six choices and conditional Swap,
-analysis overview Active buttons, motor feedback and native meters. One MIX
+analysis overview Active buttons, motor feedback and native meters. The
+overview keeps the selected analysis band name/value visible after release,
+without resending unchanged motor positions when selecting another band. One MIX
 source/style profile is active at a time. Configure existing sources through the
 [MIX draft/Apply page or Python APIs](../docs/functions/mix.md); no analysis/audio graph is constructed.
 Track colors default to palette 0. Palette 47 preview is unavailable pending

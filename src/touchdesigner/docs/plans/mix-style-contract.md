@@ -69,7 +69,7 @@ configured. It must not advertise working audio control.
 
 The [Analysis integration API](../functions/mix_analysis.md) documents how a
 different analyzer maps its own parameter/channel names into this contract,
-including a tested example. Only the convenience adapter uses Low/Mid names.
+including a tested example. Only the convenience adapter uses Low/Mid/High names.
 
 ## Feedback fields
 

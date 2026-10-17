@@ -10,7 +10,7 @@ from test_bound_parameter import BoundParameter
 from midi_queue import discard, business_output
 from mix_descriptor import analysis_profile, validate, projection
 from mix_runtime import MixRuntime, Signal
-from protocol import sysex, digest, text13
+from protocol import sysex, digest, text13, raw_value
 
 
 class Pars(dict):
@@ -229,7 +229,7 @@ class MixTests(unittest.TestCase):
     def fixture(self):
         e, m, f, a, b, *_ = test_comp_follow.FollowTests().fixture()
         source = SimpleNamespace(valid=True, isCOMP=True, id=800, path='/demo/analysis', par=Pars())
-        for band in ('Low', 'Mid'):
+        for band in ('Low', 'Mid', 'High'):
             for suffix, value, low, high in (
                     ('thresh', .1, 0, .6), ('gain', 2, 0, 7), ('add', 0, -1, 1),
                     ('smooth', 0, 0, 1), ('active', 1, 0, 1)):
@@ -237,7 +237,7 @@ class MixTests(unittest.TestCase):
                 p.name = band + suffix; p.owner = source; p.enable = True
                 p.normMin = p.min = low; p.normMax = p.max = high; p.val = value
                 source.par[p.name] = p
-        channels = {'low': Channel([.25]), 'mid': Channel([.75])}
+        channels = {'low': Channel([.25]), 'mid': Channel([.75]), 'high': Channel([.5])}
         class Chop:
             valid = True; id = 801; path = '/demo/analysis/out1'
             def __getitem__(self, name): return channels.get(name)
@@ -276,6 +276,117 @@ class MixTests(unittest.TestCase):
         self.assertEqual(e.GetMixProfile(), saved); self.assertEqual(m.data, registry)
         saved['descriptor']['items'][0]['label'] = 'Changed'
         self.assertEqual(e.GetMixProfile()['descriptor']['items'][0]['label'], 'Low')
+
+    def test_high_band_input_meter_and_active_remain_independent(self):
+        e, mix, manager, _, source, *_ = self.fixture()
+        values = {name:p.eval() for name,p in source.par.items()}
+        registry = copy.deepcopy(manager.data)
+        e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low', 'Mid', 'High'))
+        self.assertEqual(len(mix.targets), 15)
+        self.assertEqual({name:p.eval() for name,p in source.par.items()}, values)
+        self.enter(e, mix)
+        mix.tick(now=1.2)
+        self.assertIn([191, 69, 64], self.messages(e))
+        self.assertIn([191, 70, 64], self.messages(e))
+        self.cc(e, 54, 127); self.turn(e, 2, 16383); self.cc(e, 54, 0)
+        self.assertEqual(source.par.Highthresh.eval(), .1)  # first touch selects only
+        mix.tick(now=1.4)
+        self.cc(e, 54, 127); self.turn(e, 2, 16383); self.cc(e, 54, 0)
+        self.assertEqual(source.par.Highthresh.eval(), .6)
+        self.cc(e, 22, 127); self.cc(e, 22, 127); self.cc(e, 22, 0)
+        self.assertFalse(source.par.Highactive.eval())
+        self.focus(e, mix, 2)
+        self.cc(e, 53, 127); self.turn(e, 1, 8192); self.cc(e, 53, 0)
+        self.assertAlmostEqual(source.par.Highgain.eval(), 7 * 8192 / 16383)
+        self.assertEqual(source.par.Highadd.eval(), 0)
+        self.assertEqual(source.par.Highsmooth.eval(), 0)
+        self.assertEqual({name:p.eval() for name,p in source.par.items() if not name.startswith('High')},
+                         {name:value for name,value in values.items() if not name.startswith('High')})
+        self.assertEqual(manager.data, registry)
+        self.assertEqual(mix.writes, 3)
+
+    def test_analysis_band_order_reload_and_invalid_selections(self):
+        e, mix, _, _, source, *_ = self.fixture()
+        e.ConfigureMixAnalysis(mix.scope, 'analysis', ('High', 'Low'))
+        saved = e.GetMixProfile()
+        self.assertEqual([item['id'] for item in saved['descriptor']['items']], ['high', 'low'])
+        source.par.Highgain.val = 3
+        restored = MixRuntime(e)
+        self.assertEqual(restored.profile, saved['descriptor'])
+        self.assertEqual(source.par.Highgain.eval(), 3)
+        self.assertEqual(restored.writes, 0)
+        for bands in ((), ('High', 'High'), ('Kick',), ('Low', 'Unknown'), 'High', None):
+            with self.subTest(bands=bands), self.assertRaises(ValueError):
+                e.ConfigureMixAnalysis(mix.scope, 'analysis', bands)
+            self.assertEqual(e.GetMixProfile(), saved)
+
+    def test_analysis_overview_selection_caption_persists_and_moves_without_writes(self):
+        e, mix, _, _, source, *_ = self.fixture()
+        e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low', 'Mid', 'High'))
+        self.enter(e, mix)
+        self.cc(e, 54, 127); self.cc(e, 54, 0)
+        mix.tick(now=2)
+        self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
+        e._pending = b''
+        mix.tick(now=12)
+        self.assertIn(list(sysex(10,24,(0,2,*text13('>High 0.100')))), self.messages(e))
+        self.cc(e, 53, 127); self.cc(e, 53, 0)
+        mix.tick(now=13)
+        self.assertIn(list(sysex(10,24,(0,1,*text13('>Mid 0.100')))), self.messages(e))
+        self.assertIn(list(sysex(10,24,(0,2,*text13('Thresh 0.100')))), self.messages(e))
+        self.assertEqual(mix.writes, 0)
+        self.assertEqual(source.par.Highthresh.eval(), .1)
+
+    def test_analysis_focus_uses_control_names_and_long_selection_labels_keep_value(self):
+        e, mix, _, _, _, *_ = self.fixture()
+        profile = e.GetMixProfile()['descriptor']
+        profile['items'][0]['label'] = 'Long band name'
+        e.SetMixProfile(mix.scope, profile)
+        self.enter(e, mix)
+        mix.tick(now=1.2)
+        self.assertIn(list(sysex(10,24,(0,0,*text13('>Long 0.100')))), self.messages(e))
+        e._pending = b''
+        self.focus(e, mix)
+        self.assertIn(list(sysex(10,24,(0,0,*text13('Thresh 0.100')))), self.messages(e))
+        self.assertFalse(any(m[5:7] == [10,24] and m[9:10] == [ord('>')] for m in self.messages(e)))
+
+    def test_overview_selection_does_not_resend_unchanged_motor_positions(self):
+        e, mix, _, _, source, *_ = self.fixture()
+        e.ConfigureMixAnalysis(mix.scope, 'analysis', ('Low','Mid','High'))
+        self.enter(e, mix)
+        e._receive_midi(sysex(10,9,(0,2)), e._ingress_token()); mix.tick(now=2)
+        e._pending = b''
+        # Actual hardware reports selection before touch. Repeating positions
+        # here produced extra Knob 3 touch/selection in the physical trace.
+        e._receive_midi(sysex(10,9,(0,0)), e._ingress_token())
+        self.cc(e,52,127); self.cc(e,52,0); mix.tick(now=3)
+        motors = [m for m in self.messages(e) if len(m)==3 and m[0]==191 and (12<=m[1]<=19 or 44<=m[1]<=51)]
+        self.assertEqual(motors, [])
+        self.assertEqual(mix.selected, 0)
+        self.assertEqual(mix.writes, 0)
+        # A real TD edit must still move an untouched knob in this view.
+        source.par.Highthresh.val = .45
+        mix.tick(now=4)
+        self.assertIn([191,14,raw_value(.75)>>7], self.messages(e))
+
+    def test_overview_selection_preserves_queued_motors_but_focus_change_discards_them(self):
+        e, mix, *_ = self.fixture()
+        self.enter(e, mix)
+        tail = b'7]}\n'  # already-started output frame
+        e._pending = tail
+        queued = [[191,13,42], [191,45,85]]
+        for message in queued:
+            e._send(message, mix=True)
+        e._send(sysex(10,24,(0,1,*text13('Old text'))), mix=True)
+        e._receive_midi(sysex(10,9,(0,1)), e._ingress_token())
+        self.assertTrue(e._pending.startswith(tail))
+        self.assertEqual([json.loads(line)['midi'] for line in e._pending[len(tail):].splitlines()], queued)
+        e._receive_midi(sysex(12,2,(0,)), e._ingress_token())
+        self.assertEqual(e._pending, tail)
+        mix.tick(now=2)
+        frames = [json.loads(line)['midi'] for line in e._pending[len(tail):].splitlines()]
+        self.assertTrue(any(mix.motor_output(message) for message in frames))
+        self.assertEqual(mix.writes, 0)
 
     def test_common_descriptor_rejects_invalid_ranges_refs_and_unknown_style_atomically(self):
         e, mix, *_ = self.fixture(); before = e.GetMixProfile()

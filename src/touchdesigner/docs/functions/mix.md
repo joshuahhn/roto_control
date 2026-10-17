@@ -1,6 +1,6 @@
 # Independent MIX controls
 
-This slice implements saved Low/Mid analysis and wired Layer Mix descriptions on
+This slice implements saved Low/Mid/High analysis and wired Layer Mix descriptions on
 an independent eight-slot MIX page, float input, analysis Active buttons and native
 meter feedback. Source tests, native TD checks
 and scoped hardware acceptance cover touch selection, FUNC details, sustained
@@ -9,13 +9,20 @@ Opacity input/motor return, Input 2 Focus captions, curated Operation selection,
 Swap input/motor return and normal PLUGIN restoration. The generic
 tox includes this slice with no MIX assignments; the checked-in demo project
 retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lowmid-hardware-acceptance--2026-10-17).
+High also has physical overview/Focus caption, persistent-selection and Gain
+input/motor-return acceptance. Its Active button and changing meter level have
+source/native coverage but were not separately checked on hardware.
 
 ## Configure an existing source
 
 Use the controller's **MIX** custom parameter page:
 
-1. Choose Draft style: Analysis (Low / Mid) or Layer Mix inputs.
+1. Choose Draft style: Analysis bands or Layer Mix inputs.
 2. Drag the existing audioAnalysis COMP or Layer Mix TOP onto Draft source.
+   For Analysis, set Analysis bands to an ordered list such as `Low Mid High`.
+   Spaces or commas separate names, and case does not matter. The default stays
+   `Low Mid`; one band is also valid. Empty, duplicate or unknown names are
+   rejected. The convenience adapter does not yet accept Kick.
 3. For Layer Mix, use the six Custom blend slots. Fill any two to six different
    modes and leave unused slots None. Each slot offers the source's complete TD
    blend list. All None omits the Operation control.
@@ -48,12 +55,13 @@ control types/positions, meter units/stage, lifecycle and a complete example.
 Execute in TD against an upgraded controller:
 
 ```python
-controller.ConfigureMixAnalysis(controller.parent(), 'audioAnalysis')
+controller.ConfigureMixAnalysis(controller.parent(), 'audioAnalysis', ('Low', 'Mid', 'High'))
 controller.GetMixProfile()
 controller.GetMixState()
 ```
 
-The first argument is an existing COMP scope, and the source reference resolves
+Omitting `bands` retains the original Low/Mid pair. The first argument is an
+existing COMP scope, and the source reference resolves
 inside it. The scope is saved relative to the controller. No audio network is
 built, no target values are restored and hardware stays disconnected. A live scope
 rename is refreshed on Project Pre Save. Explicitly reconfigure a replaced or
@@ -67,6 +75,16 @@ without removing PLUGIN mappings. Configuration requires released knobs and exit
 from LEARN. Analysis and layers are enabled; one profile/style is active at a
 time. Configuring another source replaces MIX assignments, without changing
 PLUGIN assignments. Mixed-style slots and a profile-switching UI remain planned.
+
+## Analysis selection
+
+In the analysis overview, the selected band's screen keeps a `>` marker, its
+band name and current value, such as `>High 0.200`. Touch another band to move
+the marker; releasing touch does not expire it. First touch still selects without
+writing. FUNC details use their normal control names. Long band labels shorten
+to leave room for the value; this is display feedback, not a new control target.
+Overview selection keeps unchanged motor positions; it still sends real TD value
+changes and recalls the relevant positions when switching to FUNC details.
 
 ## Layer Mix floats
 
@@ -192,9 +210,10 @@ source when SEL changes the control function. Focus uses the selected band's
 meter on screen 1; other meters are cleared. Unsupported channel families, Focus
 offsets beyond CI=0 and unassigned functions have no business input route.
 
-The supplied meters read `audioAnalysis/out1['low']` and `['mid']` over 0..1.
+The supplied meters read the selected `audioAnalysis/out1` band channels
+`low`, `mid` and/or `high` over 0..1.
 These are processed outputs, not threshold-comparison inputs. Detection state is
-unchanged, so an inactive Mid can correctly have zero level. Meter scaling is
+unchanged, so an inactive Mid or High can correctly have zero level. Meter scaling is
 independent of knob ranges; yellow/red points are global across MIX. Feedback is
 coalesced at 10 Hz, with no replay of old meter samples after backpressure.
 
@@ -229,8 +248,8 @@ No second MIDI owner or new wire protocol is introduced.
 ## Current limits and installation
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
-in this slice. Trigger indicators, High/Kick adapters, second-page Focus and the slot
-editor are later slices. No detent or freely replaceable native-heading promise
+in this slice. Trigger indicators, the Kick adapter, second-page Focus and a
+mixed-style slot editor are later slices. No detent or freely replaceable native-heading promise
 is made. Contrast/Math and other custom combinations have source/native coverage;
 they were not individually checked on hardware. The editor configures one
 source/style profile, without per-item libraries or mixed-style slots;

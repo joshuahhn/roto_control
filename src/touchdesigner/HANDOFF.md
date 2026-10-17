@@ -2108,3 +2108,70 @@ TD saved `ROTO-CONTROL.mix-analysis.8.toe` with adjacent receipt, SHA-256
 Canonical toe and dirty-root runtime files remain untouched. TD stays open and
 disconnected, pending bytes zero, with no send/receive overrides. This remains
 in PR #27 without merging.
+
+## High analysis band — 2026-10-17
+
+Baseline `b2cd4bb`, saved runtime `7c968b1`. The user left Apply UX issue #28
+for later and continued MIX. The existing audioAnalysis exposes High Threshold,
+Gain, Add, Smooth and Active with a public high channel. The convenience adapter
+now accepts an ordered subset of Low/Mid/High, preserving its Low/Mid default.
+The MIX page adds one staged Analysis bands text field, accepting spaces/commas
+and case-insensitive names. Empty, duplicate and unknown bands are rejected;
+missing selected-band parameters preserve the active profile. Apply behavior,
+wire protocol and target conversion are unchanged. Kick trigger
+feedback and audio processing #26 remain separate future slices.
+
+557 source discovery tests pass, including 53 MIX and 17 editor tests. Added
+coverage verifies High's independent overview Threshold, Focus Gain, meter and
+exactly-once Active button, ordered persistence, draft/upgrade hydration and
+invalid configuration. The existing first-touch selection rule is preserved.
+
+Native TD 2025.33230 verifies the real Apply callback, all fifteen targets,
+invalid band rejection, applied-three versus draft-two configured reload,
+new-field hydration and generic reset to Low/Mid, with zero target writes and
+no MIDI connection. A pulse in the same cook as fixture installation preceded
+watcher registration; sending it after registration passed. This was a test
+ordering issue, not evidence of a production callback defect. The fixture was
+removed. Source installation on the correct controller verifies all 22 hashes,
+preserves the original Low/Mid profile and full baseline, and leaves no overrides.
+Recovery/scripts/results are in system temporary `roto-mix-high.YA3hYsr4Q8`.
+Physical overview and High FUNC captions passed with zero writes. The user
+then requested clearer/longer touch selection feedback, so input testing was
+paused and the connection safely stopped/reaped with the original profile
+restored. The analysis overview now keeps `>High 0.200` on the selected item's
+own screen until another selection or FUNC details, without a new timer/state.
+Two further source tests verify persistence after release, marker movement,
+normal FUNC captions and long-label value visibility.
+
+The first physical marker check reverted Low to High. Passive MIDI capture
+observed Low selection/Touch 52 followed by High selection/Touch 54 while the
+user touched only Knob 1 and LOCK was off. Suppressing repeated Track-list
+metadata did not change that result; suppressing MIX motor output kept Low.
+These are bounded one-condition experiments, not proof of a firmware defect.
+A new regression failed on six redundant motor CCs after overview selection.
+The fix keeps both cached and queued positions while overview lane targets are
+unchanged, and removes metadata's redundant motor-cache reset. It retains normal
+invalidation on profile/view/mode changes, real TD value updates, touch fences,
+queue ordering and in-flight frame tails. Additional regression coverage checks
+queued motor retention and complete old-motor discard on FUNC transition.
+
+All diagnostic send/command/RX wrappers were removed after each experiment;
+the source was reinstalled disconnected with the baseline preserved. Affected
+physical selection/input results follow below; the existing generic receipt
+still identifies source `7c968b1` until publication.
+
+With normal production motor output restored, the user confirmed Low → High →
+Low remains selected after each release, with zero writes. High Focus Gain then
+reached 4.159494598058964 through Knob 2, with 28 changed writes to Highgain only.
+Software restored its original 3.500 and the user confirmed the 50% motor return
+and normal demo_A PLUGIN display. High Active remained False throughout; changing
+High meter levels and High Active hardware input were not newly accepted.
+
+Final disconnection reaped the child with return code 0. The known PLUGIN Button
+1 learned/local identity reconciliation removed the local fourth registration
+again; disconnected restore used this run's active Device snapshot through the
+existing manager, without target-value writes. The four original control IDs,
+normalized registry, original Low/Mid profile/draft, all analysis/demo/layer
+values, Snapshots, nine demo children and old controller's 246 DAT hashes match
+baseline, allowing revision advance to 364. No send/RX/command/probe overrides
+or pending bytes remain. Saved artifact publication follows.

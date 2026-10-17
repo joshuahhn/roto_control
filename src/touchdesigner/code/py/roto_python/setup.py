@@ -99,8 +99,10 @@ def install_mix_ui(controller):
     page = next((p for p in controller.customPages if p.name == 'MIX'), None)
     page = page if page is not None else controller.appendCustomPage('MIX')
     new_source = getattr(controller.par, 'Mixsource', None) is None
+    new_bands = getattr(controller.par, 'Mixanalysisbands', None) is None
     definitions = [('Mixstyle', 'Menu', 'Draft style', 'analysis'),
                    ('Mixsource', 'OP', 'Draft source', ''),
+                   ('Mixanalysisbands', 'Str', 'Analysis bands', 'Low Mid'),
                    ('Mixoperationpreset', 'Menu', 'Operation preset', MIX_DRAFT_PRESET)]
     definitions += [(name, 'Menu', 'Custom blend ' + str(i), MIX_NO_OPERATION)
                     for i, name in enumerate(MIX_CUSTOM_PARAMETERS, 1)]
@@ -118,7 +120,7 @@ def install_mix_ui(controller):
             parameter = getattr(page, 'append' + kind)(name, label=label)[0]
         if name == 'Mixstyle':
             parameter.menuNames = ['analysis', 'layers']
-            parameter.menuLabels = ['Analysis (Low / Mid)', 'Layer Mix inputs']
+            parameter.menuLabels = ['Analysis bands', 'Layer Mix inputs']
         elif name == 'Mixoperationpreset' and new_parameter:
             parameter.menuNames = [MIX_DRAFT_PRESET]
             parameter.menuLabels = ['Custom draft']
@@ -132,6 +134,8 @@ def install_mix_ui(controller):
         parameter.help = 'Draft only. Apply MIX draft replaces the current MIX profile without changing target values or PLUGIN mappings.'
     for name in ('Mixoperationpreset', *MIX_CUSTOM_PARAMETERS, 'Mixpresetname', 'Newmixpreset', 'Savemixpreset', 'Deletemixpreset'):
         getattr(controller.par, name).enableExpr = "me.par.Mixstyle == 'layers'"
+    controller.par.Mixanalysisbands.enableExpr = "me.par.Mixstyle == 'analysis'"
+    controller.par.Mixanalysisbands.help = 'Ordered Low, Mid and/or High bands, separated by spaces or commas. Draft only until Apply.'
     controller.par.Mixoperationpreset.startSection = True
     controller.par.Applymix.startSection = True
     controller.par.Mixsummary.readOnly = True
@@ -157,6 +161,15 @@ def install_mix_ui(controller):
                     set_mix_operation_draft(controller, choices)
     refresh_mix_ui(controller)
     refresh_mix_presets_ui(controller)
+    if new_bands:
+        saved = controller.fetch('mix_profile', None, search=False)
+        if saved and saved['descriptor']['style'] == 'analysis':
+            descriptor = saved['descriptor']
+            bands = tuple(item['id'].capitalize() for item in descriptor['items'])
+            helper = controller.op('mix_descriptor').module
+            if (bands and all(band in helper.ANALYSIS_BANDS for band in bands)
+                    and descriptor == helper.analysis_profile(descriptor['source'], bands, id=descriptor['id'])):
+                controller.par.Mixanalysisbands.val = ' '.join(bands)
     callbacks = controller.op('parameter_callbacks')
     watched = callbacks.par.pars.eval().split()
     callbacks.par.pars = ' '.join(watched + [name for name in ('Mixsource', 'Mixstyle', 'Mixoperationpreset', 'Newmixpreset',
@@ -170,10 +183,12 @@ def apply_mix_ui(controller):
         raise ValueError('Choose an existing MIX source')
     style = controller.par.Mixstyle.eval()
     if style == 'analysis':
+        bands = tuple(band.capitalize() for band in controller.par.Mixanalysisbands.eval().replace(',', ' ').split())
+        controller.op('mix_descriptor').module.analysis_profile(source.name, bands)
         if not source.isCOMP or any(getattr(source.par, band + suffix, None) is None
-                                    for band in ('Low', 'Mid') for suffix in ('thresh', 'gain', 'add', 'smooth', 'active')):
-            raise ValueError('Choose an audioAnalysis COMP with Low/Mid controls')
-        return controller.ConfigureMixAnalysis(source.parent(), source.name)
+                                    for band in bands for suffix in ('thresh', 'gain', 'add', 'smooth', 'active')):
+            raise ValueError('Choose an audioAnalysis COMP with ' + '/'.join(bands) + ' controls')
+        return controller.ConfigureMixAnalysis(source.parent(), source.name, bands)
     if style == 'layers':
         return controller.ConfigureMixLayers(source.parent(), source.name,
             operation_choices=mix_draft_operations(controller))
@@ -183,6 +198,7 @@ def apply_mix_ui(controller):
 def reset_mix_ui(controller):
     """Remove user source references from a generic export clone's draft."""
     controller.par.Mixstyle.val = 'analysis'
+    controller.par.Mixanalysisbands.val = 'Low Mid'
     controller.par.Mixsource.val = ''
     controller.par.Mixpresetname.val = ''
     controller.par.Mixoperationpreset.val = MIX_DRAFT_PRESET

@@ -8,8 +8,12 @@ and Appendix B. An analyzer does not need to implement MIDI or SysEx itself.
 
 `ConfigureMixAnalysis(scope, source='audioAnalysis', bands=('Low', 'Mid'))` is a
 convenience adapter for our known audioAnalysis COMP. It expects `Lowthresh`,
-`Lowgain`, `Lowadd`, `Lowsmooth`, `Lowactive`, their Mid equivalents, and
-`out1['low']` / `out1['mid']`. The MIX page's Analysis source picker uses this
+`Lowgain`, `Lowadd`, `Lowsmooth`, `Lowactive`, their Mid/High equivalents, and
+`out1['low']` / `out1['mid']` / `out1['high']` for the selected bands. Pass an
+ordered subset such as `bands=('High', 'Low')`; the default remains Low/Mid.
+The MIX page's Analysis bands field uses the same adapter and accepts names
+separated by spaces or commas. Kick is not accepted by this adapter yet.
+The MIX page's Analysis source picker uses this
 adapter. Other analyzers use the descriptor API; the picker does not infer their
 parameter names, ranges or signal stage.
 
@@ -32,7 +36,9 @@ or `None` for no overview control. Missing controls leave their positions empty;
 they do not shift later controls or use a PLUGIN assignment. Analysis Menu,
 Pulse, callback/expression strings and arbitrary extra control keys are not
 supported. The native Volume/Pan/Send headings remain firmware UI; combined TD
-name/value captions show the actual target.
+name/value captions show the actual target. In the analysis overview, the selected
+item instead keeps its band name/value with a `>` marker until selection changes.
+FUNC details retain their control captions.
 
 Float controls default to the target's `normMin`/`normMax`. An optional `range`
 overrides these in target units, with finite increasing limits compatible with

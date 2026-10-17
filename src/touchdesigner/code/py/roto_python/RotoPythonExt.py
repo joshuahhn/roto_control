@@ -98,7 +98,7 @@ class RotoPythonExt:
         return self.GetMixProfile()
 
     def ConfigureMixAnalysis(self, scope, source='audioAnalysis', bands=('Low', 'Mid')):
-        """Describe an existing Low/Mid source. Audio/detection settings stay as-is."""
+        """Describe existing Low/Mid/High bands. Audio/detection settings stay as-is."""
         return self.SetMixProfile(scope, analysis_profile(source, bands))
 
     def ConfigureMixLayers(self, scope, source='layermix_layers', *, operation_choices=None, operation_library=None, custom_operations=()):

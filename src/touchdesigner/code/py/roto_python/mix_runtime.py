@@ -280,16 +280,24 @@ class MixRuntime:
         if save:
             self.e.ownerComp.store('mix_profile', dict(scope=posixpath.relpath(scope.path, self.e.ownerComp.path), descriptor=copy.deepcopy(profile)))
 
-    def invalidate(self):
+    def invalidate(self, *, keep_motors=False):
         self.epoch += 1
         self.ready = False
         self.blocked.update(self.touched)
         self.button_blocked.update(self.button_down)
         self.armed.clear(); self.parts.clear()
-        self.last_motor.clear(); self.last_text.clear(); self.last_button.clear()
+        if not keep_motors:
+            self.last_motor.clear()
+        self.last_text.clear(); self.last_button.clear()
         self.dirty = True; self.next_feedback = 0
         if self.active:
-            self.e._pending = discard(self.e._pending, self.feedback_output)
+            self.e._pending = discard(self.e._pending, lambda m: self.feedback_output(m)
+                                      and not (keep_motors and self.motor_output(m)))
+
+    @staticmethod
+    def motor_output(message):
+        return (len(message) == 3 and message[0] == 191
+                and (12 <= message[1] <= 19 or 44 <= message[1] <= 51))
 
     @staticmethod
     def feedback_output(message):
@@ -465,7 +473,10 @@ class MixRuntime:
         elif index != self.selected:
             self.selected = index
             self.select_pending |= send
-            self.invalidate()
+            # Overview lanes still own the same targets. Keep both queued
+            # positions and their cache; clearing either would resend motors
+            # or lose an update that has not reached the device yet.
+            self.invalidate(keep_motors=bool(self.view and self.view[0] == 'all'))
 
     def source_valid(self):
         if self.profile is None or self.scope is None or not self.scope.valid:
@@ -502,7 +513,7 @@ class MixRuntime:
         self.e._send(sysex(group, command, data), mix=True)
 
     def metadata(self):
-        self.last_motor.clear(); self.last_text.clear()
+        self.last_text.clear()  # real mode/profile/view boundaries clear motors
         items = self.profile['items'] if self.profile else []
         self.command(12, 3, (len(self.send_labels()),))
         self.command(10, 4, (0, len(items))); self.command(10, 5, (0, 0))
@@ -565,6 +576,13 @@ class MixRuntime:
                         normalized = target.normalized(value)
                         raw = raw_value(normalized) if normalized is not None else None
                         text = target.caption(value)
+                        if (self.profile['style'] == 'analysis' and self.view[0] == 'all'
+                                and lane == self.selected):
+                            # Keep selection visible after touch release. Reserve
+                            # the numeric value within the 12-character screen.
+                            number = f'{value:.3f}'
+                            label = self.profile['items'][lane]['label'][:max(0, 10 - len(number))].rstrip()
+                            text = f'>{label} {number}'
                         if raw is None:
                             self.last_motor.pop(lane, None)
                             self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] in (12 + lane, 44 + lane))

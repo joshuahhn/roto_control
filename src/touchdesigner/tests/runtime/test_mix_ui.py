@@ -121,6 +121,47 @@ class MixUiTests(unittest.TestCase):
         self.assertEqual(mix.writes, 0)
         self.assertIsNone(e._process)
 
+    def test_analysis_band_draft_applies_ordered_high_without_value_recall(self):
+        e, mix, c, source = self.fixture()
+        before = e.GetMixProfile()
+        values = {name:p.eval() for name,p in source.par.items()}
+        c.par.Mixanalysisbands.val = 'high, LOW'
+        setup.install_mix_ui(c)
+        self.assertEqual(c.par.Mixanalysisbands.eval(), 'high, LOW')
+        self.assertEqual(e.GetMixProfile(), before)
+        e.onParPulse(c.par.Applymix)
+        self.assertEqual([item['id'] for item in e.GetMixProfile()['descriptor']['items']], ['high', 'low'])
+        self.assertIn('High, Low', c.par.Mixsummary.eval())
+        self.assertEqual({name:p.eval() for name,p in source.par.items()}, values)
+        self.assertEqual(mix.writes, 0)
+        self.assertIsNone(e._process)
+
+    def test_invalid_or_missing_analysis_bands_preserve_the_applied_profile(self):
+        e, mix, c, source = self.fixture()
+        before = e.GetMixProfile()
+        for bands in ('', 'Low Low', 'Kick', 'High Unknown'):
+            with self.subTest(bands=bands):
+                c.par.Mixanalysisbands.val = bands
+                e.onParPulse(c.par.Applymix)
+                self.assertEqual(e.GetMixProfile(), before)
+                self.assertIn('Choose unique analysis bands', c.par.Mixsummary.eval())
+        c.par.Mixanalysisbands.val = 'Low Mid High'
+        source.par['Highgain'] = None
+        e.onParPulse(c.par.Applymix)
+        self.assertEqual(e.GetMixProfile(), before)
+        self.assertIn('Low/Mid/High controls', c.par.Mixsummary.eval())
+        self.assertEqual(mix.writes, 0)
+
+    def test_new_band_field_hydrates_a_known_saved_profile_without_applying(self):
+        e, mix, c, source = self.fixture()
+        e.ConfigureMixAnalysis(mix.scope, source.name, ('High', 'Mid'))
+        before = e.GetMixProfile()
+        c.par.Mixanalysisbands.destroy()
+        setup.install_mix_ui(c)
+        self.assertEqual(c.par.Mixanalysisbands.eval(), 'High Mid')
+        self.assertEqual(e.GetMixProfile(), before)
+        self.assertEqual(mix.writes, 0)
+
     def test_layer_editor_loads_custom_names_and_retains_full_source_menu(self):
         e, mix, c, source = self.fixture(layers=True)
         self.assertEqual(c.par.Mixcustom1.eval(), 'over')
@@ -257,6 +298,7 @@ class MixUiTests(unittest.TestCase):
         reset_mapping_storage(c); reset_registration(c)
         self.assertIsNone(c.par.Mixsource.eval())
         self.assertEqual(c.par.Mixstyle.eval(), 'analysis')
+        self.assertEqual(c.par.Mixanalysisbands.eval(), 'Low Mid')
         self.assertEqual(c.par.Mixsummary.eval(), 'Unassigned')
         self.assertEqual(c.par.Mixcustom1.eval(), setup.MIX_NO_OPERATION)
         self.assertEqual(c.par.Mixcustom1.menuNames, [setup.MIX_NO_OPERATION])
