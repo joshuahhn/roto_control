@@ -7,7 +7,7 @@ embedded runtime/documentation hashes and scoped native validation.
 The current export includes main-screen parameter-page hints, explicit LEARN
 metadata, an 83-entry Track color menu and a read-only Track BG preview.
 It also includes independent Low/Mid MIX analysis descriptions, float details,
-motor feedback and native meters. Configure existing sources through the
+overview Active buttons, motor feedback and native meters. Configure existing sources through the
 [MIX API](../docs/functions/mix.md); no analysis/audio graph is constructed.
 Track colors default to palette 0. Palette 47 preview is unavailable pending
 [issue #24](https://github.com/joshuahhn/roto_control/issues/24).

@@ -22,6 +22,8 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 The independent [MIX analysis source slice](docs/functions/mix.md) adds versioned
 descriptions and Low/Mid float routing with 10 Hz native meters. `mix_runtime`
+also maps overview On/Off buttons to each band's Active Toggle; FUNC buttons
+retain native item selection. It
 owns MIX mode/view/touch state; the extension keeps the existing external MIDI
 owner and mutually exclusive MIX/PLUGIN business dispatch. PLUGIN Layouts,
 Follow and LEARN remain separate. See the latest HANDOFF for native versus

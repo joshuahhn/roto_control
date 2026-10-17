@@ -28,7 +28,8 @@ The outer Control page has been removed. Use mapped target parameters or SetValu
 The [independent MIX analysis source slice](docs/functions/mix.md) adds Low/Mid
 Threshold/Gain/Add/Smooth and read-only native meters. The generic export includes
 this API-configured slice. Touch selects Low/Mid and FUNC opens details; the
-saved demo project and Quick Start above retain their PLUGIN setup.
+overview On/Off buttons toggle each band's Active. Focus buttons retain item
+selection. The saved demo project and Quick Start above retain their PLUGIN setup.
 
 No external wires are required. Hardware input writes mapped custom parameters or invokes callbacks. Target edits send feedback to hardware. The portable component has no CHOP connectors; use the target parameters or controller.State.
 

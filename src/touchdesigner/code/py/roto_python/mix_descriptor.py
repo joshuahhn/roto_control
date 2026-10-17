@@ -153,10 +153,20 @@ def projection(profile, view, selected):
             return result
         for index, item in enumerate(items):
             key = item['primary'] if knob == 0 else 'gain' if knob == 1 else ('add' if send == 0 else 'smooth' if send == 1 else None)
-            if key in item['controls']:
+            if key in item['controls'] and item['controls'][key]['kind'] == 'float':
                 result[index] = index, key
     elif kind == 'focus' and data == 0 and 0 <= selected < len(items):
         for lane, key in enumerate(('threshold', 'gain', 'add', 'smooth')):
-            if key in items[selected]['controls']:
+            if key in items[selected]['controls'] and items[selected]['controls'][key]['kind'] == 'float':
                 result[lane] = selected, key
+    return result
+
+
+def button_projection(profile, view):
+    """Overview On/Off is Active. Focus buttons remain firmware item selectors."""
+    result = [None] * 8
+    if view is not None and view[0] == 'all' and view[1][0] == 0 and view[1][2] == 0:
+        for index, item in enumerate(profile['items']):
+            if item['controls'].get('active', {}).get('kind') == 'toggle':
+                result[index] = index, 'active'
     return result

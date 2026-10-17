@@ -112,9 +112,14 @@ Mute in the API; the manual presents track activation as On/Off. Define and test
 the boolean polarity explicitly rather than assuming a parameter named Mute.
 Changing a view, touching a knob or selecting a slot must not toggle a target.
 
-Track Focus button behavior is not established by the current evidence. First
-delivery leaves its business button routing disabled until a scoped reference /
-wire review establishes the actual semantics. No PLUGIN button fallback is allowed.
+The production Low/Mid check establishes overview press/release as CC20 127/0.
+Only native On/Off maps to analyzer Active. Solo/Arm remain unassigned. Active
+True uses native Mute-off feedback 0; Active False uses 127. Press duplicates and
+release cannot toggle twice, and state feedback is reconfirmed after release.
+Track Focus Button 2 instead selects Mid via Track selection, with no CC21
+press/release. Keep Focus buttons as item selectors, with no business toggle or
+PLUGIN fallback. The native Toggle and source tests cover the new Active route;
+use dated HANDOFF evidence for its physical acceptance.
 
 The same target object is projected into either view. Editing it in All Tracks
 therefore changes what FUNC exposes, without copying bindings or storing a second

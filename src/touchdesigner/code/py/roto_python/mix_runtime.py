@@ -3,7 +3,7 @@ import copy
 import math
 import time
 from binding import Binding, parameter_chain, parameter_value, same_parameter
-from mix_descriptor import validate, projection, limits
+from mix_descriptor import validate, projection, button_projection, limits
 from midi_queue import discard
 from protocol import HEADER, sysex, text13, raw_value
 
@@ -19,14 +19,17 @@ class Target:
         if self.operator is None or not self.operator.valid:
             raise ValueError('Missing MIX target')
         self.parameter = self.operator.par[description['target']['parameter']]
-        if self.parameter is None or self.parameter.style != 'Float' or description['kind'] != 'float':
-            raise ValueError('This slice enables float input only; toggle/menu routing is unavailable')
+        kind = description['kind']
+        if self.parameter is None or (kind, self.parameter.style) not in (('float', 'Float'), ('toggle', 'Toggle')):
+            raise ValueError('MIX needs a matching Float or Toggle target; Menu routing is unavailable')
         if not self.parameter.enable:
             raise ValueError('MIX parameter is disabled')
         self.chain = self.signature()
-        minimum, maximum = limits(description.get('range', [self.parameter.normMin, self.parameter.normMax]))
+        minimum, maximum = limits(description.get('range', [0, 1] if kind == 'toggle' else [self.parameter.normMin, self.parameter.normMax]))
+        if kind == 'toggle' and (minimum, maximum) != (0, 1):
+            raise ValueError('MIX Active range must be 0..1')
         self.binding = Binding(identity, description['label'], minimum, maximum,
-                               parameter_value(self.parameter), parameter=self.parameter)
+                               parameter_value(self.parameter), parameter=self.parameter, integer=kind == 'toggle')
         self.check()
 
     def signature(self):
@@ -98,6 +101,7 @@ class MixRuntime:
         self.family = 0
         self.ready = False
         self.touched, self.blocked, self.armed = set(), set(), set()
+        self.button_down, self.button_blocked, self.last_button = set(), set(), {}
         self.parts, self.last_motor, self.last_text = {}, {}, {}
         self.dirty = True
         self.next_feedback = 0
@@ -129,6 +133,8 @@ class MixRuntime:
         for index, item in enumerate(profile['items']):
             for key, control in item['controls'].items():
                 try:
+                    if control['kind'] != ('toggle' if key == 'active' else 'float'):
+                        raise ValueError('Analysis Active needs Toggle; its knob controls need Float')
                     targets[index, key] = Target(scope, control, profile['id'] + ':' + item['id'] + ':' + key)
                 except (ValueError, AttributeError, TypeError, KeyError) as exc:
                     errors[index, key] = str(exc)
@@ -150,8 +156,9 @@ class MixRuntime:
         self.epoch += 1
         self.ready = False
         self.blocked.update(self.touched)
+        self.button_blocked.update(self.button_down)
         self.armed.clear(); self.parts.clear()
-        self.last_motor.clear(); self.last_text.clear()
+        self.last_motor.clear(); self.last_text.clear(); self.last_button.clear()
         self.dirty = True; self.next_feedback = 0
         if self.active:
             self.e._pending = discard(self.e._pending, self.feedback_output)
@@ -168,6 +175,7 @@ class MixRuntime:
         self.select_pending = True
         self.invalidate()
         self.touched.clear(); self.blocked.clear()
+        self.button_down.clear(); self.button_blocked.clear()
 
     def receive(self, message, token=None, now=None):
         """Return True when MIX owns the event, including unsupported MIX input."""
@@ -232,10 +240,40 @@ class MixRuntime:
             # Only session handshake/PING reaches Host while MIX owns routing.
             return not (group == 10 and command in (2, 0x0C))
         if not self.active:
+            if len(message) == 3 and message[0] == 191 and 20 <= message[1] <= 27 and message[2] == 0:
+                self.button_down.discard(message[1] - 20)
+                self.button_blocked.discard(message[1] - 20)
             return False
         if len(message) != 3 or message[0] != 191 or any(type(v) is not int or not 0 <= v < 128 for v in message[1:]):
             return True
         cc, value = message[1:]
+        if 20 <= cc <= 27:
+            lane = cc - 20
+            if not value:
+                self.button_down.discard(lane); self.button_blocked.discard(lane)
+                self.last_button.pop(lane, None)  # confirm the real state after momentary release
+                return True
+            held = lane in self.button_down
+            self.button_down.add(lane)
+            if stale or not self.ready:
+                self.button_blocked.add(lane)
+                return True
+            if held or lane in self.button_blocked or self.e._dispatching or not self.source_valid():
+                return True
+            address = button_projection(self.profile, self.view)[lane] if self.profile else None
+            target = self.targets.get(address)
+            if target is not None:
+                try:
+                    before = target.check()
+                    self.e._dispatching = True
+                    target.binding.write(int(not before), 'hardware')
+                    self.writes += int(before != target.binding.value)
+                    self.last_button.pop(lane, None)
+                except Exception as exc:
+                    self.suspend(address, exc)
+                finally:
+                    self.e._dispatching = False
+            return True
         if 52 <= cc <= 59:
             lane = cc - 52
             if not value:
@@ -279,7 +317,7 @@ class MixRuntime:
                     self.suspend(address, exc)
                 finally:
                     self.e._dispatching = False
-        # Buttons, transport, unknown CCs never fall back to PLUGIN controls.
+        # Transport and unknown CCs never fall back to PLUGIN controls.
         return True
 
     def select(self, index, *, send=False):
@@ -374,6 +412,24 @@ class MixRuntime:
                 self.e._pending = discard(self.e._pending, lambda m: len(m) >= 10 and tuple(m[:7]) == (*HEADER, 10, 0x18) and m[7:9] == [0, lane])
                 self.command(10, 0x18, (0, lane, *text13(text)))
                 self.last_text[lane] = text
+        # Native Mute feedback is inverted relative to analyzer Active. Focus
+        # buttons are firmware selectors, so never send business LEDs there.
+        if self.view and self.view[0] == 'all':
+            buttons = button_projection(self.profile, self.view) if self.profile and self.ready else [None] * 8
+            mute_bank = self.view[1][2] == 0
+            for lane, address in enumerate(buttons):
+                value = 127 if mute_bank else 0  # unassigned/unsupported is inactive
+                target = self.targets.get(address)
+                if target is not None:
+                    try:
+                        value = 0 if target.check() else 127
+                    except (ValueError, AttributeError, TypeError) as exc:
+                        self.suspend(address, exc)
+                        return
+                if self.last_button.get(lane) != value:
+                    self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and m[1] == 20 + lane)
+                    self.e._send((191, 20 + lane, value), mix=True)
+                    self.last_button[lane] = value
         # Remove complete old meter frames, retaining an in-flight line tail.
         self.e._pending = discard(self.e._pending, lambda m: len(m) == 3 and m[0] == 191 and 65 <= m[1] <= 80)
         for lane in range(8):

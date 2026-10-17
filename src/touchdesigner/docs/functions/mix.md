@@ -1,9 +1,9 @@
 # Independent MIX analysis
 
 This slice implements saved Low/Mid descriptions on an independent eight-slot
-MIX page, float input and native meter feedback. Source tests, native TD checks
+MIX page, float input, Active buttons and native meter feedback. Source tests, native TD checks
 and scoped hardware acceptance cover touch selection, FUNC details, sustained
-captions, Mid Gain input/motor return and normal PLUGIN restoration. The generic
+captions, Mid Gain input/motor return, overview Active toggles and normal PLUGIN restoration. The generic
 tox includes this slice with no MIX assignments; the checked-in demo project
 retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lowmid-hardware-acceptance--2026-10-17).
 
@@ -38,6 +38,22 @@ from LEARN. Only the analysis style is enabled in this slice.
 | Native Pan | Each band's Gain |
 | Native Send A / B | Each band's Add / Smooth |
 | Touch item, then FUNC | Selected band's Threshold, Gain, Add, Smooth on knobs 1–4 |
+| Overview button On/Off bank | Button 1 → Low Active; button 2 → Mid Active |
+
+In overview, the button beneath an item toggles that band's Active parameter.
+Only native On/Off switch mode 0 is assigned. Solo/Arm banks and unassigned slots
+never toggle Active or fall back to PLUGIN. A press toggles once; release and
+held duplicates do not. View/session fences reject stale presses and require a
+release before a held button can act in the new view. Active is not a knob target.
+
+LED feedback follows the actual Toggle, including software edits. Native Mute
+polarity is inverted: Active=True sends CC value 0, Active=False sends 127. The
+state is confirmed again after momentary release. Meter sources remain independent
+of this feedback; an inactive detector may itself produce zero output.
+
+FUNC Focus buttons select items. The read-only hardware check found Button 2
+selects Mid through Track selection, without a CC21 press/release. These buttons
+keep that firmware function; Active is operated from overview.
 
 Readable combined name/value feedback uses SHOW CONTROL VALUE. Native Volume/Pan
 headings are firmware UI, not renamed TD pages. Each band retains its own meter
@@ -82,8 +98,7 @@ No second MIDI owner or new wire protocol is introduced.
 ## Current limits and installation
 
 Overview Pan/Send input has source coverage; it has not had physical acceptance
-in this slice. Active is retained as typed Toggle metadata but has no business button route.
-Menus, trigger indicators, High/Kick adapters, second-page Focus and the slot
+in this slice. Menus, trigger indicators, High/Kick adapters, second-page Focus and the slot
 editor are later slices. No detent or freely replaceable native-heading promise
 is made. Layers remain planned; audio Gain/Mute processing is deferred to
 [issue #26](https://github.com/joshuahhn/roto_control/issues/26).

@@ -1724,3 +1724,55 @@ system temporary `roto-mix-publish-vyql43ej`. The two new committed files for
 distribution are the generic tox and its receipt; probes remain temporary.
 Reuse the final 511 source tests and targeted native/physical evidence because
 publication changed no runtime behavior.
+
+## MIX analysis Active buttons — 2026-10-17
+
+User requested buttons for analyzer Active. Extended the same open PR #27 on
+`feat/td-mix-analysis`, after source/export commits `58ff695` and `778d5a4`.
+Only overview native On/Off switch mode 0 maps to the item's Active Toggle.
+Button 1 is Lowactive, button 2 Midactive. Solo/Arm/unassigned buttons have no
+business target; Focus buttons retain native item selection. No new descriptor
+version, MIDI owner, audio graph or wire protocol was added.
+
+Read-only firmware 3.3.0/API 1.6 acceptance first recorded overview Button 1 as
+BF CC20 press 127, release 0, with zero parameter writes. In FUNC Focus the user
+pressed Button 2 and observed Mid. Wire traffic was General Track selection and
+Focus readback, without CC21 press/release. This establishes the native selector
+seam rather than assuming eight independent Focus business buttons.
+
+The Target adapter now accepts typed Toggle alongside Float, retaining the same
+parameter identity, bind-chain, mode and range guards. Toggle cannot project onto
+a knob. Active toggles once per fresh positive press, ignores held duplicates and
+release, and clears/blocks old presses across view/session boundaries. Native
+Mute LED polarity is inverted from Active: True sends 0, False sends 127. State
+feedback coalesces and is reconfirmed after release, without gating the explicit
+meter source or changing float values.
+
+Two behavioral regressions first failed on missing toggle writes and LED output.
+The final relevant source passes 517 discovery tests, including 30 MIX tests.
+Six new cases cover press semantics, LED/software feedback, stale/held/view
+fences, target invalidation, typed projection and held-button transitions.
+Native TD 2025.33230 accepts three real Toggle writes, duplicate/release
+suppression, independent values, software LED output, unchanged meter sampling
+and no Focus button output. Scoped source upgrade preserves values/configuration,
+matches all 22 runtime/helper hashes and reports zero errors.
+
+Production hardware accepts Low off/on and Mid on/off in overview, with four
+changed writes in total. User confirmed Button 1 lit to unlit and back, Button 2
+unlit to lit and back, and unchanged knob values. All writable analysis values
+then match baseline: Lowactive True, Midactive False, Kickactive/Audioout False,
+and the user's threshold/gain values retained. These new observations do not
+extend acceptance to Solo/Arm, other analysis adapters, menus or audio processing.
+
+Recovery/scripts and separate read-only/native/install/low-off/round-trip results
+are system temporary `roto-mix-active-3lz0aklt`. Final Focus/PLUGIN return and
+save/export bookkeeping follow this checkpoint; later evidence supersedes its
+pending delivery state.
+
+Final production observation also passes Focus Button 2 selecting Mid with normal
+four-detail screens, followed by normal demo_A PLUGIN screens. The MIX changed
+write count remains four. Cleanup closes/reaps the child, removes the temporary
+trace/send wrappers and leaves zero pending bytes. The established disconnected
+local-definition restore preserves the four original IDs after PLUGIN recall;
+registry definitions, analysis/demo values, MIX profile and Snapshots match the
+pre-install baseline. Scoped errors are zero and TD remains open.

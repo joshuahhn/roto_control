@@ -109,7 +109,7 @@ class MixTests(unittest.TestCase):
     def test_fresh_touch_required_echo_buttons_and_plugin_ack_cannot_write(self):
         e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix)
         for raw in (0, 16383): self.turn(e, 0, raw)
-        for value in (127, 0, 127): self.cc(e, 20, value)
+        for value in (127, 0, 127): self.cc(e, 27, value)  # unassigned MIX button
         target = next(iter(e._host.controls.values()))
         e._receive_midi(sysex(11, 11, (target.index >> 7, target.index & 127, *digest(target.target_id, 6), 0, 0, 0)))
         self.assertEqual(source.par.Lowthresh.eval(), .1); self.assertEqual(mix.writes, 0)
@@ -178,6 +178,84 @@ class MixTests(unittest.TestCase):
         self.cc(e, 52, 0); mix.tick(now=3)
         self.assertIn([191, 12, 95], self.messages(e))
         self.assertEqual(mix.writes, 0)
+
+    def test_overview_active_button_toggles_once_per_press_without_float_or_plugin_writes(self):
+        e, mix, manager, _, source, *_ = self.fixture(); self.enter(e, mix)
+        registry = copy.deepcopy(manager.data)
+        floats = {name:p.eval() for name,p in source.par.items() if p.style == 'Float'}
+        self.cc(e, 20, 127); self.cc(e, 20, 127)
+        self.assertFalse(source.par.Lowactive.eval()); self.assertEqual(mix.writes, 1)
+        self.cc(e, 20, 0)
+        self.assertFalse(source.par.Lowactive.eval()); self.assertEqual(mix.writes, 1)
+        self.cc(e, 20, 127); self.cc(e, 20, 0)
+        self.assertTrue(source.par.Lowactive.eval()); self.assertEqual(mix.writes, 2)
+        self.assertTrue(source.par.Midactive.eval())
+        self.assertEqual({name:p.eval() for name,p in source.par.items() if p.style == 'Float'}, floats)
+        self.assertEqual(manager.data, registry)
+
+    def test_active_feedback_uses_native_mute_polarity_and_reconfirms_after_release(self):
+        e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
+        source.par.Midactive.val = 0
+        mix.invalidate()
+        mix.tick(now=2)
+        self.assertIn([191, 20, 0], self.messages(e))  # active -> native mute off
+        self.assertIn([191, 21, 127], self.messages(e))
+        e._pending = b''; mix.tick(now=3)
+        self.assertFalse(any(len(m)==3 and 20<=m[1]<=27 for m in self.messages(e)))
+        self.cc(e, 20, 127); mix.tick(now=4); e._pending = b''
+        self.cc(e, 20, 0); mix.tick(now=5)
+        self.assertIn([191, 20, 127], self.messages(e))  # release cannot reset the state LED
+        self.assertIn([191, 65, 32], self.messages(e))  # meter source remains independent
+        self.assertEqual(mix.writes, 1)
+        source.par.Lowactive.val = 1; mix.tick(now=6)
+        buttons = [m for m in self.messages(e) if len(m)==3 and m[1]==20]
+        self.assertEqual(buttons, [[191, 20, 0]])  # coalesce obsolete pending state
+        self.assertEqual(mix.writes, 1)
+
+    def test_active_buttons_ignore_stale_held_and_unsupported_views(self):
+        e, mix, _, _, source, *_ = self.fixture(); self.enter(e, mix)
+        old = e._ingress_token()
+        e._receive_midi(sysex(12, 1, (0, 1, 0, 0)), old); mix.tick(now=2)
+        self.cc(e, 20, 127, old); self.cc(e, 20, 127)
+        self.assertEqual(mix.writes, 0)
+        self.cc(e, 20, 0); self.cc(e, 20, 127)
+        self.assertFalse(source.par.Lowactive.eval()); self.assertEqual(mix.writes, 1)
+        for event in (sysex(12, 1, (0, 0, 1, 0)), sysex(12, 1, (0, 0, 2, 0)), sysex(12, 2, (0,))):
+            e._receive_midi(event, e._ingress_token()); mix.tick(now=3)
+            self.cc(e, 20, 0); self.cc(e, 20, 127); self.cc(e, 20, 0)
+            self.assertEqual(mix.writes, 1)
+        e._receive_midi(sysex(12, 1, (0, 0, 0, 0)), e._ingress_token()); mix.tick(now=4)
+        self.cc(e, 27, 127); self.cc(e, 27, 0)
+        self.assertEqual(mix.writes, 1)  # unassigned button never falls back
+
+    def test_active_target_replacement_readonly_and_bind_master_changes_suspend(self):
+        for change in ('replacement', 'readonly', 'master'):
+            with self.subTest(change=change):
+                e, mix, _, _, source, _, operators = self.fixture(); self.enter(e, mix)
+                p=source.par.Lowactive
+                if change=='replacement':operators['analysis']=SimpleNamespace(valid=True,id=900,path=source.path)
+                elif change=='readonly':p.readOnly=True
+                else:p.mode.name='BIND';p.bindMaster=BoundParameter('Toggle')
+                self.cc(e,20,127);self.cc(e,20,0)
+                self.assertEqual(mix.writes,0)
+                self.assertTrue(source.par.Midactive.eval())
+
+    def test_active_toggle_cannot_be_projected_onto_a_knob(self):
+        e,mix,_,_,source,*_=self.fixture()
+        profile=e.GetMixProfile()['descriptor'];profile['items'][0]['primary']='active'
+        e.SetMixProfile(mix.scope,profile);self.enter(e,mix)
+        self.cc(e,52,127);self.turn(e,0,0);self.cc(e,52,0)
+        self.assertTrue(source.par.Lowactive.eval());self.assertEqual(mix.writes,0)
+        self.cc(e,20,127);self.cc(e,20,0)
+        self.assertFalse(source.par.Lowactive.eval());self.assertEqual(mix.writes,1)
+
+    def test_button_held_across_view_change_requires_release_and_new_press(self):
+        e,mix,_,_,source,*_=self.fixture();self.enter(e,mix)
+        self.cc(e,20,127);self.assertEqual(mix.writes,1)
+        e._receive_midi(sysex(12,1,(0,1,0,0)),e._ingress_token());mix.tick(now=2)
+        self.cc(e,20,127);self.assertEqual(mix.writes,1)
+        self.cc(e,20,0);self.cc(e,20,127);self.cc(e,20,0)
+        self.assertTrue(source.par.Lowactive.eval());self.assertEqual(mix.writes,2)
 
     def test_shared_track_requests_and_follow_outputs_cannot_mutate_mix_or_plugin(self):
         e, mix, m, f, source, *_ = self.fixture(); self.enter(e, mix)

@@ -140,9 +140,11 @@ The bounded Low prototype passed user-observed `MIX-FOCUS / Low`, combined detai
 name/value text for Threshold/Gain/Add/Smooth, and the public Low-output meter.
 Only Gain input was enabled: the user reached 2.84093267411341, then software
 restored 2.000 and the user confirmed its motor position, all four texts and meter.
-Other float input routes, multi-item selection, long labels, menus and Focus
-buttons remain unverified. Establish button semantics before promising
-Active/Mute/Swap buttons. These are temporary-probe results, not a production API.
+Those prototype results did not establish other float input routes, multi-item
+selection, long labels, menus or button behavior. The later production Low/Mid
+slice adds overview Active toggles and preserves Focus buttons as native item
+selectors; see the [current contract](../functions/mix.md). Mute/Swap and other
+style buttons remain future work. Prototype evidence is not a production API.
 
 The probe's original timeout cleanup prematurely published PLUGIN Track metadata,
 producing native VOLUME/PAN/SEND A/SEND B and EFFECT while still in MIX Focus.
