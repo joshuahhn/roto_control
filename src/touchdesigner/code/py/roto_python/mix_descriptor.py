@@ -248,7 +248,7 @@ def projection(profile, view, selected):
 
 
 def button_projection(profile, view):
-    """Overview On/Off is Active. Focus buttons remain firmware item selectors."""
+    """Overview On/Off is Active. Focus has no TD button assignment."""
     result = [None] * 8
     if view is not None and view[0] == 'all' and view[1][0] == 0 and view[1][2] == 0:
         for index, item in enumerate(profile['items']):

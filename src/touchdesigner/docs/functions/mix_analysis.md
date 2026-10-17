@@ -112,7 +112,7 @@ be anything. The control keys below determine the hardware position.
 | `gain` | Writable Float | Native Pan | Knob 2 |
 | `add` | Writable Float | Native Send A | Knob 3 |
 | `smooth` | Writable Float | Native Send B | Knob 4 |
-| `active` | Writable Toggle | Item's button in native On/Off bank | Buttons still select items |
+| `active` | Writable Toggle | Item's button in native On/Off bank | Firmware-owned; no TD button assignment |
 
 Set `primary` to an available Float key to choose the overview Level target,
 or `None` for no overview control. Missing controls leave their positions empty;
