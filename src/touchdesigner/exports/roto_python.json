@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "roto_python.tox",
-  "sha256": "f61afd991a3fc0f72ea29c3494ae1a32d873e5f5ac5427a957725089f8d3badb",
+  "sha256": "1b3910f1e75364436eae1124165f0eec921163b83f3c1f226a6fe633e033edb3",
   "export_date": "2026-10-17",
   "touchdesigner_build": "2025.33230",
   "profile": {
@@ -17,7 +17,8 @@
     "mix_draft_source": "empty",
     "operation_presets": "empty",
     "operation_custom_slots": 6,
-    "mix_analysis_bands_draft": "Low Mid"
+    "mix_analysis_bands_draft": "Low Mid High Kick Snare Rhythm",
+    "mix_custom_analysis_slots": "empty: slots 7 and 8; 32 draft fields reset"
   },
   "runtime_source_sha256": {
     "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
@@ -25,12 +26,12 @@
     "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
     "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
     "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
-    "RotoPythonExt": "c0942214ad16e2bb076931284499a3d7ee1aabf9c0a44b8890b5d33ee187f2ff",
+    "RotoPythonExt": "eadfaeaa4b40b0e936321c66187c7705eee5a9513fe38600e127ebff66218f1e",
     "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
     "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
     "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
     "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
-    "setup": "f6430aaf9cca74e40b69957f5b5c85ec1b612b74604f8da27d712a347027e75d",
+    "setup": "8e923db46b99c5c219ac7c2734b5d2374975d539664719e7926cf37d2804edfa",
     "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
     "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
     "layouts": "e987fe479b6b0249cce6ca0bf18d29f6e793fb34a6a638f3a6d1768067feaa2f",
@@ -40,17 +41,17 @@
     "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
     "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
     "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
-    "mix_descriptor": "a0ba657cb06842e833278be2374e80bfbdddeb1a49dce2aeada60c44950f49bd",
-    "mix_runtime": "363bec5af3cdc05ec86cdc2bfd921015830e06ce17679fc426e85b9fa1d0ae72"
+    "mix_descriptor": "210cd38cb80bdaaf17d1e71e8c068caef0e983419f1e2dcbdf3b7b7a515408ff",
+    "mix_runtime": "78e85987d9f1e12896e5edeca780f1e5dcddd9b10484e392480bb7a2046f5e59"
   },
   "embedded_documentation_sha256": {
     "readme_md": "71804a9e872f22309e00345e3d4aaac018fa8ebf8ebf51069f11041fde76ac95",
     "docs/overview_md": "493698318faef8c770506e27d2e642ae574568f7371346799fcadab3eee71f9b",
     "docs/fn_lifecycle_md": "f375ab171ee00a8c712dde6468eec9f9830dd2265691013293643c31f283fe43",
-    "docs/fn_mix_analysis_md": "6591dcd97a9e05542613dcdaa93aa4474d046c91094b738055a655793d4c1354",
+    "docs/fn_mix_analysis_md": "5c529dd73472d629731fa4e3e5b12a52a741ef2ffe0e0ef0dbffcf6a00632197",
     "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
     "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
-    "docs/fn_mix_md": "046c154b61c2290ece905ad7675336ec8cff18cd3d3db5b9c9fb45ca7f75cb2e",
+    "docs/fn_mix_md": "44f8600a0007688cc7785241f266ce638d85e834c8fbc06ad2b766b39492701a",
     "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
     "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
     "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
@@ -61,7 +62,7 @@
     "native_export_reload": "passed",
     "runtime_source_count": 22,
     "documentation_snapshot_count": 12,
-    "source_tests": 557,
+    "source_tests": 574,
     "scoped_errors": 0,
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
@@ -110,7 +111,7 @@
       "cross_comp_saved_reload": "passed",
       "existing_profile_ui_hydration": "passed: containing-network OP parameter context",
       "new_hardware_acceptance": false,
-      "analysis_bands": "passed: three-band Apply callback, fifteen targets, ordered draft/persistence, unknown/duplicate/empty rejection, missing-field preflight and new-field hydration; zero writes"
+      "analysis_bands": "passed: six known items, optional custom slots 7/8, real Apply callback; current saved Low/Mid draft preserved"
     },
     "native_mix_operation_presets": {
       "preset_add_two": "passed",
@@ -124,9 +125,40 @@
       "midi_opened": false,
       "generic_user_presets_removed": "passed"
     },
-    "native_mix_analysis_targets": 15,
-    "mix_analysis_selection_feedback": "passed: persistent band/value caption; redundant unchanged overview motor positions removed after a failing six-CC regression; queued positions and frame tails preserved, Focus/mode invalidation retained; normal-production Low/High/Low physical check passed"
+    "native_mix_analysis_targets": 21,
+    "mix_analysis_selection_feedback": "passed: persistent band/value caption; redundant unchanged overview motor positions removed after a failing six-CC regression; queued positions and frame tails preserved, Focus/mode invalidation retained; normal-production Low/High/Low physical check passed",
+    "native_mix_analysis_six_and_custom": {
+      "real_apply_callback": "passed",
+      "known_items": 6,
+      "custom_slots": [
+        7,
+        8
+      ],
+      "targets": 23,
+      "meters": 8,
+      "triggers": 4,
+      "cross_comp_scope": "passed",
+      "test_fixture_writes": 7,
+      "configured_reload": "passed",
+      "draft_not_applied": true,
+      "no_value_recall": true,
+      "midi_connected": false
+    },
+    "native_mix_trigger_documentation": {
+      "document_examples": 2,
+      "foreign_parameter_names": true,
+      "new_writes": 0,
+      "midi_connected": false
+    },
+    "native_mix_custom_generic_reset": {
+      "default_bands": "Low Mid High Kick Snare Rhythm",
+      "custom_draft_fields_cleared": 32,
+      "triggers_empty": true,
+      "disconnected": true,
+      "preserved": true
+    },
+    "new_detector_custom_slot_hardware": "pending: user away; no MIDI opened; see docs/plans/mix-analysis-acceptance.md"
   },
-  "runtime_source_commit": "be656cd892daf9e7eeb52e293c2db2a070bdec0d",
-  "embedded_documentation_source_commit": "be656cd892daf9e7eeb52e293c2db2a070bdec0d"
+  "runtime_source_commit": "3840ec67f200f3fa5f9c6f47893ddc311f92338b",
+  "embedded_documentation_source_commit": "3840ec67f200f3fa5f9c6f47893ddc311f92338b"
 }

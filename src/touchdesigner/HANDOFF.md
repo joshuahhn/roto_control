@@ -2239,3 +2239,16 @@ send/RX/probe overrides. Recovery/scripts/results are in system temporary
 disconnected. New physical acceptance is explicitly deferred to the user's return;
 [the single batch](docs/plans/mix-analysis-acceptance.md) covers High Active/meters,
 all three detectors, custom slots and final PLUGIN restoration. Publication follows.
+
+Publication pins runtime/documentation source
+`3840ec67f200f3fa5f9c6f47893ddc311f92338b`. Generic reload verifies all 22
+runtime/helper and twelve Markdown hashes, six-band draft defaults, all 32 custom
+assignment draft fields cleared, no triggers/profiles/user mappings/presets,
+Follow off, Python python3, no external DATs and zero errors. Generic SHA-256 is
+`1b3910f1e75364436eae1124165f0eec921163b83f3c1f226a6fe633e033edb3`.
+TD incremented the new working save to `ROTO-CONTROL.mix-analysis.12.toe`, with
+adjacent source/hash receipt and SHA-256
+`2ce5b242c036049563be64fa6551a75f589c2d97f2c7c075e124dc177628d879`.
+Canonical toe and prior .8/.10 saves retain their hashes. Post-save preservation
+passes; TD remains open/disconnected. The original dirty root source was not
+reset, cleaned or copied over TD. Hardware acceptance remains deferred, not passed.
