@@ -269,7 +269,7 @@ class MixRuntime:
             except (ValueError, KeyError, TypeError) as exc:
                 self.error = str(exc)
 
-    def configure(self, scope, profile, *, save=True):
+    def configure(self, scope, profile, *, save=True, strict_targets=False):
         if self.e._dispatching:
             raise ValueError('Do not configure MIX during parameter dispatch')
         if self.touched or self.e._host.touched or self.e._host.learning:
@@ -314,6 +314,14 @@ class MixRuntime:
                     pass  # invalid feedback clears bars; other controls remain usable
             if item.get('trigger'):
                 triggers[index] = Trigger(scope, item['trigger'])
+        if strict_targets and errors:
+            raise ValueError('MIX target unavailable: ' + '; '.join(
+                'item ' + str(index + 1) + ' ' + key + ': ' + error
+                for (index, key), error in errors.items()))
+        saved = (dict(scope=posixpath.relpath(scope.path, self.e.ownerComp.path),
+                      descriptor=copy.deepcopy(profile)) if save else None)
+        if strict_targets and scope is self.scope and profile == self.profile and source_state == self.layer_state:
+            return
         self.scope, self.source, self.profile = scope, source, profile
         self.layer_state = source_state
         self.layer_invalid = False
@@ -324,7 +332,7 @@ class MixRuntime:
         self.select_pending = True
         self.invalidate()
         if save:
-            self.e.ownerComp.store('mix_profile', dict(scope=posixpath.relpath(scope.path, self.e.ownerComp.path), descriptor=copy.deepcopy(profile)))
+            self.e.ownerComp.store('mix_profile', saved)
 
     def invalidate(self, *, keep_motors=False):
         self.epoch += 1

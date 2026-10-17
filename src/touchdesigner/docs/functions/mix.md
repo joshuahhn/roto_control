@@ -34,8 +34,8 @@ Use the controller's **MIX** custom parameter page:
 3. For Layer Mix, use the six Custom blend slots. Fill any two to six different
    modes and leave unused slots None. Each slot offers the source's complete TD
    blend list. All None omits the Operation control.
-4. Release knobs, exit LEARN, then press Apply MIX draft. Applied MIX shows the
-   accepted profile. Invalid configuration leaves the previous profile active.
+4. Finish the current gesture, then press Apply MIX draft. Applied MIX shows the
+   accepted source and Operation choices. Invalid configuration leaves the previous profile active.
 
 Analysis has optional `MIX Slot 7` / `MIX Slot 8` assignment pages. Set a user
 name, the other analyzer COMP's actual parameter names and independent CHOP
@@ -50,7 +50,7 @@ not alter the analyzer.
 Draft edits do not change routing or target values. Draft and applied settings
 persist separately; loading never applies an unfinished draft. Clear MIX
 assignments removes only the active MIX profile and keeps the draft for reuse.
-It also requires released knobs, exit from LEARN and no parameter dispatch.
+It also requires idle input and no parameter dispatch or PLUGIN learning.
 Neither pulse connects hardware. The editor never enables Layer Mix Setup or
 Per Layer Operation; configure those intentionally on the source first.
 An unavailable saved custom choice remains labelled Unavailable until replaced;
@@ -58,11 +58,39 @@ Apply rejects it instead of silently choosing a different mode.
 
 Operation preset contains user-named choice lists, without fixed built-in
 categories. Enter Preset name and press Add Operation preset to save the draft;
-Save preset edits / name updates the selected record. Selecting a preset only
-loads the six draft slots. Saving, renaming or deleting a preset does not change
-an already applied profile. Press Apply MIX draft to use the current slots.
+Save preset edits / name updates the selected record. Selecting a saved preset
+activates its saved choices immediately when Draft style and Draft source identify
+the same applied Layer Mix TOP. Activation copies the applied descriptor and changes
+only Operation choices. Unapplied Custom blend edits do not enter that copy.
+An applied all-None list gains the standard Operation control for each layer.
+The source must already have enabled Per Layer Operation menus.
+
+If Draft source or Draft style differs, selection loads the preset into the six
+draft slots and shows that Apply MIX draft is required. There is no queued activation.
+Custom draft selection and Custom blend edits require Apply. Adding, saving,
+renaming, and deleting presets change saved data only, including delayed menu callbacks.
+Applied MIX always shows the applied source and actual choices, independently of
+the selected preset name or draft. Deleting or renaming a preset leaves those choices active.
 Two filled slots are sufficient; six is the editor's capacity, not a minimum.
-Normal configured saves preserve these presets; generic exports clear them.
+Configured reload restores the applied profile and preserves the separate draft
+without replaying preset selection. Generic exports clear both and the saved presets.
+
+Busy input, changed wiring or Setup, replaced sources, and invalid targets reject
+activation. The selector returns to its previous value, with the old applied profile,
+draft, and target values preserved. Select again after resolving the displayed error.
+If activation succeeds but editor refresh fails, the error states that activation
+succeeded. A changed choice list uses the existing selection reset and metadata path.
+Selecting or configuring never connects hardware or writes controlled values.
+
+On a live connection, activation probes the nonblocking input pipe once. Read bytes
+stay buffered under the old ingress token and reject activation. After a successful
+commit, MIX input remains fenced until a normal Tick reaches EAGAIN and finishes
+parsing the buffer. Read limits, event limits, EOF, and partial JSON do not complete
+this drain. Readiness resumes on a later Tick and still requires fresh touch ON
+and a complete value pair. These are event gates, not persistent physical-contact detection.
+EAGAIN observes only the host pipe. Device or helper events delivered after that
+empty observation have no capture-time gesture identity. This fence does not prove
+that every earlier physical gesture has finished.
 
 The same configuration remains available from Python:
 
@@ -78,6 +106,11 @@ controller.GetMixProfile()
 controller.GetMixState()
 ```
 
+`ActivateMixOperationPreset(preset_id, source=layer_mix_top)` activates a saved
+`{id, name, operations}` record for the same applied Layer Mix TOP. The existing
+`{scope, descriptor}` profile remains authoritative. Repeating an identical,
+fully validated selection leaves the routing epoch unchanged.
+
 Omitting `bands` retains the original Low/Mid pair. The first argument is an
 existing COMP scope, and the source reference resolves
 inside it. The scope is saved relative to the controller. No audio network is
@@ -89,8 +122,8 @@ invalid target; it must not silently attach to a new operator at the old path.
 [descriptor](../plans/mix-style-contract.md). `GetMixProfile()` returns a detached
 saved record; `GetMixState()` exposes mode/view readiness, selected item, changed
 write count and unavailable controls. `ClearMixProfile()` removes MIX assignments
-without removing PLUGIN mappings. Configuration requires released knobs and exit
-from LEARN. Analysis and layers are enabled; one profile/style is active at a
+without removing PLUGIN mappings. Configuration requires idle input and no PLUGIN
+learning. Analysis and layers are enabled; one profile/style is active at a
 time. Configuring another source replaces MIX assignments, without changing
 PLUGIN assignments. Mixed-style slots and a profile-switching UI remain planned.
 

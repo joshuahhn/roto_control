@@ -33,8 +33,16 @@ recovery copies and receipts. Its different unnumbered project/export are retain
 byte-for-byte in [local-organization-1f735bd](archive/local-organization-1f735bd/).
 They do not replace the canonical project or the current generic MIX export.
 
-The later [MIX working snapshot](current/ROTO-CONTROL.mix-analysis.18.toe) has its
-own [receipt](current/ROTO-CONTROL.mix-analysis.18.json). It identifies saved
-runtime `7a99f31`; the generic export separately pins `dbd341c`. These saved
-versions differ from both the checkout and the unsaved live TD state. Integration
-does not reload, save or modify that live project.
+The latest [MIX working snapshot](current/ROTO-CONTROL.mix-analysis.20.toe) has its
+own [receipt](current/ROTO-CONTROL.mix-analysis.20.json). It contains #28 preset
+direct activation, the restored original Low/Mid profile and four local control
+definitions. TD's numbered save also updates `ROTO-CONTROL.mix-analysis.toe` to
+the same bytes. This working snapshot and the generic export pin the uncommitted
+source with 22 runtime/helper and 12 documentation hashes against baseline
+`4ec8016`. The generic export is independently sanitized and reload-verified;
+a full project restart is not newly accepted.
+
+The earlier [.18 snapshot](current/ROTO-CONTROL.mix-analysis.18.toe) and its
+[receipt](current/ROTO-CONTROL.mix-analysis.18.json), identifying saved runtime
+`7a99f31`, remain unchanged. The unnumbered canonical `ROTO-CONTROL.toe` and
+`project.json` also retain their separate older identity.

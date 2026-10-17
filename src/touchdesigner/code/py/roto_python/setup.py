@@ -1,6 +1,7 @@
 """Apply persisted TD configuration through the public binding interface."""
 import copy
 import posixpath
+from functools import wraps
 
 
 MIX_CUSTOM_PARAMETERS = tuple('Mixcustom' + str(i) for i in range(1, 7))
@@ -129,6 +130,15 @@ def legacy_mix_choices(controller, libraries=None):
     return choices
 
 
+def _mix_ui_write(function):
+    @wraps(function)
+    def update(controller, *args, **kwargs):
+        with controller.ext.RotoPythonExt._mix_ui_update():
+            return function(controller, *args, **kwargs)
+    return update
+
+
+@_mix_ui_write
 def refresh_mix_presets_ui(controller):
     parameter = controller.par.Mixoperationpreset
     selected = parameter.eval()
@@ -158,15 +168,41 @@ def mix_draft_operations(controller):
 
 
 def load_mix_preset_ui(controller):
+    extension = controller.ext.RotoPythonExt
     identity = controller.par.Mixoperationpreset.eval()
     if identity == MIX_DRAFT_PRESET:
         return
-    record = next((r for r in controller.ext.RotoPythonExt.GetMixOperationPresets() if r['id'] == identity), None)
-    if record is not None:
+    record = next((r for r in extension.GetMixOperationPresets() if r['id'] == identity), None)
+    if record is None:
+        raise ValueError('Choose an existing saved Operation preset')
+    saved = controller.fetch('mix_profile', None, search=False)
+    source = controller.par.Mixsource.eval()
+    scope = controller.op(saved['scope']) if saved else None
+    active = scope.op(saved['descriptor']['source']) if scope is not None and scope.valid else None
+    matching = (controller.par.Mixstyle.eval() == 'layers' and saved is not None
+                and saved['descriptor']['style'] == 'layers' and source is not None and source.valid
+                and active is not None and active.valid and source.id == active.id)
+    if matching:
+        extension.ActivateMixOperationPreset(identity, source=source)
+    try:
         set_mix_operation_draft(controller, record['operations'])
         controller.par.Mixpresetname.val = record['name']
+    except Exception as exc:
+        if not matching:
+            raise
+        message = 'MIX preset activated; UI refresh failed: ' + str(exc)
+        extension._last_error = message
+        try:
+            controller.par.Mixsummary.val = message + ' | Active: ' + controller.par.Mixsummary.eval()
+        except Exception:
+            pass
+        return
+    if not matching:
+        extension._sync_mix_summary()
+        controller.par.Mixsummary.val += ' | Preset loaded as draft; Apply MIX draft to change source or style'
 
 
+@_mix_ui_write
 def edit_mix_preset_ui(controller, action):
     extension = controller.ext.RotoPythonExt
     identity = controller.par.Mixoperationpreset.eval()
@@ -195,8 +231,9 @@ def refresh_mix_ui(controller):
         parameter.val = value
 
 
+@_mix_ui_write
 def install_mix_ui(controller):
-    """Install an explicit-Apply draft editor without changing MIX assignments."""
+    """Install the MIX editor without activating a preset or draft."""
     legacy_choices = legacy_mix_choices(controller)
     new_editor = getattr(controller.par, 'Mixoperationpreset', None) is None
     page = next((p for p in controller.customPages if p.name == 'MIX'), None)
@@ -242,7 +279,8 @@ def install_mix_ui(controller):
     controller.par.Mixoperationpreset.startSection = True
     controller.par.Applymix.startSection = True
     controller.par.Mixsummary.readOnly = True
-    controller.par.Mixsummary.help = 'Currently applied profile. Draft edits take effect only after Apply. Audio Gain/Mute is not available yet.'
+    controller.par.Mixoperationpreset.help = 'Select a saved preset to activate its choices for the same applied Layer Mix source. A different draft source/style requires Apply. Add, Save and Delete only change saved data.'
+    controller.par.Mixsummary.help = 'Applied source and actual Operation choices. Custom slots and source/style edits require Apply. Audio Gain/Mute is not available yet.'
     if legacy_choices is not None:
         set_mix_operation_draft(controller, legacy_choices)
         controller.par.Mixoperationlibrary.destroy()
@@ -313,6 +351,7 @@ def apply_mix_ui(controller):
     raise ValueError('Choose Analysis or Layer Mix; audio processing remains planned')
 
 
+@_mix_ui_write
 def reset_mix_ui(controller):
     """Remove user source references from a generic export clone's draft."""
     controller.par.Mixstyle.val = 'analysis'

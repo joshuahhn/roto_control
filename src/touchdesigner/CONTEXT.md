@@ -68,9 +68,32 @@ Swap have source/native and scoped hardware acceptance; Focus buttons stay
 firmware-owned with no TD business route. A later isolated Button 2 check produces
 no input/selection, so the earlier item-selector interpretation is withdrawn.
 Select in overview by touch, then use FUNC for details. The MIX custom parameter
-page stages a source/style and a
-user-named Operation preset with six custom slots until Apply; two filled slots
-are sufficient. Preset save/name/delete changes data without routing. Clear removes
+page stages source/style and six custom slots until Apply; two filled slots
+are sufficient. Selecting a saved Operation preset activates its record's choices
+immediately for the same valid applied Layer Mix source. A different draft source
+or style loads the preset as a draft requiring Apply. Activation copies the applied
+descriptor, validates all targets before commit, and preserves target values.
+All-None applied choices can gain only the standard Operation controls.
+Preset add/save/name/delete changes data without routing, with scoped suppression
+of inline, deferred, and coalesced menu callbacks. Applied MIX shows the actual
+source and choices rather than inferring them from the selected preset.
+The bounded pipe probe retains read bytes under the old ingress token and rejects
+busy activation. After a live commit, a transient fence keeps MIX not-ready until
+a Tick observes actual EAGAIN with no parsed buffer remaining, then resumes on
+the next Tick with the existing fresh-touch/full-pair gates. Read/event caps,
+EOF, and partial JSON do not finish the drain. EAGAIN is a host observation,
+without capture-time identity for device/helper events delivered later.
+Isolated native checks cover preset selection, data-only management callbacks,
+invalid choices, explicit source Apply, configured reload and generic sanitation.
+Installed-runtime hardware acceptance confirms two-to-four-choice preset selection
+without Apply, unchanged Add with motor repositioning, fresh Knob 5 input to
+Z Film on Input 1 only, and normal PLUGIN screen return. It does not establish
+persistent physical-contact detection or device capture-time fencing. The live
+controller retains the updated source and restored original configuration.
+The saved `.20` working snapshot and generic export include this slice; receipts
+pin the uncommitted source bytes independently of the baseline commit. The older
+canonical demo keeps its separate receipt. Configured reload restores the applied profile without replaying
+draft selection. Clear removes
 only MIX; generic export clears applied data, user Operation presets and draft
 source references. Other analyzers use the documented descriptor API rather than
 the known audioAnalysis convenience adapter. Audio stays

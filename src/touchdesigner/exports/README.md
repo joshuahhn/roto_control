@@ -38,6 +38,16 @@ LOCK-on/off touch selection and PLUGIN return pass with zero writes; same-batch
 view/selection timing remains unforced. The adjacent receipt separates these results
 from the earlier scoped hardware acceptance.
 
+Selecting a saved Operation preset now activates it immediately for the same
+valid applied Layer Mix source. Source/style changes and custom multi-field
+edits still use Apply; Save only persists preset data. Applied MIX shows the
+actual source and choices. Scoped hardware acceptance covers two-to-four choices
+without Apply, preserved Add with motor repositioning, fresh Knob 5 input to
+Z Film on Input 1 only and normal PLUGIN screen return. The export reload
+matches 22 runtime/helper and 12 documentation hashes, starts disconnected and
+has empty mappings, MIX configuration and presets. The receipt identifies the
+uncommitted source by hashes against baseline `4ec8016`; no release commit is implied.
+
 The demo `.toe` has its own [project receipt](../projects/current/project.json).
 Check that receipt separately for its saved runtime version. Numbered exports
 remain historical recovery copies; use the unnumbered tox and adjacent receipt.
