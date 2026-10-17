@@ -2089,3 +2089,22 @@ user preset records, selected id/name, six draft slots and source. Temporary
 fixtures were removed; evidence/recovery is system temporary
 `roto-operation-presets.4QUSytukc8`. This is configuration/API acceptance, with
 earlier physical routing/feedback acceptance reused. Live publication follows.
+
+Publication installs source `7c968b149b62de4c053e657dfd8dbcd5330c9eb0` on the
+correct controller, with all 22 runtime/helper hashes matching. Recovery is
+`before-presets.tox` in the same evidence folder. Its old Common draft migrates
+to four explicit choices plus two None slots; current Low/Mid profile, registry,
+Snapshots, analysis/layer/demo values, nine demo children and old controller's
+246 DAT fingerprints remain unchanged. No test presets were left on this controller.
+
+The new Analysis function document is embedded below the existing Functions
+nodes. Measured annotation containment and no-overlap checks pass while other
+Guide positions remain intact. Generic reload verifies 22 runtime and twelve
+Markdown hashes, no user presets/selection/name/source/slots, no assignments or
+ownership, Follow off, Python python3 and zero errors. Generic SHA-256 is
+`09872115a40be0e3642b86efe5eca348f185f4aa791a604da64acb52ee63c780`.
+TD saved `ROTO-CONTROL.mix-analysis.8.toe` with adjacent receipt, SHA-256
+`26f91428800a11fbe101cdb3c43467f41a8f4da9cac4db15db66040141681129`.
+Canonical toe and dirty-root runtime files remain untouched. TD stays open and
+disconnected, pending bytes zero, with no send/receive overrides. This remains
+in PR #27 without merging.
