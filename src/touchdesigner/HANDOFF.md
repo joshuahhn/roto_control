@@ -29,8 +29,9 @@ source tests and synthetic native messages do not establish physical acceptance.
 - Six-item overview, High Active/changing meter and Kick Active/actual trigger/
   Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm,
   custom slots and an unassigned-knob input check remain pending. A bounded
-  upper-Threshold/lower-Level prototype is accepted for now, but is not production
-  behavior. See [the batch](docs/plans/mix-analysis-acceptance.md).
+  upper-Threshold/lower-Level prototype was accepted; its explicit production
+  integration now has source/native coverage, awaiting an installed-runtime
+  hardware check. See [the batch](docs/plans/mix-analysis-acceptance.md).
 
 ## Historical milestones
 
@@ -2312,3 +2313,48 @@ source tests remain applicable; this evidence-only documentation change does
 not require rerunning them or re-embedding docs. Remaining hardware cases are
 Snare/Rhythm, custom slots and an unassigned-knob input check. Incorporating the
 accepted comparison into the production descriptor/runtime is separate work.
+
+## Production Focus threshold reference — 2026-10-17
+
+Baseline `ef4ef58`, saved runtime `3840ec6`. The user authorized integrating the
+accepted upper-Threshold/lower-Level comparison. Optional meter field
+`focus_reference: 'threshold'` references the same item's existing Float
+Threshold target. It requires analysis style, mono scalar feedback and common
+level/threshold units. First Focus uses measured Level on CC65 and actual
+Threshold on CC66, scaled/clipped by the meter range. This matches the tested
+lower/upper horizontal rendering without treating API Left/Right as physical
+orientation. Overview/stereo/RMS and old profiles lacking the field retain their
+old behavior. Comparison does not imply an actual detection.
+
+Known Kick/Snare/Rhythm adapters opt in with their verified pre-threshold sources
+and 0..1/0..1/0..100 scales. Low/Mid/High processed outputs do not opt in. Each
+custom page adds one default-off Focus threshold comparison toggle, using the
+same Apply; invalid stereo/RMS/missing-Threshold assignments preserve routing.
+The reference reuses the target identity/mode/range check but reads its actual
+value rather than a normalized/clamped motor position. Existing coalescing,
+frame tails, backlog, mode/selection and signal-failure guards remain. No new
+observer, timer, transport, target or persisted value was added.
+
+584 discovery tests pass. Ten new behavioral regressions cover actual CC pairs,
+hardware/software reference updates without detection changes, overview/legacy
+behavior, schema rejection, latest-value coalescing with in-flight tail/backlog,
+source clearing, target-contract changes and custom opt-in/reset. A separate
+trigger-schema test removes the new meter option before testing its own invalid
+style, so its error assertion continues to exercise the trigger rule.
+
+Native TD 2025.33230 verifies the real custom toggle Apply callback, six known
+plus two custom items, all three scales, actual software reference changes,
+configured reload/no value recall and independent foreign analyzer examples.
+The reference-only checks produce zero parameter writes; the reused broader
+fixture retains seven intended temporary target writes. No MIDI process opens.
+Fixtures are removed. Scoped installation verifies all 22 hashes and preserves
+original Low/Mid profile/draft, values, registry/four control IDs, Snapshots, nine
+demo children and old controller DATs. New toggles are False. Recovery/scripts/
+results are in system temporary `roto-meter-reference.tDIaOwwfzf`.
+
+Source/native coverage does not replace the scoped installed-runtime hardware
+check. The earlier temporary probe's geometry/usability result is reused only
+for that scope. [The batch](docs/plans/mix-analysis-acceptance.md#installed-reference-feedback)
+now specifies a production Kick comparison/input/restore check without an output
+probe override. Snare/Rhythm, custom slots and unassigned-knob hardware input
+remain separately pending. Publication follows; TD stays open/disconnected.

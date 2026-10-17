@@ -83,6 +83,15 @@ explicitly, such as parameter readback, analysis output, before threshold or aft
 gain/mute. Do not infer a pre-threshold measurement from an output channel's name.
 Mono may duplicate into the two native bars. Missing sources clear old bars.
 
+An analysis meter may opt into `focus_reference: 'threshold'` for first Focus.
+It requires an existing Float Threshold control and a mono scalar signal with
+the same units. Both bars share the meter range; the actual threshold is not a
+normalized motor position. CC65 carries Level and CC66 Threshold; on tested
+firmware these are lower/upper horizontal bars. Overview is unchanged. Known
+Kick/Snare/Rhythm adapters opt in; custom slots have an explicit default-off
+toggle. Legacy data without the field stays unchanged. Missing feedback clears
+both bars. No new timers, transport or target-value state is needed.
+
 An optional trigger supplies an actual public CHOP output, its optional
 detection-enabled target, and `hold_ms`, initially 200. The hold affects display
 only. Disabled detection is distinct from a measured zero trigger. Native meter

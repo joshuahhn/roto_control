@@ -31,9 +31,11 @@ Threshold/Active, as do Snare/Rhythm, with verified pre-threshold meters and ind
 trigger text in first Focus screen 5. Trigger feedback uses normal Tick
 observations and a bounded display hold. High Active/meters and Kick
 Active/trigger/Threshold now have scoped hardware acceptance; Snare/Rhythm and
-custom-slot hardware checks remain pending. A temporary upper-Threshold/lower-Level
-Kick comparison was accepted, but production scalar meters still duplicate
-their values into both channels.
+custom-slot hardware checks remain pending. An explicit optional first-Focus
+reference now supplies upper Threshold/lower Level on a common meter scale for
+the known detectors. Custom slots can opt in; existing profiles without the
+field and overview retain their original meter behavior. The accepted Kick
+prototype is separate from installed production hardware acceptance.
 Audio processing remains deferred to issue #26.
 One MIX source/style profile is active at a time. Layer input-order/Setup changes
 require explicit reconfiguration. Curated Operation libraries and conditional

@@ -12,8 +12,10 @@ analysis overview Active buttons, motor feedback and native meters. Two optional
 custom analysis slots assign another analyzer's parameter names and CHOP feedback
 through the same Apply. Detectors use independent pre-threshold meters and actual
 read-only trigger feedback; Kick has scoped hardware acceptance while Snare/Rhythm
-and custom slots remain pending. The accepted upper-Threshold/lower-Level
-comparison is a temporary prototype and is not in this export. The
+and custom slots remain pending. Explicit first-Focus reference meters supply
+upper Threshold/lower Level for known detectors; custom assignments can opt in.
+Old profiles and overview retain their original meters. Prototype acceptance
+and installed production hardware acceptance are tracked separately. The
 overview keeps the selected analysis band name/value visible after release,
 without resending unchanged motor positions when selecting another band. One MIX
 source/style profile is active at a time. Configure existing sources through the

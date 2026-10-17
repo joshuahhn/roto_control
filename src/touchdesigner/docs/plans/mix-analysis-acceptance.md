@@ -2,10 +2,24 @@
 
 Current results: six-item overview, High Active/changing meter and Kick
 Active/actual trigger/Threshold input plus motor/PLUGIN restoration pass. A
-temporary upper-Threshold/lower-Level Kick comparison is accepted for now but
-is not production behavior. Snare/Rhythm, custom slots and an unassigned-knob
+temporary upper-Threshold/lower-Level Kick comparison was accepted for now. Its
+explicit production integration now has source/native coverage; the installed
+runtime still needs the focused check below. Snare/Rhythm, custom slots and an unassigned-knob
 hardware input check remain unverified. Reuse completed cases below rather than
 running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
+
+## Installed reference feedback
+
+Use the final source without any output/receive probe override. Agent configures
+a bounded, disconnected-first Kick profile after a fresh snapshot, then user
+enters first FUNC Focus. With hands off, confirm upper Threshold near 26% and
+lower pre-threshold Level varying over the common 0..1 scale. Existing detection
+state remains unchanged. Make one small Threshold gesture, confirming only the
+upper reference tracks its actual value while the lower remains the signal.
+Restore 0.261747 or the freshly captured value, confirm motor/reference return,
+then normal PLUGIN display and disconnection. This replaces the temporary send
+override acceptance; it does not repeat unrelated LEARN/Layer Mix tests. Keep
+the generic export and original saved profile free of test assignments.
 
 Run when the user is back at the controller. Source tests and native fixtures
 cover configuration/routing/persistence; they do not prove the new hardware

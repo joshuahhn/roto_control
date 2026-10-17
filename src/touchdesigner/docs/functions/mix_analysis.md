@@ -77,6 +77,7 @@ define new controls or a new protocol.
 | Active parameter | Exact existing writable Toggle name; blank omits it |
 | Meter CHOP / channel names | Existing CHOP and one or two named channels |
 | Meter measurement / minimum / maximum / stage | Scalar or audio RMS dBFS, actual source units and signal location |
+| Focus threshold comparison | Optional, off by default; mono scalar Level and the assigned Float Threshold must share units |
 | Actual trigger CHOP / channel name | Optional real pulse output; display hold is 200 ms |
 
 Assign only fields that exist. Controls use validated native parameter ranges;
@@ -84,6 +85,8 @@ feedback units/ranges are independent. If Active is assigned, it also supplies
 the trigger's enabled state. Otherwise the trigger is observed without an enabled
 flag. The descriptor API additionally supports a separate read-only enabled flag
 or parameter-valued meter/trigger. Blank feedback CHOPs leave feedback unassigned.
+The comparison toggle is draft-only and uses the existing Apply. Stereo/RMS or
+missing Threshold assignments are rejected when it is on.
 
 Apply resolves controls and feedback against their common existing COMP ancestor,
 including sources in different networks. Stored descriptor references remain
@@ -194,7 +197,8 @@ pass a real COMP handle. Keep profile/item IDs stable and independent of paths.
 A meter is read-only feedback and does not require a writable control:
 
 - CHOP source: `{'kind': 'chop', 'op': 'levels', 'channels': ['left', 'right']}`.
-  Use one or two actual channel names. One channel fills both native bars.
+  Use one or two actual channel names. One channel fills both native bars unless
+  the explicit first-Focus threshold comparison below is enabled.
 - Parameter source: `{'kind': 'parameter', 'op': '.', 'parameter': 'Outputlevel'}`.
   A numeric read-only/expression-driven parameter can be feedback; it is never
   written by the meter. Use `measure='scalar'`.
@@ -203,7 +207,7 @@ A meter is read-only feedback and does not require a writable control:
 - `rms_dbfs` calculates RMS over each CHOP channel's available sample buffer,
   then `20 * log10(RMS)`. Use it for audio samples, with a dB range such as
   `[-60, 0]`. Do not apply it again to an already calculated level.
-- `range` maps source units to bar height and clips outside values. It is
+- `range` maps source units to the bars and clips outside values. It is
   independent of every control range. `stage` must describe the actual signal
   location. Yellow/red meter thresholds remain global MIX settings.
 
@@ -249,14 +253,42 @@ Kick's Active, actual trigger and Threshold route now have scoped hardware
 acceptance; Snare/Rhythm and custom slots still need the
 [batched physical check](../plans/mix-analysis-acceptance.md).
 
-The current production meter duplicates a scalar into both channels. A separate
-temporary Kick Focus comparison was accepted with the upper horizontal bar
-showing Threshold and the lower showing pre-threshold Level. Both extend left to
-right over the same 0..1 scale. On the tested firmware 3.3.0 Focus screen, CC66
-was the upper bar and CC65 the lower; do not infer physical layout from the API's
-Left/Right names. This prototype changed no global color thresholds or detector
-algorithm and is not implemented by this descriptor yet. Actual trigger feedback
-remains the detector output, independent of this visual comparison.
+## Focus threshold comparison
+
+An analysis item's meter may declare `focus_reference: 'threshold'`. This is
+optional and references that item's existing Float `controls.threshold`; it
+does not create another target. It requires `measure: 'scalar'` with one CHOP
+channel or a scalar parameter source. Caller-supplied level and threshold must
+have the same units and a verified signal stage. Stereo and RMS comparisons,
+other control keys and missing/non-Float Threshold targets are rejected.
+
+First Focus screen 1 then uses CC65 for the measured level and CC66 for the
+actual current threshold, both scaled/clipped by the meter's single `range`.
+The reference reads target units directly after the existing identity/mode/range
+check; it does not use the normalized motor position or coerce the target value.
+The tested firmware 3.3.0 renders these as a lower Level and upper Threshold
+horizontal bar, both extending left to right. API Left/Right names describe
+channels, not physical screen orientation. Colors remain the common firmware
+green/yellow/red rules, not per-data-source colors. Actual trigger feedback
+still comes from the detector, independently of the comparison.
+
+After verifying the example analyzer's `band_energy` and Triggerlimit units,
+set `descriptor['items'][0]['meter']['focus_reference'] = 'threshold'` and
+register through the same `controller.SetMixProfile(scope, descriptor)` call.
+Custom slots expose this as the optional Focus threshold comparison toggle.
+
+The known Kick/Snare/Rhythm adapter supplies this field automatically for its
+verified pre-threshold sources. Low/Mid/High do not: their processed outputs are
+not assumed to be threshold-comparison inputs. Overview keeps its normal meters;
+only first Focus uses the reference. Invalid level/reference feedback clears both
+bars. Existing coalescing, in-flight tails and backlog guards apply, without
+extra observers or timers. Old saved profiles without the field retain their
+original meter behavior; explicitly reconfigure to adopt the new adapter data.
+No detection, audio or target values change merely from configuration/reload.
+
+The earlier bounded Kick prototype established the physical rendering and was
+accepted at 0.490. Production integration has source/native coverage; a scoped
+hardware check of the installed runtime remains separate from that prototype.
 
 ## Lifecycle and diagnostics
 

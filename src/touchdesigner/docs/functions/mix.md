@@ -40,6 +40,9 @@ name, the other analyzer COMP's actual parameter names and independent CHOP
 feedback, then use the same Apply. Blank item name leaves a slot unassigned.
 See [custom assignments](mix_analysis.md#custom-slots-7-and-8); these stay within
 analysis style and do not create a general mixed-style editor.
+Each custom slot also has an optional Focus threshold comparison toggle, off by
+default. Use it only for a mono scalar level sharing the assigned Threshold's
+units; it uses the same Apply and does not alter the analyzer.
 
 Draft edits do not change routing or target values. Draft and applied settings
 persist separately; loading never applies an unfinished draft. Clear MIX
@@ -240,12 +243,16 @@ trigger is held for 200 ms for readability, without changing detection. See the
 [trigger API](mix_analysis.md#trigger-contract) and pending
 [batched hardware check](../plans/mix-analysis-acceptance.md).
 
-A bounded Kick Focus comparison prototype put Threshold on the upper horizontal
-bar and pre-threshold Level on the lower, both extending left to right on a 0..1
-scale. The user reached 0.490 and accepted the comparison for now. The API's
-Left/Right names describe channels, not this physical screen orientation.
-This comparison is not in the production runtime or generic tox: a single scalar
-still fills both bars. See [the evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
+The known Kick/Snare/Rhythm adapter now declares a first-Focus threshold reference.
+On the tested firmware screen 1, the upper horizontal bar shows actual Threshold,
+the lower shows pre-threshold Level, both extending left to right on the meter's
+single scale. Kick/Snare use 0..1 and Rhythm 0..100. The API's Left/Right names
+describe channels, not physical direction. Overview and profiles without the
+optional field keep their original meters. See the
+[reference contract](mix_analysis.md#focus-threshold-comparison). The earlier
+[Kick prototype](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17)
+was accepted at 0.490; installed production feedback still needs its scoped
+physical check.
 
 [SysEx API v1.6](../../../../docs/ROTO-CONTROL_SYSEX_API_v1.6.pdf), section 2.23,
 defines a timeout for SHOW CONTROL VALUE. Assigned text is therefore renewed on
