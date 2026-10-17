@@ -1850,3 +1850,22 @@ learn-storage acceptance for that older difference.
 Recovery/scripts/results are under system temporary `roto-mix-layers.FSF5D0jzzv`.
 The original dirty-root runtime sources and old controller remain untouched.
 Save/export and source receipt details follow after publication below.
+
+## Layer Mix save/export — 2026-10-17
+
+Source/documentation commit `3f053812bae4e2ff5824a04fd4a696905f665152` is embedded in the new generic
+export. Native reload confirms 22 runtime/helper and eleven documentation hashes,
+empty MIX/mappings/Snapshots/Focus/ownership, Follow off, Python python3, no external
+DAT files and zero scoped errors. Original outer Guide/doc positions are preserved.
+Generic SHA-256 is
+`3e300151a4d9249c0897fcf3cc7cbf8175e6004407c8996967af1a4aea72d2d2`.
+TD saved `ROTO-CONTROL.mix-analysis.4.toe`, with adjacent receipt, SHA-256
+`9d773da0b234bae0002291c95d3e90f4dcebe3bb8f06a3b197011a56020b6b7b`.
+The working copy keeps the restored Low/Mid profile, authorized Layer Mix demo,
+user Steps=4, original audio nodes and all four local control definitions. Nine
+demo children and the old controller's 246 DAT fingerprints match the publication
+baseline. Canonical/demo toe artifacts and dirty-root runtime source remain
+untouched. The project is open/disconnected, without pending bytes or diagnostic
+overrides. Save/export recovery and results are in the same evidence folder's
+`publish` directory. Reuse the final 522 tests; publication changes no runtime
+behavior. This update stays in PR #27 without merging.
