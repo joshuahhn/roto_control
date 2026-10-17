@@ -12,7 +12,7 @@ import test_assignment
 import test_tag_devices
 import test_comp_follow
 from layouts import Layouts, OWNER_KEY
-from protocol import digest, sysex
+from protocol import digest, SysExCommand
 from export_component import reset_mapping_storage
 
 
@@ -76,7 +76,7 @@ class OwnerTests(unittest.TestCase):
         self.assertTrue(e.GetControlState(state['id'])['mapped'])
         x.owner.valid=False;replacement=self.add(comps,'/Source')
         target=e._host.controls['knob',1]
-        ack=sysex(11,11,(target.index>>7,target.index&127,*digest(target.target_id,6),0,0,0))
+        ack=SysExCommand.CONTROL_MAPPED.message((target.index>>7,target.index&127,*digest(target.target_id,6),0,0,0))
         e._receive_midi(ack);e._receive_midi((191,12,127));e._receive_midi((191,44,127))
         self.assertEqual(replacement.eval(),5);self.assertEqual(x.eval(),5)
         self.assertEqual(m.layout(layout)['owner']['state'],'missing')
@@ -154,7 +154,7 @@ class OwnerTests(unittest.TestCase):
         e.RemoveControl(owned['id']);m.capture(force=True)
         self.assertEqual(m.plugin(layout)['targets'],[])
         e.SelectLayout('custom');self.assertEqual(e.GetValue(original),8)
-        e._receive_midi(sysex(11,11,(old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0)))
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0)))
         self.assertFalse(e.GetControlState(original)['mapped'])
 
     def test_pulse_is_not_a_preset_on_selection_or_browse(self):

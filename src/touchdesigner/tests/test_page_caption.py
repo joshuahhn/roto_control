@@ -7,7 +7,7 @@ import unittest
 
 import test_assignment
 import test_layouts
-from protocol import digest, sysex, text13
+from protocol import digest, SysExCommand, text13
 from text_comp_follow import CompFollower
 
 
@@ -26,7 +26,7 @@ class PageCaptionTests(unittest.TestCase):
         identity = digest(target.target_id, 6)
         if wrong:
             identity = (identity[0] ^ 1, *identity[1:])
-        e._receive_midi(sysex(11, 11, (target.index >> 7, target.index & 127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((target.index >> 7, target.index & 127,
             *identity, int(key[0] == 'button'), key[1] - 1, 0)))
         e._pending = b''
 
@@ -37,7 +37,7 @@ class PageCaptionTests(unittest.TestCase):
         return messages
 
     def caption(self, label):
-        return sysex(10, 0x16, text13(label))
+        return SysExCommand.SET_CURRENT_TRACK_NAME.message(text13(label))
 
     def test_hint_expires_once_and_never_renames_group_or_writes_target(self):
         e, m, p = self.fixture()
@@ -79,7 +79,7 @@ class PageCaptionTests(unittest.TestCase):
         self.assertEqual(self.flush(e, .3), [])
         self.ack(e, ('knob', 2))
         self.assertEqual(self.flush(e, .4), [self.caption('EFFECT')])
-        e._receive_midi(sysex(11, 14, (0, 1)))
+        e._receive_midi(SysExCommand.UNMAP_CTL.message((0, 1)))
         self.assertEqual(self.flush(e, .5), [self.caption('Demo')])
 
     def test_identically_named_pages_on_different_comps_are_ambiguous(self):
@@ -115,9 +115,9 @@ class PageCaptionTests(unittest.TestCase):
         self.ack(e)
         self.flush(e, 0)
         self.flush(e, 2)
-        e._receive_midi(sysex(10, 21))
+        e._receive_midi(SysExCommand.ROTO_PAGE_RIGHT.message())
         self.assertEqual(self.flush(e, 3), [self.caption('EFFECT')])
-        e._receive_midi(sysex(11, 11, (first['index'] >> 7, first['index'] & 127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((first['index'] >> 7, first['index'] & 127,
             *digest(first['identity'], 6), 0, 0, 0)))
         e._pending = b''
         self.assertEqual(self.flush(e, 4), [self.caption('Demo')])
@@ -150,7 +150,7 @@ class PageCaptionTests(unittest.TestCase):
         self.ack(e)
         self.flush(e, 0)
         self.flush(e, 2)
-        e._host._command(11, 8, (0, 0, 0))
+        e._host._send(SysExCommand.DAW_SELECT_PLUGIN.message((0, 0, 0)))
         e._pending = b''
         self.assertEqual(self.flush(e, 3), [self.caption('Demo')])
         e._host.plugin = False

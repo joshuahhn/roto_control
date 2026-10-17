@@ -8,7 +8,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / 'code/py/roto_python'))
 from RotoPythonExt import RotoPythonExt
 from controls import Controls
-from protocol import Host, sysex, digest, text13
+from protocol import Host, SysExCommand, digest, text13
 from collection_protocol import CollectionHost
 
 
@@ -63,21 +63,21 @@ class ApiTests(unittest.TestCase):
         ext._host = CollectionHost(sent.append, ext._assign_control,
                                    list(ext._collection.specs()), 'test.toggle')
         host = ext._host
-        host.start(); host.receive(sysex(10,12)); host.receive(sysex(11,1,(0,)))
+        host.start(); host.receive(SysExCommand.ROTO_DAW_CONNECTED.message()); host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
         target = host.controls['button',1]
-        host.receive(sysex(11,11,(0,target.index,*digest(target.target_id,6),1,0,0)))
+        host.receive(SysExCommand.CONTROL_MAPPED.message((0,target.index,*digest(target.target_id,6),1,0,0)))
         for value, label in [(127,'On'),(0,'Off')]:
             sent.clear()
             host.receive((191,20,value))
             self.assertEqual(ext.GetValue('enabled'), float(value>0))
-            self.assertEqual(sent,[(191,20,value),sysex(10,24,(1,0,*text13(label)))])
+            self.assertEqual(sent,[(191,20,value),SysExCommand.PARAM_VALUES.message((1,0,*text13(label)))])
         self.assertEqual([e['value'] for e in events],[1,0])
 
     def ready(self, ext):
         host = ext._host
-        host.start(); host.receive(sysex(10,12)); host.receive(sysex(11,1,(0,)))
+        host.start(); host.receive(SysExCommand.ROTO_DAW_CONNECTED.message()); host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
         for key,target in host.controls.items():
-            host.receive(sysex(11,11,(0,target.index,*digest(target.target_id,6),
+            host.receive(SysExCommand.CONTROL_MAPPED.message((0,target.index,*digest(target.target_id,6),
                                      int(key[0]=='button'),key[1]-1,0)))
 
     def test_numeric_software_then_hardware_sequence_and_touch_deferral(self):
@@ -139,7 +139,7 @@ class ApiTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Pulse'):
             ext.SetValue(1,id='reset')
         self.assertTrue(ext.GetControlState('reset')['valid'])
-        ext._host.receive(sysex(11,9,(1,)))
+        ext._host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.assertTrue(ext.Offerparameter('reset'))
         self.assertEqual(ext.GetValue('reset'),0)
 
@@ -198,7 +198,7 @@ class ApiTests(unittest.TestCase):
         target._parts[13]=10; target._display_dirty=target._deferred_value=True
         value=ext.GetValue('speed')
         self.assertTrue(ext.ClearLearn('speed'))
-        self.assertEqual(sent,[sysex(11,14,(0,1))])
+        self.assertEqual(sent,[SysExCommand.UNMAP_CTL.message((0,1))])
         self.assertFalse(ext.GetControlState('speed')['mapped'])
         self.assertTrue(ext.GetControlState('reset')['mapped'])
         self.assertEqual(ext.GetValue('speed'),value)
@@ -207,7 +207,7 @@ class ApiTests(unittest.TestCase):
         before=list(sent); ext._host.flush_display(1000)
         self.assertEqual(sent,before)
         ext.ClearLearn('reset')
-        self.assertEqual(sent[-1],sysex(11,14,(1,7)))
+        self.assertEqual(sent[-1],SysExCommand.UNMAP_CTL.message((1,7)))
         ext._host.receive((191,27,127))
         self.assertEqual(ext.GetValue('reset'),0)
 
@@ -237,7 +237,7 @@ class ApiTests(unittest.TestCase):
             ext.ClearLearn('wrong')
         self.assertEqual(sent,[])
         self.assertTrue(ext.ClearLearn('Value'))
-        self.assertEqual(sent,[sysex(11,14,(0,0))])
+        self.assertEqual(sent,[SysExCommand.UNMAP_CTL.message((0,0))])
         self.assertFalse(ext._host.mapped)
         self.assertTrue(ext._host.enabled)
 
@@ -266,7 +266,7 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(result['maximum'],20)
         self.assertFalse(result['mapped']);self.assertTrue(result['requires_relearn'])
         self.assertTrue(ext.GetControlState('reset')['mapped'])
-        self.assertEqual(sent,[sysex(11,14,(0,1))])
+        self.assertEqual(sent,[SysExCommand.UNMAP_CTL.message((0,1))])
         self.assertEqual(ext.GetValue('speed'),7.123456789)
         self.assertEqual(ext.ownerComp.fetch('control_overrides')['speed']['maximum'],20)
 
@@ -285,7 +285,7 @@ class ConfigurationTests(unittest.TestCase):
         old=ext._host.controls['button',8].target_id
         ext.ConfigureControl('reset',mode='toggle')
         self.assertEqual(ext.GetControlState('reset')['mode'],'toggle')
-        ext._host.receive(sysex(11,11,(0,15,*digest(old,6),1,7,0)))
+        ext._host.receive(SysExCommand.CONTROL_MAPPED.message((0,15,*digest(old,6),1,7,0)))
         self.assertFalse(ext.GetControlState('reset')['mapped'])
         self.ready(ext)
         self.assertFalse(ext.GetControlState('reset')['requires_relearn'])
@@ -318,7 +318,7 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(sent,[]);self.assertTrue(ext.GetControlState('speed')['mapped'])
         ext._host.controls['button',8].touched=False;ext._host._sync()
         self.assertEqual(ext.ClearAllLearn(),('speed','reset'))
-        self.assertEqual(sent,[sysex(11,14,(0,1)),sysex(11,14,(1,7))])
+        self.assertEqual(sent,[SysExCommand.UNMAP_CTL.message((0,1)),SysExCommand.UNMAP_CTL.message((1,7))])
         self.assertTrue(all(not state['mapped'] for state in ext.GetControlStates()))
 
 if __name__ == '__main__':

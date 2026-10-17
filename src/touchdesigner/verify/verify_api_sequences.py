@@ -72,14 +72,14 @@ def exercise(controller):
         real_send(message)
     host.send = capture
     host.start()
-    host.receive(protocol.sysex(10,12)); host.receive(protocol.sysex(11,1,(0,)))
+    host.receive(protocol.SysExCommand.ROTO_DAW_CONNECTED.message()); host.receive(protocol.SysExCommand.SET_PLUGIN_MODE.message((0,)))
     assert not controller.Offerparameter('api.reset')
-    host.receive(protocol.sysex(11,9,(1,)))
+    host.receive(protocol.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert controller.Offerparameter('api.reset')
     assert target_comp.fetch('pulses',0) == pulse_before
-    host.receive(protocol.sysex(11,9,(0,)))
+    host.receive(protocol.SysExCommand.SET_DEVICE_LEARN.message((0,)))
     for key,target in host.controls.items():
-        host.receive(protocol.sysex(11,11,(0,target.index,*protocol.digest(target.target_id,6),
+        host.receive(protocol.SysExCommand.CONTROL_MAPPED.message((0,target.index,*protocol.digest(target.target_id,6),
                                          int(key[0]=='button'),key[1]-1,0)))
     assert host.mapped
     controller.SetValue(6.123456789,id='api.speed')
@@ -94,7 +94,7 @@ def exercise(controller):
         sent.clear()
         host.receive((191,19+slot,0))
         assert controller.GetValue(id)==0
-        assert sent==[(191,19+slot,0),protocol.sysex(10,24,(1,slot-1,*protocol.text13('Off')))]
+        assert sent==[(191,19+slot,0),protocol.SysExCommand.PARAM_VALUES.message((1,slot-1,*protocol.text13('Off')))]
     sent.clear()
     host.receive((191,12,32)); host.receive((191,44,0))
     host.receive((191,13,64)); host.receive((191,45,0))

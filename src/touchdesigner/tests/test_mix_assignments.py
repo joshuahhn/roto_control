@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import unittest
 from test_bound_parameter import BoundParameter
 from mix_runtime import MixRuntime
-from protocol import sysex, text13
+from protocol import SysExCommand, text13
 import setup
 import test_mix
 import test_mix_ui
@@ -62,9 +62,9 @@ class MixAssignmentsTests(unittest.TestCase):
         source.par.Rythmthresh.val=49.4591
         e.ConfigureMixAnalysis(mix.scope,'analysis',('Low','Rhythm'))
         helper.enter(e,mix);mix.tick(now=1.2)
-        self.assertIn(list(sysex(10,24,(0,1,*text13('Thres 49.459')))),helper.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,1,*text13('Thres 49.459')))),helper.messages(e))
         e._pending=b'';helper.focus(e,mix,1)
-        self.assertIn(list(sysex(10,24,(0,0,*text13('Thres 49.459')))),helper.messages(e))
+        self.assertIn(list(SysExCommand.PARAM_VALUES.message((0,0,*text13('Thres 49.459')))),helper.messages(e))
         self.assertEqual(source.par.Rythmthresh.eval(),49.4591)
         self.assertEqual(mix.writes,0)
 

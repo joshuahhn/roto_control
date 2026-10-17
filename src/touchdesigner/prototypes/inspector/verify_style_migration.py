@@ -16,7 +16,7 @@ class StyleMigrationProbe:
         c=self.clone;e=c.ext.RotoPythonExt;key=e._collection.key(id)
         t=e._host.controls[key];proto=c.op('protocol').module
         index=t.index if index is None else index;identity=t.target_id if identity is None else identity
-        e._receive_midi(proto.sysex(11,11,(index>>7,index&127,*proto.digest(identity,6),int(kind=='button'),slot-1,0)))
+        e._receive_midi(proto.SysExCommand.CONTROL_MAPPED.message((index>>7,index&127,*proto.digest(identity,6),int(kind=='button'),slot-1,0)))
         e._publish();self.model_ready()
 
     def migrate(self,style):

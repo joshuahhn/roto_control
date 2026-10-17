@@ -6,10 +6,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[1] / 'code/py/roto_python'))
 from collection_protocol import CollectionHost
 from controls import Controls
-from protocol import sysex, digest, text13
+from protocol import SysExCommand, digest, text13
 
 def pulse_feedback(slot, value):
-    return [(191,19+slot,value),sysex(10,24,(1,slot-1,*text13('Trigger' if value>=64 else 'Ready')))]
+    return [(191,19+slot,value),SysExCommand.PARAM_VALUES.message((1,slot-1,*text13('Trigger' if value>=64 else 'Ready')))]
 
 
 
@@ -22,8 +22,8 @@ class CollectionTests(unittest.TestCase):
                  for kind in ('knob','button') for slot in range(1,9)]
         self.host = CollectionHost(self.sent.append, self.assign, specs, 'test', clock=lambda:self.now[0])
         self.host.start()
-        self.host.receive(sysex(10,12))
-        self.host.receive(sysex(11,1,(0,)))
+        self.host.receive(SysExCommand.ROTO_DAW_CONNECTED.message())
+        self.host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
 
     def assign(self,key,value):
         self.events.append((key,value))
@@ -32,7 +32,7 @@ class CollectionTests(unittest.TestCase):
 
     def map(self,kind,slot):
         t=self.host.controls[kind,slot]
-        self.host.receive(sysex(11,11,(0,t.index,*digest(t.target_id,6),int(kind=='button'),slot-1,0)))
+        self.host.receive(SysExCommand.CONTROL_MAPPED.message((0,t.index,*digest(t.target_id,6),int(kind=='button'),slot-1,0)))
 
     def test_learn_transitions_discard_interleaved_partial_pairs_on_all_slots(self):
         for reverse in (False, True):
@@ -41,8 +41,8 @@ class CollectionTests(unittest.TestCase):
                 for slot in range(1, 9):
                     self.map('knob', slot)
                     self.host.receive((191, (43 if reverse else 11)+slot, 64))
-                self.host.receive(sysex(11,9,(1,)))
-                self.host.receive(sysex(11,9,(0,)))
+                self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
+                self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((0,)))
                 for slot in reversed(range(1, 9)):
                     self.host.receive((191, (11 if reverse else 43)+slot, 0))
                 self.assertEqual(self.events, [])
@@ -67,7 +67,7 @@ class CollectionTests(unittest.TestCase):
 
     def test_pulse_metadata_has_action_labels(self):
         self.map('button',8)
-        details=next(m for m in reversed(self.sent) if m[0]==240 and m[5:7]==(11,10))
+        details=next(m for m in reversed(self.sent) if m[0]==240 and SysExCommand.identify(m) is SysExCommand.LEARN_PARAM)
         self.assertEqual(details[33:46],text13('Ready'))
         self.assertEqual(details[46:59],text13('Trigger'))
 
@@ -116,7 +116,7 @@ class CollectionTests(unittest.TestCase):
         self.assertEqual(self.host.echo_blocked,2)
 
     def test_mapping_wrong_hash_or_slot_rejected(self):
-        self.host.receive(sysex(11,11,(0,0,*digest('knob1',6),0,1,0)))
+        self.host.receive(SysExCommand.CONTROL_MAPPED.message((0,0,*digest('knob1',6),0,1,0)))
         self.assertFalse(self.host.controls['knob',2].mapped)
         self.assertEqual(self.host.rejected,1)
 
@@ -143,17 +143,17 @@ class CollectionTests(unittest.TestCase):
 
     def test_independent_learn_and_hardware_echo(self):
         self.map('knob',1)
-        self.host.receive(sysex(11,9,(1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.sent.clear()
         self.host.receive((191,12,60));self.host.receive((191,44,0))
         self.assertFalse(self.sent)
         self.host.parameter_changed(.6,('knob',2));self.host.parameter_changed(.7,('knob',2))
         self.host.parameter_changed(1,('button',1))
-        self.assertEqual([m[8] for m in self.sent if m[0]==240 and m[6]==10],[1,8])
+        self.assertEqual([m[8] for m in self.sent if m[0]==240 and SysExCommand.identify(m) is SysExCommand.LEARN_PARAM],[1,8])
 
     def test_reconnect_clears_partial_pairs_and_all_mapping(self):
         self.map('knob',8);self.host.receive((191,19,42));self.host.stop()
-        self.host.start();self.host.receive(sysex(10,12));self.host.receive(sysex(11,1,(0,)))
+        self.host.start();self.host.receive(SysExCommand.ROTO_DAW_CONNECTED.message());self.host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
         self.map('knob',8);self.host.receive((191,51,10))
         self.assertFalse(self.events)
         self.assertFalse(self.host.mapped)

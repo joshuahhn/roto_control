@@ -3294,3 +3294,63 @@ Raw evidence, logs, recovery tox files and source hashes are in system temp
 `roto-7-inspector-czmuxafo`. Full project restart is explicitly skipped by request.
 Physical feel, real keyboard typing, other pages and Windows remain outside this
 acceptance. Audio remains deferred. No commit, push or PR is created.
+
+## Review branch publication — 2026-10-18
+
+The user subsequently authorizes opening PRs. The parent preserves dirty root
+main and prepares exact checkpoints in isolated worktrees. Ready
+[PR #31](https://github.com/joshuahhn/roto_control/pull/31) contains #28 MIX preset
+activation and passes 611 source tests. Ready
+[PR #32](https://github.com/joshuahhn/roto_control/pull/32) targets that branch and
+contains only Toggle recall normalization, three regressions and its function
+documentation; 614 source tests pass. Ready
+[PR #33](https://github.com/joshuahhn/roto_control/pull/33) targets the Toggle branch
+and adds #7 Serial API/Inspector with the verified saved artifacts; 681 source
+tests pass. Independent same-model source/packaging reviews find no remaining
+blocker. PRs are linked to the current T3 thread; none is merged. Earlier dated
+no-commit statements describe their original checkpoints, before this authorization.
+
+Command migration is the next separate layer. The user confirms replacing raw
+Serial and SysEx command callers with named APIs, requiring a genuine zero-old-
+callers check before issue #30. A pre-migration corpus pins 158 packets and eight
+payload failures; two invalid raw-selector cases are explicitly retired rather
+than counted as unchanged payload behavior. The finite scan includes current TD
+runtime, helpers, builders/upgraders, tests, diagnostics and prototypes. Inherited
+integrations and historical binary/source snapshots remain outside the migration.
+Decision/evidence pointers are retained in the append-only
+[decision trail](../../docs/decisions/2026-10-18-roto-control.tsv). Its original
+system-temp prefix remains a frozen historical copy; later decisions append to
+the repository file.
+
+
+## 2026-10-18 named Serial and SysEx migration
+
+The named Enum API migration is complete without compatibility shims. The finite
+checker reports zero across all eight categories over 253 Python files and 69
+literal executable snippets. It explicitly lists 187 unresolved dynamic expressions,
+seven exact test-fixture exceptions and two unrelated diagnostic CLI exceptions.
+Run `python3 verify/verify_named_commands.py` from this source directory.
+
+The final logic passed 699 source tests, six affected probe tests, replay of 158
+packets/eight payload failures and all 13 pre-migration loose-input observations.
+Two invalid raw-selector cases were deliberately retired and named boundary
+rejection is tested separately. Independent gpt-6.1-sol source review passed;
+its symmetric SerialGet constructor-checker finding was fixed and nine checker
+selftests passed independently. Final comment-only cleanup did not alter logic.
+
+The nine existing source DATs were upgraded twice in a disposable configured
+controller without replacing nodes. Current imported enum/Host/LEARN objects and
+absence of old APIs were checked. Actual MIDI connected with all four controls
+mapped, and explicit Serial GET captured the same four settings while MIDI
+remained connected. Configured and sanitized generic tox reloads checked all 30
+runtime hashes and 13 documentation hashes, current enum aliases, four/zero
+controls, never_read state and no external DAT paths.
+
+After temporary fixtures were removed, the original controller was upgraded.
+Once its normal cook settled, original node IDs, custom parameters, user storage,
+old-controller storage and root nodes matched exactly. Only the intended nine
+DAT texts changed. No TD/project restart occurred. The live project was saved as
+`projects/current/ROTO-CONTROL.named-commands.1.toe` with alias and receipt;
+`exports/roto_python.tox` was refreshed from the verified generic export. Recovery
+copies were retained before replacement. Historical project snapshots remain.
+Full restart, expanded editor geometry, Windows and physical feel were not tested.

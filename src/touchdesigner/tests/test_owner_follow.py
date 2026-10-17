@@ -11,7 +11,7 @@ import test_assignment
 import test_comp_follow
 import test_layout_owners
 from layouts import Layouts, OWNER_KEY
-from protocol import sysex, digest
+from protocol import SysExCommand, digest
 from text_comp_follow import CompFollower
 
 
@@ -50,7 +50,7 @@ class OwnerFollowTests(unittest.TestCase):
                          (m.track()['name'],m.plugin()['plugin_name']))
         packets = [json.loads(line)['midi'] for line in e._pending.splitlines()]
         self.assertTrue(packets)
-        details = [p for p in packets if p[5:7] == [11,5]]
+        details = [p for p in packets if SysExCommand.identify(p) is SysExCommand.PLUGIN_DETAILS]
         self.assertTrue(details)
         self.assertTrue(all(p[8:16] == list(digest(m.plugin()['device_id'],8)) for p in details))
         self.ack(e); self.follow(f,s,a.owner)
@@ -133,7 +133,7 @@ class OwnerFollowTests(unittest.TestCase):
             other = e.CreateTrack(la,'Other')
             m.locked = True
             self.follow(f,s,b.owner,flush=False)
-            e._receive_midi(sysex(10,9,(0,1)))
+            e._receive_midi(SysExCommand.SELECT_TRACK.message((0,1)))
             if last == 'td':
                 self.follow(f,s,a.owner,flush=False); self.follow(f,s,b.owner,flush=False)
             m.locked = False; f.unlocked(); f.flush()
@@ -143,7 +143,7 @@ class OwnerFollowTests(unittest.TestCase):
         variant = e.CreatePlugin(la,m.track()['id'],'Variant')
         e.SetPluginComp(la,m.track()['id'],variant,a.owner)
         m.locked = True; self.follow(f,s,b.owner,flush=False)
-        e._receive_midi(sysex(11,7,(1,))); f.flush()
+        e._receive_midi(SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,))); f.flush()
         self.assertTrue(m.locked); self.assertEqual(m.plugin()['id'],variant)
         self.assertEqual(m.data['active'],la)
 
@@ -210,7 +210,7 @@ class OwnerFollowTests(unittest.TestCase):
         self.follow(f,s,b.owner,flush=False); token = f.token
         e.Disconnect(); self.assertIsNone(f.pending); self.assertNotEqual(f.token,token)
         f.observe(force=True); f.flush(); self.assertEqual(m.data['active'],la)
-        e._receive_midi(sysex(10,9,(0,0)),token); self.assertIsNone(f.pending)
+        e._receive_midi(SysExCommand.SELECT_TRACK.message((0,0)),token); self.assertIsNone(f.pending)
         self.follow(f,s,a.owner); self.follow(f,s,b.owner)
         self.assertEqual(m.data['active'],lb); self.assertIsNone(e._process)
         self.assertFalse(e._host.connected)
@@ -277,7 +277,7 @@ class OwnerFollowTests(unittest.TestCase):
     def test_real_tick_partial_line_old_mapping_cannot_cross_layout(self):
         e,m,f,a,b,la,lb,s,_,_ = self.fixture()
         old = e._host.controls['knob',1]
-        mapping = sysex(11,11,(old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0))
+        mapping = SysExCommand.CONTROL_MAPPED.message((old.index>>7,old.index&127,*digest(old.target_id,6),0,0,0))
         def line(message): return (json.dumps({'midi':message})+'\n').encode()
         tail = line(mapping); split = len(tail)//2
         packet = line((191,12,127))*257 + tail[:split]

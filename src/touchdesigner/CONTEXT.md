@@ -31,6 +31,13 @@ This source branch adds a fixed 83-entry ROTO palette color per Track group, wit
 
 ## Architecture
 
+Current TD protocol callers use named `SysExCommand` identities in `protocol.py`
+and GET-only `SerialGet` members in the standalone Serial worker. Framing remains
+transport-specific; receiving parsers retain their existing header, payload,
+session and target guards. See [named commands](docs/plans/named-commands.md) for
+the API shape and migration boundary. Dated HANDOFF evidence distinguishes source,
+wire equivalence and the actual loaded artifact.
+
 The optional [Serial read-back](docs/functions/serial.md) uses a separate
 GET-only one-shot worker. `ReadHardwareConfig(port=...)` starts an explicit
 macOS PLUGIN page-0 read; `GetHardwareConfig()` returns detached status and a

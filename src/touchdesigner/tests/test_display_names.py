@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / 'code/py/roto_python'))
-from protocol import Host, digest, sysex, text13
+from protocol import Host, digest, SysExCommand, text13
 from collection_protocol import CollectionHost
 
 class DisplayNamesTests(unittest.TestCase):
@@ -14,8 +14,8 @@ class DisplayNamesTests(unittest.TestCase):
         host.connected=host.plugin=host.mapped=True
         identity=host.device_id
         host.set_display_names('LIVE FX','VISUAL')
-        self.assertEqual(sent, [sysex(10,0x16,text13('LIVE FX')),
-            sysex(11,5,(0,*digest(identity,8),1,*text13('VISUAL'),0,0)),sysex(11,6)])
+        self.assertEqual(sent, [SysExCommand.SET_CURRENT_TRACK_NAME.message(text13('LIVE FX')),
+            SysExCommand.PLUGIN_DETAILS.message((0,*digest(identity,8),1,*text13('VISUAL'),0,0)),SysExCommand.PLUGIN_DETAILS_END.message()])
         self.assertEqual(host.device_id, identity)
         self.assertTrue(host.mapped)
         self.assertFalse(host.set_display_names('LIVE FX','VISUAL'))
@@ -39,4 +39,4 @@ class DisplayNamesTests(unittest.TestCase):
         sent.clear(); host._devices()
         self.assertEqual(first[8:16],sent[2][8:16])
         self.assertEqual(bytes(sent[2][17:30]).rstrip(b'\0'),b'OTHER')
-        self.assertEqual(sent[-1],sysex(11,8,(0,0,0)))
+        self.assertEqual(sent[-1],SysExCommand.DAW_SELECT_PLUGIN.message((0,0,0)))

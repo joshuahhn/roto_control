@@ -24,6 +24,7 @@ def verify():
     try:
         clone=holder.copy(production,name='controller');clone.Disconnect();clone.par.Followcomp=False
         clone.Applybinding()
+        SysExCommand=clone.op('protocol').module.SysExCommand
         layout=clone.CreateLayout('Inspector actions fixture');clone.SelectLayout(layout)
         knob=clone.AssignParameter('knob',2,holder.par.Amount)
         clone.AssignParameter('button',1,holder.par.Trigger,button_type='push')
@@ -41,7 +42,7 @@ def verify():
         assert not packets
         ext._host.learning=True;ext._host._sync();ext._publish()
         assert model.Ping(key,1,token)
-        assert any(packet[5:7]==[11,10] for packet in packets),packets
+        assert any(SysExCommand.identify(packet) is SysExCommand.LEARN_PARAM for packet in packets),packets
         assert holder.par.Amount.eval()==.37
         assert not model.Info(key,1)['mapped']  # No synthetic hardware acknowledgement.
         ext._host.learning=False;ext._host._sync();ext._publish();model.Sync();model.Flush()

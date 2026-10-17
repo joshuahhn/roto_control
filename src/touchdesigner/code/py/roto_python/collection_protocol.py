@@ -1,6 +1,6 @@
 """One PLUGIN device with independently acknowledged knobs/buttons."""
 import time
-from protocol import Host, GENERAL, PLUGIN, LearnParameter, digest, learn_parameter_message, raw_value, text13
+from protocol import SysExCommand, SysExGroup, Host, LearnParameter, digest, learn_parameter_message, raw_value, text13
 
 
 class Control(Host):
@@ -30,8 +30,8 @@ class Control(Host):
             label = "Trigger" if self._pulse_state >= 64 else "Ready"
         else:
             label = self.format_value(self.value)
-        self._command(GENERAL, 24, (int(kind == 'button'), slot-1,
-                                    *text13(label)))
+        self._send(SysExCommand.PARAM_VALUES.message((int(kind == 'button'), slot-1,
+                                    *text13(label))))
         self._display_dirty = False
 
     def stop(self):
@@ -130,7 +130,7 @@ class CollectionHost(Host):
             raise ValueError('Connect to PLUGIN before clearing LEARN')
         if self.learning or target.touched:
             raise ValueError('Exit LEARN and release the control before clearing')
-        self._command(PLUGIN, 14, (int(key[0]=='button'), key[1]-1))
+        self._send(SysExCommand.UNMAP_CTL.message((int(key[0]=='button'), key[1]-1)))
         target._clear_mapping_state()
         target._pulse_state = 0
         target.last_pulse = float('-inf')
@@ -161,14 +161,14 @@ class CollectionHost(Host):
         # mapped/unmap commands here because single-target routing differs.
         is_sysex = (len(message)>=8 and message[:5] == (240,0,34,3,2)
                     and message[-1] == 247 and all(type(x) is int and 0<=x<128 for x in message[1:-1]))
-        if is_sysex and message[5:7] in ((11,11),(11,14)):
+        if is_sysex and SysExCommand.identify(message) in (SysExCommand.CONTROL_MAPPED, SysExCommand.UNMAP_CTL):
             self.rx += 1
             if control_only:
                 return
             data = message[7:-1]
             if not self.enabled or not self.plugin:
                 return
-            if message[6] == 14:
+            if SysExCommand.identify(message) is SysExCommand.UNMAP_CTL:
                 if len(data) != 2 or data[0] not in (0,1) or not 0<=data[1]<8:
                     self.rejected += 1
                     return
@@ -200,7 +200,7 @@ class CollectionHost(Host):
             self._sync()
             return
         if is_sysex:
-            reset = message[5:7] == (11,1) or message[5] == 12
+            reset = SysExCommand.identify(message) is SysExCommand.SET_PLUGIN_MODE or message[5] == SysExGroup.MIX
             # Avoid single-target handling of CCs and mappings; session control
             # still uses Host's handshake, track and device announcements.
             super().receive(message, control_only=control_only)
@@ -208,10 +208,10 @@ class CollectionHost(Host):
                 for target in self.controls.values():
                     target.stop()
             self._sync()
-            if message[5:7]==(PLUGIN,1) and self.connected and self.plugin:
+            if SysExCommand.identify(message) is SysExCommand.SET_PLUGIN_MODE and self.connected and self.plugin:
                 for kind,slot in sorted(self.pending_unmaps):
                     if (kind,slot) not in self.controls:
-                        self._command(PLUGIN,14,(int(kind=='button'),slot-1))
+                        self._send(SysExCommand.UNMAP_CTL.message((int(kind=='button'),slot-1)))
             return
         # Validate/count non-SysEx separately so Host cannot route Knob 1.
         if not message or any(type(x) is not int or not 0<=x<=255 for x in message):

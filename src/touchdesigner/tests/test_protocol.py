@@ -6,7 +6,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "code/py/roto_python"))
-from protocol import Host, digest, sysex
+from protocol import Host, digest, SysExCommand
 
 
 class ProtocolTests(unittest.TestCase):
@@ -16,13 +16,13 @@ class ProtocolTests(unittest.TestCase):
 
     def ready(self):
         self.host.start()
-        self.host.receive(sysex(10, 2))
-        self.host.receive(sysex(10, 12))
-        self.host.receive(sysex(11, 1, (0,)))
+        self.host.receive(SysExCommand.PING_DAW.message())
+        self.host.receive(SysExCommand.ROTO_DAW_CONNECTED.message())
+        self.host.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
 
     def map(self):
         self.ready()
-        self.host.receive(sysex(11, 11, (0, 0, *digest("Value", 6), 0, 0, 0)))
+        self.host.receive(SysExCommand.CONTROL_MAPPED.message((0, 0, *digest("Value", 6), 0, 0, 0)))
 
     def test_learn_transitions_discard_partial_knob_pairs(self):
         for first, second in ((12, 44), (44, 12)):
@@ -30,12 +30,12 @@ class ProtocolTests(unittest.TestCase):
                 with self.subTest(first=first, transitions=transitions):
                     self.setUp(); self.map()
                     if transitions == (0,):
-                        self.host.receive(sysex(11, 9, (1,)))
+                        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
                     self.host.receive((191, first, 64))
                     for state in transitions:
-                        self.host.receive(sysex(11, 9, (state,)))
+                        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((state,)))
                     if transitions[-1]:
-                        self.host.receive(sysex(11, 9, (0,)))
+                        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((0,)))
                     self.host.receive((191, second, 0))
                     self.assertEqual(self.assigned, [])
                     self.host.receive((191, first, 127))
@@ -58,7 +58,7 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(self.sent[:2], [(240, 0, 34, 3, 2, 10, 1, 247),
                                        (240, 0, 34, 3, 2, 10, 3, 1, 247)])
         self.assertFalse(self.host.offer_parameter())
-        self.host.receive(sysex(11, 9, (1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.assertTrue(self.host.offer_parameter())
         self.assertEqual(self.sent[-1][5:9], (11, 10, 0, 0))
         self.assertEqual(len(self.sent[-1]), 34)
@@ -67,24 +67,24 @@ class ProtocolTests(unittest.TestCase):
         self.ready()
         self.host.parameter_changed(0.2)
         before = len(self.sent)
-        self.host.receive(sysex(11, 9, (1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.host.parameter_changed(0.3)
         self.host.parameter_changed(0.4)
         self.assertEqual(len(self.sent), before + 1)
         self.assertEqual(self.sent[-1][5:7], (11, 10))
-        self.host.receive(sysex(11, 9, (1,)))  # Duplicate event is not a new session.
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))  # Duplicate event is not a new session.
         self.host.parameter_changed(0.5)
         self.assertEqual(len(self.sent), before + 1)
-        self.host.receive(sysex(11, 9, (0,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((0,)))
         self.host.parameter_changed(0.6)
         self.assertEqual(len(self.sent), before + 1)
-        self.host.receive(sysex(11, 9, (1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.host.parameter_changed(0.7)
         self.assertEqual(len(self.sent), before + 2)
 
     def test_hardware_input_does_not_offer_during_learn(self):
         self.map()
-        self.host.receive(sysex(11, 9, (1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         before = len(self.sent)
         self.host.receive((191, 12, 32))
         self.host.receive((191, 44, 0))
@@ -95,7 +95,7 @@ class ProtocolTests(unittest.TestCase):
 
     def test_pulse_offer_counts_but_remains_repeatable(self):
         self.ready()
-        self.host.receive(sysex(11, 9, (1,)))
+        self.host.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.assertTrue(self.host.offer_parameter())
         before = len(self.sent)
         self.host.parameter_changed(0.7)
@@ -108,12 +108,12 @@ class ProtocolTests(unittest.TestCase):
         self.host.receive((191, 12, 64))
         self.host.receive((191, 44, 0))
         self.assertEqual(self.assigned, [])
-        self.host.receive(sysex(11, 11, (0, 0, *digest("Value", 6), 0, 1, 0)))
+        self.host.receive(SysExCommand.CONTROL_MAPPED.message((0, 0, *digest("Value", 6), 0, 1, 0)))
         self.assertFalse(self.host.mapped)
 
     def test_connected_advertises_track_context_before_plugin(self):
         self.host.start()
-        self.host.receive(sysex(10, 12))
+        self.host.receive(SysExCommand.ROTO_DAW_CONNECTED.message())
         commands = [(message[5], message[6]) for message in self.sent]
         # Official _return_tracks + selected-track callback startup sequence.
         self.assertEqual(commands[1:], [(10, 4), (10, 5), (10, 7), (10, 8), (12, 4)])

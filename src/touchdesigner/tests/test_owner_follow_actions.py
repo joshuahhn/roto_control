@@ -5,7 +5,7 @@ import unittest
 
 import test_owner_follow
 from layouts import Layouts
-from protocol import digest, sysex
+from protocol import digest, SysExCommand
 
 
 class OwnerFollowActionTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class OwnerFollowActionTests(unittest.TestCase):
 
     def button_ack(self, e):
         target = e._host.controls['button', 1]
-        return sysex(11, 11, (target.index >> 7, target.index & 127,
+        return SysExCommand.CONTROL_MAPPED.message((target.index >> 7, target.index & 127,
                              *digest(target.target_id, 6), 1, 0, 0))
 
     def test_a_b_a_and_custom_keep_action_library_without_recall_or_value_writes(self):

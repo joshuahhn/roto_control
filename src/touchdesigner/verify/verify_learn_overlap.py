@@ -18,7 +18,7 @@ def fixture(controller):
 def packet(comp, offer, kind, slot):
     proto = comp.op('protocol').module
     target = offer['template']
-    return proto.sysex(11,11,(target.index>>7,target.index&127,
+    return proto.SysExCommand.CONTROL_MAPPED.message((target.index>>7,target.index&127,
         *proto.digest(target.target_id,6),kind,slot-1,0))
 
 
@@ -44,7 +44,7 @@ def begin(controller):
     mask.menuNames = ['source','control'];mask.menuLabels = ['Source (Input 1)','Control (Input 2)'];mask.val = 'source'
     e._host.send = lambda message:None
     e._host.connected = e._host.plugin = True
-    e._receive_midi(comp.op('protocol').module.sysex(11,9,(1,)))
+    e._receive_midi(comp.op('protocol').module.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert e._free_learner.active and not e._follow.gated
     return 'observer initialized; native edits start next frame'
 
@@ -71,7 +71,7 @@ def acknowledge(controller):
     assert mask_ack[7:9] != h.fetch('low_ack')[7:9]
     # The physical capture reports both mappings only after LEARN exit,
     # newest Menu/Button ACK first, then the older Lowthresh/Knob ACK.
-    e._receive_midi(c.op('protocol').module.sysex(11,9,(0,)))
+    e._receive_midi(c.op('protocol').module.SysExCommand.SET_DEVICE_LEARN.message((0,)))
     e._receive_midi(mask_ack);e._receive_midi(h.fetch('low_ack'))
     states = c.GetControlStates()
     assert {(s['kind'],s['slot'],s['parameter'],s['mapped']) for s in states} == {
@@ -102,7 +102,7 @@ def finish(controller):
     e._host.send = lambda message:None;e._host.connected = e._host.plugin = True
     for key,index,identity in h.fetch('identities'):
         p = c.op('protocol').module
-        e._receive_midi(p.sysex(11,11,(index>>7,index&127,*p.digest(identity,6),int(key[0]=='button'),key[1]-1,0)))
+        e._receive_midi(p.SysExCommand.CONTROL_MAPPED.message((index>>7,index&127,*p.digest(identity,6),int(key[0]=='button'),key[1]-1,0)))
     assert all(state['mapped'] for state in c.GetControlStates())
     result = dict(h.fetch('result'),reload_hash_recall=True,errors=c.errors(recurse=True))
     assert not result['errors'],result['errors']

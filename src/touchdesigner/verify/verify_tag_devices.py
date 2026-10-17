@@ -19,7 +19,7 @@ def fixture(controller):
 def ack(c,e):
     p=c.op('protocol').module
     for key,t in list(e._host.controls.items()):
-        e._receive_midi(p.sysex(11,11,(t.index>>7,t.index&127,*p.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
+        e._receive_midi(p.SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*p.digest(t.target_id,6),int(key[0]=='button'),key[1]-1,0)))
 
 
 def begin(controller):
@@ -56,7 +56,7 @@ def route(controller):
     r['pa']=m.plugin()['id'];r['pb']=next(p['id'] for p in m.track()['plugins'] if p.get('focus_comp',{}).get('path')=='../tag_b')
     assert f.sync_tags(force=True)==[] and len(m.track()['plugins'])==3
     e._host.send=lambda message:None;e._host.connected=e._host.plugin=True
-    e._receive_midi(c.op('protocol').module.sysex(11,9,(1,)))
+    e._receive_midi(c.op('protocol').module.SysExCommand.SET_DEVICE_LEARN.message((1,)))
     assert e._free_learner.active
     r.update(actual_tag_discovery=True,tag_added_selected_comp_follow=True,layout_and_track_retained=True,separate_ui_pages=True)
     h.store('result',r)
@@ -75,8 +75,8 @@ def learn(controller):
     h,c,e=fixture(controller);r=h.fetch('result');p=c.op('protocol').module
     offer=e._free_learner.pending
     assert offer is not None and offer['parameter']==h.op('tag_a').par.Power
-    t=offer['template'];message=p.sysex(11,11,(t.index>>7,t.index&127,*p.digest(t.target_id,6),0,1,0))
-    e._receive_midi(p.sysex(11,9,(0,)));e._receive_midi(message)
+    t=offer['template'];message=p.SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*p.digest(t.target_id,6),0,1,0))
+    e._receive_midi(p.SysExCommand.SET_DEVICE_LEARN.message((0,)));e._receive_midi(message)
     a=next(s for s in c.GetControlStates() if s['slot']==2);assert a['mapped'] and a['parameter']=='Power'
     r['aid']=a['id'];r['wire']=e._host.controls['knob',2].target_id
     e.SelectComp(h.op('tag_b'))

@@ -15,7 +15,7 @@ import test_layouts
 import test_comp_follow
 import test_layout_owners
 from controls import Actions, Controls
-from protocol import digest, sysex
+from protocol import digest, SysExCommand
 
 
 class ActionTests(unittest.TestCase):
@@ -71,7 +71,7 @@ class ActionTests(unittest.TestCase):
 
     def ack(self, e, slot=1):
         target = e._host.controls['button', slot]
-        e._receive_midi(sysex(11, 11, (target.index >> 7, target.index & 127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((target.index >> 7, target.index & 127,
                          *digest(target.target_id, 6), 1, slot-1, 0)))
         return target
 
@@ -82,7 +82,7 @@ class ActionTests(unittest.TestCase):
         e, m, p, events = self.fixture()
         knob = e._host.controls['knob', 1]
         knob.mapped = True
-        e._receive_midi(sysex(11, 9, (1,)))
+        e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         state = self.assign(e)
         self.assertEqual(state['binding_type'], 'action')
         self.assertEqual((state['mode'], state['button_type']), ('pulse', 'push'))
@@ -92,7 +92,7 @@ class ActionTests(unittest.TestCase):
         self.assertEqual(events, [])
         self.assertIs(knob, e._host.controls['knob', 1])
         self.assertTrue(knob.mapped)
-        e._receive_midi(sysex(11, 9, (0,)))
+        e._receive_midi(SysExCommand.SET_DEVICE_LEARN.message((0,)))
         e._receive_midi((191, 20, 127))
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0], dict(id=state['id'], value=1, origin='hardware',
@@ -130,7 +130,7 @@ class ActionTests(unittest.TestCase):
         t = e._host.controls['button', 1]
         e._receive_midi((191, 20, 127))
         wrong = list(digest(t.target_id, 6)); wrong[0] ^= 1
-        e._receive_midi(sysex(11, 11, (0, t.index, *wrong, 1, 0, 0)))
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((0, t.index, *wrong, 1, 0, 0)))
         e._receive_midi((191, 20, 127))
         self.assertEqual(events, [])
         self.ack(e)
@@ -274,7 +274,7 @@ class ActionTests(unittest.TestCase):
         saved = copy.deepcopy(next(t for t in m.record()['targets'] if t['id']==state['id']))
         m.page_changed()
         self.assertEqual(e.GetControlStates(), [])
-        e._receive_midi(sysex(11, 11, (saved['index']>>7, saved['index']&127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((saved['index']>>7, saved['index']&127,
                            *digest(saved['identity'], 6), 1, 4, 0)))
         self.assertEqual(e.GetControlState(state['id'])['slot'], 5)
         self.assertEqual(events, [])
@@ -282,7 +282,7 @@ class ActionTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         e.RemoveControl(state['id']); m.capture(force=True)
         m.page_changed()
-        e._receive_midi(sysex(11, 11, (saved['index']>>7, saved['index']&127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((saved['index']>>7, saved['index']&127,
                            *digest(saved['identity'], 6), 1, 4, 0)))
         self.assertEqual(e.GetControlStates(), [])
 
@@ -425,7 +425,7 @@ class ActionTests(unittest.TestCase):
         state = self.assign(e); m.capture(force=True)
         saved = copy.deepcopy(next(t for t in m.record()['targets'] if t['id']==state['id']))
         e.UnregisterAction('tool.preset.clean'); m.page_changed()
-        e._receive_midi(sysex(11, 11, (saved['index']>>7, saved['index']&127,
+        e._receive_midi(SysExCommand.CONTROL_MAPPED.message((saved['index']>>7, saved['index']&127,
                            *digest(saved['identity'], 6), 1, 4, 0)))
         self.assertEqual(e.GetControlState(state['id'])['slot'], 5)
         self.assertFalse(e.GetControlState(state['id'])['valid'])
@@ -498,7 +498,7 @@ class ActionTests(unittest.TestCase):
                 self.assertEqual(events, [])
                 if status=='unregistered':self.assertEqual(e.GetControlStates(),[])
                 else:self.assertFalse(e.GetControlState(state['id'])['valid'])
-                e._receive_midi(sysex(11, 11, (target.index>>7,target.index&127,
+                e._receive_midi(SysExCommand.CONTROL_MAPPED.message((target.index>>7,target.index&127,
                                       *digest(target.target_id,6),1,0,0)))
                 self.assertEqual(events, [])
                 if status=='returned':
@@ -558,7 +558,7 @@ class NativeEvidenceTests(unittest.TestCase):
         controller = SimpleNamespace(ext=SimpleNamespace(RotoPythonExt=e),
             ConfigureControl=e.ConfigureControl, Offerparameter=e.Offerparameter,
             GetControlState=e.GetControlState,
-            op=lambda name: SimpleNamespace(module=SimpleNamespace(sysex=sysex, digest=digest)))
+            op=lambda name: SimpleNamespace(module=SimpleNamespace(SysExCommand=SysExCommand, digest=digest)))
         tool = SimpleNamespace(par=SimpleNamespace(Recalls=SimpleNamespace(eval=lambda: len(events))))
         native_fixture._configure_toggle(controller, tool, state['id'])
         self.assertEqual(events, [])

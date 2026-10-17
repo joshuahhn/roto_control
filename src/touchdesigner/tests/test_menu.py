@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).parents[1] / "code/py/roto_python"))
 from binding import parameter_value
 from controls import Controls
 from collection_protocol import CollectionHost
-from protocol import digest, sysex, text13
+from protocol import digest, SysExCommand, text13
 import test_assignment
 import test_free_learn
 
@@ -24,7 +24,7 @@ class MenuTests(unittest.TestCase):
         spec=dict(next(c.specs()),formatter=lambda value:'Display only')
         sent=[];h=CollectionHost(sent.append,lambda *args:None,[spec],'menu')
         h.controls['knob',2]._parameter_details()
-        self.assertEqual(sent[-1],sysex(11,10,(0,1,*digest(spec['identity'],6),
+        self.assertEqual(sent[-1],SysExCommand.LEARN_PARAM.message((0,1,*digest(spec['identity'],6),
             0,0,3,64,0,*text13(p.label),*text13('Alpha'),*text13('Beta'),*text13('Gamma'))))
 
     def test_menu_step_labels_stop_after_sixteen_choices(self):
@@ -37,7 +37,7 @@ class MenuTests(unittest.TestCase):
                 h=CollectionHost(sent.append,lambda *args:None,[spec],'steps')
                 h.controls['knob',8]._parameter_details()
                 labels=tuple(byte for label in p.menuLabels for byte in text13(label)) if count<=16 else ()
-                self.assertEqual(sent[-1],sysex(11,10,(1,1,*digest(spec['identity'],6),
+                self.assertEqual(sent[-1],SysExCommand.LEARN_PARAM.message((1,1,*digest(spec['identity'],6),
                     0,0,count,0,0,*text13(p.label),*labels)))
 
     def test_knob_index_rounding_names_and_label_metadata(self):
@@ -74,7 +74,7 @@ class MenuTests(unittest.TestCase):
         e=test_assignment.AssignmentTests().fixture();e._host.learning=False
         state=e.AssignParameter('button',3,menu() if parameter is None else parameter,button_type=adapter)
         h=e._host;h.connected=h.plugin=True;t=h.controls['button',3]
-        h.receive(sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),1,2,0)))
+        h.receive(SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*digest(t.target_id,6),1,2,0)))
         return e,state
 
     def test_two_choice_cycle_led_confirms_selected_option_for_both_types(self):
@@ -85,11 +85,11 @@ class MenuTests(unittest.TestCase):
                 e._host.receive((191,22,127))
                 self.assertEqual(p.eval(),'beta')
                 self.assertEqual([m for m in sent if m[:2]==(191,22)][-1],(191,22,127))
-                self.assertIn(sysex(10,24,(1,2,*text13('Beta'))),sent)
+                self.assertIn(SysExCommand.PARAM_VALUES.message((1,2,*text13('Beta'))),sent)
                 sent.clear();e.SetValue(0,id=s['id'])
                 self.assertEqual(p.eval(),'alpha')
                 self.assertEqual([m for m in sent if m[:2]==(191,22)][-1],(191,22,0))
-                self.assertIn(sysex(10,24,(1,2,*text13('Alpha'))),sent)
+                self.assertIn(SysExCommand.PARAM_VALUES.message((1,2,*text13('Alpha'))),sent)
 
     def test_cycle_led_survives_push_release_and_wraps_to_off(self):
         e,s=self.ready('push');sent=[];e._host.send=sent.append

@@ -33,25 +33,25 @@ def verify(td, source_dir):
             e._host.enabled = e._host.connected = e._host.plugin = True
         def ack():
             for ctrl in e._host.controls.values():
-                e._receive_midi(proto.sysex(11,11,(ctrl.index>>7,ctrl.index&127,
+                e._receive_midi(proto.SysExCommand.CONTROL_MAPPED.message((ctrl.index>>7,ctrl.index&127,
                     *proto.digest(ctrl.target_id,6),int(ctrl.key[0]=='button'),ctrl.key[1]-1,0)))
         ready(); ack()
         for first, second in ((12,44),(44,12)):
             before = par.eval()
             e._receive_midi((191,first,64))
-            e._receive_midi(proto.sysex(11,9,(1,)))
-            e._receive_midi(proto.sysex(11,9,(0,)))
+            e._receive_midi(proto.SysExCommand.SET_DEVICE_LEARN.message((1,)))
+            e._receive_midi(proto.SysExCommand.SET_DEVICE_LEARN.message((0,)))
             e._receive_midi((191,second,0))
             assert par.eval() == before
         for split in (False, True):
             e.SelectPlugin(layout,track,pa);ready();ack()
-            e._receive_midi(proto.sysex(11,13,(1,)))
-            e._receive_midi(proto.sysex(10,9,(0,1)))
-            e._receive_midi(proto.sysex(11,7,(1,)))
+            e._receive_midi(proto.SysExCommand.SET_PLUGIN_LOCK.message((1,)))
+            e._receive_midi(proto.SysExCommand.SELECT_TRACK.message((0,1)))
+            e._receive_midi(proto.SysExCommand.ROTO_CONTROL_SELECT_DEVICE.message((1,)))
             if split:
                 f.flush()
                 assert m.track()['id']==track and m.plugin()['id']==pb and m.selected_track==other
-            e._receive_midi(proto.sysex(11,13,(0,)))
+            e._receive_midi(proto.SysExCommand.SET_PLUGIN_LOCK.message((0,)))
             f.flush()
             assert m.track()['id']==other and m.selected_track==other
             assert f.pending is None

@@ -8,7 +8,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).parents[1]/'code/py/roto_python'))
 from binding import Binding
-from protocol import Host, digest, sysex
+from protocol import Host, digest, SysExCommand
 
 
 class Parameter:
@@ -100,16 +100,16 @@ class BindingTests(unittest.TestCase):
         sent=[]
         h=Host(sent.append,lambda value:None)
         h.start()
-        h.receive(sysex(10,12))
-        h.receive(sysex(11,1,(0,)))
-        h.receive(sysex(11,11,(0,0,*digest('Value',6),0,0,0)))
+        h.receive(SysExCommand.ROTO_DAW_CONNECTED.message())
+        h.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
+        h.receive(SysExCommand.CONTROL_MAPPED.message((0,0,*digest('Value',6),0,0,0)))
         b=Binding('speed','Speed',0,10,5)
         h.configure_target(b.wire_identity,b.label,0.5,
                            lambda value: str(b.from_normalized(value)))
         self.assertFalse(h.mapped)
-        h.receive(sysex(11,11,(0,0,*digest('Value',6),0,0,0)))
+        h.receive(SysExCommand.CONTROL_MAPPED.message((0,0,*digest('Value',6),0,0,0)))
         self.assertFalse(h.mapped)
-        h.receive(sysex(11,11,(0,0,*digest(b.wire_identity,6),0,0,0)))
+        h.receive(SysExCommand.CONTROL_MAPPED.message((0,0,*digest(b.wire_identity,6),0,0,0)))
         self.assertTrue(h.mapped)
         self.assertEqual(sent[-4][9:15],digest(b.wire_identity,6))
         self.assertIn(b'5.0',bytes(sent[-1]))
@@ -118,14 +118,14 @@ class BindingTests(unittest.TestCase):
         sent, assigned = [], []
         h=Host(sent.append,assigned.append)
         h.start()
-        h.receive(sysex(10,12))
-        h.receive(sysex(11,1,(0,)))
+        h.receive(SysExCommand.ROTO_DAW_CONNECTED.message())
+        h.receive(SysExCommand.SET_PLUGIN_MODE.message((0,)))
         h.enabled=False
         before=len(sent)
-        h.receive(sysex(11,11,(0,0,*digest('Value',6),0,0,0)))
+        h.receive(SysExCommand.CONTROL_MAPPED.message((0,0,*digest('Value',6),0,0,0)))
         h.receive((191,12,64))
         h.receive((191,44,0))
-        h.receive(sysex(11,9,(1,)))
+        h.receive(SysExCommand.SET_DEVICE_LEARN.message((1,)))
         self.assertFalse(h.offer_parameter())
         self.assertFalse(h.mapped)
         self.assertEqual(assigned,[])

@@ -1,5 +1,6 @@
 """Filter complete unsent MIDI frames, retaining any transmitted frame tail."""
 import json
+from protocol import SysExCommand
 
 
 def discard(pending, predicate):
@@ -22,4 +23,4 @@ def business_output(message):
     if len(message) == 3 and message[0] == 191:
         return True
     return (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2)
-            and (message[5] != 10 or message[6] not in (1, 3)))
+            and SysExCommand.identify(message) not in (SysExCommand.DAW_STARTED, SysExCommand.DAW_PING_RESP))

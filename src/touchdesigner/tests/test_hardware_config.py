@@ -14,7 +14,7 @@ from hardware_config import HardwareConfig, ReadContext
 import RotoPythonExt as runtime
 import test_serial_read_process as wire
 import test_layouts
-from protocol import digest, sysex
+from protocol import digest, SysExCommand
 
 
 class Process:
@@ -217,7 +217,7 @@ class ExtensionHardwareTests(unittest.TestCase):
             self.assertGreater(owner.generation, 0, action)
 
     def test_same_identity_hardware_context_events_stale_but_values_do_not(self):
-        for message in (sysex(11, 1, (0,)), sysex(11, 9, (1,)), sysex(10, 20), sysex(12, 1)):
+        for message in (SysExCommand.SET_PLUGIN_MODE.message((0,)), SysExCommand.SET_DEVICE_LEARN.message((1,)), SysExCommand.ROTO_PAGE_LEFT.message(), SysExCommand.SET_MIXER_ALL_MODE.message()):
             e, manager, parameter = self.fixture(); owner = self.seed_capture(e)
             e._receive_midi(message)
             self.assertEqual(e.GetHardwareConfig()['status'], 'stale')

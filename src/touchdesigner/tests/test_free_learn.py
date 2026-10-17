@@ -7,7 +7,7 @@ import test_assignment
 import collection_protocol
 import controls
 from free_learn import FreeLearner
-from protocol import sysex,digest
+from protocol import SysExCommand,digest
 
 class FreeLearnTests(unittest.TestCase):
     def fixture(self):
@@ -27,7 +27,7 @@ class FreeLearnTests(unittest.TestCase):
 
     def ack(self,learner,kind=0,slot=3):
         t=learner.pending['template']
-        return sysex(11,11,(t.index>>7,t.index&127,*digest(t.target_id,6),kind,slot-1,0))
+        return SysExCommand.CONTROL_MAPPED.message((t.index>>7,t.index&127,*digest(t.target_id,6),kind,slot-1,0))
 
     def test_range_changed_before_ack_preserves_registration(self):
         ext, learner, sent = self.fixture()
@@ -266,7 +266,7 @@ class FreeLearnTests(unittest.TestCase):
         ext._host.controls['knob',2].mapped=True
         ext._host.learning=False;learner.active=False;sent.clear()
         learner.receive(packet);ext._host.receive(packet)
-        self.assertFalse(any(m[0]==240 and m[5:7]==(11,14) for m in sent))
+        self.assertFalse(any(m[0]==240 and SysExCommand.identify(m) is SysExCommand.UNMAP_CTL for m in sent))
         self.assertTrue(ext._host.controls['knob',2].mapped)
 
 if __name__=='__main__':unittest.main()

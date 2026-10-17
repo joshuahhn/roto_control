@@ -4,20 +4,81 @@ Reference: joshuahhn/roto_control commit 2d43a72c6699983080f8765292498502ff08be5
 No Live, TouchDesigner, or legacy nin-lab host dependency.
 """
 
+from enum import Enum, IntEnum, unique
 import hashlib
 import math
 from typing import NamedTuple, Optional
 
 
 HEADER = (0xF0, 0, 0x22, 3, 2)
-GENERAL, PLUGIN = 0x0A, 0x0B
 
 
-def sysex(group, command, data=()):
-    payload = (group, command, *data)
-    if any(type(x) is not int or not 0 <= x < 128 for x in payload):
-        raise ValueError("SysEx payload must contain seven-bit integers")
-    return (*HEADER, *payload, 0xF7)
+class SysExGroup(IntEnum):
+    GENERAL = 0x0A
+    PLUGIN = 0x0B
+    MIX = 0x0C
+
+
+@unique
+class SysExCommand(Enum):
+    """Named wire identities; receiving policies remain with each parser."""
+
+    DAW_STARTED = (0x0A, 0x01)
+    PING_DAW = (0x0A, 0x02)
+    DAW_PING_RESP = (0x0A, 0x03)
+    NUM_TRACKS = (0x0A, 0x04)
+    FIRST_TRACK = (0x0A, 0x05)
+    SET_FIRST_TRACK = (0x0A, 0x06)
+    TRACK_DETAILS = (0x0A, 0x07)
+    TRACK_DETAILS_END = (0x0A, 0x08)
+    SELECT_TRACK = (0x0A, 0x09)
+    TRANSPORT_STATUS = (0x0A, 0x0B)
+    ROTO_DAW_CONNECTED = (0x0A, 0x0C)
+    ROTO_PAGE_LEFT = (0x0A, 0x14)
+    ROTO_PAGE_RIGHT = (0x0A, 0x15)
+    SET_CURRENT_TRACK_NAME = (0x0A, 0x16)
+    PARAM_VALUES = (0x0A, 0x18)
+    SET_PLUGIN_MODE = (0x0B, 0x01)
+    NUM_DEVICES = (0x0B, 0x02)
+    FIRST_DEVICE = (0x0B, 0x03)
+    SET_FIRST_DEVICE = (0x0B, 0x04)
+    PLUGIN_DETAILS = (0x0B, 0x05)
+    PLUGIN_DETAILS_END = (0x0B, 0x06)
+    ROTO_CONTROL_SELECT_DEVICE = (0x0B, 0x07)
+    DAW_SELECT_PLUGIN = (0x0B, 0x08)
+    SET_DEVICE_LEARN = (0x0B, 0x09)
+    LEARN_PARAM = (0x0B, 0x0A)
+    CONTROL_MAPPED = (0x0B, 0x0B)
+    SET_PLUGIN_ENABLE = (0x0B, 0x0C)
+    SET_PLUGIN_LOCK = (0x0B, 0x0D)
+    UNMAP_CTL = (0x0B, 0x0E)
+    SET_MAPPED_CTL_NAME = (0x0B, 0x0F)
+    SET_MIXER_ALL_MODE = (0x0C, 0x01)
+    SET_MIXER_SELECTED_MODE = (0x0C, 0x02)
+    NUM_SENDS = (0x0C, 0x03)
+    DAW_SELECT_TRACK = (0x0C, 0x04)
+    SET_MIXER_CHANNEL_MODE = (0x0C, 0x05)
+    REQUEST_SEND_TRACK_NAMES = (0x0C, 0x07)
+    SEND_TRACK_NAMES = (0x0C, 0x08)
+    REFRESH_MIX_MODE = (0x0C, 0x09)
+    SET_MIX_VU_METER_POINTS = (0x0C, 0x0B)
+    SET_MIX_VU_METER_STATES = (0x0C, 0x0C)
+
+    def message(self, data=()):
+        payload = (*self.value, *data)
+        if any(type(x) is not int or not 0 <= x < 128 for x in payload[2:]):
+            raise ValueError("SysEx payload must contain seven-bit integers")
+        return (*HEADER, *payload, 0xF7)
+
+    @classmethod
+    def identify(cls, frame):
+        """Read identity only, without validating framing or payload."""
+        if len(frame) < 7:
+            return None
+        try:
+            return cls((frame[5], frame[6]))
+        except ValueError:
+            return None
 
 
 def digest(text, length):
@@ -75,7 +136,7 @@ def learn_parameter_message(parameter, value):
     if parameter.key[0] == 'knob' and parameter.menu_labels:
         steps = len(parameter.menu_labels)
         strings = tuple(byte for label in parameter.menu_labels for byte in text13(label)) if steps <= 16 else ()
-    return sysex(PLUGIN, 0x0A, (parameter.index >> 7, parameter.index & 127,
+    return SysExCommand.LEARN_PARAM.message((parameter.index >> 7, parameter.index & 127,
                               *digest(parameter.target_id, 6), 0, 0, steps,
                               value >> 7, value & 127, *text13(parameter.target_label), *strings))
 
@@ -136,15 +197,12 @@ class Host:
         self.tx += 1
         return True
 
-    def _command(self, group, command, data=()):
-        self._send(sysex(group, command, data))
-
     def clear_learn(self):
         if not self.connected or not self.plugin:
             raise ValueError("Connect to PLUGIN before clearing LEARN")
         if self.learning or self.touched:
             raise ValueError("Exit LEARN and release the control before clearing")
-        self._command(PLUGIN, 14, (0, 0))
+        self._send(SysExCommand.UNMAP_CTL.message((0, 0)))
         self._clear_mapping_state()
         self.last_event = "Knob 1 unmap requested"
         return True
@@ -159,7 +217,7 @@ class Host:
     def start(self):
         self.stop()
         self.last_event = "Waiting for controller"
-        self._command(GENERAL, 1)  # DAW_STARTED
+        self._send(SysExCommand.DAW_STARTED.message())
 
     def stop(self):
         self.connected = self.plugin = self.learning = self.mapped = False
@@ -181,26 +239,26 @@ class Host:
         plugin_name_changed = plugin_name != self.plugin_name
         self.track_name, self.plugin_name = track_name, plugin_name
         if self.connected:
-            self._command(GENERAL, 0x16, text13(self.track_name))
+            self._send(SysExCommand.SET_CURRENT_TRACK_NAME.message(text13(self.track_name)))
             if self.plugin and plugin_name_changed:
                 self._device_details()
-                self._command(PLUGIN, 6)
+                self._send(SysExCommand.PLUGIN_DETAILS_END.message())
         return True
 
     def _device_details(self):
-        self._command(PLUGIN, 5, (getattr(self, "plugin_index", 0), *digest(self.device_id, 8),
-                                 1, *text13(self.plugin_name), 0, 0))
+        self._send(SysExCommand.PLUGIN_DETAILS.message((getattr(self, "plugin_index", 0), *digest(self.device_id, 8),
+                                 1, *text13(self.plugin_name), 0, 0)))
 
     def _devices(self):
         callback = getattr(self, "devices_callback", None)
         if callback is not None:
             callback()
             return
-        self._command(PLUGIN, 2, (1,))  # NUM_DEVICES
-        self._command(PLUGIN, 3, (0,))  # FIRST_DEVICE
+        self._send(SysExCommand.NUM_DEVICES.message((1,)))
+        self._send(SysExCommand.FIRST_DEVICE.message((0,)))
         self._device_details()
-        self._command(PLUGIN, 6)  # PLUGIN_DETAILS_END
-        self._command(PLUGIN, 8, (0, 0, 0))  # select device, no forced macro pages
+        self._send(SysExCommand.PLUGIN_DETAILS_END.message())
+        self._send(SysExCommand.DAW_SELECT_PLUGIN.message((0, 0, 0)))  # select device, no forced macro pages
 
     def _tracks(self):
         callback = getattr(self, "tracks_callback", None)
@@ -209,11 +267,11 @@ class Host:
             return
         # PLUGIN selection still belongs to a track, even in this one-target host.
         detail = (0, 0, *text13(self.track_name), 0, 0)
-        self._command(GENERAL, 4, (0, 1))
-        self._command(GENERAL, 5, (0, 0))
-        self._command(GENERAL, 7, detail)
-        self._command(GENERAL, 8)
-        self._command(0x0C, 4, detail)
+        self._send(SysExCommand.NUM_TRACKS.message((0, 1)))
+        self._send(SysExCommand.FIRST_TRACK.message((0, 0)))
+        self._send(SysExCommand.TRACK_DETAILS.message(detail))
+        self._send(SysExCommand.TRACK_DETAILS_END.message())
+        self._send(SysExCommand.DAW_SELECT_TRACK.message(detail))
 
     def offer_parameter(self):
         if not (self.enabled and self.connected and self.plugin and self.learning):
@@ -229,7 +287,7 @@ class Host:
         self._send(learn_parameter_message(parameter, self.value))
 
     def _display(self):
-        self._command(GENERAL, 0x18, (0, 0, *text13(self.format_value(self.value))))
+        self._send(SysExCommand.PARAM_VALUES.message((0, 0, *text13(self.format_value(self.value)))))
         self._display_dirty = False
 
     def flush_display(self, now):
@@ -273,27 +331,28 @@ class Host:
                     or any(x > 127 for x in message[1:-1])):
                 self.rejected += 1
                 return
-            group, command, data = message[5], message[6], message[7:-1]
-            if control_only and group == PLUGIN and command in (0x0B, 0x0E):
+            group, data = message[5], message[7:-1]
+            identity = SysExCommand.identify(message)
+            if control_only and identity in (SysExCommand.CONTROL_MAPPED, SysExCommand.UNMAP_CTL):
                 return
-            if group == GENERAL and command == 2:
+            if identity is SysExCommand.PING_DAW:
                 # Ableton-compatible host identity, not a registered TD DAW ID.
-                self._command(GENERAL, 3, (1,))
-            elif group == GENERAL and command == 0x0C:
+                self._send(SysExCommand.DAW_PING_RESP.message((1,)))
+            elif identity is SysExCommand.ROTO_DAW_CONNECTED:
                 self.connected = True
                 self._tracks()
                 self.last_event = "Controller handshake complete"
-            elif group == PLUGIN and command == 1 and self.connected:
+            elif identity is SysExCommand.SET_PLUGIN_MODE and self.connected:
                 self.plugin = True
                 self.mapped = self.learning = False
                 self._offered_in_learn = False
                 self._parts.clear()
                 self._devices()
                 self.last_event = "PLUGIN ready; use LEARN"
-            elif group == PLUGIN and command in (4, 7) and self.plugin:
+            elif identity in (SysExCommand.SET_FIRST_DEVICE, SysExCommand.ROTO_CONTROL_SELECT_DEVICE) and self.plugin:
                 if data and data[0] == 0:
                     self._devices()
-            elif group == PLUGIN and command == 9 and self.plugin:
+            elif identity is SysExCommand.SET_DEVICE_LEARN and self.plugin:
                 if len(data) != 1 or data[0] not in (0, 1):
                     self.rejected += 1
                     return
@@ -302,7 +361,7 @@ class Host:
                     self._offered_in_learn = False
                 self.learning = bool(data[0])
                 self.last_event = "LEARN on" if self.learning else "LEARN off"
-            elif group == PLUGIN and command == 0x0B and self.plugin and self.enabled:
+            elif identity is SysExCommand.CONTROL_MAPPED and self.plugin and self.enabled:
                 if (len(data) != 11 or data[:2] != (0, 0)
                         or data[2:8] != digest(self.target_id, 6)
                         or data[8:] != (0, 0, 0)):
@@ -314,10 +373,10 @@ class Host:
                 self.last_event = f"{self.target_label} mapped to Knob 1"
                 self._parameter_details()
                 self._feedback()
-            elif group == PLUGIN and command == 0x0E:
+            elif identity is SysExCommand.UNMAP_CTL:
                 self.mapped = False
                 self._parts.clear()
-            elif group == 0x0C:  # MIX is outside this prototype
+            elif group == SysExGroup.MIX:  # MIX is outside this prototype
                 self.plugin = self.mapped = self.learning = False
                 self._parts.clear()
             return
