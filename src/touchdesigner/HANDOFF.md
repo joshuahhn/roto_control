@@ -1776,3 +1776,19 @@ trace/send wrappers and leaves zero pending bytes. The established disconnected
 local-definition restore preserves the four original IDs after PLUGIN recall;
 registry definitions, analysis/demo values, MIX profile and Snapshots match the
 pre-install baseline. Scoped errors are zero and TD remains open.
+
+Active source is committed as `615b54d975219123eb320f9ab1cf72ba3de5c350`.
+Refreshed embedded Markdown while preserving the measured doc positions, then
+exported/reloaded the generic tox. Its 22 runtime/helper and eleven documentation
+hashes match that commit; MIX/mappings/Snapshots/Focus/ownership are empty,
+Follow is off, Python is python3, no external DAT files and zero scoped errors.
+Generic SHA-256 is
+`4ec90c9f98232458f318b50e3a530a4af8b5c8d139b666202f39067265c4a0af`.
+TD saved the configured working copy as `ROTO-CONTROL.mix-analysis.3.toe`, with
+adjacent receipt, SHA-256
+`fdd549f7df03d5224bfea44104aa62f34cd8e57c6887d060000928dd7fbd2572`.
+Old canonical/demo artifacts and original dirty-root runtime sources remain
+untouched. Final preservation checks include all eight demo children and the old
+controller's 246 DAT fingerprints. Save/export recovery and results are under
+the same temporary folder's `publish` directory. Reuse the final 517 tests;
+publication changes no runtime behavior. This update stays in the same PR #27.
