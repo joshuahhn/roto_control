@@ -10,8 +10,11 @@ def install(controller, source_dir):
     extension = controller.ext.RotoPythonExt
     if extension._process is not None:
         raise ValueError('Disconnect before MIX upgrade')
+    hardware = getattr(extension, '_hardware_config', None)
+    if hardware is not None and hardware.active:
+        raise ValueError('Finish or disconnect Serial before MIX upgrade')
     source = Path(source_dir) / 'code/py/roto_python'
-    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'setup', 'RotoPythonExt', 'lifecycle_callbacks')
+    names = ('midi_queue', 'mix_descriptor', 'mix_runtime', 'binding', 'setup', 'RotoPythonExt', 'lifecycle_callbacks', 'hardware_config')
     texts = {name: (source / (name + '.py')).read_text(encoding='utf-8') for name in names}
     preflight = {}
     exec(texts['setup'], preflight)
@@ -30,6 +33,10 @@ def install(controller, source_dir):
         node.par.language = 'python'
         node.par.syncfile = False; node.par.loadonstart = False; node.par.file = ''
         node.text = texts[name]
+    helper = controller.op('serial_read_process') or controller.create('textDAT', 'serial_read_process')
+    helper.par.language = 'python'
+    helper.par.syncfile = False; helper.par.loadonstart = False; helper.par.file = ''
+    helper.text = (Path(source_dir)/'scripts/serial_read_process.py').read_text(encoding='utf-8')
     nodes = [controller.op(name) for name in names[:3]]
     groups = [n for n in controller.ops('*', includeUtility=True)
               if n.OPType == 'annotateCOMP' and n.fetch('roto_network_group', False)

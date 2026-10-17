@@ -3,7 +3,7 @@ from time import monotonic
 from collections import Counter
 from math import ceil
 from editor_state import MappingDraft
-from parity import ClearRequest,filter_choices,visible_slots,detail_groups,ownership_label
+from parity import ClearRequest,filter_choices,visible_slots,detail_groups,ownership_label,DETAIL_GROUPS
 from context_menu import Dropdown,placement_for,editor_space_for
 ROW=26
 EDITOR=178
@@ -65,6 +65,7 @@ class InspectorView:
         self._snapshot_generation=0
         self._details_open=False
         self._details_display=None
+        self._hardware_port=''
         self._diagnostics=None
         self._native_definition=None
         self._definition_draft=None
@@ -312,7 +313,8 @@ class InspectorView:
         track=status.get('SelectedTrack') or active[1];device=status.get('SelectedDevice') or active[2]
         # LOCK can retain a selected Track outside the routing Device parent.
         selected=(dict(self._model.Choices('Track',active)).get(track,str(track)),dict(self._model.Choices('Device',active)).get(device,str(device)))
-        groups=detail_groups(info,self._model.Health(self._context,self.selected),status,self._diagnostics,labels(self._context),route,selected,self._follow_routing)
+        hardware=self._model.HardwareSnapshot(self._context,self.selected) if hasattr(self._model,'HardwareSnapshot') else None
+        groups=detail_groups(info,self._model.Health(self._context,self.selected),status,self._diagnostics,labels(self._context),route,selected,self._follow_routing,hardware)
         definition=getattr(self,'_native_definition',None)
         if definition:groups=(('Native parameter',definition['rows']),)+groups
         draft=getattr(self,'_definition_draft',None)
@@ -346,7 +348,7 @@ class InspectorView:
         native_actions=self._model.NativeEditorActions(definition,self._context,self.selected) if definition else {}
         widths=tuple(e.width for e in self._editors)
         editing_allowed=fresh and not status.get('Learning') and not status.get('Touched') and tuple(active)==tuple(self._context)
-        signature=(groups,reveal,repair,native_actions,fresh,widths,bool(draft),editing_allowed,bounds)
+        signature=(groups,reveal,repair,native_actions,fresh,widths,bool(draft),editing_allowed,bounds,hardware,getattr(self,'_hardware_port',''))
         if getattr(self,'_details_display',None)==signature:return
         self._details_display=signature
         message='\n'.join(title+'\n'+'\n'.join(label+'  '+value for label,value,kind in rows) for title,rows in groups)
@@ -362,19 +364,20 @@ class InspectorView:
                     chars=max(8,int(max(1,editor.width-30)/6))
                     return 16+max(2,sum(max(1,ceil(len(line)/chars)) for line in value.split('\n')))*14
                 form_height=34+28*len(draft['menu_names']) if menu else 118+(84 if bounds else 0)
-                total=sum(18+sum(row_height(row) for row in rows)+6 for title,rows in groups)+(form_height if draft else 0)
+                total=sum(18+sum(row_height(row) for row in rows)+6+(90 if title==DETAIL_GROUPS[3][0] else 0) for title,rows in groups)+(form_height if draft else 0)
                 content.par.h=total
                 top=total
                 for g,(title,rows) in enumerate(groups):
                     native=bool(definition and g==0)
                     group=content.op('container_native' if native else 'group'+str(g-(1 if definition else 0)))
                     if not group:continue
-                    height=18+sum(row_height(row) for row in rows)+(form_height if native and draft else 0)
+                    hardware_group=not native and title==DETAIL_GROUPS[3][0]
+                    height=18+sum(row_height(row) for row in rows)+(form_height if native and draft else 0)+(90 if hardware_group else 0)
                     group.par.y=top-height;group.par.h=height;top-=height+6
                     group.op('text_heading').par.y=height-18
                     y=height-18
                     group.op('text_heading').par.text=title
-                    for i in range(8 if native else (3,5,6)[g-(1 if definition else 0)]):
+                    for i in range(8 if native else DETAIL_GROUPS[g-(1 if definition else 0)][1]):
                         label_node=group.op('label'+str(i));value_node=group.op('value'+str(i));shown=i<len(rows)
                         label_node.par.display=value_node.par.display=shown
                         if not shown:label_node.par.text='';value_node.par.text='';continue
@@ -385,6 +388,12 @@ class InspectorView:
                         label_node.par.text=label
                         if value_node.par.text.eval()!=value:value_node.par.text=value
                         value_node.par.fontsize=10 if kind=='long' else 11
+                    if hardware_group and group.op('field_endpoint'):
+                        field=group.op('field_endpoint');field.par.y=36
+                        if field.par.text.eval()!=getattr(self,'_hardware_port',''):field.par.text=getattr(self,'_hardware_port','')
+                        action=group.op('read_hardware');action.par.y=6
+                        action.par.enable=bool(hardware and hardware['read_enabled'])
+                        action.op('text_label').par.text='Refresh hardware' if hardware and hardware['status'] in ('captured','stale') else 'Read hardware'
                     if native and group.op('container_edit'):
                         form=group.op('container_edit');form.par.display=bool(draft)
                         form.par.h=form_height
@@ -426,6 +435,22 @@ class InspectorView:
             for kind in ('values','definition'):
                 button=section.op('native_'+kind)
                 if button:button.par.enable=bool(fresh and native_actions.get(kind,{}).get('enabled'))
+
+    def HardwareEndpoint(self,value,source=None):
+        self._hardware_port=str(value)
+        for editor in getattr(self,'_editors',()):
+            field=editor.op('container_details/container_readout/container_info/group3/field_endpoint')
+            if field and field is not source and field.par.text.eval()!=self._hardware_port:field.par.text=self._hardware_port
+
+    def ReadHardware(self):
+        if self.selected is None or not self.IsLive():return False
+        try:
+            self._model.ReadHardwareSnapshot(self._context,self.selected,port=getattr(self,'_hardware_port',''))
+        except Exception as error:
+            self._set_error(str(error));return False
+        finally:
+            self._details_display=None;self._update_details()
+        return True
 
     def Connect(self,preserve_context=False):
         self.Disconnect()
@@ -481,6 +506,7 @@ class InspectorView:
         self.Refresh()
 
     def Disconnect(self):
+        self.HardwareEndpoint('')
         self._snapshot_generation=getattr(self,'_snapshot_generation',0)+1
         self._snapshot_selections=[]
         self.CloseContextMenu()
@@ -1304,6 +1330,7 @@ class InspectorView:
                 for editor in self._editors:
                     viewport=editor.op('container_details/container_readout')
                     if viewport:viewport.panel.scrollv=0
+        elif name=='read_hardware':return self.ReadHardware()
         elif name=='details_refresh':
             self.DiscardDefinition()
             if self.selected is None or not self.IsLive():return False

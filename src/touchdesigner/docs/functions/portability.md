@@ -4,6 +4,12 @@ Load `exports/roto_python.tox` under the COMP containing the tools you want to m
 
 The tox embeds the controller code, Inspector, documentation and MIDI process source. DAT file sync/load paths are cleared. MIDI launches the embedded source in a separate Python process; it does not read scripts/midi_process.py from the repository. Moving or renaming the parent does not require changing those paths. Assignments use relative target paths and are retained by saving the containing TD project.
 
+The [optional Serial reader](serial.md) and its worker source are also embedded.
+Serial reads require an explicit endpoint and use the selected Python interpreter.
+The macOS backend uses the Python standard library. No repository checkout or
+old Serial plugin is required. Captures, endpoint selections, and child processes
+are transient and are not included in a generic export.
+
 Python with mido and python-rtmidi is still required. Generic exports default the Python parameter to `python3`, resolved through TouchDesigner's PATH. A project can instead use a relative venv path such as `.venv/bin/python` (relative to the containing .toe folder), or select an interpreter explicitly. Venv symlinks are retained. Device is the exact MIDI input/output name. The disabled Helper parameter is retained for older component compatibility; the embedded helper takes precedence.
 
 Connect starts the MIDI process; handshake and input polling run while the TD timeline is playing. If the status stays at Opening MIDI ports with a paused timeline, press Play. Disconnect closes the process even while paused.

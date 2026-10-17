@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "artifact": "ROTO-CONTROL.serial-replug.1.toe",
+  "aliases": [
+    "ROTO-CONTROL.serial-replug.toe"
+  ],
+  "sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360",
+  "save_date": "2026-10-18",
+  "touchdesigner_build": "2025.33230",
+  "runtime_source_commit": null,
+  "embedded_documentation_source_commit": null,
+  "source_working_tree": {
+    "base_commit": "4ec801656ac1f49f08d27913a6a0dfd48a7d74f4",
+    "uncommitted": true,
+    "identity": "Exact embedded file hashes identify source; no new commit created"
+  },
+  "runtime_source_sha256": {
+    "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
+    "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
+    "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
+    "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
+    "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
+    "RotoPythonExt": "11276d430bd7544881622e7efced44db2b90e10a41164b6f735595cbcdef2aac",
+    "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
+    "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
+    "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
+    "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
+    "setup": "b61f48ff7a8ebbada39d985212336dd8f222f633f3402c2e7766ef6f66f83629",
+    "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
+    "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
+    "layouts": "ecb01a1ae60829c9cd4ff5104d1af5946ee44a4da0053ad8c69b2bca335e690f",
+    "target_callbacks": "862dccae82d72b65c0d5849b5346a0e9dfa3d6b5c536334aadf8452b48136bdb",
+    "inspector/inspector_data": "26bacb50da1f531bbd822c53dcbeb4ca3d5c04363bac7c8b1dba6902f9ca07ef",
+    "inspector/owned_runtime": "f23a10e27739b0224584af2cb965d2e2319cc909b899511560ea67739230a20c",
+    "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
+    "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
+    "mix_descriptor": "66ef47a06afd19147f32a86bc3910425f5577691e9dd8a133c19ac856cc12869",
+    "mix_runtime": "2365e8e86095244d02e857c5a0d8d04ba1282afc5aa3e306f0f7e0fc8f93f6d0",
+    "hardware_config": "7028e9f2bec75ed645fbcaa85882e3f7d54637886438bec2eb7e13abd8c54143",
+    "serial_read_process": "449f600fb887decc311cbef81b1adcc8b7b84c2c5ff6b9da99d7e4a26ed5f104"
+  },
+  "embedded_documentation_sha256": {
+    "readme_md": "aebdb7d0473565c443185bdd14e20e3def0dff34c24ff55f1421d3c0deddb835",
+    "docs/overview_md": "22a80fee542fab579caa8b4190f3695f5ea36924492966a32daf8c75c2a79bd0",
+    "docs/fn_lifecycle_md": "c623cf33828e1485073396265a4ed5e241e52e12ef9c73693a2f5452738cfc92",
+    "docs/fn_serial_md": "fd78d76c674c7e0e79e3830ecd44d49c4da02fb4b5e2d5184c048a19b7d93e82",
+    "docs/fn_mix_analysis_md": "94be526c28228a0248bfffd908c67e4477f1bcb579ff69a90d422752b9869dce",
+    "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
+    "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
+    "docs/fn_mix_md": "708defdcd308b17bc4ca1490db1b5ab394d55f3e62220f2c01baf22aa70e8397",
+    "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
+    "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
+    "docs/fn_inspector_md": "3fb60887e9c35509e01aa3f192ab1e5c433742bcdda12da2bf46df922d59204a",
+    "docs/fn_actions_md": "368cf7bd47c2897383176b4c32d09c9df7fd9336a6481941a3432679709123fc",
+    "docs/fn_portability_md": "127def34799e6d3c2e30bf9a060904e16e905aa6dba8c62ee19f04d10eccaec6"
+  },
+  "generic_export_sha256": "20536920ab94fa7cd9b74ece56c5664cfd161f62f73c56d732b193140959752b",
+  "validation": {
+    "source_tests": 659,
+    "runtime_hashes": 24,
+    "documentation_hashes": 13,
+    "configured_profile": "original Analysis Low/Mid",
+    "local_control_ids": 4,
+    "disconnected": true,
+    "serial": "never_read; not persisted",
+    "full_project_restart_acceptance": false,
+    "native_serial": {
+      "source_tests": 659,
+      "source_baseline": "4ec801656ac1f49f08d27913a6a0dfd48a7d74f4",
+      "snapshot": "captured once; not monitored",
+      "readonly_get_allowlist": true,
+      "disconnected_four_control_capture": "passed",
+      "first_read_immediately_after_upgrade": "passed",
+      "active_midi_three_control_capture": "passed",
+      "busy_port_real_fd_holder": "passed",
+      "busy_error_preserves_midi_pid_and_error": true,
+      "release_then_four_control_refresh": "passed",
+      "hardware_records_before_after_equal": true,
+      "pending_disconnect_reap": "passed",
+      "extension_reinit_starts_never_read": true,
+      "configured_reload": {
+        "runtime": 24,
+        "docs": 13,
+        "serial": "never_read",
+        "midi_connected": false,
+        "controls": 4,
+        "external_dat_paths": []
+      },
+      "generic_reload": {
+        "runtime": 24,
+        "docs": 13,
+        "serial": "never_read",
+        "midi_connected": false,
+        "controls": 0,
+        "external_dat_paths": []
+      },
+      "physical_unplug_replug": true,
+      "roto_setup_application_contention": false,
+      "physical_haptic_feel": false,
+      "other_pages": false,
+      "windows_backend": false,
+      "known_midi_button1": "Existing local recall discrepancy reproduced; disconnected four definitions restored; hardware record unchanged",
+      "evidence_scope": "Source tests, native lifecycle/embedding/tox reload, physical read-only configuration and real FD contention. No performance or full project restart claim.",
+      "physical_unplug_scope": "MIDI disconnected, no active Serial worker, explicit reads before and after. Same unit, new USB incarnation and read session; four records identical.",
+      "physical_timeout_retirement_recovery": false,
+      "inflight_unplug": false
+    },
+    "preservation": {
+      "preserved_nodes": 4629,
+      "target_values_modes_preserved": true,
+      "user_storage_identical": true,
+      "readonly_diagnostic_status": [
+        "COMP / demo_A / EFFECT / demo_A: disconnected",
+        "Disconnected"
+      ],
+      "changed_dat": [
+        "/roto_clean_demo/roto_python/serial_read_process"
+      ],
+      "old_artifacts_unchanged": true,
+      "new_project": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.serial-replug.1.toe",
+      "new_project_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360",
+      "new_alias_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360"
+    },
+    "native_serial_unplug": {
+      "physical": {
+        "captured_controls": 4,
+        "same_physical_unit": true,
+        "new_usb_incarnation": true,
+        "new_read_session": true,
+        "hardware_records_preserved": true,
+        "serial_idle": true,
+        "midi_disconnected": true,
+        "last_error": ""
+      },
+      "source_tests": 659,
+      "worker_tests": 20,
+      "empty_inventory": "Actual unplug returned empty successful ioreg output. One-line correction verified by captured-input regressions; no port open or TX on empty/malformed inventory.",
+      "package": {
+        "configured": {
+          "runtime": 24,
+          "docs": 13,
+          "serial": "never_read",
+          "midi_connected": false,
+          "controls": 4,
+          "external_dat_paths": []
+        },
+        "generic": {
+          "runtime": 24,
+          "docs": 13,
+          "serial": "never_read",
+          "midi_connected": false,
+          "controls": 0,
+          "external_dat_paths": []
+        }
+      },
+      "preservation": {
+        "preserved_nodes": 4629,
+        "target_values_modes_preserved": true,
+        "user_storage_identical": true,
+        "readonly_diagnostic_status": [
+          "COMP / demo_A / EFFECT / demo_A: disconnected",
+          "Disconnected"
+        ],
+        "changed_dat": [
+          "/roto_clean_demo/roto_python/serial_read_process"
+        ],
+        "old_artifacts_unchanged": true,
+        "new_project": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.serial-replug.1.toe",
+        "new_project_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360",
+        "new_alias_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360"
+      },
+      "full_project_restart": false
+    }
+  },
+  "previous_snapshot": "ROTO-CONTROL.serial-readback.1.toe; preserved unchanged"
+}

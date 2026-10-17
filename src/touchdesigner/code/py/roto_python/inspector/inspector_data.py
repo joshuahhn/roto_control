@@ -33,6 +33,13 @@ def action_diagnostics(inspector):
     return get_actions() if get_actions is not None else []
 
 
+def hardware_revision(inspector):
+    controller=inspector.parent()
+    extension=getattr(getattr(controller,'ext',None),'RotoPythonExt',None)
+    revision=getattr(extension,'_hardware_revision',0)
+    return revision if type(revision) is int else 0
+
+
 def projection_signature(inspector, states):
     """Inputs read by refresh; states is the caller's detached catalog snapshot.
 
@@ -43,7 +50,7 @@ def projection_signature(inspector, states):
     get_focus=getattr(parent() if parent is not None else None,'GetCompContext',None)
     focus=get_focus().get('status') if get_focus is not None else None
     return (states,context(inspector),action_diagnostics(inspector),inspector.fetch('selected_page','All COMPs'),
-            copy.deepcopy(inspector.fetch('pending_clear',None)),
+            copy.deepcopy(inspector.fetch('pending_clear',None)),hardware_revision(inspector),
             inspector.fetch('action_status','Click Mode \u25be; double-click Min / Max / Hardware / Value'),focus)
 
 
@@ -57,7 +64,7 @@ def refresh(inspector, states):
     if metadata is not None:
         import json
         controller=inspector.parent()
-        snapshot=dict(routing={k:v for k,v in current.items() if k!='revision'},
+        snapshot=dict(hardware_revision=hardware_revision(inspector),routing={k:v for k,v in current.items() if k!='revision'},
                       layouts=controller.GetLayouts() if current.get('key') is not None and not current.get('legacy') else [],
                       actions=action_diagnostics(inspector))
         content=json.dumps(snapshot,ensure_ascii=True,sort_keys=True)+'\n'

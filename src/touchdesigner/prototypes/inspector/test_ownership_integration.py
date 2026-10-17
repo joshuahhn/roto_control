@@ -130,7 +130,7 @@ class OwnershipDisplayTests(TestCase):
         metadata=dict(category='COMP',owner=dict(path='../Source',state='missing'))
         self.assertIn('missing',ownership_label(metadata))
         groups=detail_groups({},dict(label='Invalid'),dict(ViewingOwner=metadata,RoutingOwner=metadata,Quarantined=True),{},('L','T','D'),('L','T','D'),('T','D'),False)
-        technical=dict((label,value) for label,value,size in groups[-1][1])
+        technical=dict((label,value) for label,value,size in groups[2][1])
         self.assertIn('missing',technical['Viewing']);self.assertIn('Needs Activate',technical['Owner / Follow'])
 
 class PulsePresentationTests(TestCase):

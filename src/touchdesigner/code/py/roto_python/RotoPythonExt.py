@@ -11,7 +11,8 @@ import subprocess
 import time
 import uuid
 from binding import parameter_value, same_parameter
-from protocol import text13
+from protocol import text13, digest
+from hardware_config import HardwareConfig, ReadContext
 from snapshots import Snapshots
 from midi_queue import discard, business_output
 from mix_runtime import MixRuntime, layer_profile, layer_state, _identity
@@ -41,6 +42,9 @@ class RotoPythonExt:
         self._layout_dirty = False
         self._layouts = None
         self._process = None
+        self._hardware_config = None
+        self._hardware_revision = 0
+        self._hardware_observation = None
         self._receive = b""
         self._pending = b""
         self._started_at = 0.0
@@ -76,6 +80,112 @@ class RotoPythonExt:
             self._follow = helper.module.CompFollower(self)
         self._publish()
         self._sync_mix_summary()
+
+    def _hardware_owner(self):
+        if getattr(self, '_hardware_config', None) is None:
+            self._hardware_config = HardwareConfig()
+            self._hardware_observation = (copy.deepcopy(self._hardware_config.result), False)
+        return self._hardware_config
+
+    def _hardware_changed(self, publish=True):
+        owner = getattr(self, '_hardware_config', None)
+        observation = (copy.deepcopy(owner.result), owner.active) if owner is not None else None
+        if observation == getattr(self, '_hardware_observation', None):
+            return
+        self._hardware_observation = observation
+        self._hardware_revision = getattr(self, '_hardware_revision', 0) + 1
+        if publish:
+            self._publish_inspector()
+
+    def _invalidate_hardware(self, reason):
+        owner = getattr(self, '_hardware_config', None)
+        if owner is not None:
+            owner.invalidate(reason)
+            self._hardware_changed()
+
+    def _hardware_context(self):
+        host = self._host
+        manager = getattr(self, '_layouts', None)
+        follower = getattr(self, '_follow', None)
+        mix = getattr(self, '_mix', None)
+        available = not (getattr(self, '_restore_pending', False) or getattr(self, '_restoring', False)
+                        or self._dispatching or host.learning or bool(mix and (mix.active or mix.returning))
+                        or bool(follower and (follower.gated or follower.paused or follower.pending or follower.backlog))
+                        or bool(getattr(self, '_receive', b'')) or getattr(self, '_mix_preset_drain', False)
+                        or bool(manager and (manager.mutating or manager.quarantined and not manager.legacy)))
+        context = manager.context() if manager is not None else {}
+        ownership = context.get('owner')
+        definition_available = True
+        if ownership:
+            handle = manager.owner_handles.get(ownership['id'])
+            if (ownership['state'] != 'bound' or handle is None or not getattr(handle, 'valid', False)
+                    or manager.owner_token(handle) != ownership['id']):
+                available = definition_available = False
+        public = dict(layout_id=context.get('layout_id'), track_id=context.get('track_id'), plugin_id=context.get('plugin_id'),
+                      routing_key=context.get('key'))
+        public['device_id'] = host.device_id
+        controls = []
+        identities = []
+        collection = self._collection
+        if collection is not None:
+            for key, control in host.controls.items():
+                binding = collection.bindings.get(key)
+                if binding is None:
+                    available = definition_available = False
+                    continue
+                if not binding.valid or not control.enabled:
+                    available = definition_available = False
+                identities.append(control.target_id)
+                controls.append(dict(id=binding.id, kind=key[0], slot=key[1], parameter_index=control.index,
+                                     parameter_hash=list(digest(control.target_id, 6))))
+        elif host.enabled:
+            if self._binding is not None and not self._binding.valid:
+                available = definition_available = False
+            identities.append(host.target_id)
+            controls.append(dict(id=self._binding.id if self._binding is not None else 'Value', kind='knob', slot=1,
+                                 parameter_index=0, parameter_hash=list(digest(host.target_id, 6))))
+        manifest = dict(plugin_hash=list(digest(host.device_id, 8)), controls=controls)
+        signature = (host.device_id, tuple(identities), tuple((c['id'], c['kind'], c['slot'], c['parameter_index'], tuple(c['parameter_hash'])) for c in controls),
+                     tuple(public.items()), follower.token if follower is not None else (0, 0), definition_available)
+        return ReadContext(host, signature, manifest, public), available and bool(controls)
+
+    def ReadHardwareConfig(self, *, port):
+        """Start one independent read-only PLUGIN page-0 capture; return detached status."""
+        owner = self._hardware_owner()
+        try:
+            context, available = self._hardware_context()
+            if not available:
+                owner.observe(context)
+                return owner.fail('context_unavailable', 'Finish binding/context restoration and exit LEARN/MIX before reading hardware')
+            python = resolve_python(self.ownerComp.par.Python.eval(), project.folder)
+            helper = self.ownerComp.op('serial_read_process')
+            return owner.read(context, port=port, python=python, worker_source=helper.text if helper is not None else '')
+        except Exception as exc:
+            return owner.fail('context_error', exc)
+        finally:
+            self._hardware_changed()
+
+    def GetHardwareConfig(self):
+        """Return a detached historical capture/status. This call never refreshes hardware."""
+        owner = self._hardware_owner()
+        try:
+            context, _ = self._hardware_context()
+            return owner.snapshot(context)
+        except Exception as exc:
+            return owner.fail('context_error', exc)
+        finally:
+            self._hardware_changed()
+
+    def _tick_hardware(self):
+        owner = getattr(self, '_hardware_config', None)
+        if owner is not None:
+            try:
+                context, _ = self._hardware_context()
+                owner.tick(context)
+            except Exception as exc:
+                owner.fail('context_error', exc)
+            finally:
+                self._hardware_changed()
 
     def _sync_mix_summary(self, error=''):
         parameter = getattr(self.ownerComp.par, 'Mixsummary', None)
@@ -262,6 +372,7 @@ class RotoPythonExt:
 
     def _mix_mode_boundary(self):
         """Cancel queued business work while retaining session and frame tails."""
+        self._invalidate_hardware('Hardware mode boundary')
         self._pending = discard(self._pending, business_output)
         self._page_caption = None
         follower = getattr(self, '_follow', None)
@@ -438,6 +549,11 @@ class RotoPythonExt:
         learner = getattr(self, '_free_learner', None)
         if follower is not None and token is not None and token[0] != follower.connection_generation:
             return
+        if (len(message) >= 8 and tuple(message[:5]) == (240, 0, 34, 3, 2) and message[-1] == 247
+                and all(type(x) is int and 0 <= x < 128 for x in message[1:-1])
+                and (tuple(message[5:7]) in ((10, 2), (10, 9), (10, 20), (10, 21),
+                                           (11, 1), (11, 7), (11, 9), (11, 11), (11, 14)) or message[5] == 12)):
+            self._invalidate_hardware('Hardware context/mapping event')
         mix = getattr(self, '_mix', None)
         was_mix = bool(mix and mix.active)
         if mix is not None and mix.receive(message, token):
@@ -1093,6 +1209,7 @@ class RotoPythonExt:
         watcher = self.ownerComp.op('base_targets/watch_'+kind+str(slot))
         if watcher is None:
             raise ValueError('Missing control watcher')
+        self._invalidate_hardware('Control assignment replaced')
         if self._collection is None:
             # Transition once from single-target mode, before hardware LEARN.
             if _hardware_mapped:
@@ -1213,6 +1330,7 @@ class RotoPythonExt:
             raise RuntimeError("Install target_callbacks before binding")
         # All validation precedes changes to the existing binding.
         candidate.check_parameter()
+        self._invalidate_hardware('Binding replaced')
         removed.discard(candidate.id)
         self.ownerComp.store('removed_controls',sorted(removed))
         pending={tuple(key) for key in self.ownerComp.fetch('pending_unmaps', [])}
@@ -1324,6 +1442,7 @@ class RotoPythonExt:
             raise ValueError("Do not unbind inside on_change")
         if self._host.learning or self._host.touched:
             raise ValueError("Cannot unbind while learning or touched")
+        self._invalidate_hardware('Binding removed')
         watcher = self.ownerComp.op("target_callbacks")
         if watcher is not None:
             watcher.par.active = False
@@ -1394,6 +1513,13 @@ class RotoPythonExt:
         self._page_caption = key, deadline
 
     def _publish(self):
+        owner = getattr(self, '_hardware_config', None)
+        if owner is not None:
+            try:
+                owner.observe(self._hardware_context()[0])
+            except Exception as exc:
+                owner.fail('context_error', exc)
+            self._hardware_changed(publish=False)
         manager=getattr(self,'_layouts',None)
         with manager.owner_observation() if manager is not None else nullcontext():
             return self._publish_state()
@@ -1460,6 +1586,7 @@ class RotoPythonExt:
             return
         for watcher in self.ownerComp.ops("base_targets/watch_*"):
             watcher.par.active = False
+        self._invalidate_hardware('Control host replaced')
         old = self._host
         self._host = self.ownerComp.op("protocol").module.Host(self._send, self._assign, self._value_parameter().eval(), **self._display_names())
         self._host.connected, self._host.plugin = old.connected, old.plugin
@@ -1507,6 +1634,7 @@ class RotoPythonExt:
             if watcher is None:
                 raise ValueError("Install collection watchers before binding")
             watchers[key] = watcher
+        self._invalidate_hardware('Registered controls replaced')
         for watcher in self.ownerComp.ops("base_targets/watch_*"):
             watcher.par.active = False
         self.ownerComp.op("target_callbacks").par.active = False
@@ -1748,6 +1876,10 @@ class RotoPythonExt:
         self._publish()
 
     def Disconnect(self):
+        hardware = getattr(self, '_hardware_config', None)
+        if hardware is not None:
+            hardware.close('Controller disconnected')
+            self._hardware_changed(publish=False)
         self._page_caption = None
         self._cancel_inspector_refresh()
         follower = getattr(self, '_follow', None)
@@ -1986,11 +2118,14 @@ class RotoPythonExt:
          "Offerparameter": self.Offerparameter, "Applybinding": self.Applybinding}[par.name]()
 
     def Tick(self):
-        if self._restore_pending:
-            self.Applybinding()
-        manager=getattr(self,'_layouts',None)
-        with manager.owner_observation() if manager is not None else nullcontext():
-            return self._tick()
+        try:
+            if self._restore_pending:
+                self.Applybinding()
+            manager=getattr(self,'_layouts',None)
+            with manager.owner_observation() if manager is not None else nullcontext():
+                return self._tick()
+        finally:
+            self._tick_hardware()
 
 
     def onDestroyTD(self):
@@ -2152,6 +2287,7 @@ class RotoPythonExt:
                 if "error" in event:
                     raise RuntimeError(event["error"])
                 if event.get("ready"):
+                    self._invalidate_hardware('MIDI session started')
                     self._transport_ready = True
                     self._host.start()
                 elif "midi" in event:

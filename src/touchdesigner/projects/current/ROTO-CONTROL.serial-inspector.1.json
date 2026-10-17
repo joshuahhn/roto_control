@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "artifact": "ROTO-CONTROL.serial-inspector.1.toe",
+  "aliases": [
+    "ROTO-CONTROL.serial-inspector.toe"
+  ],
+  "sha256": "48b363ccdfcd3be00c6152a857e96c3bcfbf309e414058e05439bd3b7fdbdf2a",
+  "save_date": "2026-10-18",
+  "touchdesigner_build": "2025.33230",
+  "runtime_source_commit": null,
+  "embedded_documentation_source_commit": null,
+  "source_working_tree": {
+    "base_commit": "4ec801656ac1f49f08d27913a6a0dfd48a7d74f4",
+    "uncommitted": true,
+    "identity": "Exact embedded file hashes identify source; no new commit created"
+  },
+  "runtime_source_sha256": {
+    "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
+    "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
+    "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
+    "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
+    "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
+    "RotoPythonExt": "c12b095995badf0c183a7221bca05cceb5cb5bd6887e735dbb936de864465da6",
+    "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
+    "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
+    "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
+    "parameter_callbacks": "49579eeb423be2f8c0bdeb4043c0f100b4eacc0728c01a0e9a0b2fa856718b19",
+    "setup": "b61f48ff7a8ebbada39d985212336dd8f222f633f3402c2e7766ef6f66f83629",
+    "layout_migration": "141a309739dcce36bb20305c568ac7f8a5a7b0ac40ddac72f7a64c2ceb709d38",
+    "binding": "43b1d6c48f99074e4029554b2b9e3bd8077bac1c329f60923626c9e07140d9ab",
+    "layouts": "7c89e062214ef8d5035c531f8958ac63ebadea3aa370c19516382c9ab8d3cab1",
+    "target_callbacks": "862dccae82d72b65c0d5849b5346a0e9dfa3d6b5c536334aadf8452b48136bdb",
+    "inspector/inspector_data": "5bb123e8b0d4384d8e3da09257f58520147f09400e55c51de6eba4d7fd465241",
+    "inspector/owned_runtime": "7b1fb2ebece9a7c7ca9ddd66f20202cbf4d38a51346c2d22b4605babfe1240cc",
+    "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
+    "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
+    "mix_descriptor": "66ef47a06afd19147f32a86bc3910425f5577691e9dd8a133c19ac856cc12869",
+    "mix_runtime": "2365e8e86095244d02e857c5a0d8d04ba1282afc5aa3e306f0f7e0fc8f93f6d0",
+    "hardware_config": "7028e9f2bec75ed645fbcaa85882e3f7d54637886438bec2eb7e13abd8c54143",
+    "serial_read_process": "449f600fb887decc311cbef81b1adcc8b7b84c2c5ff6b9da99d7e4a26ed5f104",
+    "inspector/inspector_model/live_model": "f39831c9fe49e0c58c6e9f5d82f388545fdc19d0c2c5b5e4024884a1d90aa526",
+    "inspector/inspector_model/base_commands/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f",
+    "inspector/inspector_below/ui": "044660231577105902dbc2f3ed752b6c7b4f9a343c39ba5371df7e79bcba49ca",
+    "inspector/inspector_below/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f",
+    "inspector/inspector_popup/ui": "044660231577105902dbc2f3ed752b6c7b4f9a343c39ba5371df7e79bcba49ca",
+    "inspector/inspector_popup/parity": "24491c27c6b905871d826322cf4c7539f512f73265da85cc70bab633ea3b503f"
+  },
+  "embedded_documentation_sha256": {
+    "readme_md": "8b37de10cfd4d6ac74bd7dd75b0ba692b8e6b63d6c83dd4348a5e50ee9a197b1",
+    "docs/overview_md": "22a80fee542fab579caa8b4190f3695f5ea36924492966a32daf8c75c2a79bd0",
+    "docs/fn_lifecycle_md": "c623cf33828e1485073396265a4ed5e241e52e12ef9c73693a2f5452738cfc92",
+    "docs/fn_serial_md": "972f1afcf93a2d6756101468d4a733a985aa91a671b4b8ba86353d1376cd49c7",
+    "docs/fn_mix_analysis_md": "94be526c28228a0248bfffd908c67e4477f1bcb579ff69a90d422752b9869dce",
+    "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
+    "docs/fn_layouts_md": "1b4cf2dc836669757ab57ce505c28708777ab0e7589e2527f01dba370f9dbd65",
+    "docs/fn_mix_md": "708defdcd308b17bc4ca1490db1b5ab394d55f3e62220f2c01baf22aa70e8397",
+    "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
+    "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
+    "docs/fn_inspector_md": "52d95817cbbe579eda93ca46d9281b6286024b96956400c043a9cfe5a4b49d7e",
+    "docs/fn_actions_md": "368cf7bd47c2897383176b4c32d09c9df7fd9336a6481941a3432679709123fc",
+    "docs/fn_portability_md": "127def34799e6d3c2e30bf9a060904e16e905aa6dba8c62ee19f04d10eccaec6"
+  },
+  "generic_export_sha256": "861956394407849e51795f5fc3609a1c5fecfe282cadd37a78067d0650411bb9",
+  "validation": {
+    "source_tests": 681,
+    "runtime_hashes": 30,
+    "documentation_hashes": 13,
+    "configured_profile": "original Analysis Low/Mid",
+    "local_control_ids": 4,
+    "disconnected": true,
+    "serial": "never_read; not persisted",
+    "full_project_restart_acceptance": false,
+    "native_serial": {
+      "source_tests": 659,
+      "source_baseline": "4ec801656ac1f49f08d27913a6a0dfd48a7d74f4",
+      "snapshot": "captured once; not monitored",
+      "readonly_get_allowlist": true,
+      "disconnected_four_control_capture": "passed",
+      "first_read_immediately_after_upgrade": "passed",
+      "active_midi_three_control_capture": "passed",
+      "busy_port_real_fd_holder": "passed",
+      "busy_error_preserves_midi_pid_and_error": true,
+      "release_then_four_control_refresh": "passed",
+      "hardware_records_before_after_equal": true,
+      "pending_disconnect_reap": "passed",
+      "extension_reinit_starts_never_read": true,
+      "configured_reload": {
+        "runtime": 24,
+        "docs": 13,
+        "serial": "never_read",
+        "midi_connected": false,
+        "controls": 4,
+        "external_dat_paths": []
+      },
+      "generic_reload": {
+        "runtime": 24,
+        "docs": 13,
+        "serial": "never_read",
+        "midi_connected": false,
+        "controls": 0,
+        "external_dat_paths": []
+      },
+      "physical_unplug_replug": true,
+      "roto_setup_application_contention": false,
+      "physical_haptic_feel": false,
+      "other_pages": false,
+      "windows_backend": false,
+      "known_midi_button1": "Existing local recall discrepancy reproduced; disconnected four definitions restored; hardware record unchanged",
+      "evidence_scope": "Source tests, native lifecycle/embedding/tox reload, physical read-only configuration and real FD contention. No performance or full project restart claim.",
+      "physical_unplug_scope": "MIDI disconnected, no active Serial worker, explicit reads before and after. Same unit, new USB incarnation and read session; four records identical.",
+      "physical_timeout_retirement_recovery": false,
+      "inflight_unplug": false
+    },
+    "preservation": {
+      "original_nodes_preserved": 4629,
+      "target_values_modes_preserved": true,
+      "user_storage_preserved_except_revision": [
+        432,
+        450
+      ],
+      "changed_dat": [
+        "/roto_clean_demo/roto_python/docs/fn_layouts_md",
+        "/roto_clean_demo/roto_python/layouts",
+        "/roto_clean_demo/roto_python/base_targets/rx_events"
+      ],
+      "temporary_fixtures_removed": true
+    },
+    "native_serial_unplug": {
+      "physical": {
+        "captured_controls": 4,
+        "same_physical_unit": true,
+        "new_usb_incarnation": true,
+        "new_read_session": true,
+        "hardware_records_preserved": true,
+        "serial_idle": true,
+        "midi_disconnected": true,
+        "last_error": ""
+      },
+      "source_tests": 659,
+      "worker_tests": 20,
+      "empty_inventory": "Actual unplug returned empty successful ioreg output. One-line correction verified by captured-input regressions; no port open or TX on empty/malformed inventory.",
+      "package": {
+        "configured": {
+          "runtime": 24,
+          "docs": 13,
+          "serial": "never_read",
+          "midi_connected": false,
+          "controls": 4,
+          "external_dat_paths": []
+        },
+        "generic": {
+          "runtime": 24,
+          "docs": 13,
+          "serial": "never_read",
+          "midi_connected": false,
+          "controls": 0,
+          "external_dat_paths": []
+        }
+      },
+      "preservation": {
+        "preserved_nodes": 4629,
+        "target_values_modes_preserved": true,
+        "user_storage_identical": true,
+        "readonly_diagnostic_status": [
+          "COMP / demo_A / EFFECT / demo_A: disconnected",
+          "Disconnected"
+        ],
+        "changed_dat": [
+          "/roto_clean_demo/roto_python/serial_read_process"
+        ],
+        "old_artifacts_unchanged": true,
+        "new_project": "/Users/huihongnin/project/roto_control/src/touchdesigner/projects/current/ROTO-CONTROL.serial-replug.1.toe",
+        "new_project_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360",
+        "new_alias_sha256": "174b8c05a2558619b70319ba11c720cced7c5fe27f5726c87ee9bbb2559ef360"
+      },
+      "full_project_restart": false
+    },
+    "button_recall": {
+      "source_tests": 662,
+      "focused_page_tests": 11,
+      "ordinary_midi_reconnect": "passed: four mapped controls including Enabled Button1",
+      "demo_values_unchanged": true,
+      "changed_menu_names_labels_rejected": true,
+      "menu_replaced_by_numeric_old_ack_rejected": true,
+      "new_learn_recovery": true,
+      "package": {
+        "configured": {
+          "runtime": 24,
+          "docs": 13,
+          "controls": 4,
+          "connected": false,
+          "external_dat_paths": [],
+          "serial": "never_read"
+        },
+        "generic": {
+          "runtime": 24,
+          "docs": 13,
+          "controls": 0,
+          "connected": false,
+          "external_dat_paths": [],
+          "serial": "never_read"
+        }
+      },
+      "preservation": {
+        "original_nodes_preserved": 4629,
+        "target_values_modes_preserved": true,
+        "user_storage_preserved_except_revision": [
+          432,
+          450
+        ],
+        "changed_dat": [
+          "/roto_clean_demo/roto_python/docs/fn_layouts_md",
+          "/roto_clean_demo/roto_python/layouts",
+          "/roto_clean_demo/roto_python/base_targets/rx_events"
+        ],
+        "temporary_fixtures_removed": true
+      },
+      "full_project_restart": false,
+      "physical_button_press_and_led_retested": true,
+      "independent_source_review": "gpt-6.1-sol high, final round no remaining blocker",
+      "physical_button": {
+        "accepted": true,
+        "hardware_messages": [
+          [
+            191,
+            20,
+            0
+          ],
+          [
+            191,
+            20,
+            127
+          ]
+        ],
+        "changed_writes": 2,
+        "only_target": "demo_A.Enabled",
+        "value_roundtrip": [
+          true,
+          false,
+          true
+        ],
+        "user_led": "On/lit -> Off/dim -> On/lit",
+        "user_text": "Enabled -> Disabled (middle text not clearly seen) -> Enabled",
+        "middle_text_exact_acceptance": false,
+        "cleanup": {
+          "controls": 4,
+          "connected": false,
+          "process": "None",
+          "error": "",
+          "values_match": true,
+          "hooks_removed": true,
+          "cleanup_notes": []
+        },
+        "preservation": {
+          "user_storage_preserved_except_revision": [
+            450,
+            459
+          ],
+          "values_preserved": true,
+          "hooks_removed": true,
+          "receive_bytes": 0,
+          "pending_bytes": 0
+        },
+        "full_project_restart": false
+      }
+    },
+    "serial_inspector": {
+      "source_tests": 681,
+      "new_regressions": 19,
+      "affected_inspector_tests": 94,
+      "native_additive_install": true,
+      "idempotent_install": true,
+      "exactly_once_explicit_read": true,
+      "physical_get_controls": 4,
+      "hardware_records_unchanged": true,
+      "automatic_native_readout": true,
+      "value_draft_token_pending_clear_preserved": true,
+      "stale_and_error_clearing": true,
+      "worker_cleanup_reenables_read": true,
+      "configured_reload": {
+        "runtime": 30,
+        "docs": 13,
+        "controls": 4,
+        "serial": "never_read",
+        "endpoints_empty": true,
+        "external_dat_paths": [],
+        "full_build_marker": null,
+        "errors": "",
+        "warnings": ""
+      },
+      "generic_reload": {
+        "runtime": 30,
+        "docs": 13,
+        "controls": 0,
+        "serial": "never_read",
+        "endpoints_empty": true,
+        "external_dat_paths": [],
+        "full_build_marker": null,
+        "errors": "",
+        "warnings": ""
+      },
+      "preservation": {
+        "original_nodes_preserved": 4629,
+        "new_nodes": 268,
+        "static_values_modes_preserved": true,
+        "user_storage_identical": true,
+        "old_controller_storage_identical": true,
+        "root_nodes_preserved": true,
+        "changed_dat": [
+          "/roto_clean_demo/roto_python/docs/fn_serial_md",
+          "/roto_clean_demo/roto_python/docs/fn_inspector_md",
+          "/roto_clean_demo/roto_python/inspector/context_state",
+          "/roto_clean_demo/roto_python/inspector/owned_runtime",
+          "/roto_clean_demo/roto_python/inspector/inspector_data",
+          "/roto_clean_demo/roto_python/inspector/inspector_below/ui",
+          "/roto_clean_demo/roto_python/inspector/inspector_below/parity",
+          "/roto_clean_demo/roto_python/inspector/inspector_model/live_model",
+          "/roto_clean_demo/roto_python/inspector/inspector_model/base_commands/parity",
+          "/roto_clean_demo/roto_python/inspector/inspector_popup/ui",
+          "/roto_clean_demo/roto_python/inspector/inspector_popup/parity",
+          "/roto_clean_demo/roto_python/readme_md",
+          "/roto_clean_demo/roto_python/RotoPythonExt"
+        ],
+        "fixtures_removed": true
+      },
+      "full_project_restart": false,
+      "keyboard_unblurred_typing": false,
+      "endpoint_callback_test": "native callback harness",
+      "physical_haptic_feel": false,
+      "expanded_open_editor_geometry": "not separately accepted",
+      "source_review": "independent same-model gpt-6.1-sol; stale full-build marker corrected",
+      "evidence_directory": "/var/folders/5q/krg7wb4d4lsgpmlmgqvywj_w0000gn/T/roto-7-inspector-czmuxafo"
+    }
+  },
+  "previous_snapshot": "ROTO-CONTROL.recall-fixed.1.toe; preserved unchanged"
+}

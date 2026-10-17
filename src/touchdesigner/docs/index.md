@@ -8,6 +8,8 @@ and the final [HANDOFF](../HANDOFF.md) entry for source/live acceptance status.
   Markdown, embedded by `scripts/td_project_docs.py` during TD build/upgrade.
 - [Independent MIX analysis](functions/mix.md): current source slice and its
   distinction from the saved PLUGIN runtime.
+- [Serial read-back](functions/serial.md): explicit stored-configuration reads,
+  separate worker ownership, identity checks, and snapshot limits.
 - [Runtime Python](../code/py/roto_python/): controller, protocol, bindings and
   controller-owned Inspector lifecycle. Source files become embedded DATs.
 - [Inspector source and builders](../prototypes/inspector/README.md): active compact

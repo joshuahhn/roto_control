@@ -3,6 +3,8 @@ from pathlib import Path
 
 def upgrade(controller,source_dir,legacy_inspector_archive=None):
     if controller.ext.RotoPythonExt._process is not None:raise ValueError('Disconnect before Layout upgrade')
+    hardware=getattr(controller.ext.RotoPythonExt,'_hardware_config',None)
+    if hardware is not None and hardware.active:raise ValueError('Finish or disconnect Serial before Layout upgrade')
     source=Path(source_dir)
     namespace=dict(globals())
     path=source/'build/build_inspector.py'
@@ -53,12 +55,15 @@ def upgrade(controller,source_dir,legacy_inspector_archive=None):
         box=controller.create(annotateCOMP,'annotate_focus');box.par.Titletext='Focus'
         box.store('roto_network_group',True)
         box.nodeX,box.nodeY=515,-815;box.nodeWidth,box.nodeHeight=355,225
-    for index,name in enumerate(('midi_queue','mix_descriptor','mix_runtime')):
+    for index,name in enumerate(('midi_queue','mix_descriptor','mix_runtime','hardware_config')):
         helper=controller.op(name) or controller.create(textDAT,name)
         helper.viewer=True;helper.par.language='python'
         helper.par.file='';helper.par.syncfile=False;helper.par.loadonstart=False
         helper.text=(source/'code/py/roto_python'/f'{name}.py').read_text(encoding='utf-8')
         helper.nodeX,helper.nodeY=-600,-170*(index+1)
+    helper=controller.op('serial_read_process') or controller.create(textDAT,'serial_read_process')
+    helper.par.language='python';helper.par.file='';helper.par.syncfile=False;helper.par.loadonstart=False
+    helper.text=(source/'scripts/serial_read_process.py').read_text(encoding='utf-8')
     for name in ('protocol','collection_protocol','controls','binding','free_learn','RotoPythonExt','setup','lifecycle_callbacks'):
         controller.op(name).text=(source/'code/py/roto_python'/f'{name}.py').read_text(encoding='utf-8')
     inspector=controller.op('inspector') or controller.create(containerCOMP,'inspector')

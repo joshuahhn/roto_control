@@ -3012,3 +3012,285 @@ the issue. [Issue #26 comment](https://github.com/joshuahhn/roto_control/issues/
 now contains the deferral, prototype results, limitations and proposed future
 slice. The issue remains open; audio implementation is paused until requested
 again. Current work moves to the read-only Serial feasibility issue #7.
+
+## Optional Serial read-back #7 investigation — 2026-10-18
+
+The user asks to do other work after deferring audio and identifies the unfinished
+old Serial plugin in `nin-lab/roto_control` as a reference. The
+[feasibility record](docs/plans/serial-readback-feasibility.md) distinguishes its
+reusable encoder/queue from its MIDI setup parser and write/preset workflows.
+Reference baseline is clean nin-lab `52a5f09a1381d66524de7f0d6ae9436ca6208343`.
+No reference repository files or archived projects are modified or loaded.
+
+Read-only USB inventory identifies two CDC endpoints on this Roto-Control.
+Config endpoint `usbmodem1101` answers firmware 3.3.0/`eaa37b0` and PLUGIN first
+page. Endpoint `usbmodem1103` does not answer the bounded firmware probe; its
+purpose is not inferred. A scratch wrapper imports the old protocol encoder,
+queue and ZERROR SerialRuntime behind a GET-only send allowlist. Firmware, mode
+and the four demo_A PLUGIN control reads complete. Plugin hash, control index,
+mapped parameter index and mapped hash all match the current host definitions.
+Amount and Steps read smooth; Mode reads three steps; Enabled reads Toggle.
+Knob responses are 250 bytes and switch 247. Old MIDI setup config decoding is
+not reused for those layouts. Nine existing reference transport tests pass.
+
+This establishes actual stored configuration read-back for the scoped first-page
+controls, not full plugin completion or physical haptic-feel acceptance. It does
+not repair the separate historical MIDI Button 1 recall difference. Optional
+Serial worker isolation is the recommended next integration slice; active MIDI
+coexistence, stale/wrong-response handling, other pages and Inspector publication
+remain unaccepted. PDF framing ambiguities and the missing optional pyserial
+dependency are recorded without changing dependencies or MCP configuration.
+
+The Serial descriptors are closed and port settings restored. No configuration
+transaction, SET, CLEAR, LEARN or firmware update is sent. Full normalized
+snapshots match all original nodes, DAT hashes, storage and static values; TD
+remains open/disconnected on `.20`, with four local controls and empty buffers.
+Nin-lab stays clean. No current runtime install, save/export, commit, push or PR
+occurs. Probes, exact TX/RX, endpoint ancestry, identity/source fingerprints and
+preservation evidence remain under system temp `roto-7-serial-j0du7uf8`.
+
+## Read-only Serial worker #7 — 2026-10-18
+
+The user asks to continue through completion after the feasibility proof. Audio
+remains deferred in issue #26. This first integration adds
+`ReadHardwareConfig(port=...)` and `GetHardwareConfig()` with detached
+never_read/reading/captured/stale/error results. A transient HardwareConfig owner
+manages one independent child; the standalone macOS worker permits only firmware,
+mode, PLUGIN knob and PLUGIN switch GET. No dependency, Inspector UI, Serial write
+API, automatic connection or permanent polling is added. See the
+[Serial contract](docs/functions/serial.md) and [feasibility record](docs/plans/serial-readback-feasibility.md).
+
+USB ancestry, physical incarnation, PH/CI/MI/MH and PLUGIN page offset zero are
+verified before publishing a complete batch. Snapshots identify their capture
+window and closed session and never claim continuous freshness. Timeout or
+uncertain framing leaves an endpoint/incarnation marker in user-owned OS temp
+storage; helper/extension restart does not clear it. Serial failures do not enter
+the MIDI error owner or persist into Layouts/catalog. Context-generation hooks
+cover binding, routing, page, mode and lifecycle changes. Read-start eligibility
+is separate from stable definition identity, so value feedback is not a context
+change. Build, upgrade, export and exact-source checks include both new files.
+
+The final `python3 -m unittest discover -q` run passes 657 tests against baseline
+611 at `4ec8016` plus preserved dirty #28. Focused regressions include real
+subprocess/PTY framing and settings restoration, malformed/short/oversize/late
+responses, exact identities, retirement across owners, nested IPC validation,
+ABA, cleanup, MIDI isolation and packaging. Independent review reproduces a
+pipe/exit race and verifies its EOF fix. Native acceptance exposes repeated USB
+names on interface nodes and a lazy MIX token initialization that cancelled an
+immediate first read; both are fixed with regressions. The shared MIDI ingress
+token and MIX source remain unchanged. Comment review removes three internal
+docstrings and retains the protocol/API contracts. No review blocker remains.
+
+The final API reads all four original demo_A records while MIDI is disconnected.
+Amount/Steps are smooth, Mode has FIRST/SECOND/THIRD steps, and Enabled is Toggle.
+The first read immediately after the final upgrade succeeds. With MIDI active,
+the three currently reconciled knobs also capture. A real FD holder owns the
+Config endpoint during another read; the worker reports port_busy, leaves the
+holder alone and preserves the live MIDI PID and its error. Releasing the holder
+permits a four-control read. All four hardware records before and after are equal.
+Ordinary MIDI recall reproduces the existing local Button 1 reconciliation
+discrepancy; the four original local definitions are restored disconnected. The
+Serial feature does not fix that separate behavior or establish new physical
+input/feedback acceptance. Pending Disconnect reaps its child, a completed capture
+becomes stale, and extension reinit starts at never_read. A cook-stack warning
+observed during MCP reinit clears after a deferred normal cook; final scoped
+errors/warnings are empty.
+
+Configured tox reload preserves four definitions and the original Analysis
+Low/Mid profile. Generic tox reload matches all 24 runtime/helper and 13 docs
+hashes, contains no external DAT paths, starts disconnected/never_read and has no
+user mappings, MIX assignments, Operation presets or source paths. The canonical
+generic export and its receipt are refreshed through live TD, with recovery kept.
+The new [Serial working project](projects/current/ROTO-CONTROL.serial-readback.1.toe)
+and [receipt](projects/current/ROTO-CONTROL.serial-readback.1.json) identify exact
+uncommitted source hashes against `4ec8016`; its unnumbered Serial alias has the
+same bytes. A full project restart is not claimed. The #28 `.20` project, alias
+and receipt, earlier snapshots, and older canonical project remain unchanged.
+
+Before/after snapshots preserve all 4,602 original node IDs/types and static
+parameter values/modes. Additions are the two runtime DATs, one embedded Serial
+document and their Serial annotation. Existing DAT changes are the two intended
+runtime modules, four documentation snapshots/index, and the retained MIDI RX
+diagnostic table. User storage is identical apart from Layout registry revision
+417 to 424, tracked separately from unchanged configuration. Only the same three
+live Low-signal evaluated samples are normalized. Audio routing and nin-lab are
+untouched. TD remains open on the new working project, disconnected with four
+definitions and empty buffers. No commit, push or PR is created.
+
+Actual unplug/replug, Roto-Setup application contention, other pages, Windows and
+physical haptic feel remain unaccepted. The port-contention test uses a real FD
+holder. Test/probe scripts, raw observations, recovery copies, exact hashes,
+decision trail and source/native/physical results remain in system temp
+`roto-7-implement-hq1ow3jr`. The cross-family trail reviewer fails with Connection
+error; same-model independent trail review is used and reported separately.
+
+## Serial USB unplug/replug acceptance — 2026-10-18
+
+The user is ready for hardware checks and manually unplugs Roto while both MIDI
+and the one-shot Serial worker are idle. Before unplug, an explicit read captures
+the four original controls. With USB absent, both endpoints disappear, TD stays
+healthy with four local definitions, and the prior result remains the same
+historical snapshot. An explicit offline refresh fails and reaps its worker,
+without a MIDI error, port open or configuration/value change. The initial
+snapshot comparison probe confused tuple/list JSON conversion; normalized values
+are equal. That probe error is separate from the diagnostic defect below.
+
+Actual unplug leaves `ioreg` exit 0 with empty stdout and stderr. Parsing that
+empty output as a plist incorrectly reports usb_inventory / Invalid file. The
+worker changes one line to treat successful empty output as an empty device
+inventory. The existing wrong_device path then explains the absent endpoint.
+Nonempty malformed plist still reports usb_inventory. Two regressions prove
+neither case opens a port, creates a retirement marker or sends bytes. Focused
+worker 20 tests and the final 659-test discovery pass; raw outputs and exact
+source hashes are retained. No command, session, timeout or MIDI behavior changes.
+
+After the user reconnects and selects PLUGIN first page, inventory confirms the
+same physical USB serial with new parent/endpoint registry IDs and USB session.
+An explicit read through the updated embedded worker captures all four controls
+under a new read-session ID. Complete control records match the pre-unplug
+capture. The worker closes, MIDI remains disconnected with no error, and scoped
+TD errors/warnings are empty. This accepts disconnected idle unplug/replug plus
+explicit refresh. In-flight unplug, actual timeout-retirement/replug recovery,
+Roto-Setup application contention and full project restart remain unaccepted.
+
+Configured and generic tox reloads match 24 runtime/helper and 13 documentation
+hashes and start never_read/disconnected. Configured reload retains four
+definitions; generic reload has no mappings, MIX assignments, source or Operation
+presets and no external DAT paths. Before/after checks preserve all 4,629 nodes,
+target values/modes and user storage exactly; only the worker DAT changes.
+The read-only Status diagnostic changes from context/disconnected text to
+Disconnected after the explicit lifecycle action and is recorded separately.
+Temporary reload copies are removed. No knob movement or target writes are used.
+
+A first save_project MCP call unexpectedly prompts to overwrite the old Serial
+`.1`, despite its success response after cancellation. The user chooses No.
+Hash checks confirm all five old project/export/receipt artifacts remain intact;
+the save response is not treated as evidence. After removing test copies, a
+direct `project.save` to a nonexistent new basename returns True and produces
+the new [replug project](projects/current/ROTO-CONTROL.serial-replug.1.toe),
+its identical unnumbered replug alias and [receipt](projects/current/ROTO-CONTROL.serial-replug.1.json).
+The generic export/receipt are refreshed with recovery copies retained. Both
+the first Serial `.1` and #28 snapshots/aliases/receipts remain unchanged.
+No commit, push or PR occurs; TD remains open on the new replug project.
+
+Independent same-model review finds no blocker in the one-line fix or physical
+evidence; the earlier cross-family connection failure is not represented as a
+successful review. Evidence, recovery copies, raw test logs, review and published
+hashes are in system temp `roto-7-replug-9dlwk5bx`. Runtime source is uncommitted
+against `4ec8016`; receipts identify exact embedded bytes. Markdown remains
+authoritative; these HANDOFF/CONTEXT/project-index updates do not require another
+save or export of unchanged embedded function documentation.
+
+## Toggle control-page recall correction — 2026-10-18
+
+Baseline is `4ec8016` plus the preserved uncommitted #28 and #7 work, with TD
+initially on `ROTO-CONTROL.serial-replug.1.toe`. Ordinary MIDI Connect reproduces
+the historical Enabled Button 1 loss: three knobs map, while the exact Button
+index/hash report produces `Control page Menu choices changed; re-LEARN required`.
+Native Toggle parameters expose `off/on` and `Off/On` fields. Binding and saved
+records correctly normalize non-Menu choices to empty lists, but page recall
+previously compared raw fields. The independent pending removal is Button 8,
+index 15, and is not the cause. The attached Audit thread records the same local
+recall problem before Serial integration.
+
+The final fix changes only choice normalization inside `recall_page_target`.
+Current non-Menu choices are empty; current Menu choices retain their names and
+labels. Comparison with saved choices always runs. Initial style-only gating
+passed the Toggle case, but independent review found that it admitted a saved
+Menu replaced with a numeric parameter. That candidate is superseded. Three new
+tests cover native Toggle reconnect, changed true Menu names/labels, and
+Menu-to-numeric replacement including stale ACK rejection and new LEARN recovery.
+Both defects have captured failing-then-passing source output. Final discovery
+passes 662 tests, and independent source review has no remaining blocker.
+
+The parent repeats ordinary hardware MIDI reconnect with the final source.
+Amount, Enabled, Steps and Mode all map without re-LEARN; the Menu error is empty
+and demo_A/demo_B values remain unchanged. Configured and generic tox reloads
+match all 24 runtime/helper and 13 document hashes. Generic data is disconnected,
+empty and `never_read`; configured data retains the original four definitions
+and Analysis Low/Mid profile. Scoped TD errors and warnings are empty. All 4,629
+original nodes retain IDs/types; target values/modes and user storage match the
+baseline except the monotonic registry revision. Only the intended Layouts
+runtime/function document and MIDI RX diagnostic table differ. Three evaluated
+Low signal samples are excluded from value comparison; their modes and expressions
+are preserved.
+
+The final [working project](projects/current/ROTO-CONTROL.recall-fixed.1.toe),
+identical alias and [receipt](projects/current/ROTO-CONTROL.recall-fixed.1.json)
+are saved through live TD after fixture removal. The generic export and receipt
+are refreshed, with recovery in system temp `roto-button-recall-j7d5zvd_`.
+Earlier Serial and #28 projects/receipts remain unchanged. Preliminary
+`ROTO-CONTROL.button-recall.1.toe` is retained but is not the delivered fix.
+Evidence includes the original trace, red/green logs, final reconnect observation,
+reload/hash checks and preservation snapshots. Physical button press/LED behavior
+and full project restart are not newly tested. Audio remains deferred to #26.
+TD remains open and disconnected. No commit, push or PR is created.
+
+## Button 1 physical input and LED follow-up — 2026-10-18
+
+The user accepts the repaired Button 1 in PLUGIN mode after ordinary reconnect
+on `ROTO-CONTROL.recall-fixed.1.toe`. All four controls are mapped before input.
+Two physical presses produce exactly `CC191 20 0` then `CC191 20 127`, about
+2.37 seconds apart. The temporary Binding observer records exactly two changed
+hardware writes, both to demo_A.Enabled: True to False, then False to True.
+No knob binding receives a write. The user confirms lit to dim to lit and
+reports `Enabled / Disabled / Enabled`, with the middle word not clearly seen.
+LED/state acceptance passes; exact middle-word rendering is not separately claimed.
+
+The three-minute stop is cancelled after the result. Receive/write wrappers are
+removed, MIDI is disconnected and its child is reaped. The original four values
+and definitions are restored, with storage equal except the monotonic registry
+revision. Buffers and scoped errors/warnings are empty. No runtime source or
+binary artifact changes; the existing 662 source tests remain applicable.
+Project/export receipts add this physical evidence. Raw events, writes, baseline,
+recovery tox and cleanup evidence remain in system temp
+`roto-button-physical-tppb7xd1`. Full project restart is still not newly tested.
+
+## Serial Inspector Details — 2026-10-18
+
+Baseline is the preserved dirty `4ec8016` checkout and live
+`ROTO-CONTROL.recall-fixed.1.toe`. Details now owns a transient per-view endpoint
+draft and explicit Read/Refresh action. A detached historical observation stays
+with HardwareConfig; only an integer revision enters context publication.
+Display-only notifications update actual readouts without changing edit tokens
+or pending Clear. Complete unique Device/control batch matching withholds foreign
+settings. Detected haptics/button mode remains separate from the declared adapter.
+No open, selection, Browse, Technical Refresh or endpoint edit starts a read.
+
+Source discovery passes 681 tests, including 19 new behavior regressions;
+94 affected Inspector checks pass. Independent same-model source/comment review
+finds one stale full-build marker issue. The installer now invalidates that marker
+only after successful final validation, with a failing-then-passing regression.
+It does not claim that a full builder ran. `git diff --check` passes.
+
+Parent native checks install into an isolated configured component twice without
+replacing existing node IDs. Both views and their inline/popup Details render
+historical data. Native callback input verifies per-view draft sharing; it is a
+callback harness, not acceptance of real unblurred keyboard typing. Two explicit
+reads each call the existing API once. Worker completion updates native text
+without manual model Sync. Value draft content/scope/token and armed Clear remain
+unchanged. Normal Disconnect shows historical stale settings; a wrong endpoint
+clears old settings and cleanup re-enables Read. Real GET captures all four demo
+controls, including smooth, three-step labels and toggle. A final GET through the
+original upgraded instance preserves the same four hardware records.
+
+Configured and generic component reloads match 30 runtime/Inspector source hashes
+and 13 document hashes, with no external DAT paths or scoped controller warnings.
+Both start disconnected at never_read with empty endpoint inputs. Configured data
+retains four controls and the original Analysis Low/Mid profile. Generic data has
+no mappings/profile, saved observation or detected UI literals. All 4,629 original
+nodes retain IDs/types; static values/modes, user storage and the older controller
+storage are identical. Three evaluated Low signal values are excluded from value
+comparison only. Outer Inspector geometry matches baseline. Expanded open editor
+geometry is not separately accepted. Unrelated audioAnalysis warnings are outside
+this controller scope and are not changed.
+
+Temporary fixtures are removed before the live TD save. The
+[Serial Inspector project](projects/current/ROTO-CONTROL.serial-inspector.1.toe),
+identical alias and [receipt](projects/current/ROTO-CONTROL.serial-inspector.1.json)
+are retained; the verified generic tox/receipt are refreshed. Earlier 44 artifact
+entries are checked, with only the intended generic pair replaced after recovery.
+Raw evidence, logs, recovery tox files and source hashes are in system temp
+`roto-7-inspector-czmuxafo`. Full project restart is explicitly skipped by request.
+Physical feel, real keyboard typing, other pages and Windows remain outside this
+acceptance. Audio remains deferred. No commit, push or PR is created.

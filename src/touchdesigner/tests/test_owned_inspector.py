@@ -95,7 +95,7 @@ class LocalGenerationTests(unittest.TestCase):
     def boundary(self):
         from types import MethodType
         catalog=load('owned_lifecycle_catalog',SOURCE/'prototypes/inspector/model.py').CatalogModel
-        view_type=self.methods('ui.py','InspectorView',{'Connect','Disconnect','onInitTD'})
+        view_type=self.methods('ui.py','InspectorView',{'Connect','Disconnect','HardwareEndpoint','onInitTD'})
         model_type=self.methods('live_model.py','InspectorModel',{'onInitTD','onDestroyTD'})
         c,w,m,views=fixture();Node('owned_runtime',w,'textDAT').module=runtime
         def generation():
@@ -367,7 +367,7 @@ class ReviewResponseTests(unittest.TestCase):
     def test_required_runtime_and_helper_source_mismatch_stops_packaging(self):
         c,w,m,views=fixture()
         names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
-               'free_learn','layouts','layout_migration','text_comp_follow','setup',
+               'free_learn','layouts','layout_migration','text_comp_follow','setup','hardware_config',
                'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
         for name in names:
             n=Node(name,c,'textDAT');n.text=(SOURCE/'code/py/roto_python'/f'{name}.py').read_text()
@@ -376,6 +376,7 @@ class ReviewResponseTests(unittest.TestCase):
         for kind in ('knob','button'):
             for slot in range(1,9):
                 n=Node(f'watch_{kind}{slot}',base,'parameterexecuteDAT');n.text=(SOURCE/'code/py/roto_python/control_callbacks.py').read_text()
+        serial=Node('serial_read_process',c,'textDAT');serial.text=(SOURCE/'scripts/serial_read_process.py').read_text()
         helper=Node('midi_process',c,'textDAT');helper.text=(SOURCE/'scripts/midi_process.py').read_text()
         builder._verify_runtime_sources(c,SOURCE)
         helper.text='wrong helper'
@@ -411,7 +412,7 @@ def isolation_boundary():
     """Required native source shapes plus an annotation DAT lacking syncfile."""
     c=Node('roto_python');w=Node('inspector',c)
     names=('RotoPythonExt','protocol','collection_protocol','controls','binding','snapshots',
-           'free_learn','layouts','layout_migration','text_comp_follow','setup',
+           'free_learn','layouts','layout_migration','text_comp_follow','setup','hardware_config',
            'parameter_callbacks','lifecycle_callbacks','target_callbacks','learn_parameters')
     required=[]
     for name in names:
@@ -422,6 +423,7 @@ def isolation_boundary():
         for slot in range(1,9):
             n=Node(f'watch_{kind}{slot}',base,'parameterexecuteDAT');n.text=(SOURCE/'code/py/roto_python/control_callbacks.py').read_text();required.append(n)
     helper=Node('midi_process',c,'textDAT');helper.text=(SOURCE/'scripts/midi_process.py').read_text();required.append(helper)
+    serial=Node('serial_read_process',c,'textDAT');serial.text=(SOURCE/'scripts/serial_read_process.py').read_text();required.append(serial)
     annotation=Node('annotation',w,'annotateCOMP');internal=Node('help',annotation,'textDAT')
     class InternalPars:
         def __init__(self):

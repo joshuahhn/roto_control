@@ -43,7 +43,7 @@ class ControllerCatalog(CatalogModel):
     def __init__(self,adapter,schedule=None,commands_factory=None):
         super().__init__(schedule=schedule,capacity=4)
         self.adapter=adapter;self._source=OrderedDict();self._revisions={};self._info={}
-        self._serial=count(1);self._session=adapter.Session();self._status=adapter.Status();self._sync_count=0
+        self._serial=count(1);self._session=adapter.Session();self._status=adapter.Status();self._sync_count=0;self._hardware=None
         if commands_factory is None:
             from commands import CommandService
             commands_factory=CommandService
@@ -129,12 +129,32 @@ class ControllerCatalog(CatalogModel):
             if self.adapter.Exists(key):self._sync_context(key)
             else:
                 self._source.pop(key,None);self._info.pop(key,None);self._revisions.pop(key,None);self._cache.pop(key,None)
+        observe=getattr(self.adapter,'HardwareObservation',None)
+        hardware=observe() if observe else None
+        if hardware!=self._hardware:
+            self._hardware=deepcopy(hardware)
+            for context in {key for key,_ in self._subscribers.values()}:self._queue(context,65535,0)
         status=self.adapter.Status();learn=bool(status.get('Learning'))
         if status!=self._status or learn!=self._learn or session_changed:
             self._status=status;self._learn=learn;self._learn_dirty=True;self._request_flush()
         # Routing/registry changes also need to reach pinned and following views.
         for identity,(key,_) in list(self._subscribers.items()):
             if not self.adapter.Exists(key):self._queue(key,65535,65535)
+
+    def HardwareSnapshot(self,context,slot):
+        context=self._context(context);slot=self._slot(slot)
+        project=getattr(self.adapter,'HardwareSnapshot',None)
+        if project:return project(self._hardware,context,self.Info(context,slot))
+        return dict(status='never_read',rows=(('State','Never read','short'),),read_enabled=False,reason='Serial read-back unavailable')
+
+    def ReadHardwareSnapshot(self,context,slot,*,port):
+        self.Sync()
+        context=self._context(context);slot=self._slot(slot)
+        view=self.HardwareSnapshot(context,slot)
+        if not view['read_enabled']:raise ValueError(view['reason'])
+        result=self.adapter.ReadHardwareSnapshot(context,self.Info(context,slot),port=port)
+        self.Sync()
+        return result
 
     def _reject_stale(self):raise StaleDraft('Mapping changed; reopen this control')
     def ActivationToken(self,*args):return self._commands.ActivationToken(*args)
@@ -178,6 +198,10 @@ class ControllerCatalog(CatalogModel):
     def Reveal(self,context,slot,token):
         context,slot,info=self._commands._target(context,slot,token)
         return self.adapter.Reveal(info)
+
+    def Shutdown(self):
+        self._hardware=None
+        super().Shutdown()
 
     def Stats(self):return dict(super().Stats(),data_mode='controller',sync_calls=self._sync_count)
 
@@ -233,6 +257,73 @@ class TDControllerAdapter:
     def Observation(self):
         c=self.controller
         return c.ext.RotoPythonExt._layout_manager().owner_observation() if c else nullcontext()
+
+    def HardwareObservation(self):
+        c=self.controller
+        if not c:return None
+        extension=c.ext.RotoPythonExt
+        result=c.GetHardwareConfig()
+        current,available=extension._hardware_context()
+        owner=getattr(extension,'_hardware_config',None)
+        return dict(result=deepcopy(result),public=deepcopy(current.public),manifest=deepcopy(current.manifest),
+                    available=available,quarantined=bool(c.GetLayoutContext().get('quarantined')),worker_active=bool(owner and owner.active))
+
+    @staticmethod
+    def _hardware_matches(observation):
+        snapshot=observation['result'].get('snapshot')
+        if not snapshot:return False
+        if snapshot.get('context')!=observation['public']:return False
+        provenance=snapshot.get('provenance',{})
+        if (provenance.get('device_id')!=observation['public'].get('device_id') or
+                provenance.get('page_offset')!=0 or provenance.get('observation')!='snapshot_only' or
+                provenance.get('worker_closed') is not True):return False
+        expected=observation['manifest']['controls'];actual=snapshot.get('controls',[])
+        def identity(row):
+            return (row.get('id'),row.get('kind'),row.get('slot'),row.get('parameter_index'),tuple(row.get('parameter_hash') or ()),row.get('control_index'))
+        desired=[identity(dict(row,control_index=row['slot']-1)) for row in expected]
+        captured=[identity(row) for row in actual]
+        return bool(desired) and len(desired)==len(set(desired)) and len(captured)==len(set(captured)) and set(desired)==set(captured) and all(row.get('plugin_hash')==observation['manifest']['plugin_hash'] for row in actual)
+
+    def HardwareSnapshot(self,observation,key,info):
+        result=(observation or {}).get('result',{})
+        state=result.get('status','never_read');snapshot=result.get('snapshot') or {}
+        provenance=snapshot.get('provenance',{})
+        active=bool(observation and not observation.get('quarantined') and tuple(observation['public'].get('routing_key') or ())==tuple(key))
+        registered=bool(info.get('id') and observation and any(row['id']==info['id'] and row['kind']==info.get('kind') and row['slot']==info.get('slot') for row in observation['manifest']['controls']))
+        reason=('Activate this Device before reading hardware' if not active else
+                'Choose a registered control' if not registered else
+                'Serial worker is finishing; wait for cleanup, then retry' if observation['worker_active'] else
+                'Finish binding/context restoration and exit LEARN/MIX before reading hardware' if not observation['available'] else '')
+        labels=dict(never_read='Never read',reading='Reading controller Serial',captured='Captured snapshot',stale='Historical snapshot · stale',error='Controller Serial error')
+        rows=[('State',labels.get(state,state),'short')]
+        error=result.get('error')
+        if error:rows.append(('Serial issue',str(error.get('code',''))+' · '+str(error.get('message','')),'long'))
+        if result.get('invalidation_reason'):rows.append(('Stale reason',str(result['invalidation_reason']),'long'))
+        if provenance.get('captured_at_utc'):rows.append(('Captured at',str(provenance['captured_at_utc']),'long'))
+        matched=bool(active and registered and self._hardware_matches(observation))
+        if snapshot and not matched:rows.append(('Association','Settings withheld: Device/control identities do not match active routing','long'))
+        if matched:
+            control=next(row for row in snapshot['controls'] if row['id']==info['id'] and row['kind']==info['kind'] and row['slot']==info['slot'])
+            setting=control.get('haptics') if info['kind']=='knob' else control.get('button')
+            setting=setting or {}
+            rows.append(('Detected mode',str(setting.get('mode','unknown')).upper()+' · raw '+str(setting.get('raw_mode','?')),'short'))
+            rows.append(('Steps / labels',str(setting.get('steps','?'))+' · '+', '.join(map(str,setting.get('labels',[]))),'long'))
+            if info['kind']=='knob':rows.append(('Indents / feel',str(setting.get('indent_positions',[]))+' · physical feel unverified','long'))
+            else:rows.append(('LED on / off',str(setting.get('led_on','?'))+' / '+str(setting.get('led_off','?')),'short'))
+            rows.append(('Source endpoint',str(provenance.get('endpoint','')),'long'))
+            rows.append(('USB / firmware',str(provenance.get('physical_device',{}))+' / '+str(provenance.get('firmware',{})),'long'))
+            rows.append(('Serial session',str(provenance.get('serial_session_id',''))+' · historical page 0 observation','long'))
+        if reason:rows.append(('Read availability',reason,'long'))
+        return dict(status=state,rows=tuple(rows),read_enabled=not bool(reason),reason=reason)
+
+    def ReadHardwareSnapshot(self,key,info,*,port):
+        c=self.controller
+        if not c:raise ValueError('Choose a controller')
+        current,available=c.ext.RotoPythonExt._hardware_context()
+        if tuple(current.public.get('routing_key') or ())!=tuple(key):raise ValueError('Activate this Device before reading hardware')
+        if not any(row['id']==info.get('id') and row['kind']==info.get('kind') and row['slot']==info.get('slot') for row in current.manifest['controls']):
+            raise ValueError('Registered control changed; reopen this control')
+        return c.ReadHardwareConfig(port=port)
 
     def ActivationReason(self):
         c=self.controller

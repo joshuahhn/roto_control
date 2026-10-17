@@ -89,6 +89,15 @@ Custom Menu parameters support knobs (quantized option selection) and buttons (C
 
 Runtime publication keeps authoritative catalog/control state synchronous. Optional Inspector JSON/table projection compares a transient signature of data, context, page, confirmation, action status and Follow status. Changed inputs schedule at most one owned end-frame render that reads the latest snapshot; direct UI commands still refresh immediately. Disconnect forces the final disconnected projection and cancels the callback, including during export/destruction. No persistent user mapping cache or extra polling loop is added.
 
+## Hardware snapshot
+
+Details includes an explicit endpoint and Read hardware action for the optional
+[Serial snapshot](serial.md#inspector-details). Detected haptics/button settings
+are historical and remain separate from the declared RX adapter. No read starts
+on open, selection, endpoint editing or Technical Refresh. Serial-only updates
+preserve Value/Mapping drafts and pending Clear. The existing Details viewport
+scrolls through the added section without changing the outer window layout.
+
 ## Compact Popup restart size
 
 Compact views save their temporary section-height offset separately from the native Window size. Startup closes drafts and subtracts only that offset, retaining the user's manual base width/height. Expanding Mapping adds134px again; saved expanded size cannot become the next collapsed base. Generic UI exports carry offset0 and a178px closed host. No callback, token or connected session is persisted.
