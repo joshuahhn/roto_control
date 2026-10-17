@@ -106,6 +106,10 @@ pair cannot write until release and fresh touch. Discrete value selection is
 implemented; physical MIX detents are unverified. SysEx API 3.10's step-count
 field belongs to PLUGIN LEARN; chapter 4 does not document a corresponding MIX
 haptic/step-count setting.
+The [haptics review](../plans/mix-haptics-findings.md) also checks Serial v1.3,
+official integrations and firmware notes. MIX has documented fixed 0 dB indents,
+but no published setter for arbitrary MIX detent counts, positions or strength.
+Those native mixer reference points do not establish TD parameter haptic semantics.
 Native Send C/D project Operation/Swap; the send count/names retain missing fields
 as unassigned. Second-page Focus is still disabled.
 

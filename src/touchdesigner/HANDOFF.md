@@ -1980,3 +1980,21 @@ remain untouched. TD is open/disconnected without pending bytes or diagnostic
 overrides. Publication adds no runtime behavior; reuse the final 531 tests.
 Recovery/results are in the same evidence folder's `publish` directory. This
 update remains in PR #27 without merging.
+
+## MIX haptic interface review — 2026-10-17
+
+The user's next priority was physical MIX detents/resistance. The
+[scoped findings](docs/plans/mix-haptics-findings.md) distinguish existing
+Menu/Toggle quantization from configurable physical steps. Latest upstream API
+PDFs match local SysEx v1.6/Serial v1.3; neither exposes a MIX haptic setter or
+resistance-strength field. Official integrations use PLUGIN LEARN metadata for
+steps. Firmware v3.1 notes document fixed MIX 0 dB indents, including FUNC Focus;
+v3.3 notes do not add MIX haptic configuration. Their feel/positions in this TD
+session were not physically checked. Do not claim MIX has no haptics, or that its
+native indent represents a TD target's neutral value.
+
+This was read-only research against source `2bcf0ad`, without live TD, MIDI,
+serial or binary changes. No runtime implementation or Float-step feature was
+added. Documentation links/consistency and diff check are the applicable checks;
+the prior 531 runtime tests remain the evidence for unchanged source. No
+save/export or receipt refresh is needed for this Markdown-only update.
