@@ -1959,3 +1959,24 @@ values, stale pairs and menu/Setup identity changes. Hardware coverage is the
 Common + Xor/Z Film demo and first Focus controls 5/6. Other libraries, per-item
 library edits, overview Send C/D input and second-page Focus were not physically
 accepted. Reuse the final 531 tests. Save/export publication follows below.
+
+## Operation library save/export — 2026-10-17
+
+Committed source/docs `2d84b03ac937329c1ad6737f00b369d2f2580376` are embedded in
+the refreshed generic tox. All 22 runtime/helper and eleven documentation hashes
+match that commit. Export/reload confirms empty MIX/mappings/Snapshots/Focus/ownership,
+Follow off, Python python3, no external DAT files and zero errors. The original
+Guide/doc positions are preserved. Generic SHA-256 is
+`116e9f2e7549000ebae9c84a4f4640bc7abb66c5e092f732446cc7d24600759b`.
+All three libraries were also configured in a disconnected native fixture with
+Xor/Z Film additions: Common six choices, Contrast six, Math eight; no target
+value changes or unavailable controls. The fixture was removed.
+TD saved `ROTO-CONTROL.mix-analysis.5.toe` with adjacent receipt, SHA-256
+`ba34c278f96de288cb0bb3a6ad62c41dcbb66ef471ce764a9209f1d975ce41b9`.
+It retains the restored Low/Mid profile, original demo Add mode, authorized
+Layer Mix demo, audio nodes, Steps=4 and the four local definitions. The old
+controller and canonical/demo toe artifacts, plus dirty-root runtime source,
+remain untouched. TD is open/disconnected without pending bytes or diagnostic
+overrides. Publication adds no runtime behavior; reuse the final 531 tests.
+Recovery/results are in the same evidence folder's `publish` directory. This
+update remains in PR #27 without merging.
