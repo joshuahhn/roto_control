@@ -2175,3 +2175,16 @@ normalized registry, original Low/Mid profile/draft, all analysis/demo/layer
 values, Snapshots, nine demo children and old controller's 246 DAT hashes match
 baseline, allowing revision advance to 364. No send/RX/command/probe overrides
 or pending bytes remain. Saved artifact publication follows.
+
+Publication pins runtime/documentation source `be656cd892daf9e7eeb52e293c2db2a070bdec0d`.
+Native generic reload verifies all 22 runtime/helper and twelve Markdown hashes,
+default Analysis bands Low/Mid, no profile, presets, user source references,
+assignments or ownership, Follow off, Python python3, no external DATs and zero
+errors. Existing documentation positions remain unchanged. Generic SHA-256 is
+`f61afd991a3fc0f72ea29c3494ae1a32d873e5f5ac5427a957725089f8d3badb`.
+TD incremented the requested new save to `ROTO-CONTROL.mix-analysis.10.toe`, with
+adjacent source/hash receipt and SHA-256
+`1dd461e574c3fd7524b4b4e4b4a7feeda7b92f3307575a378d57623b7263426b`.
+The previous .8 working copy and canonical project hashes are unchanged. Final
+post-save preservation still passes; TD remains open and disconnected. The dirty
+root source checkout was not reset, cleaned or copied over live runtime.
