@@ -1,5 +1,12 @@
 # Analysis hardware batch
 
+Current results: six-item overview, High Active/changing meter and Kick
+Active/actual trigger/Threshold input plus motor/PLUGIN restoration pass. A
+temporary upper-Threshold/lower-Level Kick comparison is accepted for now but
+is not production behavior. Snare/Rhythm, custom slots and an unassigned-knob
+hardware input check remain unverified. Reuse completed cases below rather than
+running the whole batch again. See [dated evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
+
 Run when the user is back at the controller. Source tests and native fixtures
 cover configuration/routing/persistence; they do not prove the new hardware
 display or the actual detector's timing. No MIDI connection is needed to prepare

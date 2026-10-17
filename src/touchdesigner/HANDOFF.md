@@ -26,9 +26,11 @@ source tests and synthetic native messages do not establish physical acceptance.
 - Current MIX runtime activates one source/style profile at a time.
   Mixed-style slots and audio Gain/Mute processing remain deferred;
   audio follow-up is [#26](https://github.com/joshuahhn/roto_control/issues/26).
-- New Kick/Snare/Rhythm trigger feedback and custom analysis slots have source/native
-  coverage; their physical batch and High Active/changing-meter checks await the
-  user's return. See [the batch](docs/plans/mix-analysis-acceptance.md).
+- Six-item overview, High Active/changing meter and Kick Active/actual trigger/
+  Threshold input/motor restore have scoped physical acceptance. Snare/Rhythm,
+  custom slots and an unassigned-knob input check remain pending. A bounded
+  upper-Threshold/lower-Level prototype is accepted for now, but is not production
+  behavior. See [the batch](docs/plans/mix-analysis-acceptance.md).
 
 ## Historical milestones
 
@@ -2252,3 +2254,61 @@ adjacent source/hash receipt and SHA-256
 Canonical toe and prior .8/.10 saves retain their hashes. Post-save preservation
 passes; TD remains open/disconnected. The original dirty root source was not
 reset, cleaned or copied over TD. Hardware acceptance remains deferred, not passed.
+
+## High/Kick hardware and threshold comparison prototype — 2026-10-17
+
+Baseline `24a058e`, runtime `3840ec6`, TD 2025.33230/firmware 3.3.0/API 1.6,
+working `.12.toe`. The user returned in MIX. All 22 source hashes matched before
+connection. Fresh recovery/snapshots preserved current user values; the dirty
+root and old controller were untouched. No production source or saved artifacts
+changed in this round.
+
+The six-item overview passed with 0.100/0.100/0.200/0.262/0.312/49.459 and two
+unassigned slots, zero writes. High overview Button 3 enabled Highactive once;
+the user confirmed its LED and changing meter. Public high samples ranged from
+0 to 1.122596. The return press disabled Highactive once, with other values
+unchanged. Kick touch + FUNC selected item 3. The hardware retained native PAN /
+SEND A / SEND B headings on unassigned positions; the earlier expectation of
+visually blank screens was inaccurate. Routing contained only Kick Threshold,
+and screen 5 showed Trig Off. This is not stale PLUGIN metadata or a framing
+failure. Unassigned knobs were not physically tested for no-write behavior.
+
+Overview Button 4 enabled Kickactive with one changed write. The user confirmed
+Trig 0/1 and continuing meter; sampled public kick output was positive and held
+feedback showed idle/high. Focus Knob 1 reached 0.600 through 305 changed writes
+to Kickthresh only. The user found the independent pre-threshold level hard to
+relate visually to the threshold. The three-minute timeout restored Kickactive
+False and Kickthresh 0.26174693279619116, reaped the child with return code 0 and
+restored the original Low/Mid profile. Normalized full baseline comparison passed.
+
+At the user's request, a separate temporary one-item Kick Focus probe compared
+pre-threshold Level and the current Threshold over the same 0..1 meter scale.
+Only the outgoing reference-meter value was replaced; production target input,
+mode/queue guards and the single external MIDI owner remained in use. No CHOPs,
+audio/detection settings or global color thresholds were changed. Twelve scoped
+reference/gating checks passed. The user clarified the physical rendering: two
+horizontal bars extending left to right, upper Threshold = CC66, lower Level =
+CC65. The API's Left/Right channel names must not be used as screen orientation.
+The user reached 0.48983702618568026/display 0.490 through 867 changed Kickthresh
+writes only and accepted the comparison for now. It remains a temporary
+prototype, not production runtime/descriptor/generic-tox behavior.
+
+Its timeout restored the parameter/profile, removed send/RX overrides and
+closed/reaped MIDI. A fresh read-only return phase sent the restored 0.261747
+motor position; the user confirmed that return and normal demo_A PLUGIN display.
+Final disconnection reaped the child with return code 0, pending bytes zero.
+The known PLUGIN Button 1 learned/local reconciliation removed one local target
+again; disconnected restore used this run's active Device snapshot through the
+existing manager, without value writes. Four original control IDs, normalized
+registry, Snapshots, Low/Mid profile/draft, all analyzer/demo/layer values, nine
+demo children and the old controller's 246 DAT hashes match baseline. All 22
+runtime hashes remain unchanged, with no overrides or scoped errors. TD stays
+open; no project save/export was performed.
+
+Evidence/scripts/recoveries are in system temporary
+`roto-analysis-hardware.9LBv9IEC0m` and `roto-threshold-bars.CEPDGdvKR7`, including
+orientation/input results and `return/final-preservation.json`. Existing 574
+source tests remain applicable; this evidence-only documentation change does
+not require rerunning them or re-embedding docs. Remaining hardware cases are
+Snare/Rhythm, custom slots and an unassigned-knob input check. Incorporating the
+accepted comparison into the production descriptor/runtime is separate work.

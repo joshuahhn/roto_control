@@ -243,8 +243,20 @@ In first FUNC Focus, screen 5 displays `Trig Off` for disabled detection,
 unknown or unavailable feedback. Missing/replaced sources, removed channels and
 nonfinite/empty samples clear stale detections and report an error. Screen 5 is
 read-only; Knob 5 has no target. Focus knobs 1–4 retain any real controls, so
-Kick/Snare/Rhythm use Knob 1 only. Native headings remain firmware UI. Their new
-display/input routes still need the [batched physical check](../plans/mix-analysis-acceptance.md).
+Kick/Snare/Rhythm use Knob 1 only. Native headings remain firmware UI. Unassigned
+Pan/Send positions can retain those native headings; no TD target is implied.
+Kick's Active, actual trigger and Threshold route now have scoped hardware
+acceptance; Snare/Rhythm and custom slots still need the
+[batched physical check](../plans/mix-analysis-acceptance.md).
+
+The current production meter duplicates a scalar into both channels. A separate
+temporary Kick Focus comparison was accepted with the upper horizontal bar
+showing Threshold and the lower showing pre-threshold Level. Both extend left to
+right over the same 0..1 scale. On the tested firmware 3.3.0 Focus screen, CC66
+was the upper bar and CC65 the lower; do not infer physical layout from the API's
+Left/Right names. This prototype changed no global color thresholds or detector
+algorithm and is not implemented by this descriptor yet. Actual trigger feedback
+remains the detector output, independent of this visual comparison.
 
 ## Lifecycle and diagnostics
 

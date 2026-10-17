@@ -10,12 +10,11 @@ Opacity input/motor return, Input 2 Focus captions, curated Operation selection,
 Swap input/motor return and normal PLUGIN restoration. The generic
 tox includes this slice with no MIX assignments; the checked-in demo project
 retains its separate older receipt. See [dated evidence](../../HANDOFF.md#mix-lowmid-hardware-acceptance--2026-10-17).
-High also has physical overview/Focus caption, persistent-selection and Gain
-input/motor-return acceptance. Its Active button and changing meter level have
-source/native coverage but were not separately checked on hardware.
-The new detector/trigger/custom-slot changes have source/native coverage only;
-the user deferred their [physical batch](../plans/mix-analysis-acceptance.md)
-until returning to the controller.
+High also has physical overview/Focus caption, persistent-selection, Gain
+input/motor-return and Active/changing-meter acceptance. The six-item overview,
+Kick Active/actual trigger, Threshold input and final motor/PLUGIN restoration
+have scoped hardware acceptance. Snare/Rhythm and custom-slot hardware checks
+remain in the [physical batch](../plans/mix-analysis-acceptance.md).
 
 ## Configure an existing source
 
@@ -240,6 +239,13 @@ for Threshold and screen 5 for read-only
 trigger is held for 200 ms for readability, without changing detection. See the
 [trigger API](mix_analysis.md#trigger-contract) and pending
 [batched hardware check](../plans/mix-analysis-acceptance.md).
+
+A bounded Kick Focus comparison prototype put Threshold on the upper horizontal
+bar and pre-threshold Level on the lower, both extending left to right on a 0..1
+scale. The user reached 0.490 and accepted the comparison for now. The API's
+Left/Right names describe channels, not this physical screen orientation.
+This comparison is not in the production runtime or generic tox: a single scalar
+still fills both bars. See [the evidence](../../HANDOFF.md#highkick-hardware-and-threshold-comparison-prototype--2026-10-17).
 
 [SysEx API v1.6](../../../../docs/ROTO-CONTROL_SYSEX_API_v1.6.pdf), section 2.23,
 defines a timeout for SHOW CONTROL VALUE. Assigned text is therefore renewed on
