@@ -2026,3 +2026,8 @@ is system temporary `roto-mix-editor.uBd5Rj1xBh`.
 An additional native saved-tox reload resolves the Analysis scope across root
 COMPs, rebuilding all ten targets without value recall. All temporary fixture
 operators were removed. Live installation and generic publication follow below.
+Importing the existing profile into a new UI page also exposed custom OP
+parameters' containing-network path context, distinct from the runtime's
+controller-relative scope. Draft source hydration now uses that context, with
+source and native coverage. The final 541-test discovery run passes after this
+correction; native hydration resolves the intended Analysis COMP with zero writes.

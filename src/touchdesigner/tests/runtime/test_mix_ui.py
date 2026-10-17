@@ -53,6 +53,7 @@ class MixUiTests(unittest.TestCase):
         scope = mix.scope
         source.parent = lambda: scope
         c = e.ownerComp
+        c.parent = lambda: SimpleNamespace(path='/')
         c.ext = SimpleNamespace(RotoPythonExt=e)
         c.customPages = []
         def append(name):
@@ -66,7 +67,7 @@ class MixUiTests(unittest.TestCase):
                              SimpleNamespace(module=setup) if name == 'setup' else
                              callbacks if name == 'parameter_callbacks' else
                              registration if name == 'registration' else
-                             source if name == posixpath.relpath(source.path, c.path) else old_op(name))
+                             source if name == posixpath.relpath(source.path, c.parent().path) else old_op(name))
         c.ConfigureMixAnalysis = e.ConfigureMixAnalysis
         c.ConfigureMixLayers = e.ConfigureMixLayers
         if layers:
@@ -78,6 +79,7 @@ class MixUiTests(unittest.TestCase):
         e, mix, c, source = self.fixture()
         before = e.GetMixProfile()
         self.assertIs(c.par.Mixsource.eval(), source)
+        self.assertEqual(c.par.Mixsource.val, 'demo/analysis')
         self.assertIn('analysis: /demo/analysis', c.par.Mixsummary.eval())
         self.assertTrue(all(getattr(c.par, name).eval() == setup.MIX_NO_OPERATION
                             for name in setup.MIX_CUSTOM_PARAMETERS))

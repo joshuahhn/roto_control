@@ -70,7 +70,8 @@ def install_mix_ui(controller):
             source = scope.op(descriptor['source']) if scope is not None else None
             controller.par.Mixstyle.val = descriptor['style']
             if source is not None:
-                controller.par.Mixsource.val = posixpath.relpath(source.path, controller.path)
+                # Custom OP parameters resolve from the containing network.
+                controller.par.Mixsource.val = posixpath.relpath(source.path, controller.parent().path)
             refresh_mix_ui(controller)
             if descriptor['style'] == 'layers':
                 from mix_runtime import OPERATION_LIBRARIES
