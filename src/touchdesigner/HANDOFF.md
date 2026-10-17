@@ -1690,3 +1690,37 @@ mid-gain-final-return, final-plugin-return and final-restoration.json. TD remain
 open and disconnected with user audio nodes preserved. The generic save/export
 receipt will identify the exact committed source and embedded hashes; the
 checked-in demo project/receipt retain their prior independent baseline.
+
+## MIX generic publication — 2026-10-17
+
+Source and the scoped evidence above are committed as
+`58ff695a5fef1206ff05aa12ff0a3c5dff625c75`. Refreshed eleven Markdown snapshots
+through live TD, exported a generic controller and reloaded it in a temporary
+holder. All 22 runtime/helper and eleven documentation hashes match that commit.
+Reload is disconnected, Python=python3, Follow off, no external DAT dependencies,
+empty MIX profile, mappings, Snapshot records, ownership and Focus links, with
+zero scoped errors. Unchanged menu/color/LEARN behavior reuses its prior evidence.
+The documentation-only layout check places eleven DATs inside two measured
+groups without overlaps. Original outer Guide positions are retained; their
+pre-existing overlap with runtime nodes was also present in recovery and was not
+expanded into a controller-wide layout change.
+The generic SHA-256 is
+`a60fc7d2c59cf270b630081ca8f123ef9159c3494a24aa589eae03498c8c6352`;
+`exports/roto_python.json` pins its source, hashes and acceptance limits.
+
+TD separately saved the configured live working project as
+`ROTO-CONTROL.mix-analysis.2.toe` in the original project's current directory,
+with adjacent identity receipt. Its SHA-256 is
+`9d0efeda58df2dc53191177ef6a0a2b358622363482420f393f1596858e810c2`.
+The old local canonical `ROTO-CONTROL.toe`, its receipt and this worktree's
+checked-in demo remain untouched. The original dirty checkout's runtime source
+was neither copied into TD nor changed. Original values/mappings, the old
+controller's 246 DAT fingerprints and all eight demo-network children, including
+the user's audio nodes, match the pre-publication snapshot. TD stays open and
+disconnected; no full main-project restart is claimed.
+
+Recovery, scripts, export/reload results and the pre-save working file are in
+system temporary `roto-mix-publish-vyql43ej`. The two new committed files for
+distribution are the generic tox and its receipt; probes remain temporary.
+Reuse the final 511 source tests and targeted native/physical evidence because
+publication changed no runtime behavior.

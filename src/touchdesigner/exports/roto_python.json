@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "roto_python.tox",
-  "sha256": "97f03362bc89ae6964a84150fc995f2cddca58589b981e7ed4859791e22f6a50",
+  "sha256": "a60fc7d2c59cf270b630081ca8f123ef9159c3494a24aa589eae03498c8c6352",
   "export_date": "2026-10-17",
   "touchdesigner_build": "2025.33230",
   "profile": {
@@ -12,15 +12,16 @@
     "python": "python3",
     "embedded_midi_helper": true,
     "external_dat_files": false,
-    "external_runtime": "Python with mido and python-rtmidi"
+    "external_runtime": "Python with mido and python-rtmidi",
+    "mix_assignments": "empty"
   },
   "runtime_source_sha256": {
     "controls": "7f4fb64885f168eb5c68ac8db43b5360de4080da3765f250ed22d7e48599e3b0",
     "snapshots": "0dddbd52a177e632ede9fd0e51ea91ab81a3bb1d801fa48f1afd8d6dcb795b89",
     "learn_parameters": "d794ebba261b8697463674224b2545582488d479bee342158218627f7922beee",
     "free_learn": "713ac801e4c3e94770a2f7e9092c72d8d78a7beee48060a23d5271d09d3ced24",
-    "lifecycle_callbacks": "dba438adb15dcf6bf0413afc4bb61715cf6fd74ce8f29667f1b8eca8cc8ced6d",
-    "RotoPythonExt": "f228c93e2fb174d2bc1d1b21b22e7c988cc4692b5cf81c235645c4c5dbeda9aa",
+    "lifecycle_callbacks": "a3f2f8fbbf087481b794b95914d92580a435710a27e154e82626418c0feea343",
+    "RotoPythonExt": "8da8d7173ef82c996437e4d1e3b35bda7d97f6547cdf5d722d88a2d4f3d2d03c",
     "text_comp_follow": "aa2f81fdcfe21393c0637be0b0741eaa4c9eb12a3f603da06176e45f2218cadd",
     "collection_protocol": "8477dbf6da7f20381eb152f9d2fd62f20e8ec3a63d307d5cf0ba34383a7b9fdd",
     "protocol": "5ceec08b81bd2033e2e456dddeaec60d1dd4891b93e02c99ce8a30b0777194d9",
@@ -33,14 +34,18 @@
     "inspector/inspector_data": "26bacb50da1f531bbd822c53dcbeb4ca3d5c04363bac7c8b1dba6902f9ca07ef",
     "inspector/owned_runtime": "f23a10e27739b0224584af2cb965d2e2319cc909b899511560ea67739230a20c",
     "base_targets/mapping_marks": "3156cf1efb9f30a173538f5320ab380062ad5728f322289b5a7481b5b9198f25",
-    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17"
+    "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
+    "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
+    "mix_descriptor": "7bf09f92fdea7e87289e90c33ba5e763a4bb0b1e5e4c7c4cae1224cf3c9ed91e",
+    "mix_runtime": "797e7721c7bb0f8bcb75056c243fb6c30343a7fa59d9f5a461c0494f2b8ee30a"
   },
   "embedded_documentation_sha256": {
-    "readme_md": "f95a0a0a922a7117d68a075df22d7af3d84e6cf02bdc333fa0e746dd9bcf81c8",
+    "readme_md": "21e7f31ccbdfd0fb527b19dc65bbe6d5fbda0efd337b59e4eba36c9bb3c13d7a",
     "docs/overview_md": "493698318faef8c770506e27d2e642ae574568f7371346799fcadab3eee71f9b",
     "docs/fn_lifecycle_md": "f375ab171ee00a8c712dde6468eec9f9830dd2265691013293643c31f283fe43",
     "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
     "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
+    "docs/fn_mix_md": "4c19c5d7f2c54c372971b5d0f656cff4bc318ff0aeeb3278c8fab2ad2e3cc574",
     "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
     "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
     "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
@@ -49,18 +54,25 @@
   },
   "validation": {
     "native_export_reload": "passed",
-    "runtime_source_count": 19,
-    "documentation_snapshot_count": 10,
-    "source_tests": 487,
+    "runtime_source_count": 22,
+    "documentation_snapshot_count": 11,
+    "source_tests": 511,
     "scoped_errors": 0,
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
     "palette_47_follow_up": "https://github.com/joshuahhn/roto_control/issues/24",
-    "hardware_acceptance": "Earlier same-candidate PLUGIN checks passed: FUNC red/white palette 71 and purple/white palette 82; hardware A/B/A names/colors and Knob 1-3 screens normal. No new hardware operation during save/export.",
+    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes.",
     "arbitrary_rgb_acceptance": false,
     "full_project_restart_acceptance": false,
-    "source_tests_commit": "0254000d1f3810fea47713043c8951f6f1d098ee"
+    "source_tests_commit": "58ff695a5fef1206ff05aa12ff0a3c5dff625c75",
+    "native_mix_float_targets": 8,
+    "native_mix_configuration_reload": "passed without value recall",
+    "native_mix_scoped_upgrade": "passed twice",
+    "mix_generic_reload": "passed with empty MIX profile",
+    "mix_hardware_limits": "Overview Pan/Send and other detail input routes were not physically accepted; Toggle/Menu/trigger routes, CI=8+, Layer Mix and audio processing are disabled or deferred.",
+    "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
+    "native_documentation_layout": "passed: eleven doc nodes in two measured groups; original outer Guide positions preserved"
   },
-  "runtime_source_commit": "0254000d1f3810fea47713043c8951f6f1d098ee",
-  "embedded_documentation_source_commit": "0254000d1f3810fea47713043c8951f6f1d098ee"
+  "runtime_source_commit": "58ff695a5fef1206ff05aa12ff0a3c5dff625c75",
+  "embedded_documentation_source_commit": "58ff695a5fef1206ff05aa12ff0a3c5dff625c75"
 }
