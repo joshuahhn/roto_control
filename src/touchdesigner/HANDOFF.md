@@ -2739,3 +2739,21 @@ timing or physically test a nonselected knob gesture while locked. Reuse the
 589 source tests from `b6d2cc3` and the native correction check; no source behavior
 changed after those tests. TD remains open/disconnected, with no project save.
 Generic export/reload and its receipt follow in the publication entry below.
+
+### MIX LOCK correction publication
+
+Generic runtime source `b6d2cc30573a1ccec74cb91984a34bfc01120cac`, embedded
+Markdown source `8d3dc22`, with 589 passing discovery tests. Live TD exports the
+corrected disconnected clone and reloads it with all 22 runtime/helper and 12
+documentation hashes verified. Mappings, MIX profile/presets/triggers/source
+paths are empty; all 34 custom draft fields and six Operation slots reset,
+six default bands, Follow off, Python python3, no external DATs/process and zero
+scoped errors. Export SHA-256:
+`ff863719fa88b1fdb87ef8900ece86f9453ffffe0656bec80fc752ba7b75283c`.
+
+The receipt separates the new LOCK acceptance from reused earlier physical
+results and retains limits on locked target gestures and same-batch timing.
+Live original configuration/values/nodes remain preserved with updated source
+and docs, open/disconnected with no override or pending bytes. Canonical and
+`.18.toe` hashes remain unchanged; the saved `.18.toe` receipt still identifies
+runtime `7a99f31`. No project save or full restart is claimed.

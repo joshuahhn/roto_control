@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "artifact": "roto_python.tox",
-  "sha256": "451c57bf8466954e2f337bb927c7f0e9671347887dd09855a2f75b6e8109a92c",
+  "sha256": "ff863719fa88b1fdb87ef8900ece86f9453ffffe0656bec80fc752ba7b75283c",
   "export_date": "2026-10-17",
   "touchdesigner_build": "2025.33230",
   "profile": {
@@ -43,7 +43,7 @@
     "midi_process": "9d615d77d1cdc7f4343ae19c3ae46fcd9f4407fc29593b9562117688014ccc17",
     "midi_queue": "479da2bba9d3cbcd956d473ca01a66836c1138ada438cd425acd50f2f1c6db38",
     "mix_descriptor": "e4c8dd364d91e4655e9e9ae2e15f290fcdada83bd6f0f1d6a50061f462587bad",
-    "mix_runtime": "363706a367760a05ec0f61fdc187b55bacb66f973fd503d193f9b69fa056815b"
+    "mix_runtime": "b618b95a8fd8ec417b8b33536c987bd44e79f55b96c132608132f155213bc6a4"
   },
   "embedded_documentation_sha256": {
     "readme_md": "71804a9e872f22309e00345e3d4aaac018fa8ebf8ebf51069f11041fde76ac95",
@@ -52,7 +52,7 @@
     "docs/fn_mix_analysis_md": "c6e3f30cc7937c45e414718dfaf2fae2891c33c52a6cb10532ed54771db733b4",
     "docs/fn_binding_md": "4274c4492958ce4045b7f92f7c3fe5e4cc66aefad956b98a20bbb7a446459d0f",
     "docs/fn_layouts_md": "f6dec05d8c9c1b2cad79faf14a00699d2a63997e8d6e12fb03b4d5fcb671f247",
-    "docs/fn_mix_md": "674190f3aefd3a71e5dcc8e6779f44124f42fe9a6bfa10c7eb324eea0f37c316",
+    "docs/fn_mix_md": "8853565cd5562b5f6c7e0490980df575bb55072b252f9c1813b687c9fcbe12ac",
     "docs/fn_snapshots_md": "49063ea0663854bb01fa5edfa626e50785b1adb383da1402f667f436e8196ab8",
     "docs/fn_controls_md": "d1b8bd1ed18482aeea38126c7102b0491a3a7d63f85318f6bc6ffdf1cd79c6fd",
     "docs/fn_inspector_md": "0b17a0d29280c3a7f9e20d56e2ad2b631b7d7b6c88cbf25ab14741db504ca6be",
@@ -63,20 +63,20 @@
     "native_export_reload": "passed",
     "runtime_source_count": 22,
     "documentation_snapshot_count": 12,
-    "source_tests": 588,
+    "source_tests": 589,
     "scoped_errors": 0,
     "original_configuration_values_sources_preserved": true,
     "native_readonly_preview": "passed",
     "palette_47_follow_up": "https://github.com/joshuahhn/roto_control/issues/24",
-    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747. Snare/Rhythm Active LEDs, actual Trig 0/1, Threshold gestures, motor return and normal PLUGIN return pass. Clean round 122 changed writes: Snare 46, Rhythm 72, four Active presses. Original values restored. Caption fix is physically accepted in overview and Focus at Thres 49.459 with zero writes. Custom Slot7 Lowgain and Slot8 read-only Low meter aliases pass through real Apply: 32 Lowgain writes to 2.6131966062381737 only, 2.000 motor restore, Gain stays on Focus Knob2, Level TEST Focus and PLUGIN return normal. Unassigned Focus Knob1 20 CC12/44 pairs and overview Knob8 22 CC19/51 pairs plus touches produce zero writes. Original profile/draft/values restored; observer removed.",
+    "hardware_acceptance": "MIX overview meter; retained FUNC; touch Low/Mid selection; four sustained first-Focus captions; Mid Gain input 4.397 and motor return 4.000; normal demo_A PLUGIN restoration. Only Midgain changed during the gesture; original values restored; no extra motor input writes. New Active acceptance: overview Low off/on and Mid on/off with four changed writes; Focus selection and PLUGIN return normal. Layer Mix acceptance: two input captions/motors/opacity bars, Knob 1 Opac 0.347 input and 0.250 motor restore, Input 2 Focus four captions, PLUGIN return normal. Operation/Swap acceptance: Common plus custom Xor/Z Film, six Focus captions, Z Film input, Add/Over motors and conditional Swap availability, Swap On input/Off motor, normal PLUGIN return. Five Menu plus one Toggle changed writes only; baseline values restored. High acceptance: overview Threshold 0.100/0.100/0.200 and third motor about 33%; High first-Focus captions; selected Low -> High -> Low persists with normal motor output and zero writes; High Gain input 4.159494598058964, 28 changed writes to Highgain only; 3.500/50% motor restore and normal PLUGIN return. All original values restored. Production Kick comparison: overview upper Threshold/lower Level, first-Focus transition and normal PLUGIN return pass with zero parameter writes. Earlier accidental Focus turn changed only Kickthresh to 0.274675 via three changed writes and was restored to 0.261747. Snare/Rhythm Active LEDs, actual Trig 0/1, Threshold gestures, motor return and normal PLUGIN return pass. Clean round 122 changed writes: Snare 46, Rhythm 72, four Active presses. Original values restored. Caption fix is physically accepted in overview and Focus at Thres 49.459 with zero writes. Custom Slot7 Lowgain and Slot8 read-only Low meter aliases pass through real Apply: 32 Lowgain writes to 2.6131966062381737 only, 2.000 motor restore, Gain stays on Focus Knob2, Level TEST Focus and PLUGIN return normal. Unassigned Focus Knob1 20 CC12/44 pairs and overview Knob8 22 CC19/51 pairs plus touches produce zero writes. Original profile/draft/values restored; observer removed. MIX LOCK correction at b6d2cc3 passes overview LOCK-on touch preserving Low, unlock touch selecting Mid and normal demo_A PLUGIN return, with zero new writes and full restoration. Raw touch no longer bypasses hardware selection suppression.",
     "arbitrary_rgb_acceptance": false,
     "full_project_restart_acceptance": false,
-    "source_tests_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7",
+    "source_tests_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac",
     "native_mix_float_targets": 12,
     "native_mix_configuration_reload": "passed without value recall",
     "native_mix_scoped_upgrade": "passed: existing profile, mappings and values preserved",
     "mix_generic_reload": "passed: no profile/presets/draft source/custom assignments, 34 custom draft fields reset, default Analysis bands Low Mid High Kick Snare Rhythm; comparison toggles off",
-    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred. Same-batch FUNC/item timing and MIX LOCK behavior lack physical acceptance; earlier scoped physical acceptance was at runtime 7a99f31; touch/Focus/Mid Gain also accepted at e74e413. Focus Button 2 alone produces no input/selection in the isolated check.",
+    "mix_hardware_limits": "One active source/style and first Focus page. Overview Pan/Send, arbitrary preset combinations and optional custom trigger/comparison feedback lack physical acceptance. CI=8+, mixed-style/per-item slots and audio processing remain deferred. Same-batch view/item timing is source/native-only. MIX LOCK overview touch selection is physically accepted at b6d2cc3; writing a nonselected target while locked is source-only. Earlier other physical acceptance is scoped to 7a99f31/e74e413. Isolated Focus Button 2 produces no selection/CC.",
     "full_fresh_builder": "not accepted: existing Inspector ASCII-locale source-read failure; scoped updater accepted",
     "native_documentation_layout": "Existing twelve snapshot positions preserved; no new documentation nodes",
     "native_mix_toggle_writes": 3,
@@ -286,6 +286,7 @@
       "receive_override": false
     },
     "native_mix_review_corrections": {
+      "touch_only_keeps_selection": "passed",
       "same_batch_latest_selection": "passed",
       "backlog_and_fresh_touch": "passed",
       "only_selected_mid_gain_writes": 2,
@@ -293,7 +294,8 @@
       "meter_recovery": "passed",
       "midi_opened": false,
       "zero_samples": "source regression only: native Script CHOP clamps to one sample",
-      "live_preserved": true
+      "live_preserved": true,
+      "source_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac"
     },
     "native_mix_review_installation": {
       "runtime_hashes": 22,
@@ -346,8 +348,46 @@
         "scoped_errors": 0
       },
       "publication": "acceptance metadata only; tox and embedded-doc hashes unchanged"
+    },
+    "mix_lock_selection": {
+      "runtime_source_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac",
+      "pre_fix": {
+        "runtime": "e74e413",
+        "lock_on": "touch CC53 without Track selection incorrectly selected Mid",
+        "new_parameter_writes": 0
+      },
+      "fix": "only validated General Track selection changes selected item; raw touch retains contact/arming only; no synthetic LOCK-state command",
+      "source_regression": "passed: LOCK-on CC53 trace preserves Low/epoch/caption; independent Mid overview target still writable",
+      "native": "passed: touch-only keeps selected item, explicit/batched hardware selection and fresh input remain valid",
+      "hardware": {
+        "lock_on": "CC53 ON/OFF, no General selection; selected Low/epoch3 unchanged; user >Low",
+        "lock_off": "General Track selection Mid then CC53; selected Mid/epoch4; user >Mid",
+        "plugin_return": "passed: normal demo_A parameter/value and actual mode/ACK traffic",
+        "new_parameter_writes": 0,
+        "send_override": false,
+        "receive_override": false
+      },
+      "restoration": {
+        "preserved": true,
+        "new_parameter_writes": 0,
+        "runtime_hashes": 22,
+        "local_control_ids": 4,
+        "baseline_button1_reconciled": true,
+        "disconnected": true,
+        "pending": 0,
+        "observer_removed": true,
+        "scoped_errors": 0,
+        "stop": {
+          "reason": "user-plugin-pass",
+          "disconnected": true,
+          "pending_after": 0,
+          "child_returncode": 0,
+          "observer_removed": true
+        }
+      },
+      "limits": "Overview touch selection only; locked nonselected knob gesture and forced same-batch view/selection timing not physically accepted"
     }
   },
-  "runtime_source_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7",
-  "embedded_documentation_source_commit": "e74e413d0ddeb58a7368c0ad2a62398845e892e7"
+  "runtime_source_commit": "b6d2cc30573a1ccec74cb91984a34bfc01120cac",
+  "embedded_documentation_source_commit": "8d3dc2216edf6a390782ca5c4eb0ff4d2b29e733"
 }
